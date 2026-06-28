@@ -14,16 +14,18 @@ help: ## list targets
 
 install: install-js install-py ## install everything (JS workspaces + each Python service)
 
-install-js: ## npm install across all TS workspaces
+install-js: ## npm install across all TS workspaces (+ chronos-ui standalone)
 	npm install
+	cd apps/chronos-ui && npm install
 
 install-py: ## uv sync each Python service (isolated venvs)
 	@for s in $(PY_SERVICES); do \
 	  if [ -f $$s/pyproject.toml ]; then echo "── uv sync $$s"; (cd $$s && uv sync) || echo "!! $$s sync failed (see docs)"; fi; \
 	done
 
-build: ## build all TS apps
+build: ## build all TS apps (origin-web + passport via workspaces; chronos-ui standalone)
 	npm run build --workspaces --if-present
+	cd apps/chronos-ui && npm run build
 
 test: ## test all TS apps
 	npm run test --workspaces --if-present

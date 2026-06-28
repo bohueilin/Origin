@@ -33,10 +33,14 @@ function Stat({ label, value, unit, tone }: { label: string; value: string | num
 function SpeedRacePanel() {
   const [data, setData] = useState<SpeedRaceResponse | null>(null)
   const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
   const run = useCallback(async () => {
     setBusy(true)
+    setErr(null)
     try {
       setData(await speedRace())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Speed race failed.')
     } finally {
       setBusy(false)
     }
@@ -55,6 +59,7 @@ function SpeedRacePanel() {
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Racing…' : data ? 'Race again' : 'Run the speed race'}
       </button>
+      {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
       {data && (
         <div className="fdy-race__lanes">
           {[data.cerebras, data.baseline].map((lane) => (
@@ -174,14 +179,18 @@ export default function FoundryApp() {
   const [running, setRunning] = useState(false)
   const [revealed, setRevealed] = useState(0)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [apiError, setApiError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const doParse = useCallback(async (imageDataUri?: string, hint?: string) => {
     setParsing(true)
     setQuorum(null)
     setRevealed(0)
+    setApiError(null)
     try {
       setParse(await parseFloor({ imageDataUri, hint }))
+    } catch (e) {
+      setApiError(e instanceof Error ? e.message : 'Parse failed.')
     } finally {
       setParsing(false)
     }
@@ -204,9 +213,12 @@ export default function FoundryApp() {
     if (!parse?.siteMap) return
     setRunning(true)
     setRevealed(0)
+    setApiError(null)
     try {
       const res = await quorumRun({ siteMap: parse.siteMap, mode })
       setQuorum(res)
+    } catch (e) {
+      setApiError(e instanceof Error ? e.message : 'Quorum run failed.')
     } finally {
       setRunning(false)
     }
@@ -246,6 +258,12 @@ export default function FoundryApp() {
           oracle, never an LLM.
         </p>
       </header>
+
+      {apiError && (
+        <div className="fdy-apierror" role="alert">
+          {apiError}
+        </div>
+      )}
 
       <SpeedRacePanel />
 

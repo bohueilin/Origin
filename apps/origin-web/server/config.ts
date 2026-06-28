@@ -121,7 +121,9 @@ export function loadConfig(cwd: string = process.cwd()): AppConfig {
   if (baselineKey) {
     gemini = { apiKey: baselineKey, model: get('BASELINE_MODEL') || 'gpt-4o-mini', baseUrl: (get('BASELINE_BASE_URL') || 'https://api.openai.com/v1').replace(/\/+$/, ''), label: get('BASELINE_LABEL') || 'GPU baseline' }
   } else if (fwKey) {
-    gemini = { apiKey: fwKey, model: get('FIREWORKS_BASELINE_MODEL') || 'accounts/fireworks/models/llama-v3p3-70b-instruct', baseUrl: 'https://api.fireworks.ai/inference/v1', label: 'Fireworks · llama-3.3-70b' }
+    const fwModel = get('FIREWORKS_BASELINE_MODEL') || 'accounts/fireworks/models/gpt-oss-120b'
+    const fwLabel = get('FIREWORKS_BASELINE_LABEL') || `Fireworks · ${fwModel.split('/').pop()}`
+    gemini = { apiKey: fwKey, model: fwModel, baseUrl: 'https://api.fireworks.ai/inference/v1', label: fwLabel }
   } else if (geminiKey) {
     gemini = { apiKey: geminiKey, model: get('GEMINI_MODEL') || 'gemini-2.0-flash', baseUrl: (get('GEMINI_BASE_URL') || 'https://generativelanguage.googleapis.com/v1beta/openai').replace(/\/+$/, ''), label: 'Gemini' }
   } else {

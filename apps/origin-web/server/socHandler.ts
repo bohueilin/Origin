@@ -223,9 +223,10 @@ export async function handleSocRace(_body: unknown, cfg: CerebrasConfig, gemini:
   // full-loop time; on the real path use the measured wall time.
   const perIncident = cReal && cWall > 0 ? cWall / N : 420
 
-  // Baseline lane: ONE incident's full loop on the GPU model (3 calls). Quota → illustrative.
+  // Baseline lane: ONE incident's full loop on the GPU model (3 calls). No key → illustrative.
   let baselineMs: number | null = null
   let baselineReal = false
+  let baselineTokS = 95 // illustrative GPU-class fallback
   if (gemini.apiKey) {
     const bStart = Date.now()
     const msgs: ChatMessage[] = [
@@ -236,6 +237,7 @@ export async function handleSocRace(_body: unknown, cfg: CerebrasConfig, gemini:
     if (r.ok) {
       baselineMs = (Date.now() - bStart) * 3 // a full loop is ~3 calls
       baselineReal = true
+      if (typeof r.tokS === 'number') baselineTokS = r.tokS
     }
   }
   if (baselineMs == null) baselineMs = 7200 // illustrative GPU-class full-loop time (3 calls × ~2.4s)
@@ -251,7 +253,7 @@ export async function handleSocRace(_body: unknown, cfg: CerebrasConfig, gemini:
   }
   const baselineLane: SocRaceLane = {
     provider: 'gemini', model: gemini.label ?? gemini.model, ok: baselineReal, incidentsCleared: 1,
-    tokS: 95, totalMs: Math.round(baselineMs),
+    tokS: baselineTokS, totalMs: Math.round(baselineMs),
     note: baselineReal ? undefined : 'No live baseline key — illustrative GPU-class figures (set FIREWORKS_API_KEY for a live race).',
   }
 

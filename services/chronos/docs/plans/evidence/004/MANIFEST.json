@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "plan_id": "004",
+  "plan_name": "legitimate-control-fixtures",
+  "wave": 2,
+  "status": "complete",
+  "started_at": "2026-06-20T23:30:00+00:00",
+  "updated_at": "2026-06-20T23:55:00+00:00",
+  "completed_at": "2026-06-20T23:55:00+00:00",
+  "commit": "ed374d5f279a0f6ff976140b5a9315331e17d647",
+  "commands": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "chronos.controls.cli",
+        "materialize"
+      ],
+      "exit_code": 0,
+      "observed": "Pinned task identity, validated path diversity, local docker grades, and Phase 1 control seal."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "chronos.controls.cli",
+        "integration"
+      ],
+      "exit_code": 0,
+      "observed": "Nine HUD Docker baselines passed with stable environment_version/task_checksum; corrupt-control negative returned reward 0; Phase 2 seal written."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/controls/",
+        "-q"
+      ],
+      "exit_code": 0,
+      "observed": "9 passed in plan-004-tests mapped command."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "plan-004-tests"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: plan-004-tests exited 0."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "integration-controls"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: integration-controls exited 0 with controls_phase 2."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "lint"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: lint All checks passed."
+    },
+    {
+      "argv": [
+        "python3",
+        "docs/plans/scripts/validate_file_sizes.py",
+        "--plan",
+        "004"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 23 text file(s) are at most 500 lines"
+    },
+    {
+      "argv": [
+        "python3",
+        "docs/plans/scripts/validate_evidence.py",
+        "--plan",
+        "004",
+        "--require-complete"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: evidence manifest complete"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Task pinned and materialized",
+      "status": "pass",
+      "evidence": "fixtures/chronos/mongodb-sales-aggregation-engine/task_identity.json records terminal_wrench_revision d8a29613, grader digest ecaf1222, verifier harness digest 5783dd7c, and Dockerfile digest 87cbdebd."
+    },
+    {
+      "name": "Path diversity established",
+      "status": "pass",
+      "evidence": "Three controls labeled path-a, path-b, and path-c with diversity_rationales.json citing single-match/addFields/python-round, two-match/server-round, and correlated lookup pipeline shapes."
+    },
+    {
+      "name": "Local grader success",
+      "status": "pass",
+      "evidence": "Each control passes all 13 tests via scripts/grade_control_in_docker.sh and tests/chronos/controls/test_local_grader.py."
+    },
+    {
+      "name": "Controls sealed",
+      "status": "pass",
+      "evidence": "fixtures/chronos/mongodb-sales-aggregation-engine/controls.json phase 2 with immutable content digests and frozen_at timestamp."
+    },
+    {
+      "name": "HUD baseline stability",
+      "status": "pass",
+      "evidence": "Nine DockerRuntime baselines (3 per control) scored reward 1.0 with consistent environment_version 57cb7f09-89c1-487b-8463-b525edf01153 and task_checksum 08258e81 across runs; trace refs recorded in controls.json and artifacts/chronos/controls/baseline_runs.json."
+    },
+    {
+      "name": "Corrupt-control negative",
+      "status": "pass",
+      "evidence": "Stub SalesAnalyzer baseline through HUD DockerRuntime returned reward 0.0."
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "src/chronos/controls/**",
+      "description": "Control materialization, diversity validation, freeze/seal, local grading, HUD baseline runner, and CLI."
+    },
+    {
+      "ref": "fixtures/chronos/mongodb-sales-aggregation-engine/**",
+      "description": "Three path-diverse query.py controls, task_identity.json, diversity_rationales.json, and sealed controls.json."
+    },
+    {
+      "ref": "tests/chronos/controls/**",
+      "description": "Behavior tests for identity, diversity, local grader, immutability, and Phase 2 manifest completeness."
+    },
+    {
+      "ref": "scripts/grade_control_in_docker.sh",
+      "description": "Ephemeral mongo:7.0 local grader used by plan-004-tests and materialize."
+    },
+    {
+      "ref": "artifacts/chronos/controls/baseline_runs.json",
+      "description": "Recorded HUD baseline run metadata and corrupt-control negative result."
+    },
+    {
+      "ref": "docs/plans/repo-map/COMMANDS.json",
+      "description": "Verified plan-004-tests and integration-controls mapped argv entries."
+    }
+  ],
+  "screenshots": [],
+  "skips": [
+    "HUD baselines use DockerRuntime with the repository-built chronos/mongodb-sales-aggregation-engine-v1 image rather than hosted hud eval --remote, matching Plan 001 local-runtime evidence."
+  ],
+  "blockers": [],
+  "notes": [
+    "Gate 2 control prerequisite satisfied: three path-diverse legitimate controls are frozen under the pinned v1 grader before Plan 005 patch evaluation."
+  ]
+}

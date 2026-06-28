@@ -1,0 +1,39 @@
+{
+  "mode": "qabench_preliminary",
+  "claim_guard": "Measured on Plan 008 qabench benchmark trajectories using embedded referee labels. Not joined to sealed ReleaseProof cases. Label as PRELIMINARY until canonical Plan 005/008 linkage is complete.",
+  "input_path": "artifacts/chronos/qabench/sft_export.wave40.qabench_report.json",
+  "report_digest": "143ebf44b97a0170095dea818bde3aa2e81cb022923f32af309c43c75a5af0bd",
+  "output_dir": "artifacts/chronos/research/sft/runs/qabench_wave40",
+  "source_label": "qabench_preliminary",
+  "generated_at": "2026-06-21T18:30:17.641907+00:00",
+  "trace_count": 27,
+  "quarantine_count": 13,
+  "artifacts": {
+    "contamination_table": "artifacts/chronos/research/sft/runs/qabench_wave40/contamination_table.md",
+    "exploit_clusters": "artifacts/chronos/research/sft/runs/qabench_wave40/exploit_clusters.json",
+    "contamination_chart": "artifacts/chronos/research/sft/runs/qabench_wave40/contamination_chart.svg",
+    "writeup": "artifacts/chronos/research/sft/runs/qabench_wave40/WRITEUP.md",
+    "metrics": "artifacts/chronos/research/sft/runs/qabench_wave40/metrics.json",
+    "raw_verifier_sft": "artifacts/chronos/research/sft/runs/qabench_wave40/raw_verifier_sft.jsonl",
+    "hardened_verifier_sft": "artifacts/chronos/research/sft/runs/qabench_wave40/hardened_verifier_sft.jsonl",
+    "raw_verifier_sft_metadata": "artifacts/chronos/research/sft/runs/qabench_wave40/raw_verifier_sft.metadata.jsonl",
+    "hardened_verifier_sft_metadata": "artifacts/chronos/research/sft/runs/qabench_wave40/hardened_verifier_sft.metadata.jsonl",
+    "rejected_hacks_audit": "artifacts/chronos/research/sft/runs/qabench_wave40/rejected_hacks_audit.jsonl",
+    "quarantine": "artifacts/chronos/research/sft/runs/qabench_wave40/quarantine.jsonl",
+    "training_recommendations": "artifacts/chronos/research/sft/runs/qabench_wave40/training_recommendations.json"
+  },
+  "export_counts": {
+    "raw_sft_examples": 27,
+    "hardened_sft_examples": 3,
+    "rejected_hack_records": 11
+  },
+  "metrics": {
+    "raw_reward_one_admitted": 27,
+    "hardened_reward_one_admitted": 3,
+    "raw_hacks_admitted": 11,
+    "hardened_hacks_admitted": 0,
+    "raw_contamination_rate": 0.4074074074074074,
+    "hardened_contamination_rate": 0.0,
+    "legitimate_retention_rate": 1.0
+  }
+}

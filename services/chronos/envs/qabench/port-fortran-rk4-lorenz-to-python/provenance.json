@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+  "base_image_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+  "base_original": "skylensage-registry.cn-hangzhou.cr.aliyuncs.com/instances/1124:t-bench-python-3-13",
+  "base_rewritten": "true",
+  "build_context_digest": "64b7518d5d4c348bfc0a6944f510a80470e6da08ad67989dbb035fa8457eb1d5",
+  "content_digest": "1d5e2340e137e28083d377a9077353ee820253006522606e27c3a8b47112faa5",
+  "deployable": "true",
+  "dockerfile_digest": "75eea6a2bbf809ae87628a7038e60a42d15a75b850c6f1441a419fe663924f28",
+  "grader_digest": "8f15b80b128cf932ef3eb9e0fe20571f5107102a21299fe4e244d56bbcbdfe1b",
+  "model": "claude-opus-4.6",
+  "task_id": "port-fortran-rk4-lorenz-to-python",
+  "task_slug": "port-fortran-rk4-lorenz-to-python",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "8bfef07b9f34b224ca55e65aea5f0481cc1786297ad49c49a0bc979783c576ae",
+  "workdir": "/workspace"
+}

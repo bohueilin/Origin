@@ -1,0 +1,11 @@
+# Mirrored from few-sh/harden-v0 requirements.txt at
+# b9dd28c732e7e5435da4a2ac90ae92ac6ea65007.
+# harden-v0 is source-only in this revision: no pyproject.toml is present.
+
+harbor
+litellm
+pydantic
+tenacity
+PyYAML
+python-dotenv
+tqdm

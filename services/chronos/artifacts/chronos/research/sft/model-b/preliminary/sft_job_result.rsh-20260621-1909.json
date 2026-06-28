@@ -1,0 +1,31 @@
+{
+  "name": "accounts/desaikrrish-8x76pqk3/supervisedFineTuningJobs/chronos-model-b-rsh-20260621-1909",
+  "create_time": "2026-06-21T19:28:00.356247Z",
+  "completed_time": "2026-06-21T19:34:00.534479Z",
+  "dataset": "accounts/desaikrrish-8x76pqk3/datasets/chronos-model-b-rsh-20260621-1909",
+  "aws_s3_config": {},
+  "azure_blob_storage_config": {},
+  "state": "JOB_STATE_COMPLETED",
+  "status": {
+    "message": "Training completed"
+  },
+  "created_by": "desaikrrish@gmail.com",
+  "output_model": "accounts/desaikrrish-8x76pqk3/models/chronos-model-b-rsh-qwen3-4b-20260621-1909",
+  "base_model": "accounts/fireworks/models/qwen3-4b",
+  "epochs": 1,
+  "max_context_length": 32768,
+  "lora_rank": 8,
+  "wandb_config": {},
+  "evaluation_dataset": "accounts/desaikrrish-8x76pqk3/datasets/chronos-model-b-rsh-eval-20260621-1909",
+  "update_time": "2026-06-21T19:34:00.535171Z",
+  "nodes": 1,
+  "job_progress": {
+    "percent": 100
+  },
+  "gradient_accumulation_steps": 1,
+  "estimated_cost": {
+    "currency_code": "USD",
+    "nanos": 10905500
+  },
+  "encryption_state": "ENCRYPTION_STATE_PLAINTEXT"
+}

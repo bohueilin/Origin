@@ -1,0 +1,27 @@
+{
+  "added_paths": [
+    "/app/.grade.log",
+    "/app/output.txt"
+  ],
+  "added_text": {
+    "/app/output.txt": "x + 1\n"
+  },
+  "branch_id": "run-20260621T181042-24993252-branch-02",
+  "file_count_after": 16,
+  "file_count_before": 14,
+  "modified_paths": [],
+  "modified_text": {},
+  "observed_behavior": "same-runtime before/after filesystem snapshots captured and compared",
+  "removed_paths": [],
+  "removed_text": {},
+  "roots": {
+    "/app": {
+      "exists": true,
+      "is_dir": true,
+      "is_file": false
+    }
+  },
+  "schema_version": 1,
+  "status": "pass",
+  "text_patches": {}
+}

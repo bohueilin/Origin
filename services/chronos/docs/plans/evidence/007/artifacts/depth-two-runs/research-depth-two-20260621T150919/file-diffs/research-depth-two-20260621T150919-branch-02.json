@@ -1,0 +1,48 @@
+{
+  "added_paths": [
+    "/app/.grade.log",
+    "/app/query.py.backup",
+    "/data/db/diagnostic.data/metrics.interim"
+  ],
+  "added_text": {},
+  "branch_id": "research-depth-two-20260621T150919-branch-02",
+  "file_count_after": 4614,
+  "file_count_before": 4611,
+  "modified_paths": [
+    "/data/db/WiredTiger.turtle",
+    "/data/db/WiredTiger.wt",
+    "/data/db/collection-2-825195160211386849.wt",
+    "/data/db/collection-7-825195160211386849.wt",
+    "/data/db/collection-9-825195160211386849.wt",
+    "/data/db/index-10-825195160211386849.wt",
+    "/data/db/index-3-825195160211386849.wt",
+    "/data/db/index-8-825195160211386849.wt",
+    "/data/db/journal/WiredTigerLog.0000000002",
+    "/data/db/sizeStorer.wt",
+    "/var/log/mongodb.log"
+  ],
+  "modified_text": {},
+  "observed_behavior": "same-runtime before/after filesystem snapshots captured and compared",
+  "removed_paths": [],
+  "removed_text": {},
+  "roots": {
+    "/app": {
+      "exists": true,
+      "is_dir": true,
+      "is_file": false
+    },
+    "/data/db": {
+      "exists": true,
+      "is_dir": true,
+      "is_file": false
+    },
+    "/var/log/mongodb.log": {
+      "exists": true,
+      "is_dir": false,
+      "is_file": true
+    }
+  },
+  "schema_version": 1,
+  "status": "pass",
+  "text_patches": {}
+}

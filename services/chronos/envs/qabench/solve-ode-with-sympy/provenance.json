@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+  "base_image_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+  "base_original": "skylensage-registry.cn-hangzhou.cr.aliyuncs.com/instances/1124:t-bench-python-3-13",
+  "base_rewritten": "true",
+  "build_context_digest": "a8ba20a538ed61a19b89ed7f69d88dc744770110647060dd208591fe9c4f0698",
+  "content_digest": "3322f8616af48f50a27f859129f1f5902f0d4bd228813dc68090a05aef8d745d",
+  "deployable": "true",
+  "dockerfile_digest": "780608f6c3074e686f7d284b1db4b0f17240aba2f107ac5052cbfafb04a10a81",
+  "grader_digest": "79f81be916a6bef26d5c90052f44587194998250f342989f5a6b0bd90a4d00f4",
+  "model": "claude-opus-4.6",
+  "task_id": "solve-ode-with-sympy",
+  "task_slug": "solve-ode-with-sympy",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "5dbf522d8538e5ae0101e82febcbf43ffe778073ae520014fd871d1de4a29eab",
+  "workdir": "/app"
+}

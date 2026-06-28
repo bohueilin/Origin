@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "status": "not_run",
+  "claim_guard": "Disposable private pipeline demonstration only. Labels are diff-based, lineage is incomplete, no adversarial held-out claim is possible, and this run cannot support Model A versus Model B or improvement claims.",
+  "job_id": "chronos-model-a-preliminary-disposable-d449a3cad122",
+  "output_model": "chronos-model-a-preliminary-disposable-qwen3-4b-d449a3cad122",
+  "visibility": "private_evaluation_only",
+  "deployment_status": "not_run"
+}

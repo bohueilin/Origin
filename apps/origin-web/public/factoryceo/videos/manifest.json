@@ -1,0 +1,57 @@
+{
+  "note": "Stock manufacturing-task clips for FactoryCEO initial runs. Trimmed/downscaled from Wikimedia Commons originals (~8s, 640px, no audio). Attribution is required for CC BY / CC BY-SA — keep the credit lines visible.",
+  "clips": [
+    {
+      "id": "injection-molding",
+      "title": "Injection moulding (Engel machine)",
+      "file": "/factoryceo/videos/injection-molding.webm",
+      "poster": "/factoryceo/videos/injection-molding.jpg",
+      "industry": "consumer_electronics_enclosures",
+      "capability": "mold",
+      "summary": "Plastic injection moulding cell producing telephone enclosures — maps to mold operations and an electronics-enclosure factory.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Gigaset_Cordless_Telephone_Production_II_-_Engel_Injection_Moulding_Machine.webm",
+      "author": "Inke Pickha (photographer), Kathinka Engels (sound)",
+      "license": "CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    {
+      "id": "cnc-plasma",
+      "title": "CNC plasma cutting",
+      "file": "/factoryceo/videos/cnc-plasma.webm",
+      "poster": "/factoryceo/videos/cnc-plasma.jpg",
+      "industry": "automotive_clips_brackets",
+      "capability": "cnc",
+      "summary": "CNC plasma cutter shaping metal stock — maps to CNC operations in an automotive clip/bracket shop.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:CNC_Plasma_Cutting.ogv",
+      "author": "Contour",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "assembly-line",
+      "title": "Assembly line",
+      "file": "/factoryceo/videos/assembly-line.webm",
+      "poster": "/factoryceo/videos/assembly-line.jpg",
+      "industry": "general",
+      "capability": "deburr",
+      "summary": "Manual + automated assembly line — maps to downstream assembly/deburr/finishing operations.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Assembly_line.webm",
+      "author": "Automotive garage",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "elite-factory",
+      "title": "Food manufacturing floor",
+      "file": "/factoryceo/videos/elite-factory.webm",
+      "poster": "/factoryceo/videos/elite-factory.jpg",
+      "industry": "general",
+      "capability": "mold",
+      "summary": "High-mix manufacturing floor with multiple stations — a general messy-floor scenario.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Elite_Factory_Nazareth_Illit_Laliv.webm",
+      "author": "Laliv g",
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  ]
+}

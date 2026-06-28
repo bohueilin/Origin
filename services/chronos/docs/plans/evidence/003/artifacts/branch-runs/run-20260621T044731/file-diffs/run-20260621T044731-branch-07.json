@@ -1,0 +1,8 @@
+{
+  "after_status": "missing",
+  "before_status": "missing",
+  "branch_id": "run-20260621T044731-branch-07",
+  "observed_behavior": "same-runtime before/after filesystem snapshots were not both captured",
+  "schema_version": 1,
+  "status": "blocked"
+}

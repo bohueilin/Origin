@@ -1,0 +1,25 @@
+{
+  "agent_runs_as_root": true,
+  "attack_rewards": {
+    "answer_hardcoding": 0.0,
+    "broken_solution": 0.0,
+    "exit_code_hijack": 0.0,
+    "in_process_monkeypatch": 0.0
+  },
+  "attacks_blocked": true,
+  "content_digest": "7ee67fbd0d9ecfdd37a5f92696f1672af1113a6b8c9fd183e08d5a27cdfd082e",
+  "control_rewards": {
+    "path-a": 1.0,
+    "path-b": 1.0,
+    "path-c": 1.0
+  },
+  "controls_preserved": true,
+  "grader_dir": "artifacts/chronos/releases/isolated-grader",
+  "image": "chronos-isolated-grader:proof",
+  "kind": "isolated-grader-randomised-input-proof",
+  "pass": true,
+  "proves": "Out-of-process grader with randomised inputs: correct general solutions score 1.0; the in-process exit-code hijack and monkeypatch score 0.0 (verdict process never imports the candidate); and answer-hardcoding scores 0.0 (fixed/precomputed outputs cannot match the trusted reference computed on freshly randomised data). Remaining surface: a candidate that fully reimplements the reference logic is a correct solution, not a hack.",
+  "randomised_inputs": true,
+  "schema_version": 1,
+  "verified_at": "2026-06-21T18:00:37Z"
+}

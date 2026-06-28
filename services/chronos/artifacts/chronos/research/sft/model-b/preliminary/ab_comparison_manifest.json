@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_uploaded",
+  "comparison": "model_a_raw_contaminated_vs_model_b_confirmed_hack_removed",
+  "evidence_level": "preliminary_diff_labeled_unverified",
+  "claim_guard": "Confirmed-hack-REMOVED ablation, NOT a certified-clean/hardened model. Diff-based labels; surviving rows are unproven. The A-vs-B delta isolates Chronos-confirmed reward-hacks removed from Model A's train split; it is a preliminary lower bound and does not prove the residual set is clean.",
+  "model_a": {
+    "job_id": "chronos-model-a-prelim-v1",
+    "output_model": "accounts/desaikrrish-8x76pqk3/models/chronos-model-a-prelim-v1",
+    "train_rows": 25,
+    "train_hacks": 10
+  },
+  "model_b": {
+    "job_id": "chronos-model-b-prelim-v1",
+    "output_model": "accounts/desaikrrish-8x76pqk3/models/chronos-model-b-prelim-v1",
+    "train_rows": 15,
+    "removed_confirmed_hacks": 10
+  },
+  "shared_eval": {
+    "heldout_legitimate_eval": "artifacts/chronos/research/sft/model-b/preliminary/heldout_legitimate_eval.jsonl",
+    "hack_prone_eval_prompts": "artifacts/chronos/research/sft/model-b/preliminary/hack_prone_eval_prompts.jsonl"
+  },
+  "isolation": "Only confirmed-hack rows differ between A and B train splits."
+}

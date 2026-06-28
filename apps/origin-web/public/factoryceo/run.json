@@ -1,0 +1,4909 @@
+{
+  "meta": {
+    "n_scenarios": 25,
+    "horizon_days": 30,
+    "model": "claude-opus-4-8 (optional adapter)"
+  },
+  "scoreboard": [
+    {
+      "method": "base_llm",
+      "label": "Base LLM (no verifier)",
+      "profit": 18102.86,
+      "on_time_rate": 0.93,
+      "invalid_actions": 10.8,
+      "customer_trust": 17.44,
+      "utilization": 0.05,
+      "safety_incidents": 1
+    },
+    {
+      "method": "greedy",
+      "label": "Greedy heuristic",
+      "profit": 26968.24,
+      "on_time_rate": 1.0,
+      "invalid_actions": 0,
+      "customer_trust": 100,
+      "utilization": 0.04,
+      "safety_incidents": 1
+    },
+    {
+      "method": "llm_retry",
+      "label": "LLM + verifier retry (K=3)",
+      "profit": 22598.07,
+      "on_time_rate": 0.96,
+      "invalid_actions": 5.28,
+      "customer_trust": 55.36,
+      "utilization": 0.05,
+      "safety_incidents": 1
+    },
+    {
+      "method": "trm",
+      "label": "FactoryCEO-TRM (recursive repair)",
+      "profit": 25759.88,
+      "on_time_rate": 0.97,
+      "invalid_actions": 0,
+      "customer_trust": 100,
+      "utilization": 0.04,
+      "safety_incidents": 0
+    }
+  ],
+  "episode": {
+    "synth_id": "factoryceo-trm-v1-23",
+    "exercise": [
+      "scheduling",
+      "quality",
+      "procurement",
+      "quoting",
+      "safety"
+    ],
+    "constraints": {
+      "seed": 23,
+      "horizon_days": 30,
+      "n_jobs": 14,
+      "n_corruptions": 6,
+      "teacher": "greedy+corrupt"
+    },
+    "negative": true,
+    "teacher": "deterministic+repair",
+    "observation": {
+      "messy_prompt": "Customer email: Need 10,000 units by day 12. Same ABS as last time. Can you do $0.20/unit?\nOperator note: M4 sounded rough this afternoon; might need maintenance.\nInventory: ABS=220kg, Nylon=80kg, PP=40kg.\nMachine log: M1 uptime=95%, M2 uptime=90%, M3 uptime=92%, M4 uptime=88%.\nHR: operator O2 out sick one day this period.\nCurrent jobs: J101 due day 3 high priority; J108 due day 10 low priority; J113 due day 10 high priority.",
+      "factory_state": {
+        "horizon_days": 30,
+        "machines": [
+          {
+            "id": "M1",
+            "capabilities": [
+              "mold"
+            ],
+            "uptime": 0.95,
+            "maintenance": [
+              {
+                "start": 240,
+                "end": 246
+              }
+            ]
+          },
+          {
+            "id": "M2",
+            "capabilities": [
+              "mold",
+              "deburr"
+            ],
+            "uptime": 0.9,
+            "maintenance": []
+          },
+          {
+            "id": "M3",
+            "capabilities": [
+              "cnc"
+            ],
+            "uptime": 0.92,
+            "maintenance": []
+          },
+          {
+            "id": "M4",
+            "capabilities": [
+              "cnc",
+              "deburr"
+            ],
+            "uptime": 0.88,
+            "maintenance": []
+          }
+        ],
+        "operators": [
+          {
+            "id": "O1",
+            "type": "human",
+            "skills": [
+              "mold",
+              "deburr"
+            ],
+            "availability": [
+              {
+                "start": 8,
+                "end": 18
+              },
+              {
+                "start": 32,
+                "end": 42
+              },
+              {
+                "start": 56,
+                "end": 66
+              },
+              {
+                "start": 80,
+                "end": 90
+              },
+              {
+                "start": 104,
+                "end": 114
+              },
+              {
+                "start": 128,
+                "end": 138
+              },
+              {
+                "start": 152,
+                "end": 162
+              },
+              {
+                "start": 176,
+                "end": 186
+              },
+              {
+                "start": 200,
+                "end": 210
+              },
+              {
+                "start": 224,
+                "end": 234
+              },
+              {
+                "start": 248,
+                "end": 258
+              },
+              {
+                "start": 272,
+                "end": 282
+              },
+              {
+                "start": 296,
+                "end": 306
+              },
+              {
+                "start": 320,
+                "end": 330
+              },
+              {
+                "start": 344,
+                "end": 354
+              },
+              {
+                "start": 368,
+                "end": 378
+              },
+              {
+                "start": 392,
+                "end": 402
+              },
+              {
+                "start": 416,
+                "end": 426
+              },
+              {
+                "start": 440,
+                "end": 450
+              },
+              {
+                "start": 464,
+                "end": 474
+              },
+              {
+                "start": 488,
+                "end": 498
+              },
+              {
+                "start": 512,
+                "end": 522
+              },
+              {
+                "start": 536,
+                "end": 546
+              },
+              {
+                "start": 560,
+                "end": 570
+              },
+              {
+                "start": 584,
+                "end": 594
+              },
+              {
+                "start": 608,
+                "end": 618
+              },
+              {
+                "start": 632,
+                "end": 642
+              },
+              {
+                "start": 656,
+                "end": 666
+              },
+              {
+                "start": 680,
+                "end": 690
+              },
+              {
+                "start": 704,
+                "end": 714
+              }
+            ]
+          },
+          {
+            "id": "O2",
+            "type": "human",
+            "skills": [
+              "cnc",
+              "deburr"
+            ],
+            "availability": [
+              {
+                "start": 8,
+                "end": 18
+              },
+              {
+                "start": 32,
+                "end": 42
+              },
+              {
+                "start": 56,
+                "end": 66
+              },
+              {
+                "start": 80,
+                "end": 90
+              },
+              {
+                "start": 104,
+                "end": 114
+              },
+              {
+                "start": 152,
+                "end": 162
+              },
+              {
+                "start": 176,
+                "end": 186
+              },
+              {
+                "start": 200,
+                "end": 210
+              },
+              {
+                "start": 224,
+                "end": 234
+              },
+              {
+                "start": 248,
+                "end": 258
+              },
+              {
+                "start": 272,
+                "end": 282
+              },
+              {
+                "start": 296,
+                "end": 306
+              },
+              {
+                "start": 320,
+                "end": 330
+              },
+              {
+                "start": 344,
+                "end": 354
+              },
+              {
+                "start": 368,
+                "end": 378
+              },
+              {
+                "start": 392,
+                "end": 402
+              },
+              {
+                "start": 416,
+                "end": 426
+              },
+              {
+                "start": 440,
+                "end": 450
+              },
+              {
+                "start": 464,
+                "end": 474
+              },
+              {
+                "start": 488,
+                "end": 498
+              },
+              {
+                "start": 512,
+                "end": 522
+              },
+              {
+                "start": 536,
+                "end": 546
+              },
+              {
+                "start": 560,
+                "end": 570
+              },
+              {
+                "start": 584,
+                "end": 594
+              },
+              {
+                "start": 608,
+                "end": 618
+              },
+              {
+                "start": 632,
+                "end": 642
+              },
+              {
+                "start": 656,
+                "end": 666
+              },
+              {
+                "start": 680,
+                "end": 690
+              },
+              {
+                "start": 704,
+                "end": 714
+              }
+            ]
+          },
+          {
+            "id": "O3",
+            "type": "human",
+            "skills": [
+              "mold",
+              "cnc"
+            ],
+            "availability": [
+              {
+                "start": 8,
+                "end": 18
+              },
+              {
+                "start": 32,
+                "end": 42
+              },
+              {
+                "start": 56,
+                "end": 66
+              },
+              {
+                "start": 80,
+                "end": 90
+              },
+              {
+                "start": 104,
+                "end": 114
+              },
+              {
+                "start": 128,
+                "end": 138
+              },
+              {
+                "start": 152,
+                "end": 162
+              },
+              {
+                "start": 176,
+                "end": 186
+              },
+              {
+                "start": 200,
+                "end": 210
+              },
+              {
+                "start": 224,
+                "end": 234
+              },
+              {
+                "start": 248,
+                "end": 258
+              },
+              {
+                "start": 272,
+                "end": 282
+              },
+              {
+                "start": 296,
+                "end": 306
+              },
+              {
+                "start": 320,
+                "end": 330
+              },
+              {
+                "start": 344,
+                "end": 354
+              },
+              {
+                "start": 368,
+                "end": 378
+              },
+              {
+                "start": 392,
+                "end": 402
+              },
+              {
+                "start": 416,
+                "end": 426
+              },
+              {
+                "start": 440,
+                "end": 450
+              },
+              {
+                "start": 464,
+                "end": 474
+              },
+              {
+                "start": 488,
+                "end": 498
+              },
+              {
+                "start": 512,
+                "end": 522
+              },
+              {
+                "start": 536,
+                "end": 546
+              },
+              {
+                "start": 560,
+                "end": 570
+              },
+              {
+                "start": 584,
+                "end": 594
+              },
+              {
+                "start": 608,
+                "end": 618
+              },
+              {
+                "start": 632,
+                "end": 642
+              },
+              {
+                "start": 656,
+                "end": 666
+              },
+              {
+                "start": 680,
+                "end": 690
+              },
+              {
+                "start": 704,
+                "end": 714
+              }
+            ]
+          },
+          {
+            "id": "R1",
+            "type": "robot",
+            "skills": [
+              "mold",
+              "cnc",
+              "deburr"
+            ],
+            "availability": [
+              {
+                "start": 0,
+                "end": 720
+              }
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "name": "ABS",
+            "inventory_kg": 220.0,
+            "lead_time_days": 2,
+            "unit_cost": 3.0
+          },
+          {
+            "name": "Nylon",
+            "inventory_kg": 80.0,
+            "lead_time_days": 3,
+            "unit_cost": 5.0
+          },
+          {
+            "name": "PP",
+            "inventory_kg": 40.0,
+            "lead_time_days": 1,
+            "unit_cost": 2.0
+          }
+        ],
+        "jobs": [
+          {
+            "id": "J100",
+            "operations": [
+              {
+                "id": "op0",
+                "capability": "mold",
+                "skill": "mold",
+                "duration": 2,
+                "predecessors": []
+              },
+              {
+                "id": "op1",
+                "capability": "cnc",
+                "skill": "cnc",
+                "duration": 2,
+                "predecessors": [
+                  "op0"
+                ]
+              },
+              {
+                "id": "op2",
+                "capability": "deburr",
+                "skill": "deburr",
+                "duration": 6,
+                "predecessors": [
+                  "op1"
+                ]
+              }
+            ],
+            "material": "Nylon",
+            "material_kg": 81.8,
+            "quantity": 3971,
+            "due_day": 15,
+            "priority": 1,
+            "revenue": 3029.8,
+            "customer": "Initech"
+          },
+          {
+            "id": "J101",
+            "operations": [
+              {
+                "id": "op0",
+                "capability": "cnc",
+                "skill": "cnc",
+                "duration": 2,
+                "predecessors": []
+              },
+              {
+                "id": "op1",
+                "capability": "deburr",
+                "skill": "deburr",
+                "duration": 3,
+                "predecessors": [
+                  "op0"
+                ]
+              }
+            ],
+            "material": "PP",
+            "material_kg": 51.2,
+            "quantity": 4227,
+            "due_day": 3,
+            "priority": 3,
+            "revenue": 2743.8,
+            "customer": "Acme"
+          },
+          {
+            "id": "J102",
+            "operations": [
+              {
+                "id": "op0",
+                "capability": "cnc",
+                "skill": "cnc",
+                "duration": 4,
+                "predecessors": []
+              },
+              {
+                "id": "op1",
+                "capability": "deburr",
+                "skill": "deburr",
+                "duration": 2,
+                "predecessors": [
+                  "op0"
+                ]
+              }
+            ],
+            "material": "ABS",
+            "material_kg": 13.7,
+            "quantity": 789,
+            "due_day": 21,
+            "priority": 1,
+            "revenue": 560.6,
+            "customer": "Initech"
+          },
+          {
+            "id": "J103",
+            "operations": [
+              {
+                "id": "op0",
+                "capability": "mold",
+                "skill": "mold",
+                "duration": 6,
+                "predecessors": []
+              },
+              {
+                "id": "op1",
+                "capability": "cnc",
+                "skill": "cnc",
+                "duration": 4,
+                "predecessors": [
+                  "op0"
+                ]
+              },
+              {
+                "id": "op2",
+                "capability": "deburr",
+                "skill": "deburr",
+                "duration": 4,
+                "predecessors": [
+                  "op1"
+                ]
+              }
+            ],
+            "material": "PP",
+            "material_kg": 16.3,
+            "quantity": 1202,
+            "due_day": 18,
+            "priority": 2,
+            "revenue": 835.8,
+            "customer": "Umbrella"
+          },
+          {
+            "id": "J104",
+            "operations": [
+              {
+                "id": "op0",
+                "capability": "mold",
+                "skill": "mold",
+                "duration": 3,
+                "predecessors": []
+              },
+              {
+                "id": "op1",
+                "capability": "deburr",
+                "skill": "deburr",
+                "duration": 3,
+                "predecessors": [
+                  "op0"
+                ]
+              }
+            ],
+            "material": "PP",
+            "material_kg": 82.9,
+            "quantity": 3149,
+            "due_day": 24,
+            "priority": 1,
+            "revenue": 2176.4,
+            "customer": "Acme"
+          },
+          {
+            "id": "J105",
+            "operations": [
+              {
+                "id": "op0",
+                "capability": "mold",
+                "skill": "mold",
+                "duration": 5,
+                "predecessors": []
+              }
+            ],
+            "material": "ABS",
+            "material_kg": 43.0,
+            "quantity": 2757,
+            "due_day": 21,
+            "priority": 3,
+            "revenue": 1558.8,
+            "customer": "Initech"
+          },
+          {
+            "id": "J106",
+            "operations": [
+              {
+                "id": "op0",
+                "capability": "mold",
+                "skill": "mold",
+                "duration": 6,
+                "predecessors": []
+              },
+              {
+                "id": "op1",
+                "capability": "cnc",
+                "skill": "cnc",
+                "duration": 4,
+                "predecessors": [
+                  "op0"
+                ]
+              },
+              {
+                "id": "op2",
+                "capability": "deburr",
+                "skill": "deburr",
+                "duration": 5,
+                "predecessors": [
+                  "op1"
+                ]
+              }
+            ],
+            "material": "PP",
+            "material_kg": 29.7,
+            "quantity": 2288,
+            "due_day": 11,
+            "priority": 3,
+            "revenue": 1811.9,
+            "customer": "Umbrella"
+          },
+          {
+            "id": "J107",
+            "operations": [
+              {
+                "id": "op0",
+                "capability": "mold",
+                "skill": "mold",
+                "duration": 4,
+                "predecessors": []
+              },
+              {
+                "id": "op1",
+                "capability": "deburr",
+                "skill": "deburr",
+                "duration": 6,
+                "predecessors": [
+                  "op0"
+                ]
+              }
+            ],
+            "material": "ABS",
+            "material_kg": 17.6,
+            "quantity": 1322,
+            "due_day": 15,
+            "priority": 1,
+            "revenue": 565.8,
+            "customer": "Umbrella"
+          }
+        ],
+        "rfqs": [
+          {
+            "id": "R17",
+            "customer": "Acme",
+            "material": "ABS",
+            "quantity": 10000,
+            "due_day": 12,
+            "target_price_per_unit": 0.2,
+            "est_unit_cost": 0.14
+          },
+          {
+            "id": "R18",
+            "customer": "Globex",
+            "material": "Nylon",
+            "quantity": 3000,
+            "due_day": 20,
+            "target_price_per_unit": 0.55,
+            "est_unit_cost": 0.6
+          }
+        ]
+      }
+    },
+    "initial_plan": {
+      "quote_decisions": [
+        {
+          "rfq_id": "R17",
+          "accept": true,
+          "price_per_unit": 0.2,
+          "promised_day": 12
+        },
+        {
+          "rfq_id": "R18",
+          "accept": false,
+          "price_per_unit": 0.0,
+          "promised_day": 0
+        }
+      ],
+      "procurement": [],
+      "schedule": [
+        {
+          "job_id": "J101",
+          "operation_id": "op0",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 24,
+          "end": 26,
+          "overtime": false
+        },
+        {
+          "job_id": "J101",
+          "operation_id": "op1",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 26,
+          "end": 29,
+          "overtime": false
+        },
+        {
+          "job_id": "J113",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "R1",
+          "start": 360,
+          "end": 363,
+          "overtime": false
+        },
+        {
+          "job_id": "J113",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 2,
+          "end": 4,
+          "overtime": false
+        },
+        {
+          "job_id": "J113",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 4,
+          "end": 7,
+          "overtime": false
+        },
+        {
+          "job_id": "J108",
+          "operation_id": "op0",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 7,
+          "end": 9,
+          "overtime": false
+        },
+        {
+          "job_id": "J108",
+          "operation_id": "op1",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 9,
+          "end": 12,
+          "overtime": false
+        },
+        {
+          "job_id": "J106",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "O3",
+          "start": 8,
+          "end": 14,
+          "overtime": false
+        },
+        {
+          "job_id": "J106",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "O2",
+          "start": 14,
+          "end": 18,
+          "overtime": false
+        },
+        {
+          "job_id": "J106",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 45,
+          "end": 387,
+          "overtime": false
+        },
+        {
+          "job_id": "J100",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "R1",
+          "start": 72,
+          "end": 74,
+          "overtime": false
+        },
+        {
+          "job_id": "J100",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 0,
+          "end": 76,
+          "overtime": false
+        },
+        {
+          "job_id": "J100",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 76,
+          "end": 82,
+          "overtime": false
+        },
+        {
+          "job_id": "J107",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 12,
+          "end": 16,
+          "overtime": false
+        },
+        {
+          "job_id": "J107",
+          "operation_id": "op1",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 29,
+          "end": 35,
+          "overtime": false
+        },
+        {
+          "job_id": "J112",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "O1",
+          "start": 32,
+          "end": 35,
+          "overtime": false
+        },
+        {
+          "job_id": "J103",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "O1",
+          "start": 35,
+          "end": 41,
+          "overtime": false
+        },
+        {
+          "job_id": "J103",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 41,
+          "end": 45,
+          "overtime": false
+        },
+        {
+          "job_id": "J103",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 45,
+          "end": 49,
+          "overtime": false
+        },
+        {
+          "job_id": "J109",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "O3",
+          "start": 14,
+          "end": 18,
+          "overtime": false
+        },
+        {
+          "job_id": "J110",
+          "operation_id": "op0",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 8,
+          "end": 12,
+          "overtime": false
+        },
+        {
+          "job_id": "J110",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "R1",
+          "start": 12,
+          "end": 15,
+          "overtime": false
+        },
+        {
+          "job_id": "J105",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O3",
+          "start": 35,
+          "end": 40,
+          "overtime": false
+        },
+        {
+          "job_id": "J102",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O2",
+          "start": 32,
+          "end": 36,
+          "overtime": false
+        },
+        {
+          "job_id": "J102",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 36,
+          "end": 38,
+          "overtime": false
+        },
+        {
+          "job_id": "J104",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "R1",
+          "start": 49,
+          "end": 52,
+          "overtime": false
+        },
+        {
+          "job_id": "J104",
+          "operation_id": "op1",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 52,
+          "end": 55,
+          "overtime": false
+        },
+        {
+          "job_id": "J111",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "R1",
+          "start": 55,
+          "end": 57,
+          "overtime": false
+        },
+        {
+          "job_id": "J111",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "O2",
+          "start": 57,
+          "end": 62,
+          "overtime": false
+        },
+        {
+          "job_id": "J111",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 62,
+          "end": 65,
+          "overtime": false
+        }
+      ],
+      "quality": [
+        {
+          "job_id": "J101",
+          "action": "ship"
+        },
+        {
+          "job_id": "J113",
+          "action": "ship"
+        },
+        {
+          "job_id": "J108",
+          "action": "ship"
+        },
+        {
+          "job_id": "J106",
+          "action": "ship"
+        },
+        {
+          "job_id": "J100",
+          "action": "ship"
+        },
+        {
+          "job_id": "J107",
+          "action": "ship"
+        },
+        {
+          "job_id": "J112",
+          "action": "ship"
+        },
+        {
+          "job_id": "J103",
+          "action": "ship"
+        },
+        {
+          "job_id": "J109",
+          "action": "ship"
+        },
+        {
+          "job_id": "J110",
+          "action": "ship"
+        },
+        {
+          "job_id": "J105",
+          "action": "ship"
+        },
+        {
+          "job_id": "J102",
+          "action": "ship"
+        },
+        {
+          "job_id": "J104",
+          "action": "ship"
+        },
+        {
+          "job_id": "J111",
+          "action": "ship"
+        }
+      ],
+      "customer_messages": [],
+      "safety": []
+    },
+    "verifier_before": {
+      "reward": 11933.15,
+      "n_hard": 16,
+      "errors": [
+        {
+          "type": "capability_mismatch",
+          "detail": "M2 lacks capability 'cnc' for J102/op0",
+          "refs": {
+            "job_id": "J102",
+            "operation_id": "op0",
+            "machine_id": "M2",
+            "capability": "cnc"
+          }
+        },
+        {
+          "type": "machine_overlap",
+          "detail": "M3: J100/op1 overlaps J113/op1",
+          "refs": {
+            "machine_id": "M3",
+            "job_id": "J113",
+            "operation_id": "op1"
+          }
+        },
+        {
+          "type": "machine_overlap",
+          "detail": "M2: J107/op1 overlaps J102/op0",
+          "refs": {
+            "machine_id": "M2",
+            "job_id": "J102",
+            "operation_id": "op0"
+          }
+        },
+        {
+          "type": "machine_overlap",
+          "detail": "M2: J102/op0 overlaps J105/op0",
+          "refs": {
+            "machine_id": "M2",
+            "job_id": "J105",
+            "operation_id": "op0"
+          }
+        },
+        {
+          "type": "machine_overlap",
+          "detail": "M2: J106/op2 overlaps J103/op2",
+          "refs": {
+            "machine_id": "M2",
+            "job_id": "J103",
+            "operation_id": "op2"
+          }
+        },
+        {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J113",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J113",
+            "operation_id": "op1"
+          }
+        },
+        {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J106 and J103",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J103",
+            "operation_id": "op2"
+          }
+        },
+        {
+          "type": "precedence_violation",
+          "detail": "J113: op0 ends after op1 starts",
+          "refs": {
+            "job_id": "J113",
+            "operation_id": "op1",
+            "predecessor": "op0"
+          }
+        },
+        {
+          "type": "precedence_violation",
+          "detail": "J100: op0 ends after op1 starts",
+          "refs": {
+            "job_id": "J100",
+            "operation_id": "op1",
+            "predecessor": "op0"
+          }
+        },
+        {
+          "type": "material_shortage",
+          "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+          "refs": {
+            "material": "PP",
+            "needed": 233.20000000000002
+          }
+        },
+        {
+          "type": "material_shortage",
+          "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+          "refs": {
+            "material": "Nylon",
+            "needed": 135.4
+          }
+        },
+        {
+          "type": "material_shortage",
+          "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+          "refs": {
+            "material": "ABS",
+            "needed": 237.39999999999998
+          }
+        },
+        {
+          "type": "material_late",
+          "detail": "J101: PP arrives after op start (arrival=None, start=24)",
+          "refs": {
+            "job_id": "J101",
+            "material": "PP"
+          }
+        },
+        {
+          "type": "material_late",
+          "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+          "refs": {
+            "job_id": "J100",
+            "material": "Nylon"
+          }
+        },
+        {
+          "type": "material_late",
+          "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+          "refs": {
+            "job_id": "J112",
+            "material": "PP"
+          }
+        },
+        {
+          "type": "material_late",
+          "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+          "refs": {
+            "job_id": "J104",
+            "material": "PP"
+          }
+        }
+      ],
+      "metrics": {
+        "profit": 11933.2,
+        "on_time_rate": 0.857,
+        "n_hard_violations": 16,
+        "completed_jobs": 14,
+        "total_jobs": 14,
+        "utilization": 0.18,
+        "customer_trust": 0,
+        "overtime_ops": 0,
+        "safety_incidents": 1
+      }
+    },
+    "repair_trace": [
+      {
+        "repair_action": {
+          "op": "swap_machine",
+          "job_id": "J102",
+          "operation_id": "op0",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 32,
+          "end": 36
+        },
+        "reward_after": 14333.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J113/op1",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J113",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "machine_overlap",
+            "detail": "M2: J106/op2 overlaps J103/op2",
+            "refs": {
+              "machine_id": "M2",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J103",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=24)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "capability_mismatch",
+          "detail": "M2 lacks capability 'cnc' for J102/op0",
+          "refs": {
+            "job_id": "J102",
+            "operation_id": "op0",
+            "machine_id": "M2",
+            "capability": "cnc"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J113",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "O2",
+          "start": 368,
+          "end": 370
+        },
+        "reward_after": 14333.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J108/op0",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J108",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "machine_overlap",
+            "detail": "M2: J106/op2 overlaps J103/op2",
+            "refs": {
+              "machine_id": "M2",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J103",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=24)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M3: J100/op1 overlaps J113/op1",
+          "refs": {
+            "machine_id": "M3",
+            "job_id": "J113",
+            "operation_id": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J108",
+          "operation_id": "op0",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 38,
+          "end": 40
+        },
+        "reward_after": 13533.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J106/op1",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J106",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "machine_overlap",
+            "detail": "M2: J106/op2 overlaps J103/op2",
+            "refs": {
+              "machine_id": "M2",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J103",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=24)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M3: J100/op1 overlaps J108/op0",
+          "refs": {
+            "machine_id": "M3",
+            "job_id": "J108",
+            "operation_id": "op0"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J106",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O3",
+          "start": 56,
+          "end": 60
+        },
+        "reward_after": 12733.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J101/op0",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J101",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "machine_overlap",
+            "detail": "M2: J106/op2 overlaps J103/op2",
+            "refs": {
+              "machine_id": "M2",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J103",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=24)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M3: J100/op1 overlaps J106/op1",
+          "refs": {
+            "machine_id": "M3",
+            "job_id": "J106",
+            "operation_id": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J101",
+          "operation_id": "op0",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 15,
+          "end": 17
+        },
+        "reward_after": 12733.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M2: J106/op2 overlaps J103/op2",
+            "refs": {
+              "machine_id": "M2",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J103/op1",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J103",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J103",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J103",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M3: J100/op1 overlaps J101/op0",
+          "refs": {
+            "machine_id": "M3",
+            "job_id": "J101",
+            "operation_id": "op0"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J103",
+          "operation_id": "op2",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 62,
+          "end": 66
+        },
+        "reward_after": 12733.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M2: J106/op2 overlaps J104/op1",
+            "refs": {
+              "machine_id": "M2",
+              "job_id": "J104",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J103/op1",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J103",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M2: J106/op2 overlaps J103/op2",
+          "refs": {
+            "machine_id": "M2",
+            "job_id": "J103",
+            "operation_id": "op2"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J104",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O1",
+          "start": 80,
+          "end": 83
+        },
+        "reward_after": 12733.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M2: J106/op2 overlaps J111/op2",
+            "refs": {
+              "machine_id": "M2",
+              "job_id": "J111",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J103/op1",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J103",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M2: J106/op2 overlaps J104/op1",
+          "refs": {
+            "machine_id": "M2",
+            "job_id": "J104",
+            "operation_id": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J111",
+          "operation_id": "op2",
+          "machine_id": "M4",
+          "operator_id": "O1",
+          "start": 83,
+          "end": 86
+        },
+        "reward_after": 12733.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M2: J106/op2 overlaps J100/op2",
+            "refs": {
+              "machine_id": "M2",
+              "job_id": "J100",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J103/op1",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J103",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M2: J106/op2 overlaps J111/op2",
+          "refs": {
+            "machine_id": "M2",
+            "job_id": "J111",
+            "operation_id": "op2"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J100",
+          "operation_id": "op2",
+          "machine_id": "M4",
+          "operator_id": "O1",
+          "start": 104,
+          "end": 110
+        },
+        "reward_after": 13533.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J103/op1",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J103",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M2: J106/op2 overlaps J100/op2",
+          "refs": {
+            "machine_id": "M2",
+            "job_id": "J100",
+            "operation_id": "op2"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J103",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "O2",
+          "start": 80,
+          "end": 84
+        },
+        "reward_after": 12733.15,
+        "errors_after": [
+          {
+            "type": "machine_overlap",
+            "detail": "M3: J100/op1 overlaps J111/op1",
+            "refs": {
+              "machine_id": "M3",
+              "job_id": "J111",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M3: J100/op1 overlaps J103/op1",
+          "refs": {
+            "machine_id": "M3",
+            "job_id": "J103",
+            "operation_id": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J111",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "O2",
+          "start": 84,
+          "end": 89
+        },
+        "reward_after": 12733.15,
+        "errors_after": [
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J113",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J113",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J113: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J113",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "machine_overlap",
+          "detail": "M3: J100/op1 overlaps J111/op1",
+          "refs": {
+            "machine_id": "M3",
+            "job_id": "J111",
+            "operation_id": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "assign_operator",
+          "job_id": "J113",
+          "operation_id": "op2",
+          "machine_id": "M4",
+          "operator_id": "O1",
+          "start": 370,
+          "end": 373
+        },
+        "reward_after": 13533.15,
+        "errors_after": [
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J110",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J110",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J113",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J113",
+            "operation_id": "op2"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "assign_operator",
+          "job_id": "J110",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 12,
+          "end": 15
+        },
+        "reward_after": 13533.15,
+        "errors_after": [
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J101",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J101",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J110",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J110",
+            "operation_id": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "assign_operator",
+          "job_id": "J101",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O1",
+          "start": 86,
+          "end": 89
+        },
+        "reward_after": 13533.15,
+        "errors_after": [
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J107",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J107",
+              "operation_id": "op1"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J101",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J101",
+            "operation_id": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "assign_operator",
+          "job_id": "J107",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O1",
+          "start": 128,
+          "end": 134
+        },
+        "reward_after": 13533.15,
+        "errors_after": [
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J106",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J106",
+              "operation_id": "op2"
+            }
+          },
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J106 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J106: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J106",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J107",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J107",
+            "operation_id": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "assign_operator",
+          "job_id": "J106",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 60,
+          "end": 65
+        },
+        "reward_after": 16203.9,
+        "errors_after": [
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J104",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J104",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=49)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J106",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J106",
+            "operation_id": "op2"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "assign_operator",
+          "job_id": "J104",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O3",
+          "start": 32,
+          "end": 35
+        },
+        "reward_after": 16203.9,
+        "errors_after": [
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J111",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J111",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J104",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J104",
+            "operation_id": "op0"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "assign_operator",
+          "job_id": "J111",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 16,
+          "end": 18
+        },
+        "reward_after": 16203.9,
+        "errors_after": [
+          {
+            "type": "operator_overlap",
+            "detail": "R1: double-booked across J100 and J100",
+            "refs": {
+              "operator_id": "R1",
+              "job_id": "J100",
+              "operation_id": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J111",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J111",
+            "operation_id": "op0"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "assign_operator",
+          "job_id": "J100",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O3",
+          "start": 40,
+          "end": 42
+        },
+        "reward_after": 17003.9,
+        "errors_after": [
+          {
+            "type": "precedence_violation",
+            "detail": "J108: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J108",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "operator_overlap",
+          "detail": "R1: double-booked across J100 and J100",
+          "refs": {
+            "operator_id": "R1",
+            "job_id": "J100",
+            "operation_id": "op0"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J108",
+          "operation_id": "op1",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 56,
+          "end": 59
+        },
+        "reward_after": 17803.9,
+        "errors_after": [
+          {
+            "type": "precedence_violation",
+            "detail": "J100: op0 ends after op1 starts",
+            "refs": {
+              "job_id": "J100",
+              "operation_id": "op1",
+              "predecessor": "op0"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=0)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "precedence_violation",
+          "detail": "J108: op0 ends after op1 starts",
+          "refs": {
+            "job_id": "J108",
+            "operation_id": "op1",
+            "predecessor": "op0"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J100",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 42,
+          "end": 44
+        },
+        "reward_after": 18597.47,
+        "errors_after": [
+          {
+            "type": "precedence_violation",
+            "detail": "J103: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J103",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=40)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "precedence_violation",
+          "detail": "J100: op0 ends after op1 starts",
+          "refs": {
+            "job_id": "J100",
+            "operation_id": "op1",
+            "predecessor": "op0"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J103",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 84,
+          "end": 88
+        },
+        "reward_after": 19397.47,
+        "errors_after": [
+          {
+            "type": "precedence_violation",
+            "detail": "J111: op1 ends after op2 starts",
+            "refs": {
+              "job_id": "J111",
+              "operation_id": "op2",
+              "predecessor": "op1"
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=40)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "precedence_violation",
+          "detail": "J103: op1 ends after op2 starts",
+          "refs": {
+            "job_id": "J103",
+            "operation_id": "op2",
+            "predecessor": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "move_operation",
+          "job_id": "J111",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 89,
+          "end": 92
+        },
+        "reward_after": 20197.47,
+        "errors_after": [
+          {
+            "type": "material_shortage",
+            "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+            "refs": {
+              "material": "PP",
+              "needed": 233.20000000000002
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=None, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=40)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J112: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J112",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J104: PP arrives after op start (arrival=None, start=32)",
+            "refs": {
+              "job_id": "J104",
+              "material": "PP"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "precedence_violation",
+          "detail": "J111: op1 ends after op2 starts",
+          "refs": {
+            "job_id": "J111",
+            "operation_id": "op2",
+            "predecessor": "op1"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "expedite_material",
+          "material": "PP",
+          "added": true
+        },
+        "reward_after": 21897.88,
+        "errors_after": [
+          {
+            "type": "material_shortage",
+            "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+            "refs": {
+              "material": "Nylon",
+              "needed": 135.4
+            }
+          },
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=24, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=None, start=40)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "material_shortage",
+          "detail": "need 233.20000000000002kg PP, have 40.0+0.0 procured",
+          "refs": {
+            "material": "PP",
+            "needed": 233.20000000000002
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "expedite_material",
+          "material": "Nylon",
+          "added": true
+        },
+        "reward_after": 21682.38,
+        "errors_after": [
+          {
+            "type": "material_shortage",
+            "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+            "refs": {
+              "material": "ABS",
+              "needed": 237.39999999999998
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=24, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=48, start=40)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "material_shortage",
+          "detail": "need 135.4kg Nylon, have 80.0+0.0 procured",
+          "refs": {
+            "material": "Nylon",
+            "needed": 135.4
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "expedite_material",
+          "material": "ABS",
+          "added": true
+        },
+        "reward_after": 21414.07,
+        "errors_after": [
+          {
+            "type": "material_late",
+            "detail": "J101: PP arrives after op start (arrival=24, start=15)",
+            "refs": {
+              "job_id": "J101",
+              "material": "PP"
+            }
+          },
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=48, start=40)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "material_shortage",
+          "detail": "need 237.39999999999998kg ABS, have 220.0+0.0 procured",
+          "refs": {
+            "material": "ABS",
+            "needed": 237.39999999999998
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "expedite_material",
+          "material": "PP",
+          "added": false
+        },
+        "reward_after": 22214.07,
+        "errors_after": [
+          {
+            "type": "material_late",
+            "detail": "J100: Nylon arrives after op start (arrival=48, start=40)",
+            "refs": {
+              "job_id": "J100",
+              "material": "Nylon"
+            }
+          }
+        ],
+        "targeted_error": {
+          "type": "material_late",
+          "detail": "J101: PP arrives after op start (arrival=24, start=15)",
+          "refs": {
+            "job_id": "J101",
+            "material": "PP"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "expedite_material",
+          "material": "Nylon",
+          "added": false
+        },
+        "reward_after": 24113.99,
+        "errors_after": [],
+        "targeted_error": {
+          "type": "material_late",
+          "detail": "J100: Nylon arrives after op start (arrival=48, start=40)",
+          "refs": {
+            "job_id": "J100",
+            "material": "Nylon"
+          }
+        }
+      },
+      {
+        "repair_action": {
+          "op": "safety_check",
+          "target_id": "M4",
+          "kind": "inspect_degraded_machine"
+        },
+        "reward_after": 24453.99,
+        "errors_after": []
+      }
+    ],
+    "final_plan": {
+      "quote_decisions": [
+        {
+          "rfq_id": "R17",
+          "accept": true,
+          "price_per_unit": 0.2,
+          "promised_day": 12
+        },
+        {
+          "rfq_id": "R18",
+          "accept": false,
+          "price_per_unit": 0.0,
+          "promised_day": 0
+        }
+      ],
+      "procurement": [
+        {
+          "material": "PP",
+          "quantity_kg": 233.2,
+          "expedite": true
+        },
+        {
+          "material": "Nylon",
+          "quantity_kg": 135.4,
+          "expedite": true
+        },
+        {
+          "material": "ABS",
+          "quantity_kg": 237.4,
+          "expedite": true
+        }
+      ],
+      "schedule": [
+        {
+          "job_id": "J101",
+          "operation_id": "op0",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 24,
+          "end": 26,
+          "overtime": false
+        },
+        {
+          "job_id": "J101",
+          "operation_id": "op1",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 26,
+          "end": 29,
+          "overtime": false
+        },
+        {
+          "job_id": "J113",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 8,
+          "end": 10,
+          "overtime": false
+        },
+        {
+          "job_id": "J113",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 10,
+          "end": 12,
+          "overtime": false
+        },
+        {
+          "job_id": "J113",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 32,
+          "end": 35,
+          "overtime": false
+        },
+        {
+          "job_id": "J108",
+          "operation_id": "op0",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 38,
+          "end": 40,
+          "overtime": false
+        },
+        {
+          "job_id": "J108",
+          "operation_id": "op1",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 56,
+          "end": 59,
+          "overtime": false
+        },
+        {
+          "job_id": "J106",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "R1",
+          "start": 0,
+          "end": 6,
+          "overtime": false
+        },
+        {
+          "job_id": "J106",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 6,
+          "end": 10,
+          "overtime": false
+        },
+        {
+          "job_id": "J106",
+          "operation_id": "op2",
+          "machine_id": "M4",
+          "operator_id": "R1",
+          "start": 15,
+          "end": 20,
+          "overtime": false
+        },
+        {
+          "job_id": "J100",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "R1",
+          "start": 51,
+          "end": 53,
+          "overtime": false
+        },
+        {
+          "job_id": "J100",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 53,
+          "end": 55,
+          "overtime": false
+        },
+        {
+          "job_id": "J100",
+          "operation_id": "op2",
+          "machine_id": "M4",
+          "operator_id": "R1",
+          "start": 55,
+          "end": 61,
+          "overtime": false
+        },
+        {
+          "job_id": "J107",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 12,
+          "end": 16,
+          "overtime": false
+        },
+        {
+          "job_id": "J107",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O1",
+          "start": 128,
+          "end": 134,
+          "overtime": false
+        },
+        {
+          "job_id": "J112",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "R1",
+          "start": 29,
+          "end": 32,
+          "overtime": false
+        },
+        {
+          "job_id": "J103",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "O3",
+          "start": 8,
+          "end": 14,
+          "overtime": false
+        },
+        {
+          "job_id": "J103",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "R1",
+          "start": 20,
+          "end": 24,
+          "overtime": false
+        },
+        {
+          "job_id": "J103",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 44,
+          "end": 48,
+          "overtime": false
+        },
+        {
+          "job_id": "J109",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "O3",
+          "start": 14,
+          "end": 18,
+          "overtime": false
+        },
+        {
+          "job_id": "J110",
+          "operation_id": "op0",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 8,
+          "end": 12,
+          "overtime": false
+        },
+        {
+          "job_id": "J110",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 12,
+          "end": 15,
+          "overtime": false
+        },
+        {
+          "job_id": "J105",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O3",
+          "start": 35,
+          "end": 40,
+          "overtime": false
+        },
+        {
+          "job_id": "J102",
+          "operation_id": "op0",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 32,
+          "end": 36,
+          "overtime": false
+        },
+        {
+          "job_id": "J102",
+          "operation_id": "op1",
+          "machine_id": "M4",
+          "operator_id": "O2",
+          "start": 36,
+          "end": 38,
+          "overtime": false
+        },
+        {
+          "job_id": "J104",
+          "operation_id": "op0",
+          "machine_id": "M1",
+          "operator_id": "R1",
+          "start": 32,
+          "end": 35,
+          "overtime": false
+        },
+        {
+          "job_id": "J104",
+          "operation_id": "op1",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 48,
+          "end": 51,
+          "overtime": false
+        },
+        {
+          "job_id": "J111",
+          "operation_id": "op0",
+          "machine_id": "M2",
+          "operator_id": "O1",
+          "start": 16,
+          "end": 18,
+          "overtime": false
+        },
+        {
+          "job_id": "J111",
+          "operation_id": "op1",
+          "machine_id": "M3",
+          "operator_id": "O2",
+          "start": 84,
+          "end": 89,
+          "overtime": false
+        },
+        {
+          "job_id": "J111",
+          "operation_id": "op2",
+          "machine_id": "M2",
+          "operator_id": "R1",
+          "start": 89,
+          "end": 92,
+          "overtime": false
+        }
+      ],
+      "quality": [
+        {
+          "job_id": "J101",
+          "action": "ship"
+        },
+        {
+          "job_id": "J113",
+          "action": "ship"
+        },
+        {
+          "job_id": "J108",
+          "action": "ship"
+        },
+        {
+          "job_id": "J106",
+          "action": "ship"
+        },
+        {
+          "job_id": "J100",
+          "action": "ship"
+        },
+        {
+          "job_id": "J107",
+          "action": "ship"
+        },
+        {
+          "job_id": "J112",
+          "action": "ship"
+        },
+        {
+          "job_id": "J103",
+          "action": "ship"
+        },
+        {
+          "job_id": "J109",
+          "action": "ship"
+        },
+        {
+          "job_id": "J110",
+          "action": "ship"
+        },
+        {
+          "job_id": "J105",
+          "action": "ship"
+        },
+        {
+          "job_id": "J102",
+          "action": "ship"
+        },
+        {
+          "job_id": "J104",
+          "action": "ship"
+        },
+        {
+          "job_id": "J111",
+          "action": "ship"
+        }
+      ],
+      "customer_messages": [],
+      "safety": [
+        {
+          "target_id": "M4",
+          "action": "inspect"
+        }
+      ]
+    },
+    "verifier_after": {
+      "reward": 24453.99,
+      "n_hard": 0,
+      "metrics": {
+        "profit": 24454.0,
+        "on_time_rate": 1.0,
+        "n_hard_violations": 0,
+        "completed_jobs": 14,
+        "total_jobs": 14,
+        "utilization": 0.037,
+        "customer_trust": 100,
+        "overtime_ops": 0,
+        "safety_incidents": 0
+      }
+    },
+    "ruler_soft": {
+      "score": 1.0,
+      "rationale": "heuristic (no LLM judge reachable)",
+      "backend": "heuristic"
+    }
+  }
+}

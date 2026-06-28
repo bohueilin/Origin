@@ -1,0 +1,18 @@
+{
+  "network_policy": "block_network=True",
+  "prohibited_mounts": [
+    "/var/run/docker.sock absent"
+  ],
+  "resource_policy": "cpu=0.25,memory=512,timeout=120",
+  "secret_policy": "secrets=[]; /root/.env absent",
+  "snapshot_digest": "4cc0504951ea8b7783997e2b834435b3999991b954fc9ad1c4658e4606332908",
+  "snapshot_id": "im-01KVKY876G6SHHYQFW8BHY2YYR",
+  "snapshot_mode": "filesystem",
+  "status": "modal-filesystem-roundtrip-pass",
+  "token_sha256": "e479000a3bb0beef9eb1e497877190b25b7138ccff7470a1769e562be390e336",
+  "verified_paths": [
+    "/app/query.py",
+    "/data/db/chronos.marker",
+    "/var/log/mongodb.log"
+  ]
+}

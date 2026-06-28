@@ -1,0 +1,13 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.external/
+.venv/
+.ruff_cache/
+.codex-worktrees/
+.worktrees/
+workspace/
+__pycache__/
+*.py[cod]
+.hud_eval.toml

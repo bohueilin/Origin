@@ -1,0 +1,22 @@
+{
+  "branch_execution": {
+    "blockers": [],
+    "status": "ready"
+  },
+  "branch_gateway_smoke_ref": "docs/plans/evidence/003/artifacts/branch-gateway-smoke.json",
+  "branch_run_batch_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/branch-run-batch.json",
+  "checked_at": "2026-06-21T08:03:59Z",
+  "fork_point_id": "fp-826ba545cf30870e67d42ddb",
+  "hud_qa_binding_ref": "docs/plans/evidence/003/artifacts/hud-qa-binding-inspection.json",
+  "hud_qa_classification_ref": "docs/plans/evidence/003/artifacts/hud-qa-classification-smoke.json",
+  "observed_behavior": "integration preflight plus diagnostic BranchGateway smoke and, when QA is approved, the full 12 Hacker BranchRun batch. Canonical hud-trace-explorer QA remains a separate post-run classification path required before Witness promotion.",
+  "promotion": {
+    "blockers": [
+      "reward-hacking candidates require durable packaging and three-replay Witness seal"
+    ],
+    "status": "blocked"
+  },
+  "restore_inspection_ref": "docs/plans/evidence/003/artifacts/branch-gateway-restore-inspection.json",
+  "snapshot_id": "im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "status": "blocked"
+}

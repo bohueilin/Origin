@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "plan_id": "002",
+  "plan_name": "atomic-forkpoint-seam",
+  "wave": 2,
+  "status": "complete",
+  "started_at": "2026-06-20T22:58:25Z",
+  "updated_at": "2026-06-21T01:57:47Z",
+  "completed_at": "2026-06-21T01:57:47Z",
+  "commit": null,
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "plan-002-tests"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: plan-002-tests: cwd=. argv=['uv', 'run', 'pytest', 'tests/chronos/forkpoints', '-q', '-m', 'not integration']; 12 passed, 1 deselected in 0.03s"
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "integration-forkpoint"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: integration-forkpoint: cwd=. argv=['uv', 'run', 'pytest', 'tests/chronos/forkpoints', '-q', '-m', 'integration']; 1 passed, 12 deselected in 133.66s. Regenerated the accepted-trace retained-handle ForkPoint fp-826ba545cf30870e67d42ddb with Modal Filesystem Snapshot im-01KVKYBWZYVZSD79CX5P9SNPXR, content digest ea2ff75ff7f5702cb17f8e047e35e96bad4db16083343e38951d9c5bf7829613, Dockerfile-backed HUD env image contents, clean MongoDB quiesce/restart, real restore/grader execution, negative restore checks, and restored-sandbox security/surface inventory."
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "lint"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: lint: cwd=. argv=['uv', 'run', 'ruff', 'check', 'docs/plans/scripts']; All checks passed!"
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/validate_file_sizes.py",
+        "--plan",
+        "002"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 22 text file(s) are at most 500 lines"
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/validate_evidence.py",
+        "--plan",
+        "002",
+        "--require-complete"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 1 evidence manifest(s) are complete"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Plan 002 command routing",
+      "status": "pass",
+      "evidence": "docs/plans/repo-map/COMMANDS.json now maps plan-002-tests and integration-forkpoint to verified pytest argv with PYTHONPATH=src under a narrow documented ownership exception."
+    },
+    {
+      "name": "Six behavior cases",
+      "status": "pass",
+      "evidence": "tests/chronos/forkpoints/test_core.py covers valid capture, valid restore, boundary mismatch, history mismatch, grader mismatch, unsupported mode, partial cleanup, finalized-record immutability, store-verified capture return values, tamper rejection, and environment source-digest coverage against the repo-native contract with a deterministic local provider."
+    },
+    {
+      "name": "Integration readiness",
+      "status": "pass",
+      "evidence": "tests/chronos/forkpoints/test_integration_readiness.py runs chronos.forkpoints.integration_probe, which exports the accepted HUD trace into a redacted boundary summary, runs a real Modal Filesystem Snapshot round-trip over /app, /data/db, and /var/log/mongodb.log markers, replays accepted trace tool calls, creates/restores an orchestrated live-boundary ForkPoint through the repo-native contract, persists docs/plans/evidence/002/artifacts/forkpoint-record.json, and writes docs/plans/evidence/002/artifacts/integration-readiness.json."
+    },
+    {
+      "name": "Real HUD/Modal ForkPoint completion",
+      "status": "pass",
+      "evidence": "Accepted for Plan 002 completion: docs/plans/evidence/002/artifacts/live-boundary-forkpoint.json records an orchestrated accepted-trace rerun with a retained Modal sandbox handle, ForkPoint fp-826ba545cf30870e67d42ddb, Filesystem Snapshot im-01KVKYBWZYVZSD79CX5P9SNPXR, real restore/grader execution, negative restore checks, and restored-sandbox security/surface inventory. Provider access to the already-finished historical sandbox remains unavailable, so the retained-handle rerun is the canonical branch-ready ForkPoint consumed by Plan 003."
+    },
+    {
+      "name": "Orchestrated live-boundary ForkPoint",
+      "status": "pass",
+      "evidence": "docs/plans/evidence/002/artifacts/live-boundary-forkpoint.json records ForkPoint fp-826ba545cf30870e67d42ddb, Modal Filesystem Snapshot im-01KVKYBWZYVZSD79CX5P9SNPXR, boundary token/history hash, combined image digest forkpoint-image-sha256:dc11b737edf6fe985d7698754a6e218fb39bc383f2bc5edbd3f3a7a51ff295d6, MongoDB fsync plus clean shutdown quiescence, query hash equality after restore, grader-output hash after restore, and block_network/no-secrets/resource labels with /root/.env, Docker socket, and metadata network negative probes. It also records writable/import surface inventory with allowlisted Python environment keys and boundary, history, grader, and unsupported-mode restore rejections with no provider restore fallback. docs/plans/evidence/002/artifacts/forkpoint-record.json persists the immutable ForkPoint record with content digest ea2ff75ff7f5702cb17f8e047e35e96bad4db16083343e38951d9c5bf7829613."
+    },
+    {
+      "name": "Environment source digest coverage",
+      "status": "pass",
+      "evidence": "tests/chronos/forkpoints/test_core.py verifies environment_source_digest changes when envs/mongodb-sales-aggregation-engine/task_assets/reference_solution.sh changes. docs/plans/evidence/002/artifacts/image-identity.json records corrected source digest source-tree-sha256:5a5ff1aeca8f4600cb0d890ecc012a9510873ca3c4780b0f17575ff684775a49 and corrected combined image identity forkpoint-image-sha256:dc11b737edf6fe985d7698754a6e218fb39bc383f2bc5edbd3f3a7a51ff295d6 from a live integration rerun."
+    },
+    {
+      "name": "Sealed ForkPoint return value",
+      "status": "pass",
+      "evidence": "capture_forkpoint now returns the store-verified finalized record, including content_digest. tests/chronos/forkpoints/test_core.py verifies the returned record equals ForkPointStore.get(...) and that tampering with the finalized JSON record is rejected before restore."
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "docs/plans/evidence/002/MANIFEST.json",
+      "description": "In-progress Plan 002 evidence manifest recording exact Done-when command observations, real Modal/HUD evidence, retained-handle ForkPoint artifacts, and remaining STOP conditions."
+    },
+    {
+      "ref": "docs/plans/002-atomic-forkpoint-seam.md",
+      "description": "Living-doc log updated with Plan 002 progress, surprises, decisions, outcomes, best-practice fix discussion, and remaining STOP conditions."
+    },
+    {
+      "ref": "src/chronos/forkpoints/**",
+      "description": "Plan 002 ForkPoint capture/restore contract, immutable JSON store, deterministic local snapshot provider, and integration-readiness command."
+    },
+    {
+      "ref": "tests/chronos/forkpoints/**",
+      "description": "Behavior tests and integration-readiness test for the Plan 002 ForkPoint feature."
+    },
+    {
+      "ref": "docs/plans/evidence/002/artifacts/integration-readiness.json",
+      "description": "Integration-readiness artifact naming the local-provider ForkPoint id, Plan 003 handoff keys, and remaining real-system gaps."
+    },
+    {
+      "ref": "docs/plans/evidence/002/artifacts/trace-boundary-summary.json",
+      "description": "Redacted accepted HUD trace export: event count, event-stream digests, selected final scenario-evaluate boundary, and hashed tail event metadata."
+    },
+    {
+      "ref": "docs/plans/evidence/002/artifacts/modal-filesystem-probe.json",
+      "description": "Real Modal Filesystem Snapshot round-trip over task-relevant marker paths with block_network, no secrets, resource labels, and prohibited mount checks."
+    },
+    {
+      "ref": "docs/plans/evidence/002/artifacts/trace-replay-snapshot.json",
+      "description": "Replay-derived Modal Filesystem Snapshot from accepted HUD trace tool calls: replay count, skipped failed calls, snapshot id, query.py hash, grader-output hashes, and policy labels."
+    },
+    {
+      "ref": "docs/plans/evidence/002/artifacts/live-boundary-forkpoint.json",
+      "description": "Orchestrated accepted-trace rerun ForkPoint from a retained Modal sandbox handle: ForkPoint id, boundary token, history hash, combined image digest, Filesystem Snapshot id, restore handoff keys, MongoDB quiescence, query hash, grader hash, policy labels, restored-sandbox negative security probes, writable/import surface inventory, and negative restore checks."
+    },
+    {
+      "ref": "docs/plans/evidence/002/artifacts/forkpoint-record.json",
+      "description": "Persisted immutable ForkPoint record reloaded from the repo-native store: required interface fields, content digest, source evidence refs, snapshot identity, history hash, environment identity, and policy labels."
+    },
+    {
+      "ref": "docs/plans/evidence/002/artifacts/image-identity.json",
+      "description": "Image identity evidence combining Docker registry base manifest for mongo:7.0, checked-in environment source-tree digest, and the Modal build recipe used by the retained-handle ForkPoint probe."
+    }
+  ],
+  "screenshots": [],
+  "skips": [],
+  "blockers": [],
+  "notes": [
+    "The previous COMMANDS.json start blocker is unblocked in this PR under a user-approved narrow ownership exception.",
+    "Plan 002 completion accepts the orchestrated retained-handle accepted-trace rerun as the canonical branch-ready ForkPoint for later plans. It is explicitly not claimed to be the already-finished historical sandbox instance; provider access to that instance remains unavailable.",
+    "Post-audit fix: source digest coverage now includes reference_solution.sh, which is copied into the Modal task assets. Live evidence has been regenerated under the corrected combined image digest.",
+    "Post-audit fix: capture_forkpoint now returns the sealed store-verified record instead of the pre-digest in-memory record.",
+    "Post-Plan-003 restore inspection fix: ForkPoint capture now uses the checked-in Dockerfile.hud image, writes query.py without heredoc indentation, mirrors /protected data required by init_data.py, starts MongoDB under an explicit sleep sandbox command, and cleanly shuts MongoDB down before filesystem snapshot.",
+    "Full adversarial branch isolation remains Plan 003-owned; Plan 002 records capture/restore security inventory and negative probes sufficient to hand off a branch-ready Filesystem ForkPoint."
+  ]
+}

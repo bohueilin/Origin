@@ -1,0 +1,109 @@
+{
+  "deployable": 10,
+  "skipped": 0,
+  "tasks": [
+    {
+      "base_digest": "sha256:d34916434f1304da8b1fc7aeb547d1bee53770a4c4fe0ff4637eaca293d648d5",
+      "base_image": "ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624",
+      "base_rewritten": false,
+      "deployable": true,
+      "env_dir": "envs/qabench/adaptive-rejection-sampler",
+      "skip_reason": null,
+      "slug": "adaptive-rejection-sampler",
+      "task_id": "adaptive-rejection-sampler"
+    },
+    {
+      "base_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+      "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+      "base_rewritten": true,
+      "deployable": true,
+      "env_dir": "envs/qabench/constrained-portfolio-variance-minimization",
+      "skip_reason": null,
+      "slug": "constrained-portfolio-variance-minimization",
+      "task_id": "constrained-portfolio-variance-minimization"
+    },
+    {
+      "base_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+      "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+      "base_rewritten": true,
+      "deployable": true,
+      "env_dir": "envs/qabench/enumerate-polytope-extreme-points",
+      "skip_reason": null,
+      "slug": "enumerate-polytope-extreme-points",
+      "task_id": "enumerate-polytope-extreme-points"
+    },
+    {
+      "base_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+      "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+      "base_rewritten": true,
+      "deployable": true,
+      "env_dir": "envs/qabench/implement-2d-convolution",
+      "skip_reason": null,
+      "slug": "implement-2d-convolution",
+      "task_id": "implement-2d-convolution"
+    },
+    {
+      "base_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+      "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+      "base_rewritten": true,
+      "deployable": true,
+      "env_dir": "envs/qabench/port-fortran-rk4-lorenz-to-python",
+      "skip_reason": null,
+      "slug": "port-fortran-rk4-lorenz-to-python",
+      "task_id": "port-fortran-rk4-lorenz-to-python"
+    },
+    {
+      "base_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+      "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+      "base_rewritten": true,
+      "deployable": true,
+      "env_dir": "envs/qabench/solve-ode-with-sympy",
+      "skip_reason": null,
+      "slug": "solve-ode-with-sympy",
+      "task_id": "solve-ode-with-sympy"
+    },
+    {
+      "base_digest": "sha256:d34916434f1304da8b1fc7aeb547d1bee53770a4c4fe0ff4637eaca293d648d5",
+      "base_image": "ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624",
+      "base_rewritten": false,
+      "deployable": true,
+      "env_dir": "envs/qabench/fmri-encoding-r",
+      "skip_reason": null,
+      "slug": "fmri-encoding-r",
+      "task_id": "fmri-encoding-r"
+    },
+    {
+      "base_digest": "sha256:d34916434f1304da8b1fc7aeb547d1bee53770a4c4fe0ff4637eaca293d648d5",
+      "base_image": "ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624",
+      "base_rewritten": true,
+      "deployable": true,
+      "env_dir": "envs/qabench/synthesize-harmonic-wav-in-c",
+      "skip_reason": null,
+      "slug": "synthesize-harmonic-wav-in-c",
+      "task_id": "synthesize-harmonic-wav-in-c"
+    },
+    {
+      "base_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+      "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+      "base_rewritten": true,
+      "deployable": true,
+      "env_dir": "envs/qabench/recover-corrupted-sqlite-data",
+      "skip_reason": null,
+      "slug": "recover-corrupted-sqlite-data",
+      "task_id": "recover-corrupted-sqlite-data"
+    },
+    {
+      "base_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+      "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+      "base_rewritten": true,
+      "deployable": true,
+      "env_dir": "envs/qabench/find-invalid-blockchain-transactions",
+      "skip_reason": null,
+      "slug": "find-invalid-blockchain-transactions",
+      "task_id": "find-invalid-blockchain-transactions"
+    }
+  ],
+  "tasks_dir": ".external/terminal-wrench/tasks",
+  "terminal_wrench_revision": "d8a296132",
+  "total": 10
+}

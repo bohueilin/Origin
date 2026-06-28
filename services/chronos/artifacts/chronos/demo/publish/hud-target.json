@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "hud-publish-target-discovery",
+  "discovered_via": "read-only GET https://api.beta.hud.ai/v2/registry (hud.cli.utils.registry.list_registry_environments). No deploy/upload/mutation was performed.",
+  "api_base_url": "https://api.beta.hud.ai/v2",
+  "auth": "HUD_API_KEY from root .env (Bearer); value never recorded. HUD has no whoami endpoint; account scope is implicit in the key and surfaced by the registry listing.",
+  "registry_environments": [
+    {
+      "id": "57cb7f09-89c1-487b-8463-b525edf01153",
+      "name": "mongodb-sales-aggregation-engine-v1",
+      "version": 1,
+      "role": "ReleaseProof environment_v1 (vulnerable baseline)"
+    },
+    {
+      "id": "b3409057-8fdd-4f6b-a78f-8754910c66c3",
+      "name": "mongodb-sales-aggregation-engine",
+      "version": 2,
+      "role": "candidate publish target namespace for the hardened release"
+    }
+  ],
+  "authorized_publish_target": {
+    "registry_name": "mongodb-sales-aggregation-engine",
+    "registry_id": "b3409057-8fdd-4f6b-a78f-8754910c66c3",
+    "content_identity": "mongodb-sales-aggregation-engine:c2ee704d5c4e653e",
+    "resolution": "hud deploy resolves the registry by env name server-side (get-or-rebuild); registry_id is optional. The hardened v2 would publish as a new version of the 'mongodb-sales-aggregation-engine' registry environment."
+  },
+  "honesty_notes": [
+    "The existing registry 'mongodb-sales-aggregation-engine' v2 (id b3409057) was built 2026-06-20T21:41Z, BEFORE the Plan 005 harden run (2026-06-21T12:30Z). The registry does not expose a grader digest, so this discovery does NOT assert that the existing registry v2 equals the sealed hardened v2 (grader_v2_digest c0d86ae).",
+    "No deploy/upload was performed; the actual registry upload is deferred per maintainer direction."
+  ]
+}

@@ -1,0 +1,20 @@
+/* Self-hosted fonts (no CDN). OFL 1.1. See ../FONTS.md for download steps. */
+
+/*
+ *   EB Garamond → display serif  (headings)
+ *   Geist       → body / UI sans
+ *   Geist Mono  → code
+ */
+
+/* ---------- EB Garamond (display serif) — weight 500 ---------- */
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 500; font-display: swap; src: url("eb-garamond-v32-latin-500.woff2") format("woff2"); }
+
+/* ---------- Geist (UI sans) — weights 400/500/600/700 ---------- */
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 400; font-display: swap; src: url("geist-v5-latin-regular.woff2") format("woff2"); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 500; font-display: swap; src: url("geist-v5-latin-500.woff2") format("woff2"); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 600; font-display: swap; src: url("geist-v5-latin-600.woff2") format("woff2"); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 700; font-display: swap; src: url("geist-v5-latin-700.woff2") format("woff2"); }
+
+/* ---------- Geist Mono (code) — weights 400/500 ---------- */
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("geist-mono-v6-latin-regular.woff2") format("woff2"); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("geist-mono-v6-latin-500.woff2") format("woff2"); }

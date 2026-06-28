@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Granola-style design system — component gallery</title>
+
+  <!-- Self-hosted fonts (no CDN): EB Garamond (display), Geist (body), Geist Mono (code).
+       OFL 1.1 — see fonts/OFL-*.txt -->
+  <link rel="stylesheet" href="fonts/fonts.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Inline mirror of tailwind-preset.js (single source of truth: ../tailwind-preset.js).
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neutral: { 50:'#fcfcf8',100:'#f7f7f2',150:'#f2f2ec',200:'#eaebe5',300:'#d5d5d2',400:'#acada8',450:'#9e9e99',500:'#818179',600:'#72726e',700:'#4e4d4b',750:'#363635',800:'#292929',900:'#212121',950:'#1e1e1e' },
+            green: { 50:'#f2f6e1',100:'#e5eacd',200:'#d1e043',300:'#b2c248',400:'#788c15',500:'#5b6f00',600:'#434625' },
+            red: { 50:'#ffe7e2',100:'#f8cec5',200:'#f29e8b',300:'#e95d3d',400:'#bd4a30' },
+            background: '#ffffff',
+            surface: { DEFAULT:'#f7f7f2', sunken:'#f2f2ec', raised:'#ffffff', elevated:'#ffffff' },
+            ink: { DEFAULT:'#292929', primary:'#292929', secondary:'#72726e', 'secondary-strong':'#4e4d4b', tertiary:'#acada8', inverse:'#fcfcf8', accent:'#788c15', danger:'#bd4a30' },
+            hairline: '#47432a33', stroke: '#d5d5d2', border: '#e3e3e3',
+            accent: { DEFAULT:'#d1e043', strong:'#b2c248', text:'#0d7916', wash:'#d1e04333' },
+            fill: { accent:'#5b6f00','accent-hover':'#4c5616', primary:'#292929','primary-hover':'#4e4d4b', danger:'#e95d3d' },
+            tint: { green:'#f2f6e1', blue:'#eaf4fe', purple:'#f3f0fa' },
+            ring: '#b2c24899',
+          },
+          fontFamily: {
+            display: ['"EB Garamond"','Georgia','serif'],
+            sans: ['"Geist"','system-ui','-apple-system','sans-serif'],
+            mono: ['"Geist Mono"','ui-monospace','Menlo','monospace'],
+          },
+          fontSize: {
+            '2xs':['11px',{lineHeight:'14px',letterSpacing:'0.02em'}],
+            xs:['12px',{lineHeight:'16px',letterSpacing:'0.02em'}],
+            sm:['13px',{lineHeight:'16px',letterSpacing:'0.01em'}],
+            base:['14px',{lineHeight:'18px',letterSpacing:'0.01em'}],
+            lg:['16px',{lineHeight:'20px'}],
+            xl:['20px',{lineHeight:'1.4'}],
+            '2xl':['24px',{lineHeight:'1.33'}],
+            '3xl':['30px',{lineHeight:'1.2',letterSpacing:'-0.01em'}],
+            '4xl':['36px',{lineHeight:'1.11',letterSpacing:'-0.015em'}],
+            '5xl':['48px',{lineHeight:'1.0',letterSpacing:'-0.02em'}],
+            '6xl':['60px',{lineHeight:'1.0',letterSpacing:'-0.02em'}],
+            '7xl':['72px',{lineHeight:'1.0',letterSpacing:'-0.02em'}],
+          },
+          fontWeight: { light:'300', normal:'400', book:'430', medium:'500', semibold:'600', bold:'700' },
+          borderRadius: { xs:'2px', sm:'4px', md:'6px', lg:'8px', xl:'12px', '2xl':'16px', '3xl':'24px', full:'9999px', DEFAULT:'8px' },
+          boxShadow: { sm:'0px 1px 2px 0px #0000000d', DEFAULT:'0px 4px 6px -2px #0000000d', lg:'0px 12px 24px -8px #00000014', none:'none' },
+          transitionTimingFunction: { DEFAULT:'cubic-bezier(0.4,0,0.2,1)', out:'cubic-bezier(0,0,0.2,1)', 'out-expo':'cubic-bezier(0.16,1,0.3,1)' },
+          keyframes: {
+            'fade-in-up': { '0%':{opacity:'0',transform:'translateY(20px)'}, '100%':{opacity:'1',transform:'translateY(0)'} },
+            'dropdown-show': { '0%':{opacity:'0',transform:'translateY(-4px) scale(0.96)'}, '100%':{opacity:'1',transform:'translateY(0) scale(1)'} },
+          },
+          animation: {
+            'fade-in-up': 'fade-in-up 0.6s cubic-bezier(0,0,0.2,1) forwards',
+            'dropdown-show': 'dropdown-show 0.15s cubic-bezier(0.16,1,0.3,1)',
+          },
+        },
+      },
+    };
+  </script>
+  <style type="text/tailwindcss">
+    @layer base {
+      body { font-feature-settings: "ss01"; }
+      /* entrance: hidden until revealed by IntersectionObserver */
+      .reveal { opacity: 0; }
+      .reveal.in { @apply animate-fade-in-up; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1 !important; }
+    }
+  </style>
+</head>
+
+<body class="bg-background font-sans text-base text-ink-primary antialiased">
+
+  <!-- ============================== NAV ============================== -->
+  <header class="sticky top-0 z-40 border-b border-hairline bg-background/80 backdrop-blur">
+    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <a href="#" class="flex items-center gap-2 rounded-sm font-display text-xl text-ink-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <span class="grid h-6 w-6 place-items-center rounded-full bg-fill-accent text-ink-inverse text-xs">g</span>
+        granola
+      </a>
+      <div class="hidden items-center gap-8 text-sm text-ink-secondary md:flex">
+        <a href="#type" class="rounded-sm transition hover:text-ink-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Type</a>
+        <a href="#color" class="rounded-sm transition hover:text-ink-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Color</a>
+        <a href="#buttons" class="rounded-sm transition hover:text-ink-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Buttons</a>
+        <a href="#forms" class="rounded-sm transition hover:text-ink-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Forms</a>
+        <a href="#cards" class="rounded-sm transition hover:text-ink-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Cards</a>
+        <a href="#motion" class="rounded-sm transition hover:text-ink-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Motion</a>
+      </div>
+      <button class="rounded-full border border-stroke bg-surface-raised px-4 py-2 text-sm font-book text-ink-primary shadow-sm transition hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Download</button>
+    </nav>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-6">
+
+    <!-- ============================== HERO ============================== -->
+    <section class="reveal grid items-center gap-12 py-20 md:grid-cols-2">
+      <div>
+        <h1 class="font-display text-6xl text-ink-primary tracking-tight">The AI notepad for back-to-back meetings</h1>
+        <p class="mt-6 max-w-md text-lg text-ink-secondary">Notes, actions and memory. Without a meeting bot. A faithful, token-driven recreation of the Granola aesthetic.</p>
+        <div class="mt-8 flex items-center gap-3">
+          <!-- PRIMARY CTA = pill, green, book weight (matches granola.ai exactly) -->
+          <button class="inline-flex items-center gap-2 rounded-full bg-fill-accent px-6 py-2.5 font-book text-ink-inverse transition hover:bg-fill-accent-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            Download for free
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v9m0 0 3.5-3.5M8 11 4.5 7.5M3 14h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <p class="mt-4 flex items-center gap-1.5 text-xs text-ink-secondary">
+          <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-300"></span>
+          Available for macOS, Windows, iPhone
+        </p>
+      </div>
+
+      <!-- Product card mockup -->
+      <div class="relative">
+        <div class="rounded-2xl border border-hairline bg-surface p-2 shadow-lg">
+          <div class="rounded-xl bg-surface-raised p-5">
+            <div class="mb-3 flex items-center gap-1.5">
+              <span class="h-2.5 w-2.5 rounded-full bg-red-300"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-green-200"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-neutral-300"></span>
+            </div>
+            <h3 class="font-display text-2xl text-ink-primary">Q3 GTM sync</h3>
+            <div class="mt-2 flex gap-2">
+              <span class="rounded-full bg-tint-green px-2.5 py-1 text-xs font-medium text-ink-accent">Today</span>
+              <span class="rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-ink-secondary">4 attendees</span>
+            </div>
+            <div class="mt-4 space-y-2 text-sm text-ink-secondary">
+              <p>confirm ICP alignment</p>
+              <p>Deal stalls → sales input</p>
+              <p>GTM messaging rollout, are teams ready?!</p>
+            </div>
+            <div class="mt-5 flex justify-end">
+              <button class="inline-flex items-center gap-2 rounded-lg bg-fill-primary px-3.5 py-2 text-sm text-ink-inverse transition hover:bg-fill-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <span class="text-green-200">✦</span> Generate notes
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- decorative lime block, Granola-style -->
+        <div class="absolute -bottom-4 -left-4 -z-10 h-24 w-24 rounded-2xl bg-green-200"></div>
+      </div>
+    </section>
+
+    <!-- ============================== TYPE ============================== -->
+    <section id="type" class="reveal border-t border-hairline py-16">
+      <p class="mb-8 text-xs font-semibold uppercase tracking-wider text-ink-secondary">Typography</p>
+      <div class="space-y-5">
+        <div class="flex items-baseline gap-6"><code class="w-28 shrink-0 font-mono text-xs text-ink-secondary">display 5xl</code><span class="font-display text-5xl tracking-tight text-ink-primary">Editorial, warm, calm</span></div>
+        <div class="flex items-baseline gap-6"><code class="w-28 shrink-0 font-mono text-xs text-ink-secondary">display 3xl</code><span class="font-display text-3xl text-ink-primary">Section heading</span></div>
+        <div class="flex items-baseline gap-6"><code class="w-28 shrink-0 font-mono text-xs text-ink-secondary">display 2xl</code><span class="font-display text-2xl text-ink-primary">Card title</span></div>
+        <div class="flex items-baseline gap-6"><code class="w-28 shrink-0 font-mono text-xs text-ink-secondary">sans lg</code><span class="font-sans text-lg text-ink-secondary">Lead paragraph in the grotesque body face.</span></div>
+        <div class="flex items-baseline gap-6"><code class="w-28 shrink-0 font-mono text-xs text-ink-secondary">sans base</code><span class="font-sans text-base text-ink-primary">Body copy — the 14px default with a relaxed measure for comfortable reading across the interface.</span></div>
+        <div class="flex items-baseline gap-6"><code class="w-28 shrink-0 font-mono text-xs text-ink-secondary">sans sm</code><span class="font-sans text-sm text-ink-secondary">Secondary / supporting text.</span></div>
+        <div class="flex items-baseline gap-6"><code class="w-28 shrink-0 font-mono text-xs text-ink-secondary">sans xs</code><span class="font-sans text-xs uppercase tracking-wider text-ink-secondary">Caption / label</span></div>
+      </div>
+    </section>
+
+    <!-- ============================== COLOR ============================== -->
+    <section id="color" class="reveal border-t border-hairline py-16">
+      <p class="mb-8 text-xs font-semibold uppercase tracking-wider text-ink-secondary">Color</p>
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+        <!-- swatch template -->
+        <div><div class="h-16 rounded-lg border border-hairline bg-background"></div><p class="mt-2 text-xs text-ink-primary">background</p><p class="font-mono text-2xs text-ink-secondary">#ffffff</p></div>
+        <div><div class="h-16 rounded-lg border border-hairline bg-surface"></div><p class="mt-2 text-xs text-ink-primary">surface</p><p class="font-mono text-2xs text-ink-secondary">#f7f7f2</p></div>
+        <div><div class="h-16 rounded-lg bg-ink-primary"></div><p class="mt-2 text-xs text-ink-primary">ink-primary</p><p class="font-mono text-2xs text-ink-secondary">#292929</p></div>
+        <div><div class="h-16 rounded-lg bg-ink-secondary"></div><p class="mt-2 text-xs text-ink-primary">ink-secondary</p><p class="font-mono text-2xs text-ink-secondary">#72726e</p></div>
+        <div><div class="h-16 rounded-lg bg-fill-accent"></div><p class="mt-2 text-xs text-ink-primary">fill-accent</p><p class="font-mono text-2xs text-ink-secondary">#5b6f00</p></div>
+        <div><div class="h-16 rounded-lg bg-green-200"></div><p class="mt-2 text-xs text-ink-primary">green-200</p><p class="font-mono text-2xs text-ink-secondary">#d1e043</p></div>
+        <div><div class="h-16 rounded-lg bg-green-300"></div><p class="mt-2 text-xs text-ink-primary">green-300 (accent-strong)</p><p class="font-mono text-2xs text-ink-secondary">#b2c248</p></div>
+        <div><div class="h-16 rounded-lg bg-tint-green"></div><p class="mt-2 text-xs text-ink-primary">tint-green</p><p class="font-mono text-2xs text-ink-secondary">#f2f6e1</p></div>
+        <div><div class="h-16 rounded-lg bg-tint-blue"></div><p class="mt-2 text-xs text-ink-primary">tint-blue</p><p class="font-mono text-2xs text-ink-secondary">#eaf4fe</p></div>
+        <div><div class="h-16 rounded-lg bg-tint-purple"></div><p class="mt-2 text-xs text-ink-primary">tint-purple</p><p class="font-mono text-2xs text-ink-secondary">#f3f0fa</p></div>
+        <div><div class="h-16 rounded-lg bg-fill-danger"></div><p class="mt-2 text-xs text-ink-primary">fill-danger</p><p class="font-mono text-2xs text-ink-secondary">#e95d3d</p></div>
+        <div><div class="h-16 rounded-lg border border-hairline bg-stroke"></div><p class="mt-2 text-xs text-ink-primary">stroke</p><p class="font-mono text-2xs text-ink-secondary">#d5d5d2</p></div>
+      </div>
+    </section>
+
+    <!-- ============================== BUTTONS ============================== -->
+    <section id="buttons" class="reveal border-t border-hairline py-16">
+      <p class="mb-8 text-xs font-semibold uppercase tracking-wider text-ink-secondary">Buttons &amp; hover states</p>
+      <div class="flex flex-wrap items-center gap-4">
+        <button class="rounded-full bg-fill-accent px-6 py-2.5 font-book text-ink-inverse transition hover:bg-fill-accent-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Primary · pill</button>
+        <button class="rounded-lg bg-fill-primary px-4 py-2.5 text-base text-ink-inverse transition hover:bg-fill-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Primary · dark</button>
+        <button class="rounded-lg border border-stroke bg-surface-raised px-4 py-2.5 text-base text-ink-primary transition hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Secondary</button>
+        <button class="rounded-lg px-4 py-2.5 text-base text-ink-secondary transition hover:bg-surface hover:text-ink-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Ghost</button>
+        <button class="rounded-lg bg-fill-danger px-4 py-2.5 text-base text-ink-inverse transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">Danger</button>
+        <button disabled class="cursor-not-allowed rounded-lg bg-neutral-200 px-4 py-2.5 text-base text-ink-tertiary">Disabled</button>
+      </div>
+      <p class="mt-4 text-sm text-ink-secondary">Hover a button — fills darken to their <code class="font-mono text-xs">-hover</code> token over 150ms. (Marketing CTAs are pills; in-app buttons use <code class="font-mono text-xs">rounded-lg</code>.)</p>
+    </section>
+
+    <!-- ============================== FORMS ============================== -->
+    <section id="forms" class="reveal border-t border-hairline py-16">
+      <p class="mb-8 text-xs font-semibold uppercase tracking-wider text-ink-secondary">Forms</p>
+      <div class="grid max-w-2xl gap-6 sm:grid-cols-2">
+        <label class="block">
+          <span class="mb-1.5 block text-sm text-ink-secondary">Workspace name</span>
+          <input type="text" value="Acme Inc" class="w-full rounded-lg border border-stroke bg-surface-raised px-3.5 py-2.5 text-base text-ink-primary placeholder:text-ink-tertiary transition focus:border-green-300 focus:outline-none focus:ring-2 focus:ring-ring" />
+        </label>
+        <label class="block">
+          <span class="mb-1.5 block text-sm text-ink-secondary">Plan</span>
+          <select class="w-full rounded-lg border border-stroke bg-surface-raised px-3.5 py-2.5 text-base text-ink-primary transition focus:border-green-300 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option>Free</option><option>Pro</option><option>Enterprise</option>
+          </select>
+        </label>
+        <label class="block sm:col-span-2">
+          <span class="mb-1.5 block text-sm text-ink-secondary">Notes</span>
+          <textarea rows="3" placeholder="Type a note…" class="w-full rounded-lg border border-stroke bg-surface-raised px-3.5 py-2.5 text-base text-ink-primary placeholder:text-ink-tertiary transition focus:border-green-300 focus:outline-none focus:ring-2 focus:ring-ring"></textarea>
+        </label>
+        <label class="flex items-center gap-2.5 text-base text-ink-primary">
+          <input type="checkbox" checked class="h-4 w-4 rounded border-stroke text-fill-accent focus:ring-ring" />
+          Email me a summary
+        </label>
+      </div>
+    </section>
+
+    <!-- ============================== CARDS ============================== -->
+    <section id="cards" class="reveal border-t border-hairline py-16">
+      <p class="mb-8 text-xs font-semibold uppercase tracking-wider text-ink-secondary">Cards</p>
+      <div class="grid gap-5 md:grid-cols-3">
+        <article class="rounded-lg border border-hairline bg-surface-raised p-6 transition hover:shadow">
+          <div class="mb-3 grid h-9 w-9 place-items-center rounded-lg bg-tint-green text-ink-accent">◆</div>
+          <h3 class="font-display text-2xl text-ink-primary">Auto notes</h3>
+          <p class="mt-2 text-base text-ink-secondary">Granola enhances your own notes — it never sends a bot to your call.</p>
+        </article>
+        <article class="rounded-lg border border-hairline bg-surface p-6 transition hover:shadow">
+          <span class="rounded-full bg-tint-purple px-2.5 py-1 text-xs font-medium text-ink-primary">New</span>
+          <h3 class="mt-3 font-display text-2xl text-ink-primary">Shared folders</h3>
+          <p class="mt-2 text-base text-ink-secondary-strong">Keep teams aligned with a shared source of meeting memory.</p>
+        </article>
+        <article class="rounded-lg border border-hairline bg-fill-primary p-6 text-ink-inverse">
+          <h3 class="font-display text-2xl">Enterprise</h3>
+          <p class="mt-2 text-base text-neutral-300">SOC 2, SSO, and admin controls for your whole org.</p>
+          <button class="mt-4 rounded-full bg-accent px-4 py-2 text-sm font-book text-ink-primary transition hover:bg-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-fill-primary">Talk to sales</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============================== MOTION ============================== -->
+    <section id="motion" class="reveal border-t border-hairline py-16">
+      <p class="mb-8 text-xs font-semibold uppercase tracking-wider text-ink-secondary">Motion — dropdown &amp; accordion</p>
+      <div class="flex flex-wrap items-start gap-10">
+        <!-- Dropdown with Granola's dropdown-show (ease-out-expo) -->
+        <div class="relative" id="dd">
+          <button id="dd-btn" class="inline-flex items-center gap-2 rounded-lg border border-stroke bg-surface-raised px-4 py-2.5 text-base text-ink-primary transition hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            Options
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div id="dd-menu" class="absolute left-0 top-full z-10 mt-2 hidden w-52 origin-top rounded-lg border border-hairline bg-surface-raised p-1.5 shadow-lg">
+            <a href="#" class="block rounded-md px-3 py-2 text-sm text-ink-primary transition hover:bg-surface focus:outline-none focus-visible:bg-surface focus-visible:ring-2 focus-visible:ring-ring">Rename workspace</a>
+            <a href="#" class="block rounded-md px-3 py-2 text-sm text-ink-primary transition hover:bg-surface focus:outline-none focus-visible:bg-surface focus-visible:ring-2 focus-visible:ring-ring">Invite teammates</a>
+            <a href="#" class="block rounded-md px-3 py-2 text-sm text-ink-primary transition hover:bg-surface focus:outline-none focus-visible:bg-surface focus-visible:ring-2 focus-visible:ring-ring">Export notes</a>
+            <div class="my-1 border-t border-hairline"></div>
+            <a href="#" class="block rounded-md px-3 py-2 text-sm text-ink-danger transition hover:bg-red-50 focus:outline-none focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-ring">Delete</a>
+          </div>
+        </div>
+
+        <!-- Accordion with accordion-down/up -->
+        <div class="w-full max-w-md divide-y divide-hairline rounded-lg border border-hairline bg-surface-raised" id="acc">
+          <div>
+            <button class="acc-btn flex w-full items-center justify-between px-4 py-3.5 text-left text-base text-ink-primary transition hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">Does Granola join my call?<span class="acc-icon text-ink-secondary transition">+</span></button>
+            <div class="acc-panel grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out"><div class="overflow-hidden"><p class="px-4 pb-4 text-sm text-ink-secondary">No. It enhances notes you take yourself — no bot ever joins.</p></div></div>
+          </div>
+          <div>
+            <button class="acc-btn flex w-full items-center justify-between px-4 py-3.5 text-left text-base text-ink-primary transition hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">Which platforms are supported?<span class="acc-icon text-ink-secondary transition">+</span></button>
+            <div class="acc-panel grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out"><div class="overflow-hidden"><p class="px-4 pb-4 text-sm text-ink-secondary">macOS, Windows and iPhone.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== FOOTER ============================== -->
+    <footer class="border-t border-hairline py-10 text-sm text-ink-secondary">
+      <p>Pixel-faithful to <a href="https://www.granola.ai/" class="rounded-sm text-ink-accent transition hover:text-accent-text focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">granola.ai</a> · built from <code class="font-mono text-xs">tailwind-preset.js</code>. Self-hosted fonts: EB Garamond · Geist · Geist Mono.</p>
+    </footer>
+  </main>
+
+  <script>
+    // Reveal-on-scroll (fade-in-up)
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    reveals.forEach((el) => io.observe(el));
+    // Safety: never leave content hidden if it's never scrolled into view
+    // (e.g. full-page capture, no-scroll contexts, or IO failure).
+    setTimeout(() => reveals.forEach((el) => el.classList.add('in')), 1500);
+
+    // Dropdown
+    const ddBtn = document.getElementById('dd-btn');
+    const ddMenu = document.getElementById('dd-menu');
+    ddBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = !ddMenu.classList.contains('hidden');
+      if (open) { ddMenu.classList.add('hidden'); }
+      else { ddMenu.classList.remove('hidden'); ddMenu.classList.add('animate-dropdown-show'); }
+    });
+    document.addEventListener('click', () => ddMenu.classList.add('hidden'));
+
+    // Accordion (animate grid-rows 0fr <-> 1fr)
+    document.querySelectorAll('.acc-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const panel = btn.nextElementSibling;
+        const icon = btn.querySelector('.acc-icon');
+        const open = panel.style.gridTemplateRows === '1fr';
+        panel.style.gridTemplateRows = open ? '0fr' : '1fr';
+        icon.textContent = open ? '+' : '–';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_registered",
+  "claim_guard": "This artifact binds and audits recorded Plan 005 evidence only. It does not prove a live Fireworks evaluator registration, RFT launch, or model improvement.",
+  "release_proof": {
+    "path": "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+    "file_sha256": "0a5401537b3f7be9619d193f6e2202eee999c109f30e3309a47675543f86f456",
+    "content_digest": "b1e44142d86cdd73136b92a3876aa11ebdd55dd053c25decedac38b6712102d7",
+    "release_proof_id": "releaseproof-30e03914472631dd",
+    "proof_set_id": "proofset-e497370b2c3d2a69"
+  },
+  "binding": {
+    "environment_v2": "mongodb-sales-aggregation-engine:c2ee704d5c4e653e",
+    "grader_v2_digest": "c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908",
+    "context_id": "context-releasecandidate-294df1726b8a5ed0",
+    "grader_entrypoint_digest": "252c6bbb909762b2566144be80db590f4f087757334113e633485e338f15ed90",
+    "python_executable": "/usr/bin/python3",
+    "python_executable_digest": "container-managed:python3"
+  },
+  "security": {
+    "trusted_test_roots": [
+      "/tests"
+    ],
+    "untrusted_writable_roots": [
+      "/app"
+    ],
+    "grader_path": "/tests/test.sh",
+    "rootdir": "/tests",
+    "import_path": [
+      "/tests",
+      "/usr/lib/python3/dist-packages"
+    ],
+    "test_asset_digests": {
+      "/tests/task_assets/test_outputs.py": "ad132b324e84c2ab09460b73f4a74284bbe28b4e5c34fde80a22e0015e10c7f1",
+      "/tests/test.sh": "252c6bbb909762b2566144be80db590f4f087757334113e633485e338f15ed90"
+    },
+    "verifier_plugins": [
+      "pytest"
+    ],
+    "reward_record_policy": {
+      "transport": "trusted_evaluator_return_value",
+      "agent_writable_reward_paths": [],
+      "persisted_by": "trusted_rft_orchestrator"
+    }
+  },
+  "recorded_regression": {
+    "proofset_cases": [
+      {
+        "case_id": "mongodb-sales-aggregation-engine-path-a",
+        "case_kind": "control",
+        "v1_reward": 1.0,
+        "v2_reward": 1.0,
+        "expected_v2_reward": 1.0,
+        "passed": true
+      },
+      {
+        "case_id": "mongodb-sales-aggregation-engine-path-b",
+        "case_kind": "control",
+        "v1_reward": 1.0,
+        "v2_reward": 1.0,
+        "expected_v2_reward": 1.0,
+        "passed": true
+      },
+      {
+        "case_id": "mongodb-sales-aggregation-engine-path-c",
+        "case_kind": "control",
+        "v1_reward": 1.0,
+        "v2_reward": 1.0,
+        "expected_v2_reward": 1.0,
+        "passed": true
+      },
+      {
+        "case_id": "wit-run-20260621T075711-branch-08",
+        "case_kind": "witness",
+        "v1_reward": 1.0,
+        "v2_reward": 0.0,
+        "expected_v2_reward": 0.0,
+        "passed": true
+      }
+    ],
+    "subversion_probes": [
+      {
+        "case_id": "conftest.py",
+        "reward": 0.0,
+        "status": "blocked"
+      },
+      {
+        "case_id": "cwd/import shadowing",
+        "reward": 0.0,
+        "status": "blocked"
+      },
+      {
+        "case_id": "hook/TestReport fabrication",
+        "reward": 0.0,
+        "status": "blocked"
+      },
+      {
+        "case_id": "pytest11",
+        "reward": 0.0,
+        "status": "blocked"
+      },
+      {
+        "case_id": "site-packages mutation",
+        "reward": 0.0,
+        "status": "blocked"
+      },
+      {
+        "case_id": "trusted test replacement",
+        "reward": 0.0,
+        "status": "blocked"
+      }
+    ]
+  },
+  "provider_registration": {
+    "status": "not_run",
+    "evaluator_id": "TBD"
+  },
+  "training": {
+    "status": "not_run",
+    "job_id": "TBD"
+  },
+  "content_digest": "33721e6455d575f02f62c1d28634185af67ed258c182c5a978155c0ffcec5811"
+}

@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "status": "accepted",
+  "repository_root": "/Users/ashtonchew/projects/hack2fix2hack",
+  "repository_identity": "https://github.com/ashtonchew/hack2fix2hack.git",
+  "commit": "e6ea5e3b49286de93a817b1182c5bd3ca74b7a6e",
+  "verified_at": "2026-06-20T23:55:00Z",
+  "verified_by": "Akhil (Claude Code)",
+  "core_prerequisites": {
+    "source_trace": true,
+    "mongodb_task": false,
+    "hud_adapter": true,
+    "modal_adapter": true,
+    "grader": true,
+    "harden_v0": false,
+    "artifact_store": false,
+    "security_controls": false,
+    "baseline_command": true
+  },
+  "gate1_acceptance": {
+    "_doc": "Gate 1 accepts each surface as either verified-present with command/evidence or located-owned by a later plan with explicit owner/blocker evidence. This block is validated by validate_evidence.py.",
+    "baseline_command": {
+      "state": "verified-present",
+      "evidence_refs": ["docs/plans/repo-map/COMMANDS.json:baseline"]
+    },
+    "modal_adapter": {
+      "state": "verified-present",
+      "evidence_refs": [
+        "docs/plans/repo-map/probes/modal_snapshot_probe.py",
+        "docs/plans/evidence/001/MANIFEST.json"
+      ]
+    },
+    "source_trace": {
+      "state": "verified-present",
+      "evidence_refs": ["docs/plans/evidence/001/MANIFEST.json", "live_trace"]
+    },
+    "hud_adapter": {
+      "state": "verified-present",
+      "evidence_refs": ["envs/mongodb-sales-aggregation-engine/env.py", "live_trace"]
+    },
+    "grader": {
+      "state": "verified-present",
+      "evidence_refs": [
+        "envs/mongodb-sales-aggregation-engine/task_assets/test_outputs.py",
+        "live_trace.grader_digest_sha256"
+      ]
+    },
+    "mongodb_task": {
+      "state": "located-owned",
+      "owner_plans": ["004"],
+      "evidence_refs": ["docs/plans/repo-map/EVIDENCE-PACKETS.md"]
+    },
+    "harden_v0": {
+      "state": "located-owned",
+      "owner_plans": ["005"],
+      "evidence_refs": ["docs/plans/repo-map/EVIDENCE-PACKETS.md"]
+    },
+    "security_controls": {
+      "state": "located-owned",
+      "owner_plans": ["003"],
+      "evidence_refs": ["docs/plans/repo-map/EVIDENCE-PACKETS.md"]
+    },
+    "artifact_store": {
+      "state": "located-owned",
+      "owner_plans": ["003", "005"],
+      "evidence_refs": ["docs/plans/repo-map/EVIDENCE-PACKETS.md"]
+    }
+  },
+  "live_trace": {
+    "env_id": "57cb7f09-89c1-487b-8463-b525edf01153",
+    "env_name": "mongodb_sales_aggregation_engine_v1",
+    "job_id": "8b482f14f81741f49ba6d8b812c3bd7b",
+    "trace_id": "92b654c6-cdde-43cf-9096-3681df6df2e1",
+    "agent": "claude-haiku-4-5",
+    "reward": 1.0,
+    "kind": "legitimate-solve",
+    "grader_digest_sha256": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+    "note": "Live reward-1 trace recorded on HUD via local tcp runtime + gateway. The reward-hack variant (force-pass conftest) is proven reproducible in-container (reward 1); its live stochastic discovery and QA reward-hacking classification are Plan 003."
+  },
+  "verified_inputs": {
+    "mongodb_task_source_checkout": true,
+    "harden_v0_source_checkout": true,
+    "hud_sdk_dependency": true,
+    "modal_sdk_dependency": true,
+    "hud_api_auth": true,
+    "modal_api_auth": true,
+    "modal_filesystem_snapshot_roundtrip": true,
+    "modal_directory_snapshot_beta_create": true,
+    "sourced_hack_trajectory": true,
+    "live_hud_env_deployed": true,
+    "live_reward1_trace_recorded": true,
+    "verifier_subvertible_in_container": true
+  },
+  "located_owned_notes": [
+    "mongodb_task: real task fixture materialization owned by Plan 004; source checked out under .external/terminal-wrench and copied into envs/.../task_assets.",
+    "harden_v0: repo-native fixer/replay/dedup integration owned by Plan 005; upstream pinned under .external/harden-v0; grader digest captured for v1/v2 proof.",
+    "security_controls: branch isolation / secret scoping owned by Plan 003 (A-015); bwrap workspace isolation present in the HUD env.",
+    "artifact_store: durable Witness/ReleaseProof persistence owned by Plans 003/005.",
+    "hosted-rollout (hud eval --remote) returns 400 No registry found on this account; live trace was recorded via local tcp runtime instead. Hosted compute is a Plan 003 scaling concern, not a Gate-1 blocker."
+  ]
+}

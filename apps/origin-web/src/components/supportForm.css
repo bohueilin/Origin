@@ -1,0 +1,28 @@
+/* Support form — shared by Account Settings → Support and the proving-ground report popup,
+   so they are pixel-identical. Self-contained so it renders correctly on any page. */
+.sf-form { display: flex; flex-direction: column; gap: 12px; }
+.sf-field { display: flex; flex-direction: column; gap: 6px; }
+.sf-field > span { font: 600 12.5px/1 'Inter', system-ui, sans-serif; color: #57534a; }
+.sf-field input, .sf-field select, .sf-field textarea {
+  font: 400 14px/1.45 'Inter', system-ui, sans-serif; color: #2f2b22; background: #fff;
+  border: 1px solid #e2ddd0; border-radius: 9px; padding: 10px 12px; width: 100%; box-sizing: border-box;
+}
+.sf-field textarea { resize: vertical; }
+.sf-field input:focus-visible, .sf-field select:focus-visible, .sf-field textarea:focus-visible { outline: 2px solid #2f6df6; outline-offset: 1px; }
+.sf-msg { font: 500 13px/1.45 'Inter', system-ui, sans-serif; border-radius: 9px; padding: 9px 11px; }
+.sf-msg.ok { color: #0b6e52; background: #d9f2e8; }
+.sf-msg.err { color: #b23a30; background: #fae9e6; }
+.sf-actions { display: flex; justify-content: flex-end; }
+.sf-submit { font: 600 14px/1 'Inter', system-ui, sans-serif; color: #fff; background: #2f6df6; border: 1px solid #2f6df6; border-radius: 10px; padding: 11px 18px; cursor: pointer; transition: background .12s; }
+.sf-submit:hover:not(:disabled) { background: #1d4ed8; }
+.sf-submit:disabled { opacity: .6; cursor: default; }
+
+/* Report-issue modal */
+.report-overlay { position: fixed; inset: 0; z-index: 240; background: rgba(26,24,19,.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.report-modal { position: relative; width: 100%; max-width: 460px; background: #fffefb; border: 1px solid #e8e3d7; border-radius: 16px; padding: 24px; box-shadow: 0 40px 90px -30px rgba(26,24,19,.55); }
+.report-x { position: absolute; top: 12px; right: 14px; font: 400 22px/1 inherit; color: #9a948a; background: none; border: none; cursor: pointer; }
+.report-x:hover { color: #1a1813; }
+.report-x:focus-visible { outline: 2px solid #2f6df6; outline-offset: 2px; }
+.report-title { font: 700 22px/1.1 'Space Grotesk', system-ui, sans-serif; letter-spacing: -.02em; color: #1a1813; margin: 0; }
+.report-sub { font: 400 14px/1.5 'Inter', system-ui, sans-serif; color: #57534a; margin: 8px 0 18px; }
+.report-flag { color: #d2452f; }

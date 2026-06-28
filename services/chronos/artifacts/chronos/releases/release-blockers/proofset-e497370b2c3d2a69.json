@@ -1,0 +1,27 @@
+{
+  "content_digest": "ad4c9530d454cf63c7655894a58d84619eb25a373b2451cd2383ca75fc2b81a2",
+  "harden_returncode": 0,
+  "harden_run_ref": "/Users/ashtonchew/projects/hack2fix2hack/.worktrees/plan-005-release-proof/artifacts/chronos/releases/harden-v0-work/run-20260621T115646Z/harden-output/mongodb-sales-aggregation-engine/result.json",
+  "harden_status": "max_iterations",
+  "mandatory_subversion_case_ids": [
+    "conftest.py",
+    "cwd/import shadowing",
+    "hook/TestReport fabrication",
+    "pytest11",
+    "site-packages mutation",
+    "trusted test replacement"
+  ],
+  "missing_evidence": [
+    "v1_results",
+    "v2_results",
+    "evaluator_context_refs",
+    "subversion_results",
+    "release_candidate_ref"
+  ],
+  "proof_set_id": "proofset-e497370b2c3d2a69",
+  "reason": "No real per-case v1/v2 release-results artifact was provided; harden-v0 result.json alone is not ReleaseProof.",
+  "recorded_at": "2026-06-21T12:16:46Z",
+  "release_results_ref": null,
+  "schema_version": 1,
+  "status": "blocked"
+}

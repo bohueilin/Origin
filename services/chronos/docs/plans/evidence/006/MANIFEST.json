@@ -1,0 +1,546 @@
+{
+  "schema_version": 1,
+  "plan_id": "006",
+  "plan_name": "demo-observability-and-publication",
+  "wave": 5,
+  "status": "complete",
+  "started_at": "2026-06-21T09:34:39Z",
+  "updated_at": "2026-06-21T18:10:00Z",
+  "completed_at": "2026-06-21T14:34:43Z",
+  "commit": "6c33ae7f4b4ca374adf3b551733ca3607b594020",
+  "commands": [
+    {
+      "key": "validate-graph",
+      "command": "python docs/plans/scripts/validate_graph.py",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "PASS: 8 plans, 11 dependencies, waves [1, 2, 3, 4, 5], acyclic.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/validate_graph.py"
+      ]
+    },
+    {
+      "key": "validate-sections",
+      "command": "python docs/plans/scripts/validate_sections.py",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "PASS: 8 plans have valid frontmatter, sections, packets, and goal blocks.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/validate_sections.py"
+      ]
+    },
+    {
+      "key": "validate-ownership-repo-bound",
+      "command": "python docs/plans/scripts/validate_ownership.py --repo-bound",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "PASS: repo-bound ownership is collision-free for 8 plans.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/validate_ownership.py --repo-bound"
+      ]
+    },
+    {
+      "key": "validate-traceability",
+      "command": "python docs/plans/scripts/validate_traceability.py",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "PASS: 47 requirements map to all 8 plans.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/validate_traceability.py"
+      ]
+    },
+    {
+      "key": "plan-006-tests",
+      "command": "python docs/plans/scripts/run_mapped.py plan-006-tests",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped Plan 006 behavior tests passed after adding the Acceptance Demo Run suite: 71 passed.",
+      "recorded_at": "2026-06-21T14:34:43Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py plan-006-tests"
+      ]
+    },
+    {
+      "key": "integration-publication",
+      "command": "python docs/plans/scripts/run_mapped.py integration-publication",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped publication contract integration tests passed after candidate trust hardening: 18 passed. This remains a local contract check, not final trusted publish evidence.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py integration-publication"
+      ]
+    },
+    {
+      "key": "publication-idempotency",
+      "command": "python docs/plans/scripts/run_mapped.py publication-idempotency",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped publication idempotency check passed: 1 passed.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py publication-idempotency"
+      ]
+    },
+    {
+      "key": "publication-permission-denied",
+      "command": "python docs/plans/scripts/run_mapped.py publication-permission-denied",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped permission-denied publication check passed: 1 passed.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py publication-permission-denied"
+      ]
+    },
+    {
+      "key": "publication-trust-boundary",
+      "command": "python docs/plans/scripts/run_mapped.py publication-trust-boundary",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped publication trust-boundary check passed: 6 passed.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py publication-trust-boundary"
+      ]
+    },
+    {
+      "key": "publication-redaction",
+      "command": "python docs/plans/scripts/run_mapped.py publication-redaction",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped publication redaction check passed: 2 passed.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py publication-redaction"
+      ]
+    },
+    {
+      "key": "demo-report-replay",
+      "command": "python docs/plans/scripts/run_mapped.py demo-report-replay",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped Demo Report Replay audit-only check passed: 1 passed.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py demo-report-replay"
+      ]
+    },
+    {
+      "key": "demo-presentation-timeout",
+      "command": "python docs/plans/scripts/run_mapped.py demo-presentation-timeout",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped presentation-timeout contract check passed: 1 passed.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py demo-presentation-timeout"
+      ]
+    },
+    {
+      "key": "demo",
+      "command": "python docs/plans/scripts/run_mapped.py demo",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "run_mapped.py demo runs the Acceptance Demo Run (acceptance-demo): launched a genuine full 12-branch live batch (run-20260621T142614) from accepted ForkPoint im-01KVKYBWZYVZSD79CX5P9SNPXR, persisted the fresh run under artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs (Plan 006-owned copy), and wrote a validating 13-step report.json (status pass, discovery_source live-no-witness, live_attempt_result branches-launched, step 13 blocked-with-proof), readiness-pack.json, and a blocked-with-proof publication-attempt.json. Exit 0.",
+      "recorded_at": "2026-06-21T14:34:43Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py demo"
+      ]
+    },
+    {
+      "key": "ruff-plan-006-demo",
+      "command": "uv run ruff check src/chronos/demo tests/chronos/demo",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Focused lint passed for Plan 006-owned demo source and tests after post-merge hardening.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "uv run ruff check src/chronos/demo tests/chronos/demo"
+      ]
+    },
+    {
+      "key": "lint",
+      "command": "python docs/plans/scripts/run_mapped.py lint",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped lint passed: ruff check docs/plans/scripts.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py lint"
+      ]
+    },
+    {
+      "key": "build",
+      "command": "python docs/plans/scripts/run_mapped.py build",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Mapped build passed: uv lock --check resolved 155 packages.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/run_mapped.py build"
+      ]
+    },
+    {
+      "key": "file-size-006",
+      "command": "python docs/plans/scripts/validate_file_sizes.py --plan 006",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "PASS: 17 text file(s) are at most 550 lines; 0 file(s) exceed the 500-line target.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/validate_file_sizes.py --plan 006"
+      ]
+    },
+    {
+      "key": "evidence-006",
+      "command": "python docs/plans/scripts/validate_evidence.py --plan 006",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "PASS: Plan 006 evidence manifest is present and structured after post-Plan-005 blocker refresh.",
+      "recorded_at": "2026-06-21T13:18:05Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/validate_evidence.py --plan 006"
+      ]
+    },
+    {
+      "key": "evidence-006-require-complete",
+      "command": "python docs/plans/scripts/validate_evidence.py --plan 006 --require-complete",
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Plan 006 evidence is complete: status complete, completed_at set, every command row exit 0, every check pass or evidence-backed skipped, artifacts present, and no active blockers.",
+      "recorded_at": "2026-06-21T14:34:43Z",
+      "argv": [
+        "bash",
+        "-lc",
+        "python docs/plans/scripts/validate_evidence.py --plan 006 --require-complete"
+      ]
+    },
+    {
+      "key": "publish-prepare",
+      "command": "PYTHONPATH=src uv run python -m chronos.demo.cli publish-prepare",
+      "argv": [
+        "bash",
+        "-lc",
+        "PYTHONPATH=src uv run python -m chronos.demo.cli publish-prepare"
+      ],
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Built and validated a prepared PublicationAttempt: bound HUD deploy primitive (COMMANDS.json:hud-deploy), authorized target (account 'mongodb-sales-aggregation-engine' registry), passing ReleaseProof, sealed candidate, offline-verified hardened v2 grader, idempotency key over proof digest + target. Registry upload deliberately deferred; no environment published.",
+      "recorded_at": "2026-06-21T15:20:00Z"
+    },
+    {
+      "key": "v2-runtime-kill-proof",
+      "command": "PYTHONPATH=src uv run python scripts/chronos-demo-v2-kill-proof.py",
+      "argv": [
+        "bash",
+        "-lc",
+        "PYTHONPATH=src uv run python scripts/chronos-demo-v2-kill-proof.py"
+      ],
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Reproduced the Plan 005 release-verification harness (_DockerVerifierRunner) on a freshly-materialized hardened v2 in real mongo:7.0 containers: witness exploit reward 0.0 (killed), all three controls reward 1.0 (preserved), grader_v2_digest matches the sealed ReleaseProof. Closes the served-runtime kill-parity gap. No HUD upload performed.",
+      "recorded_at": "2026-06-21T15:35:00Z"
+    },
+    {
+      "key": "v2-deploy-proof",
+      "command": "PYTHONPATH=src uv run python scripts/chronos-demo-v2-deploy-proof.py",
+      "argv": [
+        "bash",
+        "-lc",
+        "PYTHONPATH=src uv run python scripts/chronos-demo-v2-deploy-proof.py"
+      ],
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Builds the actual deployable image and runs env.py's grader. v6 out-of-process grader: witness 0.0, three controls 1.0, in-process exit-code hijack 0.0, in-process MONKEYPATCH 0.0, and root tampering of the digest-pinned grader files (overwrite grade.py/reference, shadow stdlib) all 0.0. deploy_form_pass=true. The candidate runs only in throwaway isolated subprocesses (python3 -I run_solution.py); the verdict process (grade.py) never imports candidate code.",
+      "recorded_at": "2026-06-21T18:10:00Z"
+    },
+    {
+      "key": "hud-deploy-execution",
+      "command": "uv run hud deploy <assembled v2 context>  (HUD_API_KEY from root .env)",
+      "argv": [
+        "bash",
+        "-lc",
+        "uv run hud deploy <assembled v2 context>"
+      ],
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "hud deploy published the hardened env as mongodb-sales-aggregation-engine version 3, then (after a post-publish bug hunt fixed a grader bypass) version 4 (registry b3409057, build d7b8043a SUCCEEDED, team hud-hacks). Server-side AWS CodeBuild + ECR push. Non-destructive: builds total 4 (v4 latest; v1-v3 retained). Verified via read-only GET /v2/registry. See docs/plans/evidence/006/publish-receipt.json.",
+      "recorded_at": "2026-06-21T16:40:00Z"
+    },
+    {
+      "key": "publish-record",
+      "command": "PYTHONPATH=src uv run python -m chronos.demo.cli publish-record",
+      "argv": [
+        "bash",
+        "-lc",
+        "PYTHONPATH=src uv run python -m chronos.demo.cli publish-record"
+      ],
+      "exit_code": 0,
+      "status": "pass",
+      "observed_behavior": "Wrote and validated a published PublicationAttempt (artifacts/chronos/demo/publish/publication-published-attempt.json): outcome published, published_environment_ref hud:registry/b3409057@v4, trusted publication evidence = docs/plans/evidence/006/publish-receipt.json, passing ReleaseProof gate, no error class.",
+      "recorded_at": "2026-06-21T16:40:00Z"
+    }
+  ],
+  "rechecks": [],
+  "checks": [
+    {
+      "name": "Plan 006 ownership",
+      "status": "pass",
+      "evidence": "Plan 006 owns src/chronos/demo/**, tests/chronos/demo/**, scripts/chronos-demo*, artifacts/chronos/demo/**, docs/plans/006-demo-observability-and-publication.*, docs/plans/evidence/006/**, and only the declared Plan 006 COMMANDS.json keys. Implementation edits are limited to those owned paths/keys; validate_ownership.py passes."
+    },
+    {
+      "name": "Gate 4 / Plan 005 dependency",
+      "status": "pass",
+      "evidence": "Plan 005 merged to main with status complete (completed_at 2026-06-21T12:55:35Z, zero blockers). Its ReleaseProof releaseproof-30e03914472631dd and candidate releasecandidate-294df1726b8a5ed0 validate via repo-native assert_release_proof; Plan 006 consumes them manifest-bound."
+    },
+    {
+      "name": "Repo-map source-of-truth consistency",
+      "status": "pass",
+      "evidence": "Resolved. docs/plans/repo-map/REPOSITORY.md now reads Status: accepted and points to STATUS.json (status accepted, verified 2026-06-20T23:55Z, commit e6ea5e3) as the canonical gate state, replacing the stale 'blocked' prose that had drifted 134 commits behind HEAD. The two repo-map files are now consistent."
+    },
+    {
+      "name": "Feasible validators",
+      "status": "pass",
+      "evidence": "Graph, sections, ownership, traceability, focused lint, mapped lint, build, Plan 006 file-size, and structured evidence validation passed. demo remains a recorded blocker with exit 2 until Plan 005/Gate 4 and publish binding are complete."
+    },
+    {
+      "name": "Plan 006 mapped tests",
+      "status": "pass",
+      "evidence": "run_mapped.py plan-006-tests runs the Plan 006 behavior tests including the Acceptance Demo Run suite and passes with 71 tests."
+    },
+    {
+      "name": "Repeated blocker recheck",
+      "status": "skipped",
+      "evidence": "Historical stack-setup blocker recheck, superseded. The Plan 005/Gate-4 and publish-binding conditions are resolved (Plan 005 complete; blocked-with-proof accepted). Narrative preserved in notes."
+    },
+    {
+      "name": "Third blocker audit",
+      "status": "skipped",
+      "evidence": "Historical stack-setup blocker audit, superseded. The branch now carries the full Acceptance Demo Run implementation and a validating report; no active blocker remains. Narrative preserved in notes."
+    },
+    {
+      "name": "Pre-Gate-4 contract implementation",
+      "status": "pass",
+      "evidence": "Plan 006 pure contracts now validate report.json semantics, demo modes, prior-run fallback labels, report-replay audit-only behavior, metrics provenance, fake-live rejection, statistical overclaim rejection, PublicationAttempt outcomes, trusted publication preflight, idempotency, permission/blocker semantics, and redaction."
+    },
+    {
+      "name": "Contract-layer adversarial hardening (consolidated)",
+      "status": "pass",
+      "evidence": "The Plan 006 report/publication/readiness/metrics contracts were hardened across multiple read-only adversarial review passes before the live run: report status/source/live consistency, fake-live and single-run statistical-overclaim rejection, acceptance branch-budget binding, prior-run fallback labelling, report-shape and claim-shape guards, PublicationAttempt trust-boundary/idempotency/redaction, candidate identity binding, and CLI failure-output redaction. The chronological per-pass detail is preserved in this manifest's notes and docs/plans/006-demo-observability-and-publication.md. Covered by 71 behavior tests (plan-006-tests) and the publication contract suite (integration-publication, 18)."
+    },
+    {
+      "name": "Demo readiness pack validation",
+      "status": "pass",
+      "evidence": "Plan 006 now validates a digest-checked demo readiness pack for presentation/acceptance modes without probing live systems or reading secrets. The pack requires evidence-backed checks for HUD auth, Modal auth, model gateway auth, network, quota, source trace, ForkPoint, prior Witness, replay entrypoint, ProofSet, ReleaseProof, release candidate, publication attempt or expected block, and local artifact paths. Blocked packs require explicit blocked/expected-block reasons; passing packs cannot include blockers; secret-like content is rejected."
+    },
+    {
+      "name": "Core metrics validation",
+      "status": "pass",
+      "evidence": "Plan 006 report validation now requires the core metrics set: branch_count, clusters, time_to_witness, reward_before, reward_after, control_retention, replay_rate, restore_latency, and setup_avoided. Each metric may be measured with evidence_ref or absent as not-measured/not-applicable with reason, preserving honest pre-Gate-4 reporting."
+    },
+    {
+      "name": "Presentation timeout hardening",
+      "status": "pass",
+      "evidence": "Presentation reports now require a positive integer presentation budget, and a timeout result must switch to Prior-Run Witness Replay rather than validating as live-no-witness. Mapped demo-presentation-timeout passed with 1 test."
+    },
+    {
+      "name": "Post-Plan-005 merge preflight refresh",
+      "status": "skipped",
+      "evidence": "Superseded by the live Acceptance Demo Run. The post-Plan-005 demo-preflight blocker described here is resolved: the demo command launches the full live budget and validates a complete report. Narrative preserved in notes."
+    },
+    {
+      "name": "Acceptance Demo Run",
+      "status": "pass",
+      "evidence": "run_mapped.py demo (acceptance-demo) launched a genuine full-budget live branch batch and wrote artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/report.json, which validates via validate_demo_report: status pass, demo_mode acceptance, discovery_source live-no-witness, live_attempt_result branches-launched, 13 evidence-backed steps with non-screenshot refs, step 13 blocked-with-proof. demo exited 0."
+    },
+    {
+      "name": "Full accepted branch budget launched",
+      "status": "pass",
+      "evidence": "accepted_branch_budget 12 == launched_branch_count 12, with 12 unique persisted live_branch_refs all under the Plan 006-owned invocation dir. The fresh 12-branch live run run-20260621T142614 was persisted to artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/."
+    },
+    {
+      "name": "Fresh live branches not relabeled",
+      "status": "pass",
+      "evidence": "live_branch_refs contain only this invocation's fresh branch artifacts; prior-run Plan 003 Witness/replay evidence is labelled fallback on steps 6/7/10 and never appears in live_branch_refs. Enforced by builder invariant and test_builder_never_relabels_prior_run_refs_as_fresh_live."
+    },
+    {
+      "name": "Publication outcome honest (blocked-with-proof)",
+      "status": "pass",
+      "evidence": "Acceptance Demo step 13 references a validated PublicationAttempt: outcome blocked-with-proof, normalized_error_class publish_binding_missing, release_proof_gate_status pass, sealed candidate releasecandidate-294df1726b8a5ed0, target mongodb-sales-aggregation-engine:c2ee704d5c4e653e, trusted integration-publication context. No publish API invoked or invented."
+    },
+    {
+      "name": "Redaction",
+      "status": "pass",
+      "evidence": "publication-redaction mapped check passes; report, publication attempt, readiness pack, and resource-stop records are redacted with no secret-like content; readiness validation rejects token-bearing URLs."
+    },
+    {
+      "name": "Fake-live and overclaim guards",
+      "status": "pass",
+      "evidence": "test_acceptance_demo enforces rejection of fewer-than-budget live refs, count/provenance mismatch as blocked, resource STOP on blocked batch, and honest single-run metrics (no TBD; replay_rate/setup_avoided not-applicable; reward_after measured 0.0 from the v2 replay). plan-006-tests passes with 71 tests."
+    },
+    {
+      "name": "Acceptance Demo orchestration ownership",
+      "status": "pass",
+      "evidence": "New modules forkpoint_inputs, branch_launch, metrics, steps, report_builder, orchestration and the acceptance-demo CLI subcommand live under src/chronos/demo/** (each <500 lines). The live runner's raw output is persisted under artifacts/chronos/demo/** and never committed under Plan 003 evidence; repo-bound ownership stays collision-free."
+    },
+    {
+      "name": "Publication: bound, prepared, and PUBLISHED v5 (live)",
+      "status": "pass",
+      "evidence": "hud deploy published the hardened env as mongodb-sales-aggregation-engine version 5 (registry b3409057, build 0290bbb9 SUCCEEDED, team hud-hacks; docs/plans/evidence/006/publish-receipt.json), verified via read-only GET /v2/registry. Non-destructive: v4 latest, v1-v3 retained (total 4). publish-record wrote a validated 'published' PublicationAttempt (published_environment_ref hud:registry/b3409057@v5, trusted publication evidence ref, passing ReleaseProof gate, no error class). INTERFACES.md row 17 = verified (published v4). COMMANDS.json:hud-deploy stays not-applicable so CI cannot re-deploy. SCOPE: the published env defeats the recorded reward hack + tested variants only; a verifier-isolation STOP is recorded (see the isolation check)."
+    },
+    {
+      "name": "Post-publish bug hunt: v3 grader bypass found and fixed (v4)",
+      "status": "pass",
+      "evidence": "A parallel subagent bug-hunt found a GENUINE bypass in the published v3 grader: because the agent runs as root, a force-pass conftest.py planted directly in /tests/task_assets defeated it (PYTEST_DISABLE_PLUGIN_AUTOLOAD does not disable conftest discovery; the v3 digest gate only covered test_outputs.py). Verified with a real-container repro. Fixed in env.py (--noconftest, -p no:cacheprovider, PYTHONDONTWRITEBYTECODE, and a full /tests tree allow-list); the deploy-proof now loads GRADE_CMD verbatim from env.py and tests the conftest-in-/tests and sitecustomize variants. Re-proven (v2-deploy-proof.json) and re-deployed as v4."
+    },
+    {
+      "name": "Verifier-isolation in-process bypass FIXED out-of-process (v6); hardcoding residual recorded",
+      "status": "pass",
+      "evidence": "The in-process bypass class (exit-code hijack + monkeypatch) is fixed by the v6 out-of-process grader (artifacts/chronos/demo/publish/v2-env/grader/grade.py + run_solution.py + reference_query.py): env.py runs `python3 -I /tests/grader/grade.py`, which executes the candidate only in throwaway isolated subprocesses and compares its outputs to the trusted reference solution; the verdict process never imports candidate code. Re-proven in v2-deploy-proof.json (exit_code_hijack_blocked, monkeypatch_blocked, root_grader_tamper_blocked, controls preserved). This follows the harden-v0/Harbor reward-by-separate-process convention (see the harden-v0 investigation). The LIVE published env is still v5 (XML grader, monkeypatch-vulnerable) pending a v6 deploy decision. Remaining residual: answer-hardcoding by a root candidate, which needs randomised/hidden test data or a non-root candidate / SEPARATE verifier environment (env/Plan-005 hardening). Recorded in artifacts/chronos/demo/publish/v2-security-limitations.json."
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "docs/plans/evidence/006/MANIFEST.json",
+      "description": "Blocked Plan 006 evidence manifest recording stack setup, start blockers, and the legal implementation boundary before source edits."
+    },
+    {
+      "ref": "docs/plans/006-demo-observability-and-publication.md",
+      "description": "Living-doc log updated with the Plan 006 stack preflight, blockers, feasible implementation plan, and canonicalization plan."
+    },
+    {
+      "ref": "src/chronos/demo/**",
+      "description": "Plan 006 pure contract implementation for demo report validation, publication preflight/attempt semantics, redaction, and blocker-producing demo preflight CLI."
+    },
+    {
+      "ref": "tests/chronos/demo/**",
+      "description": "Behavior tests for 13-step report validation, demo modes, report replay, fake-live rejection, statistical overclaim rejection, publication blockers/idempotency/permission semantics, and redaction."
+    },
+    {
+      "ref": "docs/plans/repo-map/COMMANDS.json",
+      "description": "Plan 006-owned command rows wired to local contract checks and blocker-producing demo preflight."
+    },
+    {
+      "ref": "artifacts/chronos/demo/preflight-blockers/plan-006-demo.json",
+      "description": "Post-Plan-005 demo preflight blocker artifact: Plan 005 proof/candidate are present; publication is blocked-with-proof on missing binding; full Acceptance Demo Run remains unclaimed."
+    },
+    {
+      "ref": "artifacts/chronos/demo/preflight-blockers/plan-006-publication-attempt.json",
+      "description": "Proof-backed Plan 006 PublicationAttempt preflight artifact with passing ReleaseProof digest, sealed candidate ref, target identity from environment_v2, trusted command-row context, and blocked-with-proof outcome for missing publish binding."
+    },
+    {
+      "ref": "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/report.json",
+      "description": "Validating 13-step Acceptance Demo Run report.json: status pass, live-no-witness, branches-launched, step 13 blocked-with-proof, full 12-branch budget launched."
+    },
+    {
+      "ref": "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/publication-attempt.json",
+      "description": "Validated blocked-with-proof PublicationAttempt for the Acceptance Demo: passing ReleaseProof digest, sealed candidate, target identity, trusted integration-publication context, no publish API invoked."
+    },
+    {
+      "ref": "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/readiness-pack.json",
+      "description": "Passing acceptance-mode demo readiness pack tied to the final invocation: 14 evidence-backed checks and 9 artifact refs, redacted, no secrets."
+    },
+    {
+      "ref": "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json",
+      "description": "Fresh full 12-branch live BranchRun batch launched by the Acceptance Demo Run, persisted under Plan 006 ownership; source of the report live_branch_refs."
+    },
+    {
+      "ref": "scripts/chronos-demo-v2-kill-proof.py",
+      "description": "Plan 006-owned script that reproduces the Plan 005 _DockerVerifierRunner verification on a freshly-materialized hardened v2 to prove the runtime kill."
+    },
+    {
+      "ref": "artifacts/chronos/demo/publish/**",
+      "description": "Publish workspace: discovered HUD target (hud-target.json), hardened-v2 grader-digest + runtime + deploy-form kill proofs, the v2-env deploy delta (hardened env.py + Dockerfile), and the prepared + published PublicationAttempts. No secrets; no value leaks."
+    },
+    {
+      "ref": "docs/plans/evidence/006/publish-receipt.json",
+      "description": "Trusted publish receipt: mongodb-sales-aggregation-engine v4 published (registry b3409057, build d7b8043a SUCCEEDED), non-destructive; v3 (build 3bc11838) retained but superseded after a post-publish grader-bypass fix. Links the defense proofs."
+    },
+    {
+      "ref": "scripts/chronos-demo-v2-deploy-proof.py",
+      "description": "Plan 006-owned script that builds the deployable v2 image and proves the served env.py grader kills the witness, preserves controls, and blocks root test-replacement."
+    }
+  ],
+  "screenshots": [],
+  "skips": [],
+  "blockers": [],
+  "notes": [
+    "2026-06-21T09:34:39Z \u2014 Stacked worktree codex/plan-006-demo-stack created over origin/codex/plan-005-release-proof. Source implementation stopped before edits because repo-map files disagree and Plan 005/Gate 4 remains incomplete.",
+    "2026-06-21T09:38:07Z \u2014 Refetched stack refs and rechecked blockers. PR #27 / Plan 005 is unchanged at 2def782 and remains blocked; repo-map conflict remains; Plan 006 command rows remain not executable for completion.",
+    "2026-06-21T09:40:02Z \u2014 Third consecutive blocker audit found unchanged repo-map, Gate 4, and Plan 006 command blockers. No legal source implementation remains possible without external state changes.",
+    "2026-06-21T09:47:08Z \u2014 At user direction, implemented Plan 006-owned pure contracts while preserving the full completion blockers. Local contract commands pass; the full demo command writes a blocker artifact and exits 2 until Plan 005/Gate 4 and publish binding are real.",
+    "2026-06-21T09:50:27Z \u2014 Hardened pre-Gate-4 contracts: preflight-generated blocked-with-proof attempts now carry explicit passing ReleaseProof gate status, and Demo Report Replay rejects new replay claims. Plan 006 tests now pass with 19 tests.",
+    "2026-06-21T09:52:52Z \u2014 Added report validation and audit-only report replay CLI entrypoints. Plan 006 tests now pass with 22 tests.",
+    "2026-06-21T09:55:24Z \u2014 Added PublicationAttempt validation CLI entrypoint. It writes validation artifacts without invoking publish. Plan 006 tests now pass with 24 tests.",
+    "2026-06-20 planning hardening pass added deterministic self-validation, machine-readable report requirements, thin trusted publisher ownership, and publication-specific negative checks.",
+    "2026-06-20 planning hardening pass added Acceptance Demo Run, Presentation Demo Run, Prior-Run Witness Replay, and audit-only Demo Report Replay semantics.",
+    "2026-06-21 grill-with-docs decision limited blocked-with-proof to valid proof plus missing publish binding/authority; proof mismatch, unauthorized target, mixed identity, missing artifacts, and unavailable trusted context are failures.",
+    "2026-06-21 parallel risk review added demo-day preflight, sealed readiness pack, presentation timeout behavior, statistical overclaim rejection, and publisher redaction guardrails.",
+    "2026-06-21T10:04:12Z \u2014 Adversarial subagent hardening pass completed. Publication validation now rejects forged published outcomes, self-attested redaction, missing normalized blocker classes, mixed v1/v2 environment or grader identity, branch-writable evidence markers, and malformed validation input without an artifact. Mapped plan-006-tests passed with 28 tests; integration-publication passed with 12 tests; publication-redaction passed with 2 tests.",
+    "2026-06-21T10:06:31Z \u2014 Tightened proof-backed PublicationAttempt validation again so published and permission-blocked outcomes reject missing trusted-context or publish-binding placeholders. Mapped plan-006-tests passed with 29 tests; integration-publication passed with 13 tests.",
+    "2026-06-21T10:17:43Z \u2014 Added safe publication-preflight CLI for the independently runnable publish/display preflight path. It consumes a ReleaseProof JSON path, emits a validated PublicationAttempt artifact, returns nonzero for failed preflight outcomes, and still never invokes or invents a publish primitive. Mapped plan-006-tests passed with 31 tests; integration-publication passed with 13 tests.",
+    "2026-06-21T10:21:09Z \u2014 Ran feasible validators after publication-preflight CLI work. Graph, sections, repo-bound ownership, traceability, mapped publication idempotency/permission/trust/redaction, lint, build, file-size, and evidence validation passed. Mapped demo still exits 2 by design and refreshes the blocker artifact because Plan 005/Gate 4 and publish binding are missing.",
+    "2026-06-21T10:32:18Z \u2014 Hardened report status/source/live consistency. The validator now rejects invalid report status and incoherent live discovery claims while preserving Demo Report Replay as audit-only revalidation of the source report mode. Mapped plan-006-tests passed with 32 tests; demo-report-replay passed with 1 test.",
+    "2026-06-21T10:35:06Z \u2014 Compacted superseded command rows in this evidence manifest after latest validation results made earlier duplicate command rows redundant; the Plan 006 living-doc log retains the chronological history.",
+    "2026-06-21T10:47:12Z \u2014 Added demo readiness pack validation and CLI support. This validates a digest-checked readiness pack with evidence-backed auth/network/quota/artifact statuses without probing live systems or reading secrets. Mapped plan-006-tests passed with 38 tests.",
+    "2026-06-21T10:50:03Z \u2014 Reran feasible validators after readiness pack validation. Graph, sections, repo-bound ownership, traceability, mapped Plan 006 tests, lint, build, file-size, and evidence validation passed. Mapped demo remains the expected blocker-producing preflight until Plan 005/Gate 4 and publish binding exist.",
+    "2026-06-21T11:02:44Z \u2014 Restacked Plan 006 over updated PR #27 head 3105a44. The rebase completed cleanly and mapped Plan 006 tests still pass with 38 tests. Plan 005 remains blocked on harden_fixer_artifact_layout_drift/fix_failed, with no sealed ReleaseProof or release candidate.",
+    "2026-06-21T11:12:36Z \u2014 Added core metrics validation. Reports must include branch_count, clusters, time_to_witness, reward_before, reward_after, control_retention, replay_rate, restore_latency, and setup_avoided, while allowing not-measured/not-applicable values with reasons before full Acceptance Demo evidence exists. Mapped plan-006-tests passed with 39 tests.",
+    "2026-06-21T14:15:00Z \u2014 Adversarial subagent hardening pass completed. Report validators now reject pass reports with failed steps, blocked proof/publication refs shown as completed steps, acceptance pass without launched live branches, unrelated fallback labels, malformed metric shape, and natural-language single-run overclaims. Publication/readiness/redaction validators now reject forged published attempts without trusted publication evidence, temp/branch-writable publication refs, untrusted command refs, broader secret formats, and pass readiness packs that still point at blocked/missing artifacts. Mapped plan-006-tests passed with 54 tests; demo-presentation-timeout passed with 1 test; stack-base evidence now cites Plan 005 head 7d8c75fca0d967acbcbc84e01dff9b7b87859ca5.",
+    "2026-06-21T11:19:34Z \u2014 Corrected stack-base evidence after pushing the adversarial hardening commit. Latest checked Plan 006 branch head before this evidence-correction commit was b4a2cebe982afea7036c850d845f29797abaec47; origin/codex/plan-005-release-proof remained 7d8c75fca0d967acbcbc84e01dff9b7b87859ca5; Plan 005 head was an ancestor of Plan 006 HEAD. Refreshed repo-bound ownership, demo-report-replay, and publication-idempotency command rows.",
+    "2026-06-21T11:52:27Z \u2014 Restacked Plan 006 over updated PR #27 head 9c9a60f7ed3510fd817b56ea265de6367dddb32f. The rebase completed cleanly. Graph, sections, repo-bound ownership, traceability, mapped Plan 006 tests, publication commands, demo-report-replay, demo-presentation-timeout, lint, build, file-size, ownership, and structured evidence validators passed. The demo command still exits 2 and writes artifacts/chronos/demo/preflight-blockers/plan-006-demo.json because Plan 005 remains blocked without sealed ReleaseProof/release candidate and no trusted publish binding exists.",
+    "2026-06-21T11:58:02Z \u2014 Fixed the material findings from the post-rebase adversarial review. Acceptance reports now require unique persisted live_branch_refs matching launched_branch_count, Presentation timeout fallback requires persisted branch refs before replay, and blocked-with-proof PublicationAttempt records must reference the trusted integration-publication command row. Reran feasible gates: plan-006-tests 54 passed, integration-publication 16 passed, publication idempotency/permission/trust/redaction passed, demo-report-replay and demo-presentation-timeout passed, graph/sections/ownership/traceability/lint/build/file-size/evidence passed. demo still exits 2 with the expected Plan 005/Gate 4 and publish-binding STOPs.",
+    "2026-06-21T13:18:05Z \u2014 Rebased Plan 006 over merged main after Plan 005 completed. Refreshed demo preflight to consume the manifest-listed Plan 005 ReleaseProof/candidate, record blocked-with-proof for missing publish binding, and keep Acceptance Demo orchestration as an active blocker. Feasible gates pass; --require-complete remains intentionally not run because demo is still blocked.",
+    "2026-06-21T14:34:43Z \u2014 Implemented the repository-native Plan 006 Acceptance Demo Run and ran it live. New modules under src/chronos/demo (forkpoint_inputs, branch_launch, metrics, steps, report_builder, orchestration) build the enriched ForkPoint task profile from the proven Plan 003 Witness replay surface (trusted_entrypoint_ref env:env, workdir /app, real grader argv) and launch run_live_branch_batch through an injected runner seam. run_mapped.py demo (acceptance-demo) launched a genuine full 12-branch live batch (run-20260621T142614), persisted it under artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs (Plan 006-owned copy), and wrote a validating 13-step report.json (status pass, live-no-witness, branches-launched), a passing readiness-pack.json, and a blocked-with-proof publication-attempt.json. demo exited 0.",
+    "2026-06-21T14:34:43Z \u2014 Done-when gate met: plan-006-tests 71 passed, integration-publication 18 passed, publication idempotency/permission/trust/redaction passed, demo (acceptance-demo) exit 0, demo-report-replay and demo-presentation-timeout passed, graph/sections/repo-bound-ownership/traceability/file-size/lint/build passed, and validate_evidence.py --plan 006 --require-complete exit 0. Plan 006 marked complete. Publication remains blocked-with-proof per the Plan 006 Done-when and explicit user decision because INTERFACES.md records no checked-in publish primitive. Recorded the stale REPOSITORY.md 'blocked' prose vs STATUS.json 'accepted' as a non-owned documentation lag (skipped check), consistent with the merged Plan 002-005 stack.",
+    "2026-06-21T14:50:00Z \u2014 Refreshed docs/plans/repo-map/REPOSITORY.md (Plan 001-owned) at user direction within PR #29: Status blocked -> accepted, pointing to STATUS.json as the canonical gate state and removing the stale 'Gate 1 remains blocked / do not start Plans 002-007' prose that had drifted 134 commits behind HEAD. This reconciles the repo-map source-of-truth inconsistency; the corresponding manifest check is now pass.",
+    "2026-06-21T15:20:00Z \u2014 At maintainer direction (full permission, do everything except the registry upload), bound and prepared the real HUD publish path. Discovered the authorized target via a read-only GET /v2/registry probe (account's 'mongodb-sales-aggregation-engine' registry; ReleaseProof environment_v1 = the -v1 registry UUID). Regenerated the hardened v2 grader from committed sources via the Plan 005 materializer and verified grader_v2_digest == sealed ReleaseProof c0d86ae. Added a 'prepared' publication outcome (publication.py + 4 tests), a publish-prepare CLI, a bound COMMANDS.json:hud-deploy row (not-applicable so it cannot accidentally deploy), and bound INTERFACES.md row 17 (bound; upload-deferred). publish-prepare emits a validated prepared PublicationAttempt. The acceptance demo report's step 13 remains blocked-with-proof (honest run-time state before the binding existed); the prepared outcome is additive binding evidence dated after the run. No environment was uploaded. NOTE: INTERFACES.md/COMMANDS.json/REPOSITORY.md are Plan 001-owned; these repo-map edits are bundled into PR #29 at maintainer direction.",
+    "2026-06-21T15:35:00Z \u2014 Killed the 'served-runtime kill-parity unproven' gap with a real proof. scripts/chronos-demo-v2-kill-proof.py regenerates the hardened v2 and runs the Plan 005 _DockerVerifierRunner harness in real mongo:7.0 containers: witness exploit reward 0.0, all three controls reward 1.0, grader_v2_digest matches the sealed ReleaseProof. The prepared PublicationAttempt now cites this proof. The actual hud deploy upload (and the env.py-serve packaging) await an explicit go-ahead; nothing was uploaded.",
+    "2026-06-21T16:05:00Z \u2014 PUBLISHED. At maintainer go-ahead, rewired env.py to serve the hardened /tests grader read-only (digest-gated), proved the deployed-image served grader kills the witness (0.0), preserves controls (1.0), and blocks a root test-replacement (0.0), then ran hud deploy: mongodb-sales-aggregation-engine version 3 published (registry b3409057, build 3bc11838 SUCCEEDED, team hud-hacks). Non-destructive (v2/v1 retained). publish-record wrote a validated 'published' PublicationAttempt; INTERFACES.md row 17 and the manifest now record published v3. 77 behavior tests pass; --require-complete exits 0. Repo-map edits are Plan 001-owned, bundled at maintainer direction.",
+    "2026-06-21T16:40:00Z \u2014 Post-publish bug hunt + fix + v4. A parallel-subagent review found the published v3 grader still bypassable (root conftest planted in /tests, not /app). Fixed env.py (--noconftest + /tests tree allow-list), made the deploy-proof load GRADE_CMD verbatim from env.py and cover the new attack variants, re-proved in real containers (witness 0.0, controls 1.0, all root /tests subversions 0.0), and re-deployed as version 4 (build d7b8043a). v3 retained but superseded. Also applied the doc audit: REFERENCE publication outcomes/PublicationAttempt schema now include prepared/published fields; Plan 006 frontmatter + 000-index now declare the hud-deploy COMMANDS key and the maintainer-directed repo-map exception; INTERFACES row 17 fixed (verified, not located-owned); added artifacts/chronos/demo/publish/README.md.",
+    "2026-06-21T16:55:00Z \u2014 Swarm re-review (parallel bug-hunt subagents) found: (1) a GENUINE in-process exit-code hijack bypassing the published v3/v4 grader (verified) \u2014 recorded as a weak-isolation STOP, mitigated by a v5 JUnit-XML grader candidate (re-proven; not yet deployed) and scoped honestly; (2) published attempts not cross-checked to the proven target \u2014 fixed record_published_publication to bind receipt outcome/registry-name/proof/candidate to the demo inputs; (3) a partial-prefix ref-rewrite bug on feedback refs \u2014 fixed to a path-boundary match; (4) control_retention denominator pinned to the numerator \u2014 fixed to controls_preserved/controls_total via broken_control_ids. Plus doc fixes (stale @v3->@v4, nine->ten owned keys). 77 tests pass; --require-complete exits 0. The live env is v4 (exit-hijack-vulnerable); deploying the v5 fix and the deeper out-of-process isolation redesign await maintainer decision.",
+    "2026-06-21T17:10:00Z \u2014 Deployed the v5 grader fix (maintainer-authorized): mongodb-sales-aggregation-engine version 5 (build 0290bbb9 SUCCEEDED) is the live latest; v5 blocks the in-process exit-code hijack (JUnit-XML verdict in a second process), re-proven in v2-deploy-proof.json. Non-destructive (v1-v4 retained). The residual in-process isolation STOP (monkeypatch/answer-hardcoding) stands; the proper fix is the harden-v0/Harbor convention: grade via a reward FILE written by a separate-process/separate-user/SEPARATE-verifier-environment grader that runs the solution OUT-OF-PROCESS as an uploaded artifact, with hidden expected outputs. Recorded for the env/Plan-005 redesign.",
+    "2026-06-21T18:10:00Z \u2014 Implemented the verifier-isolation fix following the harden-v0/Harbor convention. harden-v0 delegates grading to Harbor, which runs the verifier as a SEPARATE process writing a reward FILE (never the candidate's exit code), optionally in a SEPARATE verifier environment / as a non-agent user. Adopted that out-of-process pattern as the v6 grader: env.py runs `python3 -I /tests/grader/grade.py`, which runs the candidate and the trusted reference solution in throwaway isolated subprocesses and compares outputs \u2014 the verdict process never imports candidate code. Re-proven (v2-deploy-proof.json): witness/exit-hijack/monkeypatch/root-grader-tamper all blocked, controls preserved. Committed and proven; the live env is v5 pending a v6 deploy decision. The only residual is answer-hardcoding (needs randomised/hidden data or a non-root/SEPARATE-verifier env). Also rebased Plan 006 onto main (Plan 008 merged); plan-007 already contained main."
+  ]
+}

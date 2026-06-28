@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624",
+  "base_image_digest": "sha256:d34916434f1304da8b1fc7aeb547d1bee53770a4c4fe0ff4637eaca293d648d5",
+  "base_original": "skylensage-registry.cn-hangzhou.cr.aliyuncs.com/instances/1124:t-bench-ubuntu-24-04",
+  "base_rewritten": "true",
+  "build_context_digest": "3ea06c19e7ffa1937f56b44c22db3a7cbc4a70adafa252d29c64817475e6fb1a",
+  "content_digest": "618d94d7081ddba69fb78a5fde7e0fcd72fb76e480c0451af43ef0a48e3fa9cf",
+  "deployable": "true",
+  "dockerfile_digest": "07bb587de4080ee951809f66f97d428556e1f6f2366985d68eed1ededf3b23ad",
+  "grader_digest": "9c17b9091a33178edc5fdd7a4dd268fae0f188abb64358bf0db773c81f43c81f",
+  "model": "claude-opus-4.6",
+  "task_id": "synthesize-harmonic-wav-in-c",
+  "task_slug": "synthesize-harmonic-wav-in-c",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "c402b07bdc208360af0d0c08b563abad51d1acda17dddb97c07b37791b168dea",
+  "workdir": "/app"
+}

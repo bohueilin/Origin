@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624",
+  "base_image_digest": "sha256:d34916434f1304da8b1fc7aeb547d1bee53770a4c4fe0ff4637eaca293d648d5",
+  "base_original": "ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624",
+  "base_rewritten": "false",
+  "build_context_digest": "9b6813303b0c5f5aa5ebaa93375e8d1c0bd832b49fd8e921061573263ed03747",
+  "content_digest": "af72c1e18df5f6d5e07cf2e6fa12aeddfcbba64c8e9ea4503d149dbfe8ce22d8",
+  "deployable": "true",
+  "dockerfile_digest": "ae6e11c69ad5764ec93a9947ab43a58ff5c925cbf93fbb9ec8923c061fa3f62e",
+  "grader_digest": "3fdc7dd4bf7a739eca5f69a311e1352d3e9912e6abdf9563ab12d83fddd3ca78",
+  "model": "claude-opus-4.6",
+  "task_id": "fmri-encoding-r",
+  "task_slug": "fmri-encoding-r",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "caf1b89a2de359add0477cc00d8abbd04423b5e288b7ca74df76eb8de759b885",
+  "workdir": "/app"
+}

@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 1140 640"
+   font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+   version="1.1"
+   id="svg41"
+   sodipodi:docname="pipeline.svg"
+   inkscape:version="1.4.4 (dcaf3e7d, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview41"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.77192982"
+     inkscape:cx="569.35227"
+     inkscape:cy="320.625"
+     inkscape:window-width="2514"
+     inkscape:window-height="1516"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg41" />
+  <defs
+     id="defs3">
+    <marker
+       id="arrow"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="3"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M0,0 L8,3 L0,6 Z"
+         fill="#8b949e"
+         id="path1" />
+    </marker>
+    <marker
+       id="arrowGold"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="3"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M0,0 L8,3 L0,6 Z"
+         fill="#f0b429"
+         id="path2" />
+    </marker>
+    <marker
+       id="arrowDash"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="3"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M0,0 L8,3 L0,6 Z"
+         fill="#56d4dd"
+         id="path3" />
+    </marker>
+  </defs>
+  <rect
+     x="0"
+     y="0"
+     width="1140"
+     height="640"
+     rx="18"
+     fill="#0d1117"
+     id="rect3" />
+  <text
+     x="40"
+     y="52"
+     fill="#e6edf3"
+     font-size="26px"
+     font-weight="700"
+     id="text3">Cobra— the hardening loop</text>
+  <text
+     x="40"
+     y="70"
+     fill="#8b949e"
+     font-size="15px"
+     id="text4">Point it at a grader → red swarm breaches it → green team seals the holes → robustness climbs, measured on held-out truth.</text>
+  <!-- stage cards -->
+  <!-- A: Grader -->
+  <rect
+     x="40"
+     y="150"
+     width="156"
+     height="128"
+     rx="12"
+     fill="#161b22"
+     stroke="#56d4dd"
+     stroke-width="1.5"
+     id="rect4" />
+  <text
+     x="118"
+     y="182"
+     fill="#56d4dd"
+     font-size="15"
+     font-weight="700"
+     text-anchor="middle"
+     id="text5">Grader (env)</text>
+  <text
+     x="118"
+     y="210"
+     fill="#e6edf3"
+     font-size="12"
+     text-anchor="middle"
+     id="text6">stock visible</text>
+  <text
+     x="118"
+     y="227"
+     fill="#e6edf3"
+     font-size="12"
+     text-anchor="middle"
+     id="text7">test suite</text>
+  <text
+     x="118"
+     y="255"
+     fill="#8b949e"
+     font-size="11"
+     text-anchor="middle"
+     id="text8">EvalPlus base_input</text>
+  <!-- B: Red swarm + conductor -->
+  <rect
+     x="240"
+     y="150"
+     width="156"
+     height="128"
+     rx="12"
+     fill="#161b22"
+     stroke="#ff6b6b"
+     stroke-width="1.5"
+     id="rect8" />
+  <text
+     x="318"
+     y="182"
+     fill="#ff6b6b"
+     font-size="15"
+     font-weight="700"
+     text-anchor="middle"
+     id="text9">Red swarm</text>
+  <text
+     x="318"
+     y="208"
+     fill="#e6edf3"
+     font-size="11"
+     text-anchor="middle"
+     id="text10">sapper · forger</text>
+  <text
+     x="318"
+     y="224"
+     fill="#e6edf3"
+     font-size="11"
+     text-anchor="middle"
+     id="text11">edge-slipper</text>
+  <rect
+     x="262"
+     y="238"
+     width="112"
+     height="26"
+     rx="6"
+     fill="#1c2230"
+     stroke="#a371f7"
+     stroke-width="1"
+     id="rect11" />
+  <text
+     x="318"
+     y="255"
+     fill="#a371f7"
+     font-size="11"
+     text-anchor="middle"
+     id="text12">+ conductor · 4 levers</text>
+  <!-- C: Breach -->
+  <rect
+     x="440"
+     y="150"
+     width="156"
+     height="128"
+     rx="12"
+     fill="#161b22"
+     stroke="#d29922"
+     stroke-width="1.5"
+     id="rect12" />
+  <text
+     x="518"
+     y="182"
+     fill="#d29922"
+     font-size="15"
+     font-weight="700"
+     text-anchor="middle"
+     id="text13">Breach</text>
+  <text
+     x="518"
+     y="212"
+     fill="#e6edf3"
+     font-size="13"
+     text-anchor="middle"
+     id="text14">passes grader</text>
+  <text
+     x="518"
+     y="230"
+     fill="#e6edf3"
+     font-size="13"
+     text-anchor="middle"
+     id="text15">fails oracle</text>
+  <text
+     x="518"
+     y="256"
+     fill="#8b949e"
+     font-size="12"
+     text-anchor="middle"
+     id="text16">R = 1 , T = 0</text>
+  <!-- D: Green team -->
+  <rect
+     x="640"
+     y="150"
+     width="156"
+     height="128"
+     rx="12"
+     fill="#161b22"
+     stroke="#3fb950"
+     stroke-width="1.5"
+     id="rect16" />
+  <text
+     x="718"
+     y="182"
+     fill="#3fb950"
+     font-size="15"
+     font-weight="700"
+     text-anchor="middle"
+     id="text17">Green team</text>
+  <text
+     x="718"
+     y="208"
+     fill="#e6edf3"
+     font-size="11"
+     text-anchor="middle"
+     id="text18">picks a hardening</text>
+  <text
+     x="718"
+     y="224"
+     fill="#e6edf3"
+     font-size="11"
+     text-anchor="middle"
+     id="text19">patch template</text>
+  <text
+     x="718"
+     y="255"
+     fill="#8b949e"
+     font-size="11"
+     text-anchor="middle"
+     id="text20">pristine_readonly…</text>
+  <!-- E: Regression gate -->
+  <rect
+     x="840"
+     y="150"
+     width="156"
+     height="128"
+     rx="12"
+     fill="#161b22"
+     stroke="#a371f7"
+     stroke-width="1.5"
+     id="rect20" />
+  <text
+     x="918"
+     y="182"
+     fill="#a371f7"
+     font-size="15"
+     font-weight="700"
+     text-anchor="middle"
+     id="text21">Regression gate</text>
+  <text
+     x="918"
+     y="212"
+     fill="#e6edf3"
+     font-size="12"
+     text-anchor="middle"
+     id="text22">breach → 0</text>
+  <text
+     x="918"
+     y="230"
+     fill="#e6edf3"
+     font-size="12"
+     text-anchor="middle"
+     id="text23">∧  gold → 1</text>
+  <text
+     x="918"
+     y="256"
+     fill="#8b949e"
+     font-size="11"
+     text-anchor="middle"
+     id="text24">else: patch_rejected</text>
+  <!-- F: Robustness -->
+  <rect
+     x="1004"
+     y="150"
+     width="100"
+     height="128"
+     rx="12"
+     fill="#161b22"
+     stroke="#f0b429"
+     stroke-width="1.5"
+     id="rect24" />
+  <text
+     x="1054"
+     y="182"
+     fill="#f0b429"
+     font-size="14"
+     font-weight="700"
+     text-anchor="middle"
+     id="text25">Robust ↑</text>
+  <text
+     x="1054"
+     y="210"
+     fill="#e6edf3"
+     font-size="11"
+     text-anchor="middle"
+     id="text26">held-out</text>
+  <text
+     x="1054"
+     y="232"
+     fill="#e6edf3"
+     font-size="11"
+     text-anchor="middle"
+     id="text27">+ honest</text>
+  <text
+     x="1054"
+     y="254"
+     fill="#e6edf3"
+     font-size="11"
+     text-anchor="middle"
+     id="text28">pass</text>
+  <!-- flow arrows -->
+  <line
+     x1="196"
+     y1="214"
+     x2="238"
+     y2="214"
+     stroke="#8b949e"
+     stroke-width="2"
+     marker-end="url(#arrow)"
+     id="line28" />
+  <line
+     x1="396"
+     y1="214"
+     x2="438"
+     y2="214"
+     stroke="#8b949e"
+     stroke-width="2"
+     marker-end="url(#arrow)"
+     id="line29" />
+  <line
+     x1="596"
+     y1="214"
+     x2="638"
+     y2="214"
+     stroke="#8b949e"
+     stroke-width="2"
+     marker-end="url(#arrow)"
+     id="line30" />
+  <line
+     x1="796"
+     y1="214"
+     x2="838"
+     y2="214"
+     stroke="#8b949e"
+     stroke-width="2"
+     marker-end="url(#arrow)"
+     id="line31" />
+  <line
+     x1="996"
+     y1="214"
+     x2="1002"
+     y2="214"
+     stroke="#f0b429"
+     stroke-width="2"
+     marker-end="url(#arrowGold)"
+     id="line32" />
+  <!-- escalate feedback loop E -> B -->
+  <path
+     d="M918 150 C 918 96, 318 96, 318 148"
+     fill="none"
+     stroke="#a371f7"
+     stroke-width="1.6"
+     stroke-dasharray="5,4"
+     marker-end="url(#arrow)"
+     id="path32" />
+  <text
+     x="618"
+     y="92"
+     fill="#a371f7"
+     font-size="12px"
+     text-anchor="middle"
+     id="text32">escalate — next round faces the harder grader (red ↔ green)</text>
+  <!-- oracle band -->
+  <rect
+     x="40"
+     y="360"
+     width="956"
+     height="74"
+     rx="12"
+     fill="#10161f"
+     stroke="#56d4dd"
+     stroke-width="1.3"
+     id="rect32" />
+  <text
+     x="62"
+     y="390"
+     fill="#56d4dd"
+     font-size="15"
+     font-weight="700"
+     id="text33">Oracle — held-out ground truth</text>
+  <text
+     x="62"
+     y="414"
+     fill="#8b949e"
+     font-size="12.5"
+     id="text34">EvalPlus plus_input tests (gold-derived), disjoint from the grader's cases. Independent. Never shown to agents, never used to select.</text>
+  <!-- dashed links from oracle up to Breach (T=0) and Gate -->
+  <line
+     x1="518"
+     y1="360"
+     x2="518"
+     y2="280"
+     stroke="#56d4dd"
+     stroke-width="1.4"
+     stroke-dasharray="4,4"
+     marker-end="url(#arrowDash)"
+     id="line34" />
+  <text
+     x="528"
+     y="330"
+     fill="#56d4dd"
+     font-size="11"
+     id="text35">T = 0 check</text>
+  <!-- honesty pills -->
+  <text
+     x="40"
+     y="490"
+     fill="#e6edf3"
+     font-size="15"
+     font-weight="700"
+     id="text36">The protected invariant — eval honesty</text>
+  <g
+     font-size="12.5"
+     id="g40">
+    <rect
+       x="40"
+       y="506"
+       width="240"
+       height="40"
+       rx="20"
+       fill="#161b22"
+       stroke="#30363d"
+       id="rect36" />
+    <text
+       x="160"
+       y="531"
+       fill="#e6edf3"
+       text-anchor="middle"
+       id="text37">train / held-out breach split</text>
+    <rect
+       x="296"
+       y="506"
+       width="240"
+       height="40"
+       rx="20"
+       fill="#161b22"
+       stroke="#30363d"
+       id="rect37" />
+    <text
+       x="416"
+       y="531"
+       fill="#e6edf3"
+       text-anchor="middle"
+       id="text38">honest-pass tracked beside every #</text>
+    <rect
+       x="552"
+       y="506"
+       width="240"
+       height="40"
+       rx="20"
+       fill="#161b22"
+       stroke="#30363d"
+       id="rect38" />
+    <text
+       x="672"
+       y="531"
+       fill="#e6edf3"
+       text-anchor="middle"
+       id="text39">deterministic subprocess sandbox</text>
+    <rect
+       x="808"
+       y="506"
+       width="296"
+       height="40"
+       rx="20"
+       fill="#161b22"
+       stroke="#30363d"
+       id="rect39" />
+    <text
+       x="956"
+       y="531"
+       fill="#e6edf3"
+       text-anchor="middle"
+       id="text40">no LLM-as-judge in the verdict path</text>
+  </g>
+  <text
+     x="40"
+     y="596"
+     fill="#8b949e"
+     font-size="12"
+     id="text41">engine: agents/ · conductor/ · green/      grading: grader/ · oracle/ · gate/ · templates/      metrics: breadth/ · consequence/      surfaces: server/ · dashboard/ · viz3d/</text>
+</svg>

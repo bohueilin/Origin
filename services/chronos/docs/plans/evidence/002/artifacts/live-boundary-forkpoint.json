@@ -1,0 +1,141 @@
+{
+  "base_image_digest": "sha256:8ecb514b00bdcc0bde67ef4e6c330385377a9dc68e24ee94e28c07c891647348",
+  "boundary_token": "29d614c21ab3c0754c4b815ad00bfec4f4088a6b9b4b6a22e7f524071bc0599b",
+  "environment_image_digest": "forkpoint-image-sha256:dc11b737edf6fe985d7698754a6e218fb39bc383f2bc5edbd3f3a7a51ff295d6",
+  "fork_point_id": "fp-826ba545cf30870e67d42ddb",
+  "handoff_keys": [
+    "boundary_token",
+    "branch_tag_inputs",
+    "environment_image_digest",
+    "environment_version",
+    "fork_point_id",
+    "grader_digest",
+    "grader_digest_source",
+    "history_hash",
+    "history_prefix_ref",
+    "isolated_writable_root",
+    "network_policy",
+    "parent_node_id",
+    "resource_policy",
+    "secret_policy",
+    "snapshot_digest",
+    "snapshot_id",
+    "snapshot_mode",
+    "snapshot_restore_ref",
+    "snapshot_retention",
+    "source_evidence_refs",
+    "task_id",
+    "task_visible_probe"
+  ],
+  "history_hash": "431934b50d29acd8fe19e0c8b053bd099b6651524b957301814bf1744151b762",
+  "history_prefix_ref": "inline-sha256:431934b50d29acd8fe19e0c8b053bd099b6651524b957301814bf1744151b762",
+  "hud_step_id": "completed-action:accepted-trace-rerun-before-scenario-evaluate",
+  "hud_trace_id": "92b654c6-cdde-43cf-9096-3681df6df2e1",
+  "image_identity_ref": "docs/plans/evidence/002/artifacts/image-identity.json",
+  "limitations": [
+    "This is an orchestrated rerun from the accepted trace export with a retained Modal sandbox handle.",
+    "It is not the already-finished historical sandbox instance from the original HUD run.",
+    "Raw tool commands and outputs are not committed; history and replay evidence are hash-only.",
+    "Environment image identity combines Docker Hub base manifest, source tree, and Modal recipe; it is not a Modal-internal built image manifest."
+  ],
+  "negative_restore_checks": {
+    "checks": [
+      {
+        "case": "boundary_mismatch",
+        "error_class": "boundary_mismatch",
+        "handoff_created": false,
+        "provider_restore_called": false
+      },
+      {
+        "case": "history_mismatch",
+        "error_class": "history_mismatch",
+        "handoff_created": false,
+        "provider_restore_called": false
+      },
+      {
+        "case": "grader_mismatch",
+        "error_class": "grader_mismatch",
+        "handoff_created": false,
+        "provider_restore_called": false
+      },
+      {
+        "case": "state_restore_failed",
+        "error_class": "state_restore_failed",
+        "handoff_created": false,
+        "provider_restore_called": false
+      }
+    ],
+    "status": "pass"
+  },
+  "network_policy": "block_network=True",
+  "query_py_sha256": "de1e37e62188483a86a585c7cc8660b395b84b071c48ac5c1a37e9d6a5ff2100",
+  "quiesce": {
+    "mongod_after_quiesce": "stopped",
+    "mongod_before_quiesce": "running",
+    "strategy": "trusted orchestrator MongoDB fsync, clean shutdown, and filesystem sync before snapshot"
+  },
+  "replayed_tool_count": 29,
+  "replayed_tools_sha256": "6fbc0d5802d1aa175de7a65ee03167793365930e6cb4788b3c84a22b53336fb3",
+  "resource_policy": "cpu=0.5,memory=1024,timeout=900",
+  "restored_grade_output_sha256": "8afba38259d0bb91c28ea30f90c8ca0c16a7adeaa206f302b21e3f2b69a1ff7b",
+  "restored_query_py_sha256": "de1e37e62188483a86a585c7cc8660b395b84b071c48ac5c1a37e9d6a5ff2100",
+  "secret_policy": "secrets=[]",
+  "security_probe": {
+    "docker_sock": "absent",
+    "metadata_network": "blocked",
+    "root_env": "absent"
+  },
+  "skipped_tool_count": 2,
+  "snapshot_digest": "79fb6181adb209684af059999f7d886701338955048523632d10b10acd304156",
+  "snapshot_id": "im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "snapshot_mode": "filesystem",
+  "snapshot_restore_ref": "modal-image://im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "snapshot_retention": "modal-default-ttl",
+  "source_evidence_refs": [
+    "docs/plans/repo-map/STATUS.json:live_trace.grader_digest_sha256",
+    "unavailable-plan-003-owned",
+    "unavailable-plan-003-owned"
+  ],
+  "status": "live-boundary-rerun-forkpoint-pass",
+  "surface_inventory": {
+    "branch_relevant_paths": [
+      "/app/query.py",
+      "/app/task_assets",
+      "/data/db",
+      "/var/log/mongodb.log"
+    ],
+    "cwd": "/app",
+    "path_writable": {
+      "/app": true,
+      "/app/task_assets": true,
+      "/data/db": true,
+      "/root": true,
+      "/tmp": true,
+      "/var/log/mongodb.log": true
+    },
+    "python_env": {
+      "PYTHONHASHSEED": "0",
+      "PYTHONPATH": "/pkg/:/root/"
+    },
+    "python_executable": "/usr/bin/python3",
+    "python_path": [
+      "",
+      "/pkg",
+      "/root",
+      "/usr/lib/python310.zip",
+      "/usr/lib/python3.10",
+      "/usr/lib/python3.10/lib-dynload",
+      "/usr/local/lib/python3.10/dist-packages",
+      "/usr/lib/python3/dist-packages"
+    ],
+    "task_assets_sha256": {
+      "init_data.py": "3ce337a7907a4b37b30e543967bf4ac7c382e202b9644eb68c264dd484d5fe54",
+      "instruction.md": "528c95bfb8e94580efa657de4293c4f1e96fe14b472962abc157f02ac4de251f",
+      "orders.json": "084b8f80170c7890702c75cba6e4f0c93fc06a681846f267b4e7d588433f9600",
+      "products.json": "a01a60e519d8c16ab793b2a656210abc5aade2d76de1d4be3a237dd2d9ec03ea",
+      "reference_solution.sh": "b254884ca4e8382949cd245f23116bb404254239c57292b784c95ae543ab960e",
+      "test_outputs.py": "ad132b324e84c2ab09460b73f4a74284bbe28b4e5c34fde80a22e0015e10c7f1"
+    },
+    "trusted_evidence_root": "outside sandbox: docs/plans/evidence/002"
+  }
+}

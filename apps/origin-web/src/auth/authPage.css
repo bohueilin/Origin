@@ -1,0 +1,83 @@
+/* Origin auth page — Luma-style split: warm-paper form on the left, brand canvas on
+   the right. Self-contained (standalone Vite entry); mirrors the Origin warm-paper palette. */
+:root {
+  --bg: #faf9f5; --panel: #fffefb; --line: #e8e3d7; --ink: #1a1813; --soft: #57534a;
+  --muted: #6e6a5f; --accent: #2f6df6; --accent-ink: #1d4ed8;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --display: 'Space Grotesk', var(--sans);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+
+.ap-shell { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+@media (max-width: 880px) { .ap-shell { grid-template-columns: 1fr; } }
+
+/* ---- form column ---- */
+.ap-form-col { display: flex; flex-direction: column; padding: 32px 40px 28px; min-height: 100vh; }
+@media (max-width: 520px) { .ap-form-col { padding: 24px 22px; } }
+
+.ap-brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-family: var(--display); font-weight: 700; font-size: 19px; align-self: flex-start; }
+.ap-logo { width: 32px; height: 32px; border-radius: 9px; object-fit: cover; display: block; }
+
+.ap-form-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 0; }
+.ap-form-card { width: 100%; max-width: 364px; }
+
+.ap-title { font-family: var(--display); font-weight: 600; font-size: 30px; letter-spacing: -0.02em; margin: 0; }
+.ap-sub { color: var(--muted); font-size: 13.5px; line-height: 1.55; margin: 12px 0 24px; }
+
+.ap-google { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font: 600 14px/1 var(--sans); color: var(--ink); background: #fff; border: 1px solid #dcd8cc; border-radius: 11px; padding: 12px 14px; cursor: pointer; transition: border-color .12s, background .12s; }
+.ap-google:hover:not(:disabled) { border-color: #c3bdac; background: #fffdf8; }
+.ap-google:disabled { opacity: .6; cursor: default; }
+
+.ap-or { display: flex; align-items: center; gap: 12px; margin: 16px 0; color: var(--muted); font-size: 12px; }
+.ap-or::before, .ap-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+.ap-fields { display: flex; flex-direction: column; gap: 13px; }
+/* minmax(0,1fr) + min-width:0 let the inputs shrink to their cell so First/Last align
+   exactly to the full-width Google button + Email field (no right-edge overflow). */
+.ap-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 11px; }
+.ap-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ap-field > span { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.ap-field input { width: 100%; font: 400 14.5px/1.2 var(--sans); color: var(--ink); background: #fff; border: 1px solid #dcd8cc; border-radius: 10px; padding: 11px 12px; transition: border-color .12s, box-shadow .12s; }
+.ap-field input::placeholder { color: #b4ad9e; }
+.ap-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.16); }
+
+.ap-error { font-size: 13px; color: #b23a30; background: #fae9e6; border-radius: 9px; padding: 9px 11px; }
+.ap-note { font-size: 13px; color: #0b6e52; background: #d9f2e8; border-radius: 9px; padding: 9px 11px; }
+
+.ap-submit { width: 100%; font: 600 14.5px/1 var(--sans); color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: 11px; padding: 13px 14px; margin-top: 4px; cursor: pointer; transition: background .12s, transform .08s; }
+.ap-submit:hover:not(:disabled) { background: var(--accent-ink); }
+.ap-submit:active:not(:disabled) { transform: translateY(1px); }
+.ap-submit:disabled { opacity: .65; cursor: default; }
+
+.ap-alt { font-size: 13.5px; color: var(--soft); text-align: center; margin: 18px 0 0; }
+.ap-link, .ap-switch { font: 600 13.5px/1 var(--sans); color: var(--accent-ink); background: none; border: none; padding: 0; cursor: pointer; }
+.ap-link:hover, .ap-switch:hover { text-decoration: underline; }
+.ap-switch { display: block; margin: 16px auto 0; }
+
+.ap-legal { font-size: 12px; color: var(--muted); line-height: 1.5; max-width: 364px; align-self: center; text-align: center; margin: 0; }
+.ap-legal a { color: var(--soft); text-decoration: underline; text-underline-offset: 2px; }
+.ap-legal a:hover { color: var(--ink); }
+
+/* visible keyboard focus */
+.ap-google:focus-visible, .ap-submit:focus-visible, .ap-link:focus-visible, .ap-switch:focus-visible, .ap-brand:focus-visible, .ap-legal a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px;
+}
+
+/* ---- imagine space (right) — placeholder brand canvas ---- */
+.ap-art { position: relative; overflow: hidden; background:
+  radial-gradient(120% 90% at 18% 12%, #3a63d6 0%, transparent 55%),
+  radial-gradient(120% 110% at 88% 92%, #14b389 0%, transparent 50%),
+  linear-gradient(155deg, #1b2240 0%, #131a33 60%, #0f1428 100%); }
+@media (max-width: 880px) { .ap-art { display: none; } }
+.ap-art::after { content: ''; position: absolute; inset: 0; background-image:
+  linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 44px 44px; mask-image: radial-gradient(80% 70% at 50% 45%, #000 30%, transparent 80%); }
+.ap-art-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px; }
+.ap-art-mark { width: 78px; height: 78px; border-radius: 20px; object-fit: cover; display: block; }
+.ap-art-line { font-family: var(--display); font-weight: 600; font-size: 30px; letter-spacing: -0.02em; color: #fff; margin: 28px 0 0; }
+.ap-art-sub { font-size: 14.5px; color: rgba(255,255,255,0.66); letter-spacing: 0.01em; margin: 12px 0 0; }
+@media (prefers-reduced-motion: no-preference) { .ap-art-mark { animation: ap-float 6s ease-in-out infinite; } }
+@keyframes ap-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }

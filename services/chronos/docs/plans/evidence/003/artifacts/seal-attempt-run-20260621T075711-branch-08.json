@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-06-21T08:08:00Z",
+  "status": "blocked",
+  "blocker_type": "STATE_RESTORE_ACCESS",
+  "candidate_branch_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/branches/run-20260621T075711-branch-08.json",
+  "candidate_branch_id": "run-20260621T075711-branch-08",
+  "batch_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/branch-run-batch.json",
+  "included_paths": [
+    "/app/conftest.py"
+  ],
+  "qa_evidence_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/qa/run-20260621T075711-branch-08.json",
+  "file_diff_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/file-diffs/run-20260621T075711-branch-08.json",
+  "causal_evidence_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/causal/run-20260621T075711-branch-08.json",
+  "snapshot_restore_ref": "modal-image://im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "replay_surface_status": "present",
+  "replay_executor": "chronos.witnesses.surface_replay.replay_with_recorded_surface",
+  "command": [
+    "PYTHONPATH=src",
+    "uv",
+    "run",
+    "python",
+    "-"
+  ],
+  "observed_error": {
+    "type": "modal.exception.PermissionDeniedError",
+    "message": "You don't have permission to access Image 'im-01KVKYBWZYVZSD79CX5P9SNPXR'"
+  },
+  "observed_behavior": "The canonical task-agnostic sealing path loaded a rewarded, QA-confirmed BranchRun candidate with replay_surface data and attempted three deterministic v1 replays through the recorded restore surface. Replay stopped before grading because the current Modal credential context cannot access the recorded image. No sealed Witness artifact was written or claimed.",
+  "next_owner": "Plan 003 operator must provide a restore-readable immutable v1 state reference for the candidate, or rerun discovery in a Modal workspace whose snapshot/image ids remain readable by the sealing credentials. Do not replace this with a task-specific local pytest replay."
+}

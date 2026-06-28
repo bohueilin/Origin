@@ -1,0 +1,29 @@
+{
+  "command_argv_ref": "docs/plans/repo-map/COMMANDS.json:integration-publication",
+  "command_key": "integration-publication",
+  "content_digest": "0d86ab8658790f0d1770eb090fe53fa033781fa2840ea6779d5f762a7b6aec2f",
+  "created_at": "2026-06-21T15:35:05Z",
+  "deferred_deploy_command_ref": "docs/plans/repo-map/COMMANDS.json:hud-deploy",
+  "deferred_reason": "Ready to publish; the actual registry upload awaits an explicit go-ahead. The bound HUD deploy primitive, the authorized 'mongodb-sales-aggregation-engine' registry target, and the hardened v2 are all verified: the v2 grader digest matches the sealed ReleaseProof, AND the runtime kill is proven in real mongo:7.0 containers (witness exploit reward 0.0, all three controls reward 1.0; artifacts/chronos/demo/publish/v2-runtime-kill-proof.json).",
+  "evidence_refs": [
+    "docs/plans/evidence/005/MANIFEST.json",
+    "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+    "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json",
+    "artifacts/chronos/demo/publish/v2-grader-verification.json",
+    "artifacts/chronos/demo/publish/v2-runtime-kill-proof.json",
+    "artifacts/chronos/demo/publish/hud-target.json"
+  ],
+  "idempotency_key": "bb3c8ce70604f4a5dd6cf4d191c3d482ab8da4aaf6ff1128f69e98e03c60a347",
+  "outcome": "prepared",
+  "publication_attempt_id": "pubattempt-bb3c8ce70604f4a5",
+  "published_target_ref": "artifacts/chronos/demo/publish/hud-target.json",
+  "publisher_capability_label": "hud-environment-deploy",
+  "redaction_status": "redacted",
+  "release_candidate_ref": "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json",
+  "release_proof_digest": "b1e44142d86cdd73136b92a3876aa11ebdd55dd053c25decedac38b6712102d7",
+  "release_proof_gate_status": "pass",
+  "release_proof_id": "releaseproof-30e03914472631dd",
+  "schema_version": 1,
+  "target_id": "mongodb-sales-aggregation-engine:c2ee704d5c4e653e",
+  "trusted_context_ref": "docs/plans/repo-map/COMMANDS.json:integration-publication"
+}

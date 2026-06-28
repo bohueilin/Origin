@@ -1,0 +1,11 @@
+{
+  "case_id": "mongodb-sales-aggregation-engine-path-b",
+  "content_digest": "18a45b54ccd11a2b4fab89a2378b5abca950e53728924a1cfc3844fc570c5ba7",
+  "mutation_paths": [],
+  "recorded_at": "2026-06-21T13:00:18Z",
+  "returncode": 0,
+  "reward": 1.0,
+  "schema_version": 1,
+  "stderr_digest": "51249a11d0702e9cf113482902ff08227a6a5f9765cae8d8c1d45c0d63b56c35",
+  "stdout_digest": "eda1be1731a4b711ea00c9d223b16cb6e407a8999ae9c5344a39d6b0d5000824"
+}

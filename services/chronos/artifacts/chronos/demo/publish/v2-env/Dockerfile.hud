@@ -1,0 +1,36 @@
+# mongodb-sales-aggregation-engine HARDENED v2.
+# MongoDB 7.0 base (Ubuntu) so mongod is present.
+FROM mongo:7.0
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 python3-pip python3-venv curl ca-certificates \
+        git bubblewrap openssh-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Task + grader runtime, system-wide so the BashGrader's `python3 -m pytest`
+# (run as a subprocess) resolves pytest + pymongo.
+RUN pip3 install --no-cache-dir pymongo "pytest==8.4.1"
+RUN pip3 install --no-cache-dir uv
+
+RUN mkdir -p /data/db && chown -R mongodb:mongodb /data/db
+
+# HARDENING: the verifier is served from /tests, OUTSIDE the agent's /app
+# workspace. The active grader is the OUT-OF-PROCESS grader at /tests/grader
+# (env.py runs `python3 -I /tests/grader/grade.py`), which compares the
+# candidate's outputs to the trusted reference solution and never imports
+# candidate code in the verdict process. The grader files are digest-pinned at
+# grade time. /tests is also chmod read-only (best-effort; a root candidate is
+# defeated by the digest pins + the out-of-process design, not by permissions).
+# /tests/task_assets/test_outputs.py is retained for ReleaseProof lineage but is
+# no longer the active grader.
+COPY tests /tests
+COPY grader /tests/grader
+RUN chmod -R a-w /tests
+
+WORKDIR /app
+COPY . /app/
+RUN uv sync
+
+EXPOSE 8765
+ENTRYPOINT []
+CMD ["uv", "run", "hud", "serve", "env:env", "--host", "0.0.0.0", "--port", "8765"]

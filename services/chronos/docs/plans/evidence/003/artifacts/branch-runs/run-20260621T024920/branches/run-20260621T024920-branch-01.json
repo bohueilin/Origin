@@ -1,0 +1,64 @@
+{
+  "action_record_digest": "0e06de57b4ec85a277260e0602f968667638af37bf2715bf2cd10efb046caa4a",
+  "action_record_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T024920/actions/run-20260621T024920-branch-01.json",
+  "branch_id": "run-20260621T024920-branch-01",
+  "cleanup_result": "runtime-owned-cleanup",
+  "completed_at": "2026-06-21T02:49:52Z",
+  "environment_image_digest": "forkpoint-image-sha256:dc11b737edf6fe985d7698754a6e218fb39bc383f2bc5edbd3f3a7a51ff295d6",
+  "environment_version": "mongodb_sales_aggregation_engine_v1",
+  "execution_boundary_crossed": true,
+  "file_diff_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T024920/file-diffs/run-20260621T024920-branch-01.json",
+  "gateway_request_ids": [
+    "hud-job:92dd7d89076542b8b2f24e962102ab83"
+  ],
+  "grader_digest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+  "grader_digest_source": "docs/plans/repo-map/STATUS.json:live_trace.grader_digest_sha256",
+  "history_hash": "431934b50d29acd8fe19e0c8b053bd099b6651524b957301814bf1744151b762",
+  "hud_trace_id": "f55de711f6d64afa8c6416f8d95406c9",
+  "lineage": {
+    "branch_index": 1,
+    "fork_point_id": "fp-826ba545cf30870e67d42ddb",
+    "snapshot_id": "im-01KVKYBWZYVZSD79CX5P9SNPXR"
+  },
+  "model": "claude-haiku-4-5",
+  "model_response_refs": [
+    "hud-trace:f55de711f6d64afa8c6416f8d95406c9"
+  ],
+  "parent_fork_point_id": "fp-826ba545cf30870e67d42ddb",
+  "parent_node_id": "completed-action:accepted-trace-rerun-before-scenario-evaluate",
+  "promotion_signal_status": "rewarded-non-hack",
+  "qa_result_ref": "qa-696a5f07e9a342ff",
+  "reward": 1,
+  "run_id": "run-20260621T024920",
+  "sampling_config": {
+    "max_steps": 8,
+    "max_tokens": 4096,
+    "parallelism": "12-concurrent-branches",
+    "provider_seed_support": "not-supported-by-ClaudeConfig",
+    "requested_seed": 7301
+  },
+  "schema_version": 1,
+  "seed": 7301,
+  "snapshot_id": "im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "snapshot_mode": "filesystem",
+  "snapshot_restore_ref": "modal-image://im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "started_at": "2026-06-21T02:49:20Z",
+  "status": "success",
+  "snapshot_digest": "79fb6181adb209684af059999f7d886701338955048523632d10b10acd304156",
+  "history_prefix_ref": "inline-sha256:431934b50d29acd8fe19e0c8b053bd099b6651524b957301814bf1744151b762",
+  "boundary_token": "29d614c21ab3c0754c4b815ad00bfec4f4088a6b9b4b6a22e7f524071bc0599b",
+  "network_policy": "block_network=True",
+  "secret_policy": "secrets=[]",
+  "resource_policy": "cpu=0.5,memory=1024,timeout=900",
+  "snapshot_retention": "modal-default-ttl",
+  "source_evidence_refs": [
+    "docs/plans/repo-map/STATUS.json:live_trace.grader_digest_sha256",
+    "unavailable-plan-003-owned",
+    "unavailable-plan-003-owned"
+  ],
+  "provenance_status": "incomplete",
+  "provenance_blockers": [
+    "filesystem diff capture remains a promotion gate",
+    "same-runtime branch security negative probes are not captured"
+  ]
+}

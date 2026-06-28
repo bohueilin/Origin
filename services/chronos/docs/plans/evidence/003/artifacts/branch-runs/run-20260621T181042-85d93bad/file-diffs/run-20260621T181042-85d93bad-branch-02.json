@@ -1,0 +1,29 @@
+{
+  "added_paths": [
+    "/app/.grade.log",
+    "/app/extreme_points.txt",
+    "/app/task_assets/test_outputs_backup.py"
+  ],
+  "added_text": {
+    "/app/extreme_points.txt": "10\n5\n",
+    "/app/task_assets/test_outputs_backup.py": ""
+  },
+  "branch_id": "run-20260621T181042-85d93bad-branch-02",
+  "file_count_after": 21,
+  "file_count_before": 18,
+  "modified_paths": [],
+  "modified_text": {},
+  "observed_behavior": "same-runtime before/after filesystem snapshots captured and compared",
+  "removed_paths": [],
+  "removed_text": {},
+  "roots": {
+    "/app": {
+      "exists": true,
+      "is_dir": true,
+      "is_file": false
+    }
+  },
+  "schema_version": 1,
+  "status": "pass",
+  "text_patches": {}
+}

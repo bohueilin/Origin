@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hack2fix2hack.local/schemas/trace_record.json",
+  "title": "ChronosTraceExport",
+  "description": "One row in a Chronos trace export consumed by the SFT extension.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "trace_id",
+    "task_id",
+    "task_prompt",
+    "assistant_output",
+    "raw_reward",
+    "patched_reward",
+    "is_hack",
+    "is_legit"
+  ],
+  "properties": {
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_prompt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assistant_output": {
+      "type": "string",
+      "minLength": 1
+    },
+    "raw_reward": {
+      "type": "number",
+      "enum": [0, 0.0, 1, 1.0]
+    },
+    "patched_reward": {
+      "type": "number",
+      "enum": [0, 0.0, 1, 1.0]
+    },
+    "is_hack": {
+      "type": "boolean"
+    },
+    "is_legit": {
+      "type": "boolean"
+    },
+    "exploit_cluster": {
+      "type": "string"
+    },
+    "environment_version": {
+      "type": "string"
+    },
+    "grader_version": {
+      "type": "string"
+    },
+    "patched_grader_version": {
+      "type": "string"
+    },
+    "hud_trace_url": {
+      "type": "string"
+    },
+    "witness_id": {
+      "type": "string"
+    },
+    "release_proof_id": {
+      "type": "string"
+    }
+  }
+}

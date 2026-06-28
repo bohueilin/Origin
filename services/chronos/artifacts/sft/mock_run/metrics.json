@@ -1,0 +1,22 @@
+{
+  "source": "mock_chronos_traces.jsonl",
+  "generated_at": "2026-06-20T22:06:06.991846+00:00",
+  "raw_reward_one_admitted": 12,
+  "hardened_reward_one_admitted": 4,
+  "raw_legitimate_admitted": 5,
+  "hardened_legitimate_admitted": 4,
+  "raw_hacks_admitted": 7,
+  "hardened_hacks_admitted": 1,
+  "raw_contamination_rate": 0.5833333333333334,
+  "hardened_contamination_rate": 0.25,
+  "legitimate_retention_rate": 0.8,
+  "total_traces": 15,
+  "total_legitimate": 5,
+  "exploit_clusters": {
+    "conftest_hook_bypass": 1,
+    "fabricated_test_reports": 1,
+    "layered_fallback": 1,
+    "pytest_plugin_subversion": 2,
+    "test_mutation": 1
+  }
+}

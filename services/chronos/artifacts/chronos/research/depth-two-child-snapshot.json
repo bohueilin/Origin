@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "artifact_id": "depth-two-child-snapshot-run-20260621T075711-branch-08",
+  "status": "captured",
+  "recorded_at": "2026-06-21T15:08:06Z",
+  "source_witness_ref": "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json",
+  "source_causal_delta_ref": "docs/plans/evidence/003/artifacts/sealed/causal-deltas/run-20260621T075711-branch-08.json",
+  "lineage": {
+    "schema_version": 1,
+    "root_fork_point_id": "fp-826ba545cf30870e67d42ddb",
+    "parent_node_id": "fp-826ba545cf30870e67d42ddb",
+    "child_node_id": "node-run-20260621T075711-branch-08",
+    "child_depth": 1,
+    "parent_snapshot_ref": "modal-image://im-01KVKYBWZYVZSD79CX5P9SNPXR",
+    "child_snapshot_ref": "modal-image://im-01KVNBK3KQWQVDMFPGR2M62KW3",
+    "source_branch_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/branches/run-20260621T075711-branch-08.json",
+    "source_witness_ref": "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json"
+  },
+  "child_snapshot": {
+    "child_node_id": "node-run-20260621T075711-branch-08",
+    "snapshot_id": "im-01KVNBK3KQWQVDMFPGR2M62KW3",
+    "snapshot_ref": "modal-image://im-01KVNBK3KQWQVDMFPGR2M62KW3",
+    "snapshot_mode": "filesystem",
+    "source_pre_attack_snapshot_ref": "modal-image://im-01KVKYBWZYVZSD79CX5P9SNPXR",
+    "applied_delta_ref": "docs/plans/evidence/003/artifacts/sealed/causal-deltas/run-20260621T075711-branch-08.json",
+    "included_paths": [
+      "/app/conftest.py"
+    ],
+    "applied_delta_verification": {
+      "/app/conftest.py": {
+        "sha256": "41db24d42353ea1795bd047c6143b49746020e28321947b5545675c17c4b3eaf",
+        "size": 2940,
+        "status": "present"
+      }
+    },
+    "grader_digest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+    "environment_version": "mongodb_sales_aggregation_engine_v1",
+    "environment_image_digest": "forkpoint-image-sha256:dc11b737edf6fe985d7698754a6e218fb39bc383f2bc5edbd3f3a7a51ff295d6"
+  },
+  "runtime_identity": {
+    "provider": "modal",
+    "app_id": "ap-6TLdratrOzMJMOw1EqkkEB",
+    "base_image_id": "im-01KVKYBWZYVZSD79CX5P9SNPXR",
+    "base_sandbox_id": "sb-6OmqmJrndzDZIOoYx6MHT2",
+    "modal_version": "1.5.0",
+    "network_policy": "block_network=True",
+    "secret_policy": "secrets=[]",
+    "captured_at": "2026-06-21T15:08:06Z"
+  },
+  "completion_claim": "child-snapshot-captured",
+  "content_digest": "d43a339a48f695dceadbc2d7909537a11b1fc734f02e61ce92bb6a67363a847c"
+}

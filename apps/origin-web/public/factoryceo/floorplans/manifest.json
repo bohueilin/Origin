@@ -1,0 +1,185 @@
+{
+  "note": "Floor-plan backdrops include local CAD plans and authenticated Staer warehouse scene thumbnails fetched from the gated Hugging Face dataset.",
+  "source": "https://huggingface.co/datasets/Voxel51/FloorPlanCAD",
+  "license": "CC BY-SA 4.0",
+  "staer_source": "https://huggingface.co/datasets/staerrobotics/warehouses",
+  "attribution": "FloorPlanCAD (Voxel51) \u2014 CC BY-SA 4.0 \u00b7 Staer Warehouses",
+  "plans": [
+    {
+      "id": "plan-1",
+      "title": "CAD plan 1 \u00b7 cross-dock / bulk reserve",
+      "file": "/factoryceo/floorplans/floorplan-1.png",
+      "kind": "floorplancad"
+    },
+    {
+      "id": "plan-2",
+      "title": "CAD plan 2 \u00b7 pick-pack / outbound wave",
+      "file": "/factoryceo/floorplans/floorplan-2.png",
+      "kind": "floorplancad"
+    },
+    {
+      "id": "plan-3",
+      "title": "CAD plan 3 \u00b7 cold-chain / quarantine",
+      "file": "/factoryceo/floorplans/floorplan-3.png",
+      "kind": "floorplancad"
+    },
+    {
+      "id": "plan-0",
+      "title": "CAD plan 0 \u00b7 returns / kitting cells",
+      "file": "/factoryceo/floorplans/floorplan-0.png",
+      "kind": "floorplancad"
+    },
+    {
+      "id": "staer-scene01",
+      "title": "Staer scene01 \u00b7 box / crate / pallet",
+      "file": "/factoryceo/floorplans/staer-scene01.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene01/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene02",
+      "title": "Staer scene02 \u00b7 box / crate / pallet",
+      "file": "/factoryceo/floorplans/staer-scene02.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene02/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene03",
+      "title": "Staer scene03 \u00b7 rack / box / pallet",
+      "file": "/factoryceo/floorplans/staer-scene03.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene03/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene04",
+      "title": "Staer scene04 \u00b7 box / rack / crate",
+      "file": "/factoryceo/floorplans/staer-scene04.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene04/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene05",
+      "title": "Staer scene05 \u00b7 box / rack / crate",
+      "file": "/factoryceo/floorplans/staer-scene05.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene05/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene06",
+      "title": "Staer scene06 \u00b7 box / lights / rack",
+      "file": "/factoryceo/floorplans/staer-scene06.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene06/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene07",
+      "title": "Staer scene07 \u00b7 box / crate / pallet",
+      "file": "/factoryceo/floorplans/staer-scene07.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene07/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene08",
+      "title": "Staer scene08 \u00b7 box / crate / pallet",
+      "file": "/factoryceo/floorplans/staer-scene08.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene08/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene09",
+      "title": "Staer scene09 \u00b7 drum / jerrican / railing",
+      "file": "/factoryceo/floorplans/staer-scene09.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene09/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene10",
+      "title": "Staer scene10 \u00b7 conveyor / belt item / box",
+      "file": "/factoryceo/floorplans/staer-scene10.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene10/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene11",
+      "title": "Staer scene11 \u00b7 box / pallet / crate",
+      "file": "/factoryceo/floorplans/staer-scene11.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene11/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene12",
+      "title": "Staer scene12 \u00b7 box / belt item / tote",
+      "file": "/factoryceo/floorplans/staer-scene12.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene12/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene13",
+      "title": "Staer scene13 \u00b7 box / shelving / bin",
+      "file": "/factoryceo/floorplans/staer-scene13.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene13/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene14",
+      "title": "Staer scene14 \u00b7 box / pallet / bin",
+      "file": "/factoryceo/floorplans/staer-scene14.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene14/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "staer-scene15",
+      "title": "Staer scene15 \u00b7 box / tote / drum",
+      "file": "/factoryceo/floorplans/staer-scene15.jpg",
+      "remote_file": "https://huggingface.co/datasets/staerrobotics/warehouses/resolve/main/scene15/thumbnail.jpg",
+      "kind": "staer",
+      "fallback": false
+    },
+    {
+      "id": "mapf-warehouse-10-20-10-2-1",
+      "title": "MAPF warehouse 10-20-10-2-1 \u00b7 compact pick grid",
+      "file": "/factoryceo/floorplans/mapf-warehouse-10-20-10-2-1.png",
+      "kind": "mapf",
+      "source": "https://movingai.com/benchmarks/mapf/index.html",
+      "plan_binding": "plan-0"
+    },
+    {
+      "id": "mapf-warehouse-10-20-10-2-2",
+      "title": "MAPF warehouse 10-20-10-2-2 \u00b7 wide aisle grid",
+      "file": "/factoryceo/floorplans/mapf-warehouse-10-20-10-2-2.png",
+      "kind": "mapf",
+      "source": "https://movingai.com/benchmarks/mapf/index.html",
+      "plan_binding": "plan-1"
+    },
+    {
+      "id": "mapf-warehouse-20-40-10-2-1",
+      "title": "MAPF warehouse 20-40-10-2-1 \u00b7 large fulfillment grid",
+      "file": "/factoryceo/floorplans/mapf-warehouse-20-40-10-2-1.png",
+      "kind": "mapf",
+      "source": "https://movingai.com/benchmarks/mapf/index.html",
+      "plan_binding": "plan-2"
+    },
+    {
+      "id": "mapf-warehouse-20-40-10-2-2",
+      "title": "MAPF warehouse 20-40-10-2-2 \u00b7 XL reserve grid",
+      "file": "/factoryceo/floorplans/mapf-warehouse-20-40-10-2-2.png",
+      "kind": "mapf",
+      "source": "https://movingai.com/benchmarks/mapf/index.html",
+      "plan_binding": "plan-3"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-20T17:38:25.485339+00:00",
+  "status": "pass",
+  "results": [
+    {
+      "validator": "validate_graph.py",
+      "argv": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/hack2fix2hack-plan-bundle/docs/plans/scripts/validate_graph.py"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: 7 plans, 7 dependencies, waves [1, 2, 3, 4, 5], acyclic",
+      "stderr": ""
+    },
+    {
+      "validator": "validate_sections.py",
+      "argv": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/hack2fix2hack-plan-bundle/docs/plans/scripts/validate_sections.py"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: 7 plans have valid frontmatter, sections, packets, and goal blocks",
+      "stderr": ""
+    },
+    {
+      "validator": "validate_ownership.py",
+      "argv": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/hack2fix2hack-plan-bundle/docs/plans/scripts/validate_ownership.py"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: proposed ownership is collision-free for 7 plans",
+      "stderr": ""
+    },
+    {
+      "validator": "validate_traceability.py",
+      "argv": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/hack2fix2hack-plan-bundle/docs/plans/scripts/validate_traceability.py"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: 45 requirements map to all 7 plans",
+      "stderr": ""
+    },
+    {
+      "validator": "validate_evidence.py",
+      "argv": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/hack2fix2hack-plan-bundle/docs/plans/scripts/validate_evidence.py"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: 7 evidence manifest(s) are present/structured",
+      "stderr": ""
+    },
+    {
+      "validator": "validate_file_sizes.py",
+      "argv": [
+        "/opt/pyvenv/bin/python",
+        "/mnt/data/hack2fix2hack-plan-bundle/docs/plans/scripts/validate_file_sizes.py"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: 51 text file(s) are at most 500 lines",
+      "stderr": ""
+    }
+  ]
+}

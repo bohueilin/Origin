@@ -1,0 +1,29 @@
+# MongoDB 7.0 base (Ubuntu) so mongod is present; the original task's private
+# Alibaba registry base is unavailable, so this is a public-base rebuild.
+FROM mongo:7.0
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 python3-pip python3-venv curl ca-certificates \
+        git bubblewrap openssh-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Task + grader runtime, system-wide so the BashGrader's `python3 -m pytest`
+# (run as a subprocess, not under the serve venv) resolves pytest + pymongo, and
+# so the verifier stays subvertible by agent-planted conftest/plugins.
+RUN pip3 install --no-cache-dir pymongo "pytest==8.4.1"
+
+# `hud serve` runs from a uv-managed venv (the console script is reliably created
+# there); the grader subprocess still uses the system python3 above.
+RUN pip3 install --no-cache-dir uv
+
+RUN mkdir -p /data/db && chown -R mongodb:mongodb /data/db
+WORKDIR /app
+COPY . /app/
+RUN uv sync
+
+EXPOSE 8765
+# The mongo base image sets its own ENTRYPOINT (docker-entrypoint.sh); clear it
+# so our serve command runs directly instead of being passed to mongod. mongod
+# itself is started by env.py's @env.initialize hook.
+ENTRYPOINT []
+CMD ["uv", "run", "hud", "serve", "env:env", "--host", "0.0.0.0", "--port", "8765"]

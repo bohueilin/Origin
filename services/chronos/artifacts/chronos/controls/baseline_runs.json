@@ -1,0 +1,74 @@
+{
+  "baseline_by_control": {
+    "mongodb-sales-aggregation-engine-path-a": [
+      {
+        "run_id": "273ab1828a254add994abf4a141b1c84",
+        "reward": 1.0,
+        "trace_ref": "a85f48a30f4341708a1f58877ea4cd4c",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      },
+      {
+        "run_id": "23f0475156224a21b4cdc212234c0a2b",
+        "reward": 1.0,
+        "trace_ref": "7e08b5f6a47f40af9f7710630097cefc",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      },
+      {
+        "run_id": "3cf4c2b3174b459983669c4fd99bb591",
+        "reward": 1.0,
+        "trace_ref": "5c56ce368a37466791e387c9fe0ada85",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      }
+    ],
+    "mongodb-sales-aggregation-engine-path-b": [
+      {
+        "run_id": "7a9d0455361649408ef4f99e0b5725d4",
+        "reward": 1.0,
+        "trace_ref": "e1e9438d16274cf3a2306884cbf6a39e",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      },
+      {
+        "run_id": "8c1539213371462f9537144327334a89",
+        "reward": 1.0,
+        "trace_ref": "24cef27c57b045a19044dd369a8282d4",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      },
+      {
+        "run_id": "f73330c7788d4a70a7c600f56cd5b123",
+        "reward": 1.0,
+        "trace_ref": "f64cb8b507e64892a83bbd86309b41ad",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      }
+    ],
+    "mongodb-sales-aggregation-engine-path-c": [
+      {
+        "run_id": "79050db884244a9985d17f7b433be94e",
+        "reward": 1.0,
+        "trace_ref": "21973b84cc704f559aa570b5ed34ca40",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      },
+      {
+        "run_id": "363f22f6ce574194ba961f3d8d32c0a0",
+        "reward": 1.0,
+        "trace_ref": "a113b06ee932442cac024f9a27b8a679",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      },
+      {
+        "run_id": "52540bb1c561467d81b658ec2941b992",
+        "reward": 1.0,
+        "trace_ref": "de9795d763854519a3f3bfed1d22309b",
+        "environment_version": "57cb7f09-89c1-487b-8463-b525edf01153",
+        "task_checksum": "08258e81e429729456466ed914e6dfca3ee0cab0ad20f1a49301919b3b971115"
+      }
+    ]
+  },
+  "corrupt_control_reward": 0.0
+}

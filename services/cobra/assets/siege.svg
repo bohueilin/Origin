@@ -1,0 +1,65 @@
+<svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="sarrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#ff6b6b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="560" rx="18" fill="#0d1117"/>
+  <text x="36" y="46" fill="#e6edf3" font-size="23" font-weight="700">The siege — every loop element maps to one thing on screen</text>
+
+  <!-- robustness gauge -->
+  <text x="36" y="84" fill="#f0b429" font-size="13" font-weight="700">robustness — cheats blocked (held-out)</text>
+  <rect x="36" y="94" width="928" height="22" rx="11" fill="#161b22" stroke="#30363d"/>
+  <rect x="36" y="94" width="835" height="22" rx="11" fill="#f0b429" opacity="0.85"/>
+  <text x="884" y="110" fill="#0d1117" font-size="12" font-weight="700" text-anchor="end">~100%  ·  honest-pass 100%</text>
+
+  <!-- conductor tent -->
+  <path d="M70 470 L120 420 L170 470 Z" fill="#1c2230" stroke="#a371f7" stroke-width="1.5"/>
+  <line x1="120" y1="420" x2="120" y2="470" stroke="#a371f7" stroke-width="1"/>
+  <text x="120" y="492" fill="#a371f7" font-size="12" text-anchor="middle">conductor</text>
+  <text x="120" y="508" fill="#8b949e" font-size="10.5" text-anchor="middle">(off the wall)</text>
+
+  <!-- red swarm -->
+  <text x="250" y="170" fill="#ff6b6b" font-size="13" font-weight="700" text-anchor="middle">red swarm</text>
+  <g fill="#ff6b6b">
+    <circle cx="210" cy="220" r="9"/><circle cx="250" cy="250" r="9"/><circle cx="225" cy="300" r="9"/>
+    <circle cx="265" cy="350" r="9"/><circle cx="215" cy="390" r="9"/>
+  </g>
+
+  <!-- castle wall -->
+  <rect x="600" y="150" width="70" height="320" fill="#1a2029" stroke="#30363d" stroke-width="1.5"/>
+  <g fill="#1a2029" stroke="#30363d" stroke-width="1.5">
+    <rect x="600" y="138" width="16" height="14"/><rect x="627" y="138" width="16" height="14"/><rect x="654" y="138" width="16" height="14"/>
+  </g>
+  <text x="730" y="300" fill="#56d4dd" font-size="13" font-weight="700" transform="rotate(90 730 300)" text-anchor="middle">grader = castle</text>
+
+  <!-- gate 1: turreted (sealed) -->
+  <rect x="585" y="175" width="30" height="40" rx="4" fill="#10261a" stroke="#3fb950" stroke-width="2"/>
+  <path d="M585 175 L600 160 L615 175 Z" fill="#3fb950"/>
+  <text x="500" y="190" fill="#3fb950" font-size="11.5" text-anchor="middle">gate sealed → turret</text>
+  <text x="500" y="206" fill="#8b949e" font-size="10.5" text-anchor="middle">patch_applied</text>
+
+  <!-- gate 2: breached (open) -->
+  <rect x="585" y="245" width="30" height="40" rx="4" fill="#2a2410" stroke="#d29922" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="500" y="260" fill="#d29922" font-size="11.5" text-anchor="middle">undefended gate found</text>
+  <text x="500" y="276" fill="#8b949e" font-size="10.5" text-anchor="middle">breach_found · R=1,T=0</text>
+  <line x1="280" y1="262" x2="582" y2="262" stroke="#ff6b6b" stroke-width="1.6" marker-end="url(#sarrow)"/>
+
+  <!-- gate 3: sealed, agent killed -->
+  <rect x="585" y="315" width="30" height="40" rx="4" fill="#10261a" stroke="#3fb950" stroke-width="2"/>
+  <path d="M585 315 L600 300 L615 315 Z" fill="#3fb950"/>
+  <g stroke="#ff6b6b" stroke-width="2.5"><line x1="540" y1="326" x2="556" y2="342"/><line x1="556" y1="326" x2="540" y2="342"/></g>
+  <text x="470" y="330" fill="#ff6b6b" font-size="11.5" text-anchor="middle">exploit sealed → agent dies</text>
+  <text x="470" y="346" fill="#8b949e" font-size="10.5" text-anchor="middle">agent_killed</text>
+
+  <!-- gate 4: friendly fire -->
+  <rect x="585" y="385" width="30" height="40" rx="4" fill="#2a1414" stroke="#ff6b6b" stroke-width="2"/>
+  <path d="M585 385 L600 370 L615 385 Z" fill="#ff6b6b" opacity="0.55"/>
+  <text x="495" y="400" fill="#ff6b6b" font-size="11.5" text-anchor="middle">over-tightened → torn down</text>
+  <text x="495" y="416" fill="#8b949e" font-size="10.5" text-anchor="middle">patch_rejected (hit a gold soln)</text>
+
+  <!-- legend strip -->
+  <line x1="36" y1="450" x2="964" y2="450" stroke="#21262d" stroke-width="1"/>
+  <text x="36" y="492" fill="#8b949e" font-size="12">each wall section = one check in the reward · red pins = breaches · green pins = sealed · all gates turreted = siege over</text>
+  <text x="36" y="514" fill="#8b949e" font-size="12">the dashboard animates purely off a 7-event stream → the engine can be tested by replaying a recorded golden run</text>
+</svg>

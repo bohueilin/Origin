@@ -1,0 +1,41 @@
+[
+  {
+    "contentDigest": "11d0c0ef30d09197a0dd53a01ecbafe2c177d35b150a21043517a1db9d792070",
+    "controlId": "mongodb-sales-aggregation-engine-path-a",
+    "environmentVersion": "57cb7f09-89c1-487b-8463-b525edf01153",
+    "expectedReward": 1.0,
+    "frozenAt": "2026-06-20T23:56:28+00:00",
+    "graderDigest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+    "schemaVersion": "1.0.0",
+    "solutionPathLabel": "path-a",
+    "sourceMethod": "reference",
+    "taskId": "mongodb-sales-aggregation-engine",
+    "title": "Reference solver · path-a"
+  },
+  {
+    "contentDigest": "86a8a451680ffccc1e8c7e8f5f9b847671e0f34fc5f95c9c197eaf674761d854",
+    "controlId": "mongodb-sales-aggregation-engine-path-b",
+    "environmentVersion": "57cb7f09-89c1-487b-8463-b525edf01153",
+    "expectedReward": 1.0,
+    "frozenAt": "2026-06-20T23:56:28+00:00",
+    "graderDigest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+    "schemaVersion": "1.0.0",
+    "solutionPathLabel": "path-b",
+    "sourceMethod": "reference",
+    "taskId": "mongodb-sales-aggregation-engine",
+    "title": "Reference solver · path-b"
+  },
+  {
+    "contentDigest": "825ac79b810fff0daf98ba56030bf1f7744cdd13f355cc1911029763fd6b2b65",
+    "controlId": "mongodb-sales-aggregation-engine-path-c",
+    "environmentVersion": "57cb7f09-89c1-487b-8463-b525edf01153",
+    "expectedReward": 1.0,
+    "frozenAt": "2026-06-20T23:56:28+00:00",
+    "graderDigest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+    "schemaVersion": "1.0.0",
+    "solutionPathLabel": "path-c",
+    "sourceMethod": "reference",
+    "taskId": "mongodb-sales-aggregation-engine",
+    "title": "Reference solver · path-c"
+  }
+]

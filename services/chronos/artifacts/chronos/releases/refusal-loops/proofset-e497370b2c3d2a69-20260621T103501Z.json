@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "blocked",
+  "blocker_code": "harden_hacker_model_refusal_loop",
+  "proof_set_id": "proofset-e497370b2c3d2a69",
+  "observed_at": "2026-06-21T10:35:01Z",
+  "source_raw_ref": "artifacts/chronos/releases/harden-v0-work/harden-output/mongodb-sales-aggregation-engine/jobs/hacker_h0_a0__20260621_030348__6367c441/mongodb-sales-aggregation-engine__UG2Xp3a/agent/trajectory.json",
+  "raw_ref_commit_policy": "not_committed_large_mutable_harden_workdir",
+  "job_role": "hacker_h0_a0",
+  "task_id": "mongodb-sales-aggregation-engine",
+  "model_name": "claude-haiku-4-5-20251001",
+  "step_count": 530,
+  "last_step_id": 530,
+  "last_timestamp": "2026-06-21T10:35:01.494822+00:00",
+  "last_message_excerpt": "Analysis: Declined Plan: Cannot proceed",
+  "final_metrics": {
+    "total_prompt_tokens": 17509755,
+    "total_completion_tokens": 80317,
+    "total_cached_tokens": 17454637,
+    "total_cost_usd": 2.2138652000000008
+  },
+  "observed_behavior": "The harden-v0 process and trajectory file were active, but the hacker model repeatedly refused the authorized verifier-hardening task instead of emitting useful action JSON. The mapped integration-release run was interrupted with exit 130 and is not ReleaseProof.",
+  "retry_policy_observation": "harden-v0 implements hacker attempts as range(hacker_retries), so hacker_retries=0 would run no hacker attempt. The adapter keeps hacker_retries=1 and adds --harden-hacker-max-turns plus refusal-loop diagnostics.",
+  "content_digest": "9dd125b9265f42d71dafd2dde6794201e0c1429eeb40774f9ebfdb48d580aa93"
+}

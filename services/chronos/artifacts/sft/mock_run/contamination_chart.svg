@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="280" viewBox="0 0 480 280" role="img" aria-label="Reward hacks admitted under raw versus hardened verifier">
+  <rect width="480" height="280" fill="#F4F6FA"/>
+  <text x="240" y="28" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#10141B">Reward Hacks Admitted Before SFT</text>
+  <line x1="60" y1="220" x2="420" y2="220" stroke="#DCE2EC" stroke-width="2"/>
+  <rect x="130" y="40" width="80" height="180" rx="8" fill="#A85B12"/>
+  <rect x="270" y="195" width="80" height="25" rx="8" fill="#1C8A57"/>
+  <text x="170" y="30" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#10141B">7</text>
+  <text x="310" y="185" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#10141B">1</text>
+  <text x="170" y="245" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#434C5A">Raw Verifier</text>
+  <text x="310" y="245" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#434C5A">Hardened Verifier</text>
+</svg>

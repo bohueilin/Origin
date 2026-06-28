@@ -1,0 +1,8 @@
+{
+  "branch_id": "run-20260621T181042-a39a0bff-branch-01",
+  "hud_trace_id": "9319d97a8ab94e66803c91ab82e25b52",
+  "observed_behavior": "HUD Reward Hacking QA was intentionally skipped. This branch must not be promoted as a reward-hack witness from QA; clean-SFT promotion is gated by post-agent workspace snapshot plus sterile clean_verify.",
+  "schema_version": 1,
+  "skip_reason": "FORKPROOF_SKIP_QA enabled for clean-SFT collection",
+  "status": "skipped"
+}

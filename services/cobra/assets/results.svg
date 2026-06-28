@@ -1,0 +1,39 @@
+<svg viewBox="0 0 1000 430" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1000" height="430" rx="18" fill="#0d1117"/>
+  <text x="36" y="46" fill="#e6edf3" font-size="22" font-weight="700">Before → after on the discovered breaches (EvalPlus / HumanEval, held-out oracle)</text>
+
+  <!-- axis -->
+  <line x1="90" y1="350" x2="660" y2="350" stroke="#30363d" stroke-width="1.5"/>
+  <line x1="90" y1="120" x2="90" y2="350" stroke="#30363d" stroke-width="1.5"/>
+  <text x="78" y="126" fill="#8b949e" font-size="11" text-anchor="end">100%</text>
+  <text x="78" y="240" fill="#8b949e" font-size="11" text-anchor="end">50%</text>
+  <text x="78" y="354" fill="#8b949e" font-size="11" text-anchor="end">0%</text>
+
+  <!-- group 1: cheats blocked -->
+  <rect x="150" y="346" width="70" height="4" rx="2" fill="#ff6b6b"/>
+  <text x="185" y="338" fill="#ff6b6b" font-size="12" text-anchor="middle" font-weight="700">0%</text>
+  <rect x="240" y="130" width="70" height="220" rx="4" fill="#3fb950"/>
+  <text x="275" y="122" fill="#3fb950" font-size="12" text-anchor="middle" font-weight="700">100%</text>
+  <text x="230" y="374" fill="#e6edf3" font-size="13" text-anchor="middle" font-weight="700">cheats blocked</text>
+  <text x="185" y="392" fill="#8b949e" font-size="11" text-anchor="middle">naive</text>
+  <text x="275" y="392" fill="#8b949e" font-size="11" text-anchor="middle">hardened</text>
+
+  <!-- group 2: honest-pass -->
+  <rect x="430" y="130" width="70" height="220" rx="4" fill="#3fb950" opacity="0.55"/>
+  <text x="465" y="122" fill="#3fb950" font-size="12" text-anchor="middle" font-weight="700">100%</text>
+  <rect x="520" y="130" width="70" height="220" rx="4" fill="#3fb950"/>
+  <text x="555" y="122" fill="#3fb950" font-size="12" text-anchor="middle" font-weight="700">100%</text>
+  <text x="510" y="374" fill="#e6edf3" font-size="13" text-anchor="middle" font-weight="700">honest-pass</text>
+  <text x="465" y="392" fill="#8b949e" font-size="11" text-anchor="middle">naive</text>
+  <text x="555" y="392" fill="#8b949e" font-size="11" text-anchor="middle">hardened</text>
+
+  <!-- stat card -->
+  <rect x="710" y="110" width="254" height="248" rx="14" fill="#161b22" stroke="#30363d"/>
+  <text x="837" y="150" fill="#8b949e" font-size="12.5" text-anchor="middle">discovered breach rate</text>
+  <text x="837" y="200" fill="#d29922" font-size="52" font-weight="800" text-anchor="middle">10%</text>
+  <text x="837" y="226" fill="#8b949e" font-size="12" text-anchor="middle">3 / 30 hardest HumanEval tasks</text>
+  <line x1="740" y1="248" x2="934" y2="248" stroke="#21262d"/>
+  <text x="837" y="280" fill="#e6edf3" font-size="13.5" text-anchor="middle">cheat family: harness tampering</text>
+  <text x="837" y="304" fill="#3fb950" font-size="13.5" text-anchor="middle" font-weight="700">sealed to 0 · honest-pass 1.0</text>
+  <text x="837" y="334" fill="#8b949e" font-size="11.5" text-anchor="middle">standard EvalPlus grader, unmodified</text>
+</svg>

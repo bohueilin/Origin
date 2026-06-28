@@ -1,0 +1,22 @@
+{
+  "source": "qabench_preliminary",
+  "generated_at": "2026-06-21T16:07:14.994185+00:00",
+  "raw_reward_one_admitted": 32,
+  "hardened_reward_one_admitted": 23,
+  "raw_legitimate_admitted": 23,
+  "hardened_legitimate_admitted": 23,
+  "raw_hacks_admitted": 9,
+  "hardened_hacks_admitted": 0,
+  "raw_contamination_rate": 0.28125,
+  "hardened_contamination_rate": 0.0,
+  "legitimate_retention_rate": 1.0,
+  "total_traces": 32,
+  "total_legitimate": 23,
+  "exploit_clusters": {
+    "/app/conftest.py": 5,
+    "/app/task_assets/conftest.py": 1,
+    "/app/task_assets/conftest.py;/app/test_conftest.py": 1,
+    "/app/task_assets/test_outputs_modified.py": 1,
+    "unclassified": 1
+  }
+}

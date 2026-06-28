@@ -1,0 +1,912 @@
+{
+  "horizon_days": 21,
+  "machines": [
+    {
+      "id": "M1",
+      "capabilities": [
+        "mold"
+      ],
+      "uptime": 0.95,
+      "maintenance": [
+        {
+          "start": 240,
+          "end": 246
+        }
+      ]
+    },
+    {
+      "id": "M2",
+      "capabilities": [
+        "mold",
+        "deburr"
+      ],
+      "uptime": 0.9,
+      "maintenance": []
+    },
+    {
+      "id": "M3",
+      "capabilities": [
+        "cnc"
+      ],
+      "uptime": 0.92,
+      "maintenance": []
+    },
+    {
+      "id": "M4",
+      "capabilities": [
+        "cnc",
+        "deburr"
+      ],
+      "uptime": 0.88,
+      "maintenance": []
+    }
+  ],
+  "operators": [
+    {
+      "id": "O1",
+      "type": "human",
+      "skills": [
+        "mold",
+        "deburr"
+      ],
+      "availability": [
+        {
+          "start": 8,
+          "end": 18
+        },
+        {
+          "start": 32,
+          "end": 42
+        },
+        {
+          "start": 56,
+          "end": 66
+        },
+        {
+          "start": 80,
+          "end": 90
+        },
+        {
+          "start": 104,
+          "end": 114
+        },
+        {
+          "start": 128,
+          "end": 138
+        },
+        {
+          "start": 152,
+          "end": 162
+        },
+        {
+          "start": 176,
+          "end": 186
+        },
+        {
+          "start": 200,
+          "end": 210
+        },
+        {
+          "start": 224,
+          "end": 234
+        },
+        {
+          "start": 248,
+          "end": 258
+        },
+        {
+          "start": 272,
+          "end": 282
+        },
+        {
+          "start": 296,
+          "end": 306
+        },
+        {
+          "start": 320,
+          "end": 330
+        },
+        {
+          "start": 344,
+          "end": 354
+        },
+        {
+          "start": 368,
+          "end": 378
+        },
+        {
+          "start": 392,
+          "end": 402
+        },
+        {
+          "start": 416,
+          "end": 426
+        },
+        {
+          "start": 440,
+          "end": 450
+        },
+        {
+          "start": 464,
+          "end": 474
+        },
+        {
+          "start": 488,
+          "end": 498
+        }
+      ]
+    },
+    {
+      "id": "O2",
+      "type": "human",
+      "skills": [
+        "cnc",
+        "deburr"
+      ],
+      "availability": [
+        {
+          "start": 8,
+          "end": 18
+        },
+        {
+          "start": 32,
+          "end": 42
+        },
+        {
+          "start": 56,
+          "end": 66
+        },
+        {
+          "start": 80,
+          "end": 90
+        },
+        {
+          "start": 104,
+          "end": 114
+        },
+        {
+          "start": 152,
+          "end": 162
+        },
+        {
+          "start": 176,
+          "end": 186
+        },
+        {
+          "start": 200,
+          "end": 210
+        },
+        {
+          "start": 224,
+          "end": 234
+        },
+        {
+          "start": 248,
+          "end": 258
+        },
+        {
+          "start": 272,
+          "end": 282
+        },
+        {
+          "start": 296,
+          "end": 306
+        },
+        {
+          "start": 320,
+          "end": 330
+        },
+        {
+          "start": 344,
+          "end": 354
+        },
+        {
+          "start": 368,
+          "end": 378
+        },
+        {
+          "start": 392,
+          "end": 402
+        },
+        {
+          "start": 416,
+          "end": 426
+        },
+        {
+          "start": 440,
+          "end": 450
+        },
+        {
+          "start": 464,
+          "end": 474
+        },
+        {
+          "start": 488,
+          "end": 498
+        }
+      ]
+    },
+    {
+      "id": "O3",
+      "type": "human",
+      "skills": [
+        "mold",
+        "cnc"
+      ],
+      "availability": [
+        {
+          "start": 8,
+          "end": 18
+        },
+        {
+          "start": 32,
+          "end": 42
+        },
+        {
+          "start": 56,
+          "end": 66
+        },
+        {
+          "start": 80,
+          "end": 90
+        },
+        {
+          "start": 104,
+          "end": 114
+        },
+        {
+          "start": 128,
+          "end": 138
+        },
+        {
+          "start": 152,
+          "end": 162
+        },
+        {
+          "start": 176,
+          "end": 186
+        },
+        {
+          "start": 200,
+          "end": 210
+        },
+        {
+          "start": 224,
+          "end": 234
+        },
+        {
+          "start": 248,
+          "end": 258
+        },
+        {
+          "start": 272,
+          "end": 282
+        },
+        {
+          "start": 296,
+          "end": 306
+        },
+        {
+          "start": 320,
+          "end": 330
+        },
+        {
+          "start": 344,
+          "end": 354
+        },
+        {
+          "start": 368,
+          "end": 378
+        },
+        {
+          "start": 392,
+          "end": 402
+        },
+        {
+          "start": 416,
+          "end": 426
+        },
+        {
+          "start": 440,
+          "end": 450
+        },
+        {
+          "start": 464,
+          "end": 474
+        },
+        {
+          "start": 488,
+          "end": 498
+        }
+      ]
+    },
+    {
+      "id": "R1",
+      "type": "robot",
+      "skills": [
+        "mold",
+        "cnc",
+        "deburr"
+      ],
+      "availability": [
+        {
+          "start": 0,
+          "end": 504
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "ABS",
+      "inventory_kg": 220.0,
+      "lead_time_days": 2,
+      "unit_cost": 3.0
+    },
+    {
+      "name": "Nylon",
+      "inventory_kg": 80.0,
+      "lead_time_days": 3,
+      "unit_cost": 5.0
+    },
+    {
+      "name": "PP",
+      "inventory_kg": 40.0,
+      "lead_time_days": 1,
+      "unit_cost": 2.0
+    }
+  ],
+  "jobs": [
+    {
+      "id": "J100",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 2,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 6,
+          "predecessors": [
+            "op0"
+          ]
+        },
+        {
+          "id": "op2",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 5,
+          "predecessors": [
+            "op1"
+          ]
+        }
+      ],
+      "material": "PP",
+      "material_kg": 31.9,
+      "quantity": 2000,
+      "due_day": 17,
+      "priority": 1,
+      "revenue": 1287.2,
+      "customer": "Globex"
+    },
+    {
+      "id": "J101",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 2,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 2,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "Nylon",
+      "material_kg": 70.9,
+      "quantity": 3871,
+      "due_day": 3,
+      "priority": 3,
+      "revenue": 2365.9,
+      "customer": "Umbrella"
+    },
+    {
+      "id": "J102",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 2,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 4,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "PP",
+      "material_kg": 41.6,
+      "quantity": 2158,
+      "due_day": 5,
+      "priority": 2,
+      "revenue": 1817.5,
+      "customer": "Globex"
+    },
+    {
+      "id": "J103",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 2,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 3,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "Nylon",
+      "material_kg": 78.4,
+      "quantity": 2747,
+      "due_day": 4,
+      "priority": 1,
+      "revenue": 1792.0,
+      "customer": "Umbrella"
+    },
+    {
+      "id": "J104",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 2,
+          "predecessors": []
+        }
+      ],
+      "material": "PP",
+      "material_kg": 14.8,
+      "quantity": 1171,
+      "due_day": 9,
+      "priority": 1,
+      "revenue": 725.5,
+      "customer": "Umbrella"
+    },
+    {
+      "id": "J105",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 4,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 4,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "ABS",
+      "material_kg": 11.6,
+      "quantity": 956,
+      "due_day": 16,
+      "priority": 2,
+      "revenue": 570.1,
+      "customer": "Acme"
+    },
+    {
+      "id": "J106",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 4,
+          "predecessors": []
+        }
+      ],
+      "material": "Nylon",
+      "material_kg": 47.9,
+      "quantity": 1873,
+      "due_day": 13,
+      "priority": 1,
+      "revenue": 877.0,
+      "customer": "Acme"
+    },
+    {
+      "id": "J107",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 5,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 5,
+          "predecessors": [
+            "op0"
+          ]
+        },
+        {
+          "id": "op2",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 4,
+          "predecessors": [
+            "op1"
+          ]
+        }
+      ],
+      "material": "PP",
+      "material_kg": 75.9,
+      "quantity": 3838,
+      "due_day": 5,
+      "priority": 3,
+      "revenue": 3009.3,
+      "customer": "Acme"
+    },
+    {
+      "id": "J108",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 6,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 5,
+          "predecessors": [
+            "op0"
+          ]
+        },
+        {
+          "id": "op2",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 6,
+          "predecessors": [
+            "op1"
+          ]
+        }
+      ],
+      "material": "ABS",
+      "material_kg": 25.0,
+      "quantity": 2290,
+      "due_day": 13,
+      "priority": 1,
+      "revenue": 970.4,
+      "customer": "Initech"
+    },
+    {
+      "id": "J109",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 3,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 5,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "ABS",
+      "material_kg": 39.4,
+      "quantity": 3808,
+      "due_day": 7,
+      "priority": 1,
+      "revenue": 2965.5,
+      "customer": "Globex"
+    },
+    {
+      "id": "J110",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 3,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 5,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "ABS",
+      "material_kg": 21.1,
+      "quantity": 1400,
+      "due_day": 16,
+      "priority": 2,
+      "revenue": 750.8,
+      "customer": "Initech"
+    },
+    {
+      "id": "J111",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 4,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 3,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "Nylon",
+      "material_kg": 68.4,
+      "quantity": 3847,
+      "due_day": 18,
+      "priority": 2,
+      "revenue": 2116.6,
+      "customer": "Acme"
+    },
+    {
+      "id": "J112",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 4,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 2,
+          "predecessors": [
+            "op0"
+          ]
+        },
+        {
+          "id": "op2",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 2,
+          "predecessors": [
+            "op1"
+          ]
+        }
+      ],
+      "material": "PP",
+      "material_kg": 97.5,
+      "quantity": 4696,
+      "due_day": 18,
+      "priority": 3,
+      "revenue": 3363.0,
+      "customer": "Acme"
+    },
+    {
+      "id": "J113",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 6,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 5,
+          "predecessors": [
+            "op0"
+          ]
+        },
+        {
+          "id": "op2",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 5,
+          "predecessors": [
+            "op1"
+          ]
+        }
+      ],
+      "material": "Nylon",
+      "material_kg": 42.4,
+      "quantity": 3881,
+      "due_day": 3,
+      "priority": 3,
+      "revenue": 2668.8,
+      "customer": "Acme"
+    },
+    {
+      "id": "J114",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 4,
+          "predecessors": []
+        }
+      ],
+      "material": "ABS",
+      "material_kg": 56.6,
+      "quantity": 2796,
+      "due_day": 18,
+      "priority": 3,
+      "revenue": 1576.8,
+      "customer": "Acme"
+    },
+    {
+      "id": "J115",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 4,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 5,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "PP",
+      "material_kg": 93.6,
+      "quantity": 3445,
+      "due_day": 3,
+      "priority": 2,
+      "revenue": 2941.1,
+      "customer": "Acme"
+    },
+    {
+      "id": "J116",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 5,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 6,
+          "predecessors": [
+            "op0"
+          ]
+        }
+      ],
+      "material": "PP",
+      "material_kg": 92.8,
+      "quantity": 3727,
+      "due_day": 8,
+      "priority": 3,
+      "revenue": 1541.4,
+      "customer": "Acme"
+    },
+    {
+      "id": "J117",
+      "operations": [
+        {
+          "id": "op0",
+          "capability": "mold",
+          "skill": "mold",
+          "duration": 6,
+          "predecessors": []
+        },
+        {
+          "id": "op1",
+          "capability": "cnc",
+          "skill": "cnc",
+          "duration": 2,
+          "predecessors": [
+            "op0"
+          ]
+        },
+        {
+          "id": "op2",
+          "capability": "deburr",
+          "skill": "deburr",
+          "duration": 6,
+          "predecessors": [
+            "op1"
+          ]
+        }
+      ],
+      "material": "Nylon",
+      "material_kg": 55.2,
+      "quantity": 2342,
+      "due_day": 6,
+      "priority": 1,
+      "revenue": 1516.5,
+      "customer": "Initech"
+    }
+  ],
+  "rfqs": [
+    {
+      "id": "R17",
+      "customer": "Acme",
+      "material": "ABS",
+      "quantity": 10000,
+      "due_day": 12,
+      "target_price_per_unit": 0.2,
+      "est_unit_cost": 0.14
+    },
+    {
+      "id": "R18",
+      "customer": "Globex",
+      "material": "Nylon",
+      "quantity": 3000,
+      "due_day": 20,
+      "target_price_per_unit": 0.55,
+      "est_unit_cost": 0.6
+    }
+  ]
+}

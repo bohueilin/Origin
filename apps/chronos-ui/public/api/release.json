@@ -1,0 +1,143 @@
+{
+  "brokenControlByIteration": {
+    "1": [],
+    "2": [],
+    "3": []
+  },
+  "environmentV2": "mongodb-sales-aggregation-engine:c2ee704d5c4e653e",
+  "graderV2Digest": "c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908",
+  "patches": {
+    "1": {
+      "added": 0,
+      "description": "harden-v0 produced a robust candidate after iteration 0 (hacker_failed).",
+      "diff": [
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# release candidate: releasecandidate-294df1726b8a5ed0"
+        },
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# grader v2: c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908"
+        },
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# source tree: c2ee704d5c4e653ea8de5da0fca96cfeaf6bf35d4322e551cafc76f21887cedc"
+        }
+      ],
+      "filePath": "task_assets/test_outputs.py",
+      "generatedBy": "harden-v0 fixer",
+      "iteration": 1,
+      "label": "Release candidate v2",
+      "patchDigest": "6a45619acc5accf94a82e4043e7b720b2226f65bf60a1c4172bbce1259c154f0",
+      "patchRef": "artifacts/chronos/releases/harden-v0-work/run-20260621T123033Z/harden-output/mongodb-sales-aggregation-engine/result.json",
+      "rationale": [
+        "Mandatory subversion case blocked: conftest.py",
+        "Mandatory subversion case blocked: cwd/import shadowing",
+        "Mandatory subversion case blocked: hook/TestReport fabrication",
+        "Mandatory subversion case blocked: pytest11",
+        "Mandatory subversion case blocked: site-packages mutation",
+        "Mandatory subversion case blocked: trusted test replacement"
+      ],
+      "removed": 0,
+      "status": "proven",
+      "summary": "ReleaseProof releaseproof-30e03914472631dd kills 1 witness and preserves 3 controls."
+    },
+    "2": {
+      "added": 0,
+      "description": "harden-v0 produced a robust candidate after iteration 0 (hacker_failed).",
+      "diff": [
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# release candidate: releasecandidate-294df1726b8a5ed0"
+        },
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# grader v2: c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908"
+        },
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# source tree: c2ee704d5c4e653ea8de5da0fca96cfeaf6bf35d4322e551cafc76f21887cedc"
+        }
+      ],
+      "filePath": "task_assets/test_outputs.py",
+      "generatedBy": "harden-v0 fixer",
+      "iteration": 2,
+      "label": "Release candidate v2",
+      "patchDigest": "6a45619acc5accf94a82e4043e7b720b2226f65bf60a1c4172bbce1259c154f0",
+      "patchRef": "artifacts/chronos/releases/harden-v0-work/run-20260621T123033Z/harden-output/mongodb-sales-aggregation-engine/result.json",
+      "rationale": [
+        "Mandatory subversion case blocked: conftest.py",
+        "Mandatory subversion case blocked: cwd/import shadowing",
+        "Mandatory subversion case blocked: hook/TestReport fabrication",
+        "Mandatory subversion case blocked: pytest11",
+        "Mandatory subversion case blocked: site-packages mutation",
+        "Mandatory subversion case blocked: trusted test replacement"
+      ],
+      "removed": 0,
+      "status": "proven",
+      "summary": "ReleaseProof releaseproof-30e03914472631dd kills 1 witness and preserves 3 controls."
+    },
+    "3": {
+      "added": 0,
+      "description": "harden-v0 produced a robust candidate after iteration 0 (hacker_failed).",
+      "diff": [
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# release candidate: releasecandidate-294df1726b8a5ed0"
+        },
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# grader v2: c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908"
+        },
+        {
+          "kind": "ctx",
+          "no": "—",
+          "text": "# source tree: c2ee704d5c4e653ea8de5da0fca96cfeaf6bf35d4322e551cafc76f21887cedc"
+        }
+      ],
+      "filePath": "task_assets/test_outputs.py",
+      "generatedBy": "harden-v0 fixer",
+      "iteration": 3,
+      "label": "Release candidate v2",
+      "patchDigest": "6a45619acc5accf94a82e4043e7b720b2226f65bf60a1c4172bbce1259c154f0",
+      "patchRef": "artifacts/chronos/releases/harden-v0-work/run-20260621T123033Z/harden-output/mongodb-sales-aggregation-engine/result.json",
+      "rationale": [
+        "Mandatory subversion case blocked: conftest.py",
+        "Mandatory subversion case blocked: cwd/import shadowing",
+        "Mandatory subversion case blocked: hook/TestReport fabrication",
+        "Mandatory subversion case blocked: pytest11",
+        "Mandatory subversion case blocked: site-packages mutation",
+        "Mandatory subversion case blocked: trusted test replacement"
+      ],
+      "removed": 0,
+      "status": "proven",
+      "summary": "ReleaseProof releaseproof-30e03914472631dd kills 1 witness and preserves 3 controls."
+    }
+  },
+  "publication": {
+    "buildId": "0290bbb9-0b29-4224-94ac-decff4b9110d",
+    "buildStatus": "SUCCEEDED",
+    "environmentUrl": "https://hud.ai/environments/b3409057-8fdd-4f6b-a78f-8754910c66c3",
+    "graderHardeningNote": "The published grader was hardened across iterations (v3 to v6) after each post-publish bug hunt found the prior version bypassable by a root candidate. The deployed grader runs the candidate out-of-process so the verdict never imports it; the deploy-form kill proof re-confirms the witness killed at 0.0 and all three controls preserved at 1.0.",
+    "outcome": "published",
+    "publishedEnvironmentRef": "hud:registry/b3409057-8fdd-4f6b-a78f-8754910c66c3@v5",
+    "publishedVersion": 5,
+    "releaseProofId": "releaseproof-30e03914472631dd",
+    "residualLimitation": "Deploy v6, then add randomised/hidden test data (or a non-root candidate / SEPARATE verifier environment) to close the answer-hardcoding residual.",
+    "team": "hud-hacks"
+  },
+  "releaseProofId": "releaseproof-30e03914472631dd",
+  "survivingWitnessByIteration": {
+    "1": [],
+    "2": [],
+    "3": []
+  }
+}

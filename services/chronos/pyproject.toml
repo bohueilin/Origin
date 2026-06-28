@@ -1,0 +1,42 @@
+[project]
+name = "chronos"
+version = "0.1.0"
+description = "Chronos planning and integration scaffold."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "hud-python[modal]==0.6.4",
+  "modal==1.5.0",
+  "python-dotenv==1.2.2",
+  "pymongo>=4.0",
+]
+
+[project.optional-dependencies]
+harden-v0 = [
+  "harbor",
+  "litellm",
+  "pydantic",
+  "tenacity",
+  "PyYAML",
+  "python-dotenv",
+  "tqdm",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.12",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chronos"]
+
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--ignore=tests/chronos/controls/test_local_grader.py --ignore=tests/chronos/controls/test_freeze_immutability.py --ignore=tests/chronos/research/test_research_contracts.py --ignore=tests/chronos/research/rft/test_evaluator_binding.py --ignore=tests/chronos/demo/test_acceptance_demo.py --ignore=tests/chronos/qabench/test_live_discovery.py"

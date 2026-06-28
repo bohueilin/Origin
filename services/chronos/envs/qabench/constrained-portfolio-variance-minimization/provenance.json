@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+  "base_image_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+  "base_original": "skylensage-registry.cn-hangzhou.cr.aliyuncs.com/instances/1124:t-bench-python-3-13",
+  "base_rewritten": "true",
+  "build_context_digest": "27b0eeaa568e6ab0b7f73767602fd199b2a00fe84f9d74a60d1566a6638d1b84",
+  "content_digest": "bc7c4b0e29e1055cd1ca05347346e0419cdecd329d05ee15254172ae5df226e7",
+  "deployable": "true",
+  "dockerfile_digest": "0900ff80f2022856529a03e5af6a657ba175eb41cc4482056dca610a33a3786d",
+  "grader_digest": "48c9b9a557c6c53fdeff4a2fdcd5bd4b657fd0a9f3e4a7cfd86581d4accf72af",
+  "model": "claude-opus-4.6",
+  "task_id": "constrained-portfolio-variance-minimization",
+  "task_slug": "constrained-portfolio-variance-minimization",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "9f3b188f124d89b270f3a828cffdc0219d4f49d5c8cac85e3dd9123fcfb88f71",
+  "workdir": "/app"
+}

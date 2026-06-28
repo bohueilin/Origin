@@ -1,0 +1,17 @@
+{
+  "content_digest": "05b840a9785f3f1ee17e1f12902d9c78a4b06fb357801313aeb393776e0d895d",
+  "deployable_env_note": "Full hud deploy context = v1 environment (envs/mongodb-sales-aggregation-engine) + this hardened tests/ served read-only at /tests. Served-runtime kill-parity under `hud serve` is unproven without a container build; the offline kill is already proven by Plan 005 ReleaseProof releaseproof-30e03914472631dd.",
+  "environment_v2_identity": "mongodb-sales-aggregation-engine:c2ee704d5c4e653e",
+  "grader_v2_digest_match": true,
+  "kind": "hardened-v2-grader-verification",
+  "recomputed_grader_v2_digest": "c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908",
+  "regenerated_from": [
+    "envs/mongodb-sales-aggregation-engine/task_assets/test_outputs.py",
+    "docs/plans/evidence/005/integration-release-preflight.json (v1_replay_surfaces)",
+    "src/chronos/releases/harden_task_materializer.py (_write_test_sh transform)"
+  ],
+  "releaseproof_grader_v2_digest": "c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908",
+  "schema_version": 1,
+  "v2_tests_ref": "artifacts/chronos/demo/publish/v2/tests",
+  "verified_at": "2026-06-21T15:17:12Z"
+}

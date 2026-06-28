@@ -1,0 +1,113 @@
+{
+  "api_base": "https://api.beta.hud.ai",
+  "blocker": "HUD QA API requires X-Organization-ID; HUD team_id is discoverable but not accepted as that organization id, and no repo-bound HUD organization env/config is present",
+  "checked_at": "2026-06-21T07:57:00Z",
+  "credential_presence": {
+    "ANTHROPIC_API_KEY": "present",
+    "HUD_API_KEY": "present",
+    "MODAL_TOKEN_ID": "present",
+    "MODAL_TOKEN_SECRET": "present"
+  },
+  "discovered_team_binding": {
+    "accepted_as_organization_id": false,
+    "source": "/v2/environments/usage",
+    "status": "present"
+  },
+  "fork_point_id": "fp-826ba545cf30870e67d42ddb",
+  "observed_behavior": "HUD trace readback is available through the authenticated API, and the hidden QA-agent router exists, but Plan 003 still lacks the organization-scoped Reward Hacking Agent run/result binding needed to join an authoritative QA verdict to the BranchRun trace and action digest.",
+  "openapi_has_qa_agents_path": false,
+  "openapi_probe": {
+    "path": "/openapi.json",
+    "status_code": 200,
+    "summary": {
+      "keys": [
+        "components",
+        "info",
+        "openapi",
+        "paths"
+      ],
+      "message": null,
+      "shape": "object"
+    }
+  },
+  "openapi_trace_paths": [
+    "/v2/trace/batch-validate",
+    "/v2/trace/{trace_id}",
+    "/v2/trace/{trace_id}/analysis-context",
+    "/v2/trace/{trace_id}/env-logs",
+    "/v2/trace/{trace_id}/events",
+    "/v2/trace/{trace_id}/info",
+    "/v2/trace/{trace_id}/logs",
+    "/v2/trace/{trace_id}/related",
+    "/v2/trace/{trace_id}/usage"
+  ],
+  "organization_binding": {
+    "env_name": null,
+    "status": "absent"
+  },
+  "qa_agents_with_api_key_probe": {
+    "path": "/v2/qa-agents",
+    "status_code": 401,
+    "summary": {
+      "keys": [
+        "detail",
+        "error"
+      ],
+      "message": "Invalid token: Not enough segments",
+      "shape": "object"
+    }
+  },
+  "qa_agents_with_hud_hacks_probe": {
+    "path": "/v2/qa-agents",
+    "status_code": 401,
+    "summary": {
+      "keys": [
+        "detail",
+        "error"
+      ],
+      "message": "Invalid token: Not enough segments",
+      "shape": "object"
+    }
+  },
+  "qa_agents_with_org_probe": null,
+  "qa_agents_with_team_probe": {
+    "path": "/v2/qa-agents",
+    "status_code": 401,
+    "summary": {
+      "keys": [
+        "detail",
+        "error"
+      ],
+      "message": "Invalid token: Not enough segments",
+      "shape": "object"
+    }
+  },
+  "qa_agents_without_org_probe": {
+    "path": "/v2/qa-agents",
+    "status_code": 401,
+    "summary": {
+      "keys": [
+        "detail",
+        "error"
+      ],
+      "message": "Missing X-Organization-ID header",
+      "shape": "object"
+    }
+  },
+  "snapshot_id": "im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "status": "blocked",
+  "trace_events_probe": {
+    "path": "/v2/trace/230f29455d88491fbf284fa218cae422/events",
+    "status_code": 200,
+    "summary": {
+      "keys": [
+        "events",
+        "latest_seq",
+        "reward",
+        "status"
+      ],
+      "message": null,
+      "shape": "object"
+    }
+  }
+}

@@ -1,0 +1,213 @@
+/*
+ * Granola-style design tokens — SINGLE SOURCE OF TRUTH.
+ * Values are pixel-faithful to granola.ai (see granola-extraction.md).
+ * The Tailwind preset (tailwind-preset.js) mirrors these exact values.
+ *
+ * Layer 1 = primitives (raw scales). Layer 2 = semantic (use THESE in UI).
+ * In components, reference semantic tokens (e.g. var(--ds-ink-primary)),
+ * never raw hex. See AGENTS.md.
+ */
+
+:root {
+  /* ============================================================
+   * LAYER 1 — PRIMITIVES
+   * ============================================================ */
+
+  /* Warm neutral ramp ("oats") */
+  --ds-neutral-50:  #fcfcf8;
+  --ds-neutral-100: #f7f7f2;
+  --ds-neutral-150: #f2f2ec;
+  --ds-neutral-200: #eaebe5;
+  --ds-neutral-300: #d5d5d2;
+  --ds-neutral-400: #acada8;
+  --ds-neutral-450: #9e9e99;
+  --ds-neutral-500: #818179;
+  --ds-neutral-600: #72726e;
+  --ds-neutral-700: #4e4d4b;
+  --ds-neutral-750: #363635;
+  --ds-neutral-800: #292929;
+  --ds-neutral-900: #212121;
+  --ds-neutral-950: #1e1e1e;
+  --ds-white: #ffffff;
+  --ds-black: #000000;
+
+  /* Green ramp (signature olive/lime) */
+  --ds-green-50:  #f2f6e1;
+  --ds-green-100: #e5eacd;
+  --ds-green-200: #d1e043;
+  --ds-green-300: #b2c248;
+  --ds-green-400: #788c15;
+  --ds-green-500: #5b6f00;
+  --ds-green-600: #434625;
+
+  /* Red ramp (danger) */
+  --ds-red-50:  #ffe7e2;
+  --ds-red-100: #f8cec5;
+  --ds-red-200: #f29e8b;
+  --ds-red-300: #e95d3d;
+  --ds-red-400: #bd4a30;
+
+  /* Tinted accent surfaces */
+  --ds-tint-green:  #f2f6e1;
+  --ds-tint-blue:   #eaf4fe;
+  --ds-tint-purple: #f3f0fa;
+
+  /* ============================================================
+   * LAYER 2 — SEMANTIC (use these in UI)
+   * ============================================================ */
+
+  /* Surfaces */
+  --ds-background: var(--ds-white);        /* page */
+  --ds-surface: var(--ds-neutral-100);     /* #f7f7f2 warm off-white panel */
+  --ds-surface-sunken: var(--ds-neutral-150);
+  --ds-surface-raised: var(--ds-white);
+  --ds-surface-elevated: var(--ds-white);
+
+  /* Ink (text) */
+  --ds-ink-primary: var(--ds-neutral-800);          /* #292929 */
+  --ds-ink-secondary: var(--ds-neutral-600);        /* #72726e */
+  --ds-ink-secondary-strong: var(--ds-neutral-700); /* #4e4d4b */
+  --ds-ink-tertiary: var(--ds-neutral-400);         /* #acada8 */
+  --ds-ink-inverse: var(--ds-neutral-50);           /* #fcfcf8 */
+
+  /* Borders */
+  --ds-hairline: #47432a33;                /* warm translucent — the warmth cue */
+  --ds-stroke: var(--ds-neutral-300);      /* #d5d5d2 */
+  --ds-border: #e3e3e3;
+
+  /* Accent (green) */
+  --ds-accent: var(--ds-green-200);             /* #d1e043 bright lime — Granola's rendered accent */
+  --ds-accent-strong: var(--ds-green-300);      /* #b2c248 — most-used accent / hover */
+  --ds-accent-text: #0d7916;
+  --ds-accent-wash: #d1e04333;
+  --ds-fill-accent: var(--ds-green-500);        /* #5b6f00 primary green button */
+  --ds-fill-accent-hover: #4c5616;
+  --ds-ink-accent: var(--ds-green-400);         /* #788c15 */
+
+  /* Primary (dark action) */
+  --ds-fill-primary: var(--ds-neutral-800);     /* #292929 */
+  --ds-fill-primary-hover: var(--ds-neutral-700);
+
+  /* Danger */
+  --ds-fill-danger: var(--ds-red-300);          /* #e95d3d */
+  --ds-ink-danger: var(--ds-red-400);           /* #bd4a30 */
+
+  /* Focus ring */
+  --ds-ring: #b2c24899;
+
+  /* ============================================================
+   * TYPOGRAPHY
+   * ============================================================ */
+  --ds-font-display: "Libre Baskerville", Georgia, "Times New Roman", serif;
+  --ds-font-display-weight: 400;
+  --ds-font-sans: "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ds-font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --ds-text-2xs: 11px;
+  --ds-text-xs:  12px;
+  --ds-text-sm:  13px;
+  --ds-text-base: 14px;   /* body default */
+  --ds-text-lg:  16px;
+  --ds-text-xl:  20px;
+  --ds-text-2xl: 24px;
+  --ds-text-3xl: 30px;
+  --ds-text-4xl: 36px;
+  --ds-text-5xl: 48px;
+  --ds-text-6xl: 60px;
+  --ds-text-7xl: 72px;
+
+  --ds-leading-tight: 1.25;
+  --ds-leading-snug: 1.375;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.625;
+
+  --ds-tracking-tight: -0.025em;
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide: 0.025em;
+  --ds-tracking-wider: 0.05em;
+
+  --ds-weight-light: 300;
+  --ds-weight-normal: 400;
+  --ds-weight-book: 430;
+  --ds-weight-medium: 500;
+  --ds-weight-semibold: 600;
+  --ds-weight-bold: 700;
+
+  /* ============================================================
+   * SPACE / RADIUS / SHADOW  (4px base)
+   * ============================================================ */
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-space-10: 40px;
+  --ds-space-12: 48px;
+  --ds-space-16: 64px;
+  --ds-space-20: 80px;
+  --ds-space-24: 96px;
+
+  --ds-radius-xs: 2px;
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 6px;
+  --ds-radius-lg: 8px;     /* default — buttons, cards */
+  --ds-radius-xl: 12px;
+  --ds-radius-2xl: 16px;
+  --ds-radius-3xl: 24px;
+  --ds-radius-full: 9999px;
+
+  /* Restrained elevation — prefer hairline borders over shadows */
+  --ds-shadow-sm: 0px 1px 2px 0px #0000000d;
+  --ds-shadow: 0px 4px 6px -2px #0000000d;
+  --ds-shadow-lg: 0px 12px 24px -8px #00000014;
+
+  /* ============================================================
+   * MOTION  (confirmed from granola.ai)
+   * ============================================================ */
+  --ds-duration: 150ms;            /* default transition */
+  --ds-ease: cubic-bezier(0.4, 0, 0.2, 1);          /* default / ease-in-out */
+  --ds-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ds-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);  /* signature show/hide curve */
+  --ds-ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+
+  /* Named animations (pair with the @keyframes below) */
+  --ds-animate-fade-in-up: fade-in-up 0.6s var(--ds-ease-out) forwards;
+  --ds-animate-overlay-show: overlayShow 0.15s var(--ds-ease-out-expo);
+  --ds-animate-content-show: contentShow 0.15s var(--ds-ease-out-expo);
+  --ds-animate-dropdown-show: dropdownShow 0.15s var(--ds-ease-out-expo);
+  --ds-animate-accordion-down: accordion-down 0.2s var(--ds-ease-out);
+  --ds-animate-accordion-up: accordion-up 0.2s var(--ds-ease-out);
+}
+
+/* ============================================================
+ * KEYFRAMES (confirmed from granola.ai)
+ * ============================================================ */
+@keyframes fade-in-up {
+  0%   { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes overlayShow {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+/* Centered dialog (Granola's contentShow) */
+@keyframes contentShow {
+  0%   { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+/* Anchored dropdown variant (same feel, no centering transform) */
+@keyframes dropdownShow {
+  0%   { opacity: 0; transform: translateY(-4px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes accordion-down {
+  0%   { height: 0; }
+  100% { height: var(--radix-accordion-content-height, auto); }
+}
+@keyframes accordion-up {
+  0%   { height: var(--radix-accordion-content-height, auto); }
+  100% { height: 0; }
+}

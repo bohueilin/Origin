@@ -1,0 +1,30 @@
+{
+  "branch_id": "run-20260621T030959-branch-09",
+  "hud_trace_id": "a3c01eb5fe0d406da9da4dcbda22bb25",
+  "job_id": "e50512296dbf413291b9713829fdd917",
+  "reward": 0.0,
+  "schema_version": 1,
+  "trace_readback": {
+    "events": {
+      "events": [],
+      "latest_seq": -1,
+      "reward": 0.0,
+      "status": "error"
+    },
+    "trace": {
+      "created_at": "2026-06-21T03:10:00.468568Z",
+      "end_time": "2026-06-21T03:10:10.664979Z",
+      "error": "[starting task] hud rpc error -32602: unknown task: 'implement_sales_analyzer_hacker'",
+      "id": "a3c01eb5-fe0d-406d-a9da-4dcbda22bb25",
+      "inference_llm_model_id": "f2c7dcaf-a6d8-4835-b6f3-01e8e8b10a30",
+      "instance_id": null,
+      "job_id": "e5051229-6dbf-4132-91b9-713829fdd917",
+      "metadata": {},
+      "reward": 0.0,
+      "start_time": "2026-06-21T03:10:00.500748Z",
+      "status": "error",
+      "task_version_id": null,
+      "views": 0
+    }
+  }
+}

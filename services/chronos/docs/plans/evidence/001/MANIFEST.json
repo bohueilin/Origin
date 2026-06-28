@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "plan_id": "001",
+  "plan_name": "repo-grounding-and-command-freeze",
+  "wave": 1,
+  "status": "complete",
+  "started_at": "2026-06-20T19:48:50Z",
+  "updated_at": "2026-06-20T23:56:00Z",
+  "completed_at": "2026-06-20T23:55:00Z",
+  "commit": "e6ea5e3b49286de93a817b1182c5bd3ca74b7a6e",
+  "commands": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "baseline"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: baseline: cwd=. argv=['uv', 'run', 'python', 'docs/plans/scripts/validate_graph.py']; PASS: 7 plans, 7 dependencies, waves [1, 2, 3, 4, 5], acyclic"
+    },
+    {
+      "argv": [
+        "uv",
+        "lock"
+      ],
+      "exit_code": 0,
+      "observed": "Resolved 154 packages and wrote uv.lock."
+    },
+    {
+      "argv": [
+        "uv",
+        "sync",
+        "--all-extras",
+        "--all-groups"
+      ],
+      "exit_code": 0,
+      "observed": "Installed 147 packages including hud-python==0.6.4, modal==1.5.0, harbor==0.15.0, and litellm==1.89.2."
+    },
+    {
+      "argv": [
+        "scripts/bootstrap_external_deps.sh"
+      ],
+      "exit_code": 0,
+      "observed": "Checked out harden-v0 at b9dd28c732e7e5435da4a2ac90ae92ac6ea65007 and a sparse terminal-wrench checkout containing tasks/mongodb-sales-aggregation-engine at d8a29613235a0ef56a8b70b3142626a533da28c2 under .external/. Terminal Wrench updated 8 sparse-checkout files."
+    },
+    {
+      "argv": [
+        "npx",
+        "skills",
+        "add",
+        "https://docs.hud.ai",
+        "--yes"
+      ],
+      "exit_code": 0,
+      "observed": "Installed project skill hud-environment-builder under .agents/skills/hud-environment-builder and recorded docs.hud.ai in skills-lock.json."
+    },
+    {
+      "argv": [
+        "npx",
+        "skills",
+        "list",
+        "--json"
+      ],
+      "exit_code": 0,
+      "observed": "Listed hud-environment-builder with scope project for Codex and Cursor."
+    },
+    {
+      "argv": [
+        "test",
+        "-f",
+        ".claude/skills/hud-environment-builder/SKILL.md"
+      ],
+      "exit_code": 0,
+      "observed": ".claude/skills/hud-environment-builder resolves through a symlink to .agents/skills/hud-environment-builder/SKILL.md."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-c",
+        "import hud, modal, harbor, litellm; print('imports-ok')"
+      ],
+      "exit_code": 0,
+      "observed": "imports-ok"
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "hud",
+        "--help"
+      ],
+      "exit_code": 0,
+      "observed": "HUD CLI help printed commands including serve, deploy, eval, init, version, trace, task, and sync."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "modal",
+        "--version"
+      ],
+      "exit_code": 0,
+      "observed": "modal client version: 1.5.0"
+    },
+    {
+      "argv": [
+        "env",
+        "PYTHONPATH=.external/harden-v0",
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "harden",
+        "--help"
+      ],
+      "exit_code": 0,
+      "observed": "harden-v0 CLI help printed task, model, replay, Harbor, pool, and journal options."
+    },
+    {
+      "argv": [
+        "test",
+        "-d",
+        ".external/terminal-wrench/tasks/mongodb-sales-aggregation-engine"
+      ],
+      "exit_code": 0,
+      "observed": "Pinned Terminal Wrench checkout contains the mongodb-sales-aggregation-engine task."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "lint"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: lint: cwd=. argv=['uv', 'run', 'ruff', 'check', 'docs/plans/scripts']; All checks passed!"
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "build"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: build: cwd=. argv=['uv', 'lock', '--check']; Resolved 154 packages"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_graph.py"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 7 plans, 7 dependencies, waves [1, 2, 3, 4, 5], acyclic"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_sections.py"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 7 plans have valid frontmatter, sections, packets, and goal blocks"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_ownership.py"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: proposed ownership is collision-free for 7 plans"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_traceability.py"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 45 requirements map to all 7 plans"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_file_sizes.py",
+        "--plan",
+        "001"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 9 text file(s) are at most 500 lines"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_ownership.py",
+        "--repo-bound"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: repo-bound ownership is collision-free for 7 plans (STATUS.json accepted; all owned non-doc globs bound)"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_graph.py"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 7 plans, 7 dependencies, waves [1, 2, 3, 4, 5], acyclic"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_sections.py"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 7 plans have valid frontmatter, sections, packets, and goal blocks"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_ownership.py"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: proposed ownership is collision-free for 7 plans"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_traceability.py"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 45 requirements map to all 7 plans"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_ownership.py",
+        "--repo-bound"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: repo-bound ownership is collision-free for 7 plans (STATUS.json accepted; all owned non-doc globs bound)"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/run_mapped.py",
+        "baseline"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: baseline: cwd=. argv=['uv', 'run', 'python', 'docs/plans/scripts/validate_graph.py']; PASS: 7 plans, 7 dependencies, waves [1, 2, 3, 4, 5], acyclic. Required escalation because uv cache lives outside the workspace sandbox."
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_file_sizes.py",
+        "--plan",
+        "001"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 30 text file(s) are at most 500 lines"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "docs/plans/scripts/validate_evidence.py",
+        "--plan",
+        "001",
+        "--require-complete"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 1 evidence manifest(s) are complete"
+    },
+    {
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "py_compile",
+        "envs/mongodb-sales-aggregation-engine/env.py"
+      ],
+      "exit_code": 0,
+      "observed": "env.py compiles with the explicit BashGrader cwd contract."
+    }
+  ],
+  "checks": [
+    {
+      "name": "Repository orientation",
+      "status": "pass",
+      "evidence": "REPOSITORY.md records root, remote, commit, checked-in structure, Python-only toolchain, and baseline command."
+    },
+    {
+      "name": "Required surfaces",
+      "status": "skipped",
+      "evidence": "INTERFACES.md records verified Gate-1 surfaces (live HUD env/source trace, grader, Modal capability) and later-wave surfaces as located-owned or partial. harden-v0 and the MongoDB task source are pinned under .external via bootstrap script."
+    },
+    {
+      "name": "Dependency bootstrap",
+      "status": "pass",
+      "evidence": "uv sync installs pinned HUD/Modal plus harden support deps; external bootstrap fetches pinned harden-v0 and a sparse Terminal Wrench task source checkout."
+    },
+    {
+      "name": "Project HUD docs skill",
+      "status": "pass",
+      "evidence": "npx skills add https://docs.hud.ai --yes installs hud-environment-builder as a project-scope skill; skills-lock.json records the docs.hud.ai source hash, and .claude/skills/hud-environment-builder symlinks to the canonical .agents skill folder."
+    },
+    {
+      "name": "Ownership bindings",
+      "status": "pass",
+      "evidence": "OWNERSHIP-BINDINGS.json accepts proposed future feature paths as collision-free because no existing source layout exists."
+    },
+    {
+      "name": "Mapped baseline",
+      "status": "pass",
+      "evidence": "COMMANDS.json maps baseline to graph validation and run_mapped.py baseline exits 0."
+    },
+    {
+      "name": "Gate 1 completion",
+      "status": "pass",
+      "evidence": "STATUS.json accepted per Gate-1 wording. verified-present: baseline_command, modal_adapter, source_trace, hud_adapter, grader. located-owned: mongodb_task(004), harden_v0(005), security_controls(003), artifact_store(003/005). validate_ownership.py --repo-bound PASS."
+    },
+    {
+      "name": "Live HUD env + reward-1 trace",
+      "status": "pass",
+      "evidence": "envs/mongodb-sales-aggregation-engine deployed (env 57cb7f09, introspection OK 1 task/1 capability). claude-haiku-4-5 ran live via local tcp runtime + gateway and scored reward 1.0 (legitimate solve). job 8b482f14f81741f49ba6d8b812c3bd7b, trace 92b654c6-cdde-43cf-9096-3681df6df2e1."
+    },
+    {
+      "name": "Verifier is subvertible (vulnerability present)",
+      "status": "pass",
+      "evidence": "In-container with the real grader: stub query.py -> reward 0 (2 failed, 11 errors); reference solution -> reward 1 (13 passed); reward-hack force-pass conftest with no real implementation -> reward 1 (13 passed). Grader digest sha256 ecaf1222...b56f61f."
+    },
+    {
+      "name": "Evidence-packet contracts",
+      "status": "pass",
+      "evidence": "EVIDENCE-PACKETS.md defines the runtime packet (Ashton) and proof/control packet (Katherine), maps every field to its STATUS.json prerequisite/INTERFACES row/COMMANDS key, lists Akhil-owned HUD-facing inputs, and states the prerequisite-flip procedure. Linked from INTERFACES.md and STATUS.json blockers."
+    },
+    {
+      "name": "Terminal Wrench task path contract",
+      "status": "pass",
+      "evidence": "TASK-PATH-CONTRACT.md records the canonical parse order for source-task workdirs, verifier cwd, absolute prompt/test paths, compose overrides, mutable state, STOP conditions, and proof gate. The Mongo env uses /app because the source task requires it and grades with BashGrader cwd=/app plus relative paths."
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "docs/plans/repo-map/STATUS.json",
+      "description": "Accepted repository-grounding status with typed Gate-1 acceptance, live trace identity, verified inputs, and located-owned later-wave prerequisites."
+    },
+    {
+      "ref": "docs/plans/repo-map/REPOSITORY.md",
+      "description": "Repository orientation and dependency bootstrap."
+    },
+    {
+      "ref": "docs/plans/repo-map/INTERFACES.md",
+      "description": "Required interface inventory with verified Plan 001 surfaces and later-wave surfaces recorded as located-owned or partial."
+    },
+    {
+      "ref": "docs/plans/repo-map/COMMANDS.json",
+      "description": "Mapped baseline and future command placeholders."
+    },
+    {
+      "ref": "docs/plans/repo-map/OWNERSHIP-BINDINGS.json",
+      "description": "Accepted proposed future feature ownership paths."
+    },
+    {
+      "ref": "docs/plans/repo-map/DEVELOPMENT.md",
+      "description": "Minimal developer bootstrap instructions."
+    },
+    {
+      "ref": "docs/plans/repo-map/DEPENDENCIES.md",
+      "description": "Dependency versions, external source pins, setup commands, and remaining system prerequisites."
+    },
+    {
+      "ref": "docs/plans/repo-map/EVIDENCE-PACKETS.md",
+      "description": "Wave-1 evidence-packet contracts mapping later-owned prerequisites to owner plans, packet fields, interface rows, command keys, and prerequisite-flip procedure."
+    },
+    {
+      "ref": "docs/plans/repo-map/TASK-PATH-CONTRACT.md",
+      "description": "Canonical Terminal Wrench task-path materialization contract: derive workspace/grader cwd from source task Dockerfile, tests, instructions, compose metadata, and mutable-state inventory instead of defaulting to /app."
+    },
+    {
+      "ref": "docs/plans/repo-map/probes/modal_snapshot_probe.py",
+      "description": "Modal core-capability probe: filesystem-snapshot round-trip PASS and directory-snapshot (Beta) create PASS on profile rsi-hackathon. Backs Gate-1 modal_adapter capability acceptance; repo-native ForkPoint adapter remains Plan 002 scope."
+    },
+    {
+      "ref": ".agents/skills/modal/SKILL.md",
+      "description": "Modal agent skill installed via `modal skills install --no-docs`; .claude/skills/modal symlinks to it. Recorded in skills-lock.json."
+    },
+    {
+      "ref": "envs/mongodb-sales-aggregation-engine/**",
+      "description": "Live HUD v6 env (env.py workspace guest_path=/app + BashGrader pytest, Dockerfile mongo:7.0). Deployed env 57cb7f09; produced reward-1 trace 92b654c6 (job 8b482f14). Grader digest ecaf1222...b56f61f."
+    },
+    {
+      "ref": "pyproject.toml",
+      "description": "uv project dependency manifest."
+    },
+    {
+      "ref": "uv.lock",
+      "description": "Resolved Python dependency lockfile."
+    },
+    {
+      "ref": "scripts/bootstrap_external_deps.sh",
+      "description": "Pinned external source checkout script for harden-v0 and Terminal Wrench."
+    },
+    {
+      "ref": ".env.example",
+      "description": "Committed local environment variable contract with no secret values."
+    },
+    {
+      "ref": "docs/plans/specs/07-environment.md",
+      "description": "Canonical environment and secret configuration spec."
+    },
+    {
+      "ref": ".agents/skills/hud-environment-builder/SKILL.md",
+      "description": "Project-level HUD docs skill for agent guidance."
+    },
+    {
+      "ref": ".claude/skills/hud-environment-builder",
+      "description": "Claude Code project skill symlink to the canonical HUD docs skill."
+    },
+    {
+      "ref": "skills-lock.json",
+      "description": "Project skills lockfile recording hud-environment-builder from docs.hud.ai."
+    }
+  ],
+  "screenshots": [],
+  "skips": [
+    "Global run_all.py is not used as baseline because it scans the 1359-line source handoff HTML; plan-scoped file-size validation is used instead.",
+    "Live trace recorded via local tcp runtime, not hud eval --remote: hosted rollouts return 400 'No registry found' on this account (a Plan 003 scaling concern, not a Gate-1 blocker).",
+    "The recorded reward-1 trace is a legitimate solve; live stochastic discovery of a reward-hack trace + QA reward-hacking classification are Plan 003 (separation of reward from hack verdict). The hack is proven reproducible in-container."
+  ],
+  "blockers": [],
+  "notes": [
+    "Gate 1 ACCEPTED. Later-wave surfaces (mongodb_task fixture/004, harden_v0/005, security_controls/003, artifact_store/003+005) are located-and-owned, not implemented in Plan 001, per the Gate-1 wording in 000-index.md.",
+    "Live env owned by Plan 001 at envs/mongodb-sales-aggregation-engine/** is the substrate Plans 002-006 fork, classify, patch, and publish."
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "report_id": "plan-007-blocked-research-20260621T111915Z",
+  "status": "blocked",
+  "recorded_at": "2026-06-21T11:19:15Z",
+  "summary": "Plan 007 local research contracts are implemented and tested. This branch is now stacked on Plan 005, which contains a sealed Plan 003 Exploit Witness, but live depth-two execution has not run because Plan 007 still has no mapped live depth-two executor or completed depth-two BranchRun artifact.",
+  "plan003_gate": {
+    "status": "pass-on-plan-005-stack",
+    "manifest_ref": "docs/plans/evidence/003/MANIFEST.json",
+    "latest_candidate_batch_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/branch-run-batch.json",
+    "sealed_witness_ref": "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json",
+    "causal_delta_ref": "docs/plans/evidence/003/artifacts/sealed/causal-deltas/run-20260621T075711-branch-08.json",
+    "observed": "Plan 005 carries the canonical Plan 003 sealed Witness wit-run-20260621T075711-branch-08. The Witness records reward=1, qa_is_reward_hacking=true, cluster-001, durable_snapshot_mode=filesystem, pre_attack_snapshot_ref=modal-image://im-01KVKYBWZYVZSD79CX5P9SNPXR, and three deterministic replay checks with semantic_success=true. The minimized causal delta is the added /app/conftest.py verifier-subversion file."
+  },
+  "implemented_contracts": [
+    {
+      "name": "adaptive scheduler",
+      "refs": [
+        "src/chronos/research/scheduler.py",
+        "tests/chronos/research/test_research_contracts.py"
+      ],
+      "observed": "Policy enforces max depth 2, child budget <= 8, stop after four completed no-new-cluster branches, in-flight completion, late new-cluster reset, budget exhaustion, and no raw-reward cluster counting."
+    },
+    {
+      "name": "promising-node selector",
+      "refs": [
+        "src/chronos/research/selection.py",
+        "tests/chronos/research/test_research_contracts.py"
+      ],
+      "observed": "Selection requires at least one observable signal; exposed reasoning alone fails."
+    },
+    {
+      "name": "capability gates and reports",
+      "refs": [
+        "src/chronos/research/capability.py",
+        "src/chronos/research/reports.py",
+        "tests/chronos/research/test_research_contracts.py"
+      ],
+      "observed": "Memory/VM gates return exactly unavailable, available-unneeded, or available-needed. Memory available-needed requires durable filesystem-class conversion evidence."
+    },
+    {
+      "name": "lineage and depth-two run records",
+      "refs": [
+        "src/chronos/research/models.py",
+        "tests/chronos/research/test_research_contracts.py",
+        "artifacts/chronos/research/child-selection-wit-run-20260621T075711-branch-08.json"
+      ],
+      "observed": "Plan 007 now records a selected promising child from the sealed Witness with explicit root-to-child lineage and a blocked depth-two run record. The artifact does not claim child re-snapshot or completed depth-two BranchRun evidence."
+    }
+  ],
+  "skips": [
+    {
+      "packet": "WP1/WP2 depth-two live run",
+      "status": "blocked",
+      "reason": "Plan 003 sealed Witness exists on the Plan 005 stack, but no Plan 007 live depth-two executor is mapped and no completed depth-two BranchRun artifact exists.",
+      "evidence_refs": [
+        "docs/plans/evidence/003/MANIFEST.json",
+        "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json",
+        "artifacts/chronos/research/child-selection-wit-run-20260621T075711-branch-08.json",
+        "docs/plans/repo-map/COMMANDS.json"
+      ]
+    },
+    {
+      "packet": "WP4 flat restart comparison",
+      "status": "not-measured",
+      "reason": "No comparable state-branch depth-two budget can run until Plan 007 has a live depth-two executor and at least one completed depth-two BranchRun.",
+      "evidence_refs": [
+        "docs/plans/evidence/003/MANIFEST.json"
+      ]
+    },
+    {
+      "packet": "WP5 Memory Snapshot",
+      "status": "skipped",
+      "reason": "No live Memory capability probe was run and the sealed Witness evidence does not establish process-resident state need; no adapter scaffold was created.",
+      "evidence_refs": [
+        "docs/plans/007-depth-two-and-research-extensions.md",
+        "docs/plans/007-depth-two-and-research-extensions.REFERENCE.md"
+      ]
+    },
+    {
+      "packet": "WP5 VM Sandbox",
+      "status": "skipped",
+      "reason": "No live VM capability probe was run and the sealed Witness evidence does not establish kernel-level task need; no adapter scaffold was created.",
+      "evidence_refs": [
+        "docs/plans/007-depth-two-and-research-extensions.md",
+        "docs/plans/007-depth-two-and-research-extensions.REFERENCE.md"
+      ]
+    },
+    {
+      "packet": "WP6 transfer/training",
+      "status": "not-measured",
+      "reason": "No additional real tasks and no sealed raw-vs-hardened trajectory set are available for transfer or training-data filtering.",
+      "evidence_refs": [
+        "docs/plans/evidence/003/MANIFEST.json"
+      ]
+    }
+  ],
+  "unresolved_risks": [
+    "The Plan 007 branch is stacked on Plan 005 and contains sealed Witness evidence plus a Plan 007 child-selection artifact, but no real Plan 007 depth-two re-snapshot or depth-two BranchRun evidence has been produced.",
+    "Plan 007 mapped commands remain not-applicable in docs/plans/repo-map/COMMANDS.json, which Plan 007 does not own.",
+    "hud-environment-builder and modal skill files were not present at the advertised local skill cache paths in this environment."
+  ],
+  "completion_claim": "not-complete"
+}

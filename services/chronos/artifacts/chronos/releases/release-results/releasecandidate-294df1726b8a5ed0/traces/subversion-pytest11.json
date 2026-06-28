@@ -1,0 +1,13 @@
+{
+  "case_id": "subversion-pytest11",
+  "content_digest": "d219012ac56c62732e1aabda373819c2be01c547ab2b3fe172cd20d69593d97d",
+  "mutation_paths": [
+    "evil_pytest11_plugin.py"
+  ],
+  "recorded_at": "2026-06-21T13:01:48Z",
+  "returncode": 0,
+  "reward": 0.0,
+  "schema_version": 1,
+  "stderr_digest": "51249a11d0702e9cf113482902ff08227a6a5f9765cae8d8c1d45c0d63b56c35",
+  "stdout_digest": "a34590c83938b9aea548f9b5846ffdedb95f58ca84d9bf1a16d76ce7c2196739"
+}

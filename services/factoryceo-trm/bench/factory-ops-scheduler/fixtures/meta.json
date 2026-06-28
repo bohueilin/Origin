@@ -1,0 +1,8 @@
+{
+  "seed": 73,
+  "n_jobs": 18,
+  "horizon_days": 21,
+  "oracle_reward": 34902.79,
+  "quality_frac": 0.6,
+  "messy_prompt": "Customer email: Need 10,000 units by day 12. Same ABS as last time. Can you do $0.20/unit?\nOperator note: M4 sounded rough this afternoon; might need maintenance.\nInventory: ABS=220kg, Nylon=80kg, PP=40kg.\nMachine log: M1 uptime=95%, M2 uptime=90%, M3 uptime=92%, M4 uptime=88%.\nHR: operator O2 out sick one day this period.\nCurrent jobs: J101 due day 3 high priority; J113 due day 3 high priority; J115 due day 3 med priority."
+}

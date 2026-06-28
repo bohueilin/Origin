@@ -1,0 +1,23 @@
+# Origin Physical AI
+
+> Origin Physical AI is the robot-readiness layer for Physical AI. Submit your site, build a robot brain, run it in a deterministic proving ground, and get a readiness license — graded on a finish / escalate / refuse decision model with RSL (Robot Safety Level) tiers and FAR/FRR. A deterministic oracle is the only judge; nothing is scored by an LLM.
+
+## What it is
+- A pipeline that turns a real site map into a graded readiness license for a physical-AI robot deployment.
+- Four steps: (1) submit your site, (2) build the robot brain, (3) run the proving ground, (4) get the readiness license.
+- The decision model is finish / escalate / refuse: a ready robot finishes safe work, escalates ambiguity, and refuses unsafe actions.
+
+## Pages
+- [Home](https://origin-physical-ai.pages.dev/): the product story and how it works.
+- [Console](https://origin-physical-ai.pages.dev/app): submit a site, build the brain, run the deterministic proving ground, and read the readiness license.
+
+## How scoring works
+- A deterministic oracle scores every run — reproducible, no LLM judge.
+- Models are placed on RSL tiers; cost-vs-readiness is shown side by side.
+- Metrics include FAR (false-accept rate) and FRR (false-reject rate).
+
+## Honesty
+- "Measured" numbers come from a real oracle-scored run. Everything else is explicitly labeled "projected." No fabricated metrics.
+
+## Contact
+- For access or questions: bohueilin@gmail.com

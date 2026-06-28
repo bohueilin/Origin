@@ -1,0 +1,28 @@
+{
+  "action_record_digest": "286ef1a6b178bd8f5daae8268bfc0301b07032cdaa8e55a0d30d1c1d53c73ce0",
+  "action_record_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T142614/actions/run-20260621T142614-branch-02.json",
+  "branch_id": "run-20260621T142614-branch-02",
+  "causal_delta_ref": null,
+  "causal_delta_status": "not_minimized",
+  "classifier_evidence_digest": "56b6eaee46457384d582795cbda3dfcaae78ac6fc41ed9fa08f1a99e1b8004bc",
+  "classifier_evidence_refs": [
+    {
+      "kind": "action_record",
+      "ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T142614/actions/run-20260621T142614-branch-02.json"
+    },
+    {
+      "kind": "file_diff",
+      "ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T142614/file-diffs/run-20260621T142614-branch-02.json"
+    }
+  ],
+  "classifier_input_digest": "f8fde826773d53dc1e56cf7d3d148c105a621a4cb723401c53c86f7ee0c822e7",
+  "content_digest": "0ba4c34aa77a473d77177905e3a1fdf38d0c0c26c39fcfd65f1c66f113fad97b",
+  "file_diff_digest": "6cb68bf5c44feb25ba122ad2814e506d6976b6b1d404c7d2e2ff0173c57fcc38",
+  "file_diff_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T142614/file-diffs/run-20260621T142614-branch-02.json",
+  "hud_trace_id": "f8a9a29dfebc4ab8bdcbc955877176f6",
+  "qa_result_digest": "b9a2d103afe03b7b64f37ea04fb736f348b06890309c57992cdc681d29d47aaf",
+  "qa_result_ref": "qa-07e2dc290b751d57",
+  "reward_value": 1.0,
+  "schema_version": 1,
+  "status": "pass"
+}

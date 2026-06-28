@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+  "base_image_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+  "base_original": "skylensage-registry.cn-hangzhou.cr.aliyuncs.com/instances/1124:t-bench-python-3-13",
+  "base_rewritten": "true",
+  "build_context_digest": "3a622ad6b3348bd8b8490adfe465129f9a485aa6e1d65c7b3a7cd2e0c0ad69fc",
+  "content_digest": "b104650bd12f834f7418ed69644570ab6528d38e420e1ad158572401d113908f",
+  "deployable": "true",
+  "dockerfile_digest": "250197998fa755cbf3e366fff800a93dbb706001c129d59ea0a7a0a243b171b7",
+  "grader_digest": "ab82b3c8d06f29e89308f13b654c1aca0f491b94a5e407440420cfba8ab2b05d",
+  "model": "claude-opus-4.6",
+  "task_id": "implement-2d-convolution",
+  "task_slug": "implement-2d-convolution",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "55d09b319191d7c1705731397eac86ecee81fc6f019f87b28d055c6a056f66ea",
+  "workdir": "/app"
+}

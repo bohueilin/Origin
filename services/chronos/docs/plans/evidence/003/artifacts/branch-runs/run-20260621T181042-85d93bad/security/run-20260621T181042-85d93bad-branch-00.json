@@ -1,0 +1,38 @@
+{
+  "blockers": [],
+  "branch_id": "run-20260621T181042-85d93bad-branch-00",
+  "observed_behavior": "same-runtime branch security negative probes passed",
+  "probe": {
+    "disallowed_egress_probe": "denied",
+    "forbidden_secret_presence": {
+      "ANTHROPIC_API_KEY": "absent",
+      "GITHUB_TOKEN": "absent",
+      "HUD_API_KEY": "absent",
+      "MODAL_TOKEN_ID": "absent",
+      "MODAL_TOKEN_SECRET": "absent"
+    },
+    "repo_or_workspace_write_probes": {
+      "/Users/ashtonchew/projects/hack2fix2hack/chronos-probe": "denied",
+      "/workspace/chronos-probe": "denied"
+    },
+    "schema_version": 1,
+    "status": "pass"
+  },
+  "runtime_params": {
+    "capture_root_source": "FORKPROOF_BRANCH_STATE_ROOTS",
+    "capture_roots": [
+      "/app"
+    ],
+    "egress_policy": "outbound_cidr_allowlist",
+    "instance_id": "sb-omM2gGkEHT7MbkxDZN2dkP",
+    "network_file_systems": [],
+    "outbound_cidr_allowlist": [
+      "127.0.0.1/32"
+    ],
+    "provider": "modal",
+    "secret_policy": "secrets=[]",
+    "volumes": []
+  },
+  "schema_version": 1,
+  "status": "pass"
+}

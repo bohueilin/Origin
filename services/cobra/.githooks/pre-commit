@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Pre-commit gate: run the deterministic check (ruff + pytest) before allowing a commit.
+# Wired via `git config core.hooksPath .githooks` (done by `make install`).
+set -euo pipefail
+
+echo "pre-commit: running make check…"
+make check

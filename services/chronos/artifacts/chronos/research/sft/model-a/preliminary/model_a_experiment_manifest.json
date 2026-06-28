@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_uploaded",
+  "experiment": "model_a_preliminary_diff_labeled",
+  "evidence_level": "preliminary_diff_labeled_unverified",
+  "claim_guard": "Disposable private pipeline demonstration only. Labels are diff-based, lineage is incomplete, no adversarial held-out claim is possible, and this run cannot support Model A versus Model B or improvement claims.",
+  "visibility": "private_evaluation_only",
+  "heldout_policy": "legitimate_groups_only_no_adversarial_claim",
+  "split_seed": "chronos-model-a-split-v1",
+  "source": {
+    "plan_008_manifest": null,
+    "plan_008_manifest_digest": null,
+    "qabench_report": "artifacts/chronos/qabench/benchmark-report.json",
+    "qabench_report_digest": "b05ff1038b67254d94cb15a22bbe311607c1972635da268457b1195c5b4c691f",
+    "referee_id": "preliminary_diff_based",
+    "referee_digest": "b05ff1038b67254d94cb15a22bbe311607c1972635da268457b1195c5b4c691f"
+  },
+  "counts": {
+    "eligible": 32,
+    "quarantined": 0,
+    "train": 25,
+    "train_legitimate": 15,
+    "train_hacks": 10,
+    "heldout": 7,
+    "heldout_legitimate": 7,
+    "heldout_hacks": 0
+  },
+  "groups": [
+    {
+      "group_id": "bbf41fcc562ede24",
+      "partition": "heldout",
+      "trace_ids": [
+        "run-20260621T151502-91611fa3-branch-00",
+        "run-20260621T151502-91611fa3-branch-01",
+        "run-20260621T151502-91611fa3-branch-02",
+        "run-20260621T151502-91611fa3-branch-03"
+      ]
+    },
+    {
+      "group_id": "88474bc363fb7801",
+      "partition": "train",
+      "trace_ids": [
+        "run-20260621T150843-593445c8-branch-00",
+        "run-20260621T150843-593445c8-branch-01",
+        "run-20260621T150843-593445c8-branch-02",
+        "run-20260621T150843-593445c8-branch-03"
+      ]
+    },
+    {
+      "group_id": "cd5b9919aa3a36ae",
+      "partition": "train",
+      "trace_ids": [
+        "run-20260621T151611-8950c398-branch-00",
+        "run-20260621T151611-8950c398-branch-02"
+      ]
+    },
+    {
+      "group_id": "ae9306b5c3f079b8",
+      "partition": "train",
+      "trace_ids": [
+        "run-20260621T150843-e8418eb0-branch-02"
+      ]
+    },
+    {
+      "group_id": "0e217fa0de9e5bb0",
+      "partition": "heldout",
+      "trace_ids": [
+        "run-20260621T151512-ad621392-branch-01",
+        "run-20260621T151512-ad621392-branch-02",
+        "run-20260621T151512-ad621392-branch-03"
+      ]
+    },
+    {
+      "group_id": "b360041119360449",
+      "partition": "train",
+      "trace_ids": [
+        "run-20260621T135019-branch-00",
+        "run-20260621T135019-branch-01",
+        "run-20260621T135019-branch-02",
+        "run-20260621T135019-branch-03"
+      ]
+    },
+    {
+      "group_id": "e58f8302aa6dd7e0",
+      "partition": "train",
+      "trace_ids": [
+        "run-20260621T150843-11320a9b-branch-00",
+        "run-20260621T150843-11320a9b-branch-01",
+        "run-20260621T150843-11320a9b-branch-03"
+      ]
+    },
+    {
+      "group_id": "0fa883d7dc89a0dc",
+      "partition": "train",
+      "trace_ids": [
+        "run-20260621T134932-branch-00",
+        "run-20260621T134932-branch-01",
+        "run-20260621T134932-branch-03",
+        "run-20260621T150843-0f6f8370-branch-00",
+        "run-20260621T150843-0f6f8370-branch-01",
+        "run-20260621T150843-0f6f8370-branch-02",
+        "run-20260621T150843-0f6f8370-branch-03",
+        "run-20260621T150843-fccab200-branch-00",
+        "run-20260621T150843-fccab200-branch-01",
+        "run-20260621T150843-fccab200-branch-02",
+        "run-20260621T150843-fccab200-branch-03"
+      ]
+    }
+  ],
+  "artifacts": {
+    "model_a_raw_train": {
+      "path": "artifacts/chronos/research/sft/model-a/preliminary/model_a_raw_train.jsonl",
+      "sha256": "d449a3cad122153c766a2187c25fa198e6523e59ab48c234e3f06f769391bc04"
+    },
+    "model_a_raw_train_metadata": "artifacts/chronos/research/sft/model-a/preliminary/model_a_raw_train.metadata.jsonl",
+    "heldout_legitimate_eval": {
+      "path": "artifacts/chronos/research/sft/model-a/preliminary/heldout_legitimate_eval.jsonl",
+      "sha256": "4437384bf0b3d9601b0e23b4e33224b7c134ca8f818f662bea281df9401765d4"
+    },
+    "heldout_adversarial_prompts": "artifacts/chronos/research/sft/model-a/preliminary/heldout_adversarial_prompts.jsonl",
+    "quarantine": "artifacts/chronos/research/sft/model-a/preliminary/quarantine.jsonl",
+    "provider_capability_check": "artifacts/chronos/research/sft/model-a/preliminary/provider_capability_check.json",
+    "fireworks_dataset_upload": "artifacts/chronos/research/sft/model-a/preliminary/fireworks_dataset_upload.json",
+    "sft_job_request": "artifacts/chronos/research/sft/model-a/preliminary/sft_job_request.json",
+    "sft_job_result": "artifacts/chronos/research/sft/model-a/preliminary/sft_job_result.json",
+    "heldout_eval_manifest": "artifacts/chronos/research/sft/model-a/preliminary/heldout_eval_manifest.json"
+  },
+  "content_digest": "4fed3073ffe10620f75b5431f16eed8d36ef2080fc6d8341be970c109237f39d"
+}

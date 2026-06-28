@@ -1,0 +1,11 @@
+pydantic>=2.0
+numpy>=1.24
+pytest>=7.0
+# backend service
+fastapi>=0.110
+uvicorn[standard]>=0.27
+# optional: live LLM intake/planner adapter (deterministic fallback if absent)
+anthropic>=0.40
+# optional: TRM-native student training + V-JEPA 2 (CPU ok for the tiny TRM)
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install transformers   # only for V-JEPA 2

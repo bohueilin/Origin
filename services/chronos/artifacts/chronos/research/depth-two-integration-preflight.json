@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "artifact_id": "plan-007-depth-two-integration-preflight",
+  "status": "ready",
+  "recorded_at": "2026-06-21T11:44:38Z",
+  "command_ref": "uv run python -m chronos.research.cli integration",
+  "plan003_gate": {
+    "status": "pass",
+    "manifest_ref": "docs/plans/evidence/003/MANIFEST.json",
+    "sealed_witness_check": true,
+    "manifest_status": "complete"
+  },
+  "child_selection": {
+    "status": "present",
+    "artifact_ref": "artifacts/chronos/research/child-selection-wit-run-20260621T075711-branch-08.json"
+  },
+  "child_snapshot": {
+    "status": "captured",
+    "artifact_ref": "artifacts/chronos/research/depth-two-child-snapshot.json",
+    "snapshot_ref": "modal-image://im-01KVNBK3KQWQVDMFPGR2M62KW3"
+  },
+  "depth_two_execution": {
+    "status": "completed",
+    "executor": "mapped",
+    "completed_branch_run_ref": "artifacts/chronos/research/depth-two-run.json",
+    "required_next_artifacts": []
+  },
+  "blockers": [],
+  "completion_claim": "complete",
+  "content_digest": "3cb2d5fda4c8b7ddee308723fa33ce03d0ba564670d0e43c4fe393f69a669e8c"
+}

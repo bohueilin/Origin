@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "plan_id": "005",
+  "plan_name": "verifier-fix-and-release-proof",
+  "wave": 4,
+  "status": "complete",
+  "started_at": "2026-06-21T06:52:20Z",
+  "updated_at": "2026-06-21T18:30:00Z",
+  "completed_at": "2026-06-21T12:55:35Z",
+  "commit": null,
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "plan-005-tests"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: plan-005-tests: cwd=. argv=['uv', 'run', 'pytest', 'tests/chronos/releases', '-q']; 37 passed in 0.39s."
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "integration-release"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: integration-release: cache-aware path loaded artifacts/chronos/releases/release-results/proofset-e497370b2c3d2a69.json and artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json, validated stable gate fields for releasecandidate-294df1726b8a5ed0, wrote docs/plans/evidence/005/integration-release-preflight.json, and completed without rerunning Docker."
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "lint"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: lint: cwd=. argv=['uv', 'run', 'ruff', 'check', 'docs/plans/scripts']; All checks passed."
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/run_mapped.py",
+        "build"
+      ],
+      "exit_code": 0,
+      "observed": "RUN: build: cwd=. argv=['uv', 'lock', '--check']; Resolved 155 packages in 18ms."
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/validate_file_sizes.py",
+        "--plan",
+        "005"
+      ],
+      "exit_code": 0,
+      "observed": "WARN: src/chronos/releases/release_results.py: 548 lines > 500 target; WARN: tests/chronos/releases/test_release_evaluation.py: 544 lines > 500 target; WARN: tests/chronos/releases/test_release_contracts.py: 503 lines > 500 target; PASS: 65 text file(s) are at most 550 lines; 3 file(s) exceed the 500-line target."
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/validate_evidence.py",
+        "--plan",
+        "005"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 1 evidence manifest(s) are present/structured."
+    },
+    {
+      "argv": [
+        "python",
+        "docs/plans/scripts/validate_evidence.py",
+        "--plan",
+        "005",
+        "--require-complete"
+      ],
+      "exit_code": 0,
+      "observed": "PASS: 1 evidence manifest(s) are complete."
+    }
+  ],
+  "checks": [
+    {
+      "name": "Release contract coverage",
+      "status": "pass",
+      "evidence": "Mapped plan-005-tests passes with 37 tests covering ProofSet membership, empty/missing case rejection, surviving Witness rejection, broken-control rejection, mixed digest rejection, v1 failure, pytest fallback/subversion probes, artifact round-trip, harden-v0 schema/config inspection, materialized wrapper isolation, release-results generation, cache validation, and idempotent ReleaseProof sealing."
+    },
+    {
+      "name": "Integration release gate",
+      "status": "pass",
+      "evidence": "Mapped integration-release exits 0 from the cache-aware release-results path. ReleaseProof releaseproof-30e03914472631dd gates ProofSet proofset-e497370b2c3d2a69: v1 reproduces the sealed Witness and all three controls, v2 kills wit-run-20260621T075711-branch-08, v2 preserves controls path-a/path-b/path-c, and all mandatory pytest subversion probes are blocked."
+    },
+    {
+      "name": "Immutable candidate identity",
+      "status": "pass",
+      "evidence": "releasecandidate-294df1726b8a5ed0 records harden run run-20260621T123033Z, source_ref/source_path, source_tree_digest c2ee704d5c4e653ea8de5da0fca96cfeaf6bf35d4322e551cafc76f21887cedc, environment_v2 mongodb-sales-aggregation-engine:c2ee704d5c4e653e, grader_v2_digest c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908, and candidate content digest 9047b5a60ae273cb9ae9b29c4e40801d1fd83f43083e45281dc43b9f9116144a."
+    },
+    {
+      "name": "Verifier-isolation in-process bypass fixed out-of-process (additive)",
+      "status": "pass",
+      "evidence": "The sealed v2 grader is an in-process pytest grader (imports the candidate into the verdict process) and is bypassable by a root candidate (conftest hack, atexit/os._exit exit-code hijack, in-process monkeypatch). The isolated grader (artifacts/chronos/releases/isolated-grader/) adopts the harden-v0/Harbor out-of-process convention with randomised inputs. Proven in a real container by chronos.releases.isolated_grader_proof (artifacts/chronos/releases/isolated-grader-proof.json): controls_preserved=true (path-a/b/c reward 1.0), attacks_blocked=true (answer-hardcoding, exit-code hijack, in-process monkeypatch, broken solution all reward 0.0). tests/chronos/releases/test_isolated_grader.py locks the randomisation invariants. Does NOT change the sealed ReleaseProof identity; it is the structural verifier-isolation fix for the env/publish surface to adopt. The only remaining surface is a candidate that fully reimplements the reference logic (a correct solution, not a hack)."
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "src/chronos/releases/release_results.py",
+      "description": "Canonical release-results generator and cache validator. It materializes immutable release candidate identity from harden-v0 output, generates per-case v1/v2 Witness/control results, runs mandatory pytest-subversion probes, and validates cached release-results before expensive Docker regeneration."
+    },
+    {
+      "ref": "src/chronos/releases/cli.py",
+      "description": "Plan 005 integration entrypoint now supports --generate-release-results, --harden-run-ref, and --control-solution-target; it takes the fast idempotent path when release-results and ReleaseProof stable fields already match."
+    },
+    {
+      "ref": "src/chronos/releases/release_proof.py",
+      "description": "ReleaseProof sealing is idempotent for an existing proof with matching stable fields while preserving append-only behavior for mismatched immutable artifacts."
+    },
+    {
+      "ref": "src/chronos/releases/harden_task_materializer.py",
+      "description": "Materialized harden-v0 trusted test wrapper runs from the exact trusted test mount, starts from the sealed replay surface, and prevents branch-writable cwd/import/plugin shadowing during v2 verification."
+    },
+    {
+      "ref": "tests/chronos/releases/**",
+      "description": "Focused release tests for gate failures, cache hits/staleness, release-results generation, harden candidate identity, idempotent sealing, pytest subversion fallback behavior, and harden-v0/materializer integration contracts."
+    },
+    {
+      "ref": "artifacts/chronos/releases/harden-runs/proofset-e497370b2c3d2a69.json",
+      "description": "Compact harden-v0 run record for run-20260621T123033Z. The terminal candidate is robust under the clean trusted wrapper: iteration 0 hacker_failed with hack_reward 0.00; this run supplies the immutable candidate source for Plan 005 release-results."
+    },
+    {
+      "ref": "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json",
+      "description": "Immutable release candidate identity: source path/ref, source tree digest, harden run ref, v2 environment/grader identity, terminal iteration, and content digest."
+    },
+    {
+      "ref": "artifacts/chronos/releases/release-results/proofset-e497370b2c3d2a69.json",
+      "description": "Independent release-results artifact for ProofSet proofset-e497370b2c3d2a69, including v1/v2 Witness/control results, evaluator context, mandatory pytest-subversion results, and trace refs."
+    },
+    {
+      "ref": "artifacts/chronos/releases/release-results/releasecandidate-294df1726b8a5ed0/traces/*.json",
+      "description": "Per-case v2 Witness/control traces and mandatory subversion probe traces used by release-results and ReleaseProof."
+    },
+    {
+      "ref": "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+      "description": "Sealed ReleaseProof with ProofSet id, v1/v2 identities, patch/fixer refs, per-case results, trace links, killed/preserved counts, gate status pass, release candidate ref, timestamps, and content digest."
+    },
+    {
+      "ref": "docs/plans/evidence/005/integration-release-preflight.json",
+      "description": "Mapped integration-release evidence. It binds harden-v0 schema, closes ProofSet membership, records the release evaluation result, and now reports complete with no blockers."
+    },
+    {
+      "ref": "docs/plans/repo-map/COMMANDS.json",
+      "description": "Rescue exception command-row update: integration-release now uses cache-aware release-results generation/validation rather than rerunning Docker whenever candidate identity and proof fields are unchanged."
+    },
+    {
+      "ref": "artifacts/chronos/releases/isolated-grader/grade.py",
+      "description": "Out-of-process trusted grader with randomised inputs: runs candidate + reference in throwaway isolated subprocesses, compares outputs; verdict process never imports candidate code."
+    },
+    {
+      "ref": "artifacts/chronos/releases/isolated-grader/run_solution.py",
+      "description": "Runs ONE candidate SalesAnalyzer out-of-process and prints its JSON output (the only place a candidate is imported; a throwaway subprocess)."
+    },
+    {
+      "ref": "artifacts/chronos/releases/isolated-grader/reference_query.py",
+      "description": "Trusted reference solution used to compute the expected outputs at grade time on the randomised data."
+    },
+    {
+      "ref": "artifacts/chronos/releases/isolated-grader-proof.json",
+      "description": "Real-container proof: three controls reward 1.0; exit-code hijack, monkeypatch, answer-hardcoding, and broken solution all reward 0.0; pass=true."
+    }
+  ],
+  "screenshots": [],
+  "skips": [],
+  "blockers": [],
+  "notes": [
+    "Planning template only; no implementation evidence is claimed.",
+    "2026-06-21 PR #11 planning hardening is stacked over PR #19, but Plan 005 remains not-started until Gate 3 opens with at least one sealed Exploit Witness.",
+    "2026-06-21 PR #11 updates Plan 005 start criteria, ProofSet membership checks, family-variant handling, command-map custody, and known pytest-subversion regression requirements; no source implementation or release evidence is claimed.",
+    "2026-06-21T06:52:20Z fresh origin/main worktree preflight stopped before implementation for unresolved dependency, command-map, and harden-v0 checkout gates; no source files were edited.",
+    "2026-06-21T06:53:45Z continuation recheck after git fetch origin main found the same blockers; no implementation or non-owned writes were attempted.",
+    "2026-06-21T06:54:46Z third consecutive preflight found unchanged blockers; active goal marked blocked rather than complete.",
+    "2026-06-21T07:01:52Z user approved a narrow rescue PR. docs/plans/000-index.md now records a cross-plan exception allowing Plan 003 Witness sealing, Plan 005 release proof work, and only the Plan 005 COMMANDS.json rows in this same isolated branch. The prior blockers remain historical until the rescue work produces Gate 3 and Gate 4 evidence.",
+    "2026-06-21T07:01:52Z Plan 005 contract tests pass through run_mapped.py. integration-release is now a real command and fails closed because no sealed Plan 003 Exploit Witness exists; skipped commands are no longer counted.",
+    "2026-06-21T07:14:52Z release contracts were tightened to require sealed Witness reward/QA join/dedup/replay evidence and the full mandatory v2 pytest-subversion check set. The remaining STOP is evidence-backed: no sealed Plan 003 Witness exists, and the current ForkPoint evidence does not record a canonical task-agnostic replay/grader command that can be used to seal one without hard-coding the MongoDB task.",
+    "2026-06-21T07:19:11Z harden-v0 adapter now records result.json output schema from .external/harden-v0/harden/loop.py and .external/harden-v0/CLAUDE.md, including implementation fields, documented fields, status values, and output paths. integration-release refreshed docs/plans/evidence/005/integration-release-preflight.json with that schema and still fails only on missing sealed Witness.",
+    "2026-06-21T07:21:40Z added Plan 005 evaluator identity and ReleaseProof sealing contracts. Release gate now rejects missing or mixed per-case environment/grader identity before reward decisions, and ReleaseProof artifacts must content-verify before append-only storage. Mapped plan-005-tests now reports 10 passing tests.",
+    "2026-06-21T07:23:55Z added candidate patch rejection-history entries and bounded-failure ReleaseProof support. Rejected gates now carry per-case v2 results, surviving Witness ids, broken control ids, patch/fixer refs, iteration, and gate decision; bounded_failure cannot seal without rejection history. Mapped plan-005-tests now reports 11 passing tests.",
+    "2026-06-21T07:30:10Z removed task-specific release assumptions found by read-only subagent review. integration-release now takes explicit controls/taskset/selection refs instead of hard-coding the current controls fixture; subversion checks are evaluator-profile driven; evaluator context uses verifier plugin provenance instead of a required pytest field; and Plan 003 sealing now requires canonical replay_surface evidence. Mapped plan-005-tests now reports 13 passing tests, while integration-release remains blocked only on missing sealed Witness.",
+    "2026-06-21T08:08:00Z latest Plan 003 seal attempt reached the recorded replay-surface restore boundary for candidate run-20260621T075711-branch-08 and failed with Modal PermissionDeniedError for image im-01KVKYBWZYVZSD79CX5P9SNPXR. Plan 005 remains blocked on upstream state-restore access; no ReleaseProof or PR completion is claimed.",
+    "2026-06-21T08:26:35Z replay now loads the symlinked repo-root .env before Modal access, without printing or overriding secrets. Retried Plan 003 sealing succeeded as wit-run-20260621T075711-branch-08, and integration-release reached ProofSet closure for proofset-e497370b2c3d2a69.",
+    "2026-06-21T08:37:31Z integration-release is now a strict release command rather than a ProofSet-only preflight: it runs harden-v0 through the repo optional dependency boundary, writes harden-run and release-blocker artifacts, infers mandatory pytest subversion checks from replay_surface, and exits 2 until real v1/v2 release results can seal ReleaseProof.",
+    "2026-06-21T09:02:13Z harden-v0 model selection no longer silently falls back to Gemini/Google. The adapter defaults to Anthropic, the mapped command explicitly passes anthropic/claude-haiku-4-5 for hacker/fixer/solver, and credential checks record presence only. The integration-release run reached Anthropic-backed hacker execution and then timed out with returncode 124/status unknown; ReleaseProof remained blocked on completing harden-v0 plus real v1/v2 release-results evidence.",
+    "2026-06-21T09:13:48Z reran integration-release with the same explicit Anthropic model path and a larger bounded harden timeout. harden-v0 returned 0/status max_iterations, found a rewarded hack, attempted the fixer, and recorded iteration outcome fix_failed with fix_applied false. The release gate still exits 2 because harden-v0 did not produce a successful candidate patch or real per-case v1/v2 release-results artifact.",
+    "2026-06-21T09:28:04Z adapter diagnostics now record the concrete fixer failure: harden-v0 expected the committed fixer artifact repo at trial_dir/artifacts, but Harbor exported /logs/artifacts under trial_dir/artifacts/logs/artifacts. The nested diff includes fixer patch material, but it is diagnostic only because harden-v0 did not apply it or validate it through solver/replay.",
+    "2026-06-21T10:35:01Z stopped a live mapped integration-release run after verifying it was semantically stalled. The process and files were active, but the single hacker_h0_a0 trial was in a refusal loop: trajectory step_count=530, model=claude-haiku-4-5-20251001, last message='Analysis: Declined / Plan: Cannot proceed', final_metrics total_prompt_tokens=17509755 and total_cost_usd=2.2138652000000008. This proves retry=0 is not the right Plan 005 speed lever: harden-v0 implements hacker_retries as range(hacker_retries), so zero would run no hacker attempt; fastest trustworthy setting is one hacker attempt plus fail-fast on refusal/step budget or a more compliant model/prompt path.",
+    "2026-06-21T10:45:00Z added a canonical harden-v0 refusal-loop guard and turn cap: integration-release now passes --harden-hacker-max-turns 80, the adapter records generic hacker_refusal_loops from Harbor trajectory files, and harden_result_blocker reports harden_hacker_model_refusal_loop before release evidence can be mistaken for a gate attempt. Split harden output inspection into src/chronos/releases/harden_inspection.py to satisfy the Plan 005 file-size gate.",
+    "2026-06-21T12:20:00Z fixed harden_result_blocker classification so rejected replay-broken candidates are preserved as iteration history when a later terminal harden iteration is fixed. The latest compact harden run now records iteration 0 as rejected replay_broke_fix and iteration 1 as fixed; release-blockers/proofset-e497370b2c3d2a69.json blocks only on missing independent release-results evidence.",
+    "2026-06-21T12:55:35Z \u2014 Plan 005 ReleaseProof sealed. The final mapped integration-release command validates existing release-results and ReleaseProof for proofset-e497370b2c3d2a69 plus releasecandidate-294df1726b8a5ed0 in the fast path; Docker-backed release-results generation remains the fallback only when candidate identity, release-results digest, or ReleaseProof stable fields drift.",
+    "2026-06-21T12:55:35Z \u2014 Release-results cache key includes generator_contract version 2 so replay-wrapper changes invalidate stale artifacts; after regenerating once, mapped integration-release returned to the fast cache path.",
+    "2026-06-21T18:30:00Z \u2014 Additive post-completion hardening (Plan 005 stays complete). Added the out-of-process isolated grader with randomised inputs under artifacts/chronos/releases/isolated-grader/ + src/chronos/releases/isolated_grader_proof.py + tests/chronos/releases/test_isolated_grader.py, fixing the in-process verifier-isolation bypass (exit-code hijack + monkeypatch) and the answer-hardcoding residual. Real-container proof recorded. The sealed ReleaseProof identity is unchanged."
+  ]
+}

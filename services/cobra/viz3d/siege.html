@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cobra — Siege Visualization (medieval re-skin)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+  <style>
+    :root { color-scheme: dark; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1512; }
+    #app { position: fixed; inset: 0; }
+    #hud {
+      position: fixed; top: 16px; left: 16px; z-index: 10;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      color: #c5cdd8; pointer-events: none; user-select: none;
+    }
+    #hud h1 { margin: 0 0 2px; font: 400 32px/.9 "UnifrakturMaguntia", serif; letter-spacing: .01em;
+      background: linear-gradient(180deg, #e6ebf2, #aab6c4 55%, #6c7682);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #hud .sub { margin: 0; font: 600 10px/1 "Cinzel", serif; letter-spacing: .2em; text-transform: uppercase; color: #828c99; }
+    #hud .hint { margin-top: 10px; font-size: 11px; color: #c0392b; }
+    /* Persistent beat caption (DOM overlay — renders even without WebGL). */
+    #beat {
+      position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+      max-width: 86vw; padding: 9px 20px; border-radius: 9px; z-index: 10;
+      background: rgba(8,12,20,0.82); border: 1px solid #2a313b;
+      color: #dfe5ec; font: 600 15px/1.3 ui-monospace, "SF Mono", Menlo, monospace;
+      letter-spacing: .02em; text-align: center; pointer-events: none; user-select: none;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #beat:empty { display: none; }
+
+    /* ── right sidebar: metric plaques + an ongoing chronicle ── */
+    #sidebar { position: fixed; top: 14px; right: 14px; bottom: 14px; width: 312px; z-index: 10;
+               display: flex; flex-direction: column; gap: 12px; pointer-events: none; user-select: none; }
+    #stats { display: flex; flex-direction: column; gap: 10px; align-items: stretch; flex-shrink: 0; }
+    .log-h { font: 600 10px/1 "Cinzel", serif; letter-spacing: .18em; text-transform: uppercase;
+             color: #828c99; padding: 2px 4px; flex-shrink: 0; }
+    #log { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
+           gap: 1px; background: linear-gradient(180deg, #1a1f28, #11151b);
+           border: 1px solid #2a313b; border-radius: 10px; padding: 8px 4px; }
+    #log .row { font: 13px/1.35 "EB Garamond", serif; color: #b3bcc8; padding: 5px 12px;
+                border-left: 3px solid transparent; opacity: 0; animation: logslide .3s forwards; }
+    @keyframes logslide { to { opacity: 1; } }
+    #log .row.breach { border-color: #c0392b; color: #e0a59c; }
+    #log .row.patch  { border-color: #6fae86; }
+    #log .row.reject { border-color: #e0863a; }
+    #log .row.kill   { border-color: #6fae86; }
+    #log .row.robust { border-color: #caa24b; color: #d8cba0; }
+    #stats .plaque { min-width: 168px; padding: 11px 18px; text-align: right;
+      background: linear-gradient(180deg, #1c222b, #11151b);
+      border: 1px solid #2a313b; border-radius: 8px;
+      box-shadow: inset 0 1px 0 rgba(170,182,196,.10), inset 0 -10px 22px rgba(0,0,0,.5), 0 4px 16px rgba(0,0,0,.55); }
+    #stats .plaque.hold { border-color: #3a4452; box-shadow: inset 0 1px 0 rgba(170,182,196,.16), 0 0 22px rgba(120,140,160,.12); }
+    #stats .v { font: 900 40px/1 "Cinzel", serif; font-variant-numeric: tabular-nums;
+      background: linear-gradient(180deg, #eef2f7, #c2ccd6 60%, #8b96a2);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #stats .v.good { background: linear-gradient(180deg, #bfe0ea, #7fa8b8 60%, #4d7180);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #stats .v.warn { background: linear-gradient(180deg, #e98a7e, #c0392b 60%, #8a2018);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #stats .k { font: 600 10px/1 "Cinzel", serif; letter-spacing: .14em; text-transform: uppercase;
+      color: #828c99; margin-top: 8px; }
+    #stats .d { font: 12px/1.3 ui-monospace, "SF Mono", monospace; color: #97a1ae; margin-top: 6px; }
+    #stats .counts { font: 12px/1 ui-monospace, "SF Mono", monospace; color: #97a1ae;
+      padding: 7px 15px; background: rgba(10,13,18,.72); border: 1px solid #2a313b; border-radius: 7px; }
+  </style>
+
+  <!-- Three.js + OrbitControls via CDN import map (no build step). -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hud">
+    <h1>Cobra</h1>
+    <p class="sub">the grader siege</p>
+    <p class="hint">drag to orbit · scroll to zoom · open console for the event stream</p>
+  </div>
+  <aside id="sidebar">
+    <div id="stats">
+      <div class="plaque hold">
+        <div class="v" id="s-wall">—</div>
+        <div class="k">the wall holds</div>
+        <div class="d" id="s-wall-d"></div>
+      </div>
+      <div class="plaque">
+        <div class="v good" id="s-honest">—</div>
+        <div class="k">honest admitted</div>
+      </div>
+      <div class="plaque">
+        <div class="v warn" id="s-spoils">—</div>
+        <div class="k">spoils if gamed</div>
+      </div>
+      <div class="counts" id="s-counts">0 breached · 0 sealed · 0 probes</div>
+    </div>
+    <div class="log-h">The chronicle</div>
+    <div id="log"></div>
+  </aside>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPixelatedPass } from "three/addons/postprocessing/RenderPixelatedPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+    // ----------------------------------------------------------------------
+    // Palette — medieval dusk: weathered stone, wood, iron, torchlight.
+    // (Stone/wood tints multiply the pixel textures below.)
+    // ----------------------------------------------------------------------
+    // Cool, desaturated keep — slate & charcoal stone, one red accent (breach / banners /
+    // light shafts). Restraint: nothing warm or green; saturation lives only in the red.
+    const C = {
+      bg:          0x0e1116, // void
+      ground:      0x7e8694, // cool grey-blue tint over the dirt (keeps a little earth)
+      stoneDark:   0x8e96a0, // wall tint (light cool grey)
+      stoneMid:    0xa7afb9, // keep body tint
+      stoneLight:  0xc2cad2, // battlements / upper tint
+      wood:        0xffffff, // plank texture carries the color
+      iron:        0x5c646e, // mid iron banding
+      banner:      0xb5392f, // the red accent — heraldry cloth
+      bannerTrim:  0x8a929c, // steel trim (no gold)
+      flameOuter:  0xff7a1e, // warm torch fire
+      flameInner:  0xffd36a,
+      torch:       0xff9a44, // warm torch light pool
+      beacon:      0xffae52, // warm beacon flame
+      status:      0x49515c, // neutral gate banner (flips red / steel later)
+      robust:      0x9fb1c4, // robustness fill (cool pale)
+      honest:      0x7fa8b8, // honest-pass fill (cool teal, not green)
+      track:       0x161c24, // gauge track
+      panel:       0x12161c, // gauge backing
+    };
+
+    // Adversary specialties → distinct colors (hashed fallback for unknowns).
+    const SPECIALTY_COLORS = {
+      FORGER:        0xff5d5d, // red
+      EDGE_SLIPPER:  0x4fd1ff, // cyan
+      SPEC_GAMER:    0xb07cff, // purple
+      OVERFITTER:    0xffc24f, // amber
+      NULL_RETURNER: 0x49e08a, // green
+      // Real Cobra engine specialties (Seam 2 agent_spawn.specialty values)
+      tamper_harness:   0xff5d5d, // red
+      hardcode_outputs: 0xffc24f, // amber
+      sparse_test_gap:  0x4fd1ff, // cyan
+      scout:            0xb07cff, // purple
+      mimic:            0x49e08a, // green
+    };
+    function colorForSpecialty(spec) {
+      if (spec && SPECIALTY_COLORS[spec] != null) return SPECIALTY_COLORS[spec];
+      let h = 0;
+      const s = String(spec || "");
+      for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+      return new THREE.Color().setHSL((h % 360) / 360, 0.62, 0.6).getHex();
+    }
+
+    const N_GATES = 8;
+    const RING_R  = 19;            // gate ring radius
+    const ATTACK_R = RING_R + 3.2; // where agents stop, just outside a gate
+    const SPAWN_R = 28;            // outer edge where agents appear
+    const TWO_PI  = Math.PI * 2;
+
+    // ----------------------------------------------------------------------
+    // Scene scaffold: renderer, camera, lights, ground, orbit controls.
+    // ----------------------------------------------------------------------
+    const container = document.getElementById("app");
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.12;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    container.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1c1622);          // dusk (behind the sky dome)
+    scene.fog = new THREE.Fog(0x2a2030, 95, 300);         // thin dusk haze, far back (less fog)
+
+    // Sunset gradient sky dome — deep orange/rose at the horizon → dusk purple/blue up top.
+    // Cheap: one large BackSide sphere, unlit ShaderMaterial (gradient by world-Y), fog off.
+    const sky = new THREE.Mesh(
+      new THREE.SphereGeometry(400, 32, 15),
+      new THREE.ShaderMaterial({
+        side: THREE.BackSide, depthWrite: false, fog: false,
+        uniforms: {
+          topColor: { value: new THREE.Color(0x161a2e) },     // deep dusk blue-purple
+          midColor: { value: new THREE.Color(0x4d2c40) },     // dusk rose
+          horizonColor: { value: new THREE.Color(0x9a4420) }, // dark sunset amber
+        },
+        vertexShader:
+          "varying vec3 vW; void main(){ vec4 wp = modelMatrix * vec4(position,1.0); vW = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }",
+        fragmentShader:
+          "varying vec3 vW; uniform vec3 topColor, midColor, horizonColor; void main(){ float t = max(0.0, normalize(vW).y); vec3 low = mix(horizonColor, midColor, smoothstep(0.0, 0.16, t)); vec3 c = mix(low, topColor, pow(smoothstep(0.04, 0.55, t), 0.9)); gl_FragColor = vec4(c, 1.0); }",
+      })
+    );
+    sky.frustumCulled = false;
+    scene.add(sky);
+
+    // Perspective camera looking down at the set at a slight angle.
+    const camera = new THREE.PerspectiveCamera(
+      48, window.innerWidth / window.innerHeight, 0.1, 1000
+    );
+    camera.position.set(34, 30, 40);
+
+    // Orbit controls — drag to look around (referenced by the render loop).
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.maxPolarAngle = Math.PI / 2 - 0.04; // stay above the ground
+    controls.minDistance = 22;
+    controls.maxDistance = 105;
+    controls.target.set(0, 7, 0);
+
+    // Post-processing: a pixel-art crunch + a soft bloom that makes the red breach/torch
+    // lights glow like the reference. EffectComposer drives the render loop from here on.
+    const composer = new EffectComposer(renderer);
+    const pixelPass = new RenderPixelatedPass(4, scene, camera); // 4px cells → crisp pixel-art
+    pixelPass.normalEdgeStrength = 0.55;
+    pixelPass.depthEdgeStrength = 0.3;
+    composer.addPass(pixelPass);
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight), 0.95, 0.6, 0.62
+    );
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+    // Flip to true to render through the pixel-art + bloom composer; false = raw crisp render.
+    const USE_POST = false;
+
+    // Lighting: warm dusk hemisphere + low warm key (shadows) + cool dusk rim.
+    // Gentle lift so the field reads as a living dusk landscape (greener ground bounce),
+    // without washing out the gauges/labels — key/rim keep the torchlit dusk mood.
+    const hemi = new THREE.HemisphereLight(0x687892, 0x2a2630, 1.0); // dusk ambient (lifted so stone + trees read)
+    scene.add(hemi);
+
+    const key = new THREE.DirectionalLight(0xec9450, 1.5); // warm sunset sun on the grey stone
+    key.position.set(40, 30, 18); // low moon → long shadows
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.near = 1;
+    key.shadow.camera.far = 180;
+    key.shadow.camera.left = -60;
+    key.shadow.camera.right = 60;
+    key.shadow.camera.top = 60;
+    key.shadow.camera.bottom = -60;
+    key.shadow.bias = -0.0004;
+    scene.add(key);
+
+    const rim = new THREE.DirectionalLight(0x46506e, 0.45);
+    rim.position.set(-28, 18, -26);
+    scene.add(rim);
+
+    // Warm courtyard torch-pools (static fill light around the ring).
+    for (let i = 0; i < 4; i++) {
+      const a = (i / 4) * TWO_PI + Math.PI / 4;
+      const pool = new THREE.PointLight(C.torch, 7, 24, 2);
+      pool.position.set(Math.cos(a) * 13, 5, Math.sin(a) * 13);
+      scene.add(pool);
+    }
+
+    // ----------------------------------------------------------------------
+    // Pixel-art textures — tiny canvases, nearest-neighbor, no mipmaps.
+    // ----------------------------------------------------------------------
+    function pixelTexture(draw, size, repeat) {
+      const c = document.createElement("canvas");
+      c.width = c.height = size;
+      draw(c.getContext("2d"), size);
+      const t = new THREE.CanvasTexture(c);
+      t.magFilter = THREE.NearestFilter;
+      t.minFilter = THREE.NearestFilter;
+      t.generateMipmaps = false;
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(repeat, repeat);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+
+    function drawStone(ctx, S) {
+      const shades = ["#8b857b", "#9b958a", "#a59e91", "#7d776e", "#928c81", "#736d64"];
+      ctx.fillStyle = "#4a463f"; ctx.fillRect(0, 0, S, S); // mortar
+      const bh = 8, bw = 16;
+      for (let row = 0; row * bh < S + bh; row++) {
+        const yy = row * bh, off = (row % 2) ? bw / 2 : 0;
+        for (let bx = -1; bx * bw < S + bw; bx++) {
+          const xx = bx * bw + off;
+          for (let py = 1; py < bh - 1; py++)
+            for (let px = 1; px < bw - 1; px++) {
+              const gx = ((xx + px) % S + S) % S, gy = yy + py;
+              if (gy >= S) continue;
+              ctx.fillStyle = shades[(Math.random() * shades.length) | 0];
+              ctx.fillRect(gx, gy, 1, 1);
+            }
+        }
+      }
+    }
+
+    function drawWood(ctx, S) {
+      const planks = ["#6e4c2c", "#5e3f24", "#7a5430", "#553820", "#684628"];
+      const gap = "#33220f";
+      const pw = 8;
+      for (let p = 0; p * pw < S; p++) {
+        const base = planks[p % planks.length];
+        for (let py = 0; py < S; py++)
+          for (let px = 0; px < pw; px++) {
+            const gx = p * pw + px;
+            if (gx >= S) continue;
+            ctx.fillStyle = px === 0 ? gap : (Math.random() < 0.16 ? gap : base);
+            ctx.fillRect(gx, py, 1, 1);
+          }
+      }
+    }
+
+    function drawDirt(ctx, S) {
+      const shades = ["#3c3328", "#473b2d", "#352c22", "#4a3d2e", "#2e2620"];
+      for (let y = 0; y < S; y++)
+        for (let x = 0; x < S; x++) {
+          ctx.fillStyle = shades[(Math.random() * shades.length) | 0];
+          ctx.fillRect(x, y, 1, 1);
+        }
+    }
+
+    const TEX = {
+      stone: pixelTexture(drawStone, 32, 1),
+      wood:  pixelTexture(drawWood, 32, 1),
+      dirt:  pixelTexture(drawDirt, 32, 28),
+    };
+
+    // ----------------------------------------------------------------------
+    // Material + geometry helpers.
+    // ----------------------------------------------------------------------
+    const stone = (color) =>
+      new THREE.MeshLambertMaterial({ map: TEX.stone, color, flatShading: true });
+    const wood = (color = C.wood) =>
+      new THREE.MeshLambertMaterial({ map: TEX.wood, color, flatShading: true });
+    const iron = () =>
+      new THREE.MeshLambertMaterial({ color: C.iron, flatShading: true });
+
+    function castReceive(mesh) {
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    // Flickering torch flames are collected here and animated in the loop.
+    const flames = [];
+    function makeFlame(s) {
+      const g = new THREE.Group();
+      const outer = new THREE.Mesh(
+        new THREE.ConeGeometry(0.22 * s, 0.62 * s, 6),
+        new THREE.MeshBasicMaterial({ color: C.flameOuter, toneMapped: false })
+      );
+      outer.position.y = 0.30 * s;
+      const inner = new THREE.Mesh(
+        new THREE.ConeGeometry(0.12 * s, 0.38 * s, 6),
+        new THREE.MeshBasicMaterial({ color: C.flameInner, toneMapped: false })
+      );
+      inner.position.y = 0.26 * s;
+      g.add(outer, inner);
+      g.userData.phase = Math.random() * TWO_PI;
+      flames.push(g);
+      return g;
+    }
+
+    // A wall-mounted torch: bracket + flame (emissive accent, no per-torch light).
+    function makeTorch(s = 1) {
+      const t = new THREE.Group();
+      const stick = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.7, 0.12), wood());
+      stick.position.y = 0.35;
+      const flame = makeFlame(s);
+      flame.position.y = 0.75;
+      t.add(stick, flame);
+      return t;
+    }
+
+    // Ground.
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(240, 240),
+      new THREE.MeshLambertMaterial({ map: TEX.dirt, color: C.ground })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Ring of merlons (crenellation teeth) around a circle.
+    function addMerlons(parent, { count, radius, y, size, mat }) {
+      const geo = new THREE.BoxGeometry(size, size * 1.4, size);
+      for (let i = 0; i < count; i++) {
+        const a = (i / count) * TWO_PI;
+        const m = castReceive(new THREE.Mesh(geo, mat));
+        m.position.set(Math.cos(a) * radius, y, Math.sin(a) * radius);
+        m.rotation.y = -a;
+        parent.add(m);
+      }
+    }
+
+    // Row of merlons along a straight top (local X axis), used on walls.
+    function addWallMerlons(parent, { length, y, size, mat }) {
+      const geo = new THREE.BoxGeometry(size, size * 1.3, size * 0.9);
+      const span = length - size;
+      const count = Math.max(2, Math.round(span / (size * 2)));
+      for (let i = 0; i <= count; i++) {
+        const x = -span / 2 + (span / count) * i;
+        const m = castReceive(new THREE.Mesh(geo, mat));
+        m.position.set(x, y, 0);
+        parent.add(m);
+      }
+    }
+
+    // A hanging heraldic banner (crimson cloth + gold trim + emblem).
+    function makeBanner(w, h) {
+      const g = new THREE.Group();
+      const cloth = new THREE.Mesh(
+        new THREE.BoxGeometry(w, h, 0.08),
+        new THREE.MeshLambertMaterial({ color: C.banner, flatShading: true })
+      );
+      g.add(cloth);
+      const trim = new THREE.Mesh(
+        new THREE.BoxGeometry(w, 0.18, 0.1),
+        new THREE.MeshLambertMaterial({ color: C.bannerTrim, flatShading: true })
+      );
+      trim.position.y = h / 2 - 0.12;
+      g.add(trim);
+      const emblem = new THREE.Mesh(
+        new THREE.BoxGeometry(w * 0.34, w * 0.34, 0.1),
+        new THREE.MeshLambertMaterial({ color: C.bannerTrim, flatShading: true })
+      );
+      emblem.position.y = h * 0.04;
+      emblem.rotation.z = Math.PI / 4;
+      g.add(emblem);
+      return g;
+    }
+
+    // ----------------------------------------------------------------------
+    // The grader = central stone keep with a torch-lit beacon.
+    // ----------------------------------------------------------------------
+    function buildKeep() {
+      const keep = new THREE.Group();
+
+      const base = castReceive(new THREE.Mesh(
+        new THREE.CylinderGeometry(9, 9.6, 1.2, 16), stone(C.stoneDark)));
+      base.position.y = 0.6;
+      keep.add(base);
+
+      const tier = castReceive(new THREE.Mesh(
+        new THREE.CylinderGeometry(6.4, 6.8, 1.4, 8), stone(C.stoneMid)));
+      tier.position.y = 1.9;
+      tier.rotation.y = Math.PI / 8;
+      keep.add(tier);
+
+      const tower = castReceive(new THREE.Mesh(
+        new THREE.CylinderGeometry(3.6, 4.0, 6.2, 8), stone(C.stoneMid)));
+      tower.position.y = 5.6;
+      tower.rotation.y = Math.PI / 8;
+      keep.add(tower);
+
+      const crown = castReceive(new THREE.Mesh(
+        new THREE.CylinderGeometry(4.1, 3.7, 0.8, 8), stone(C.stoneLight)));
+      crown.position.y = 9.1;
+      crown.rotation.y = Math.PI / 8;
+      keep.add(crown);
+
+      addMerlons(keep, { count: 8, radius: 3.85, y: 9.8, size: 0.85, mat: stone(C.stoneLight) });
+
+      // Hanging banners on the tower.
+      for (const ba of [Math.PI * 0.25, Math.PI * 1.25]) {
+        const banner = makeBanner(1.6, 3.2);
+        banner.position.set(Math.cos(ba) * 3.75, 6.4, Math.sin(ba) * 3.75);
+        banner.lookAt(banner.position.x * 2, 6.4, banner.position.z * 2);
+        keep.add(banner);
+      }
+
+      // The grader beacon — a stone brazier with a warm flame.
+      const bowl = castReceive(new THREE.Mesh(
+        new THREE.CylinderGeometry(1.4, 0.9, 0.9, 8), stone(C.stoneLight)));
+      bowl.position.y = 9.9;
+      keep.add(bowl);
+      const rimIron = new THREE.Mesh(
+        new THREE.TorusGeometry(1.35, 0.12, 6, 8), iron());
+      rimIron.position.y = 10.3;
+      rimIron.rotation.x = Math.PI / 2;
+      keep.add(rimIron);
+
+      const flame = makeFlame(2.8);
+      flame.position.y = 10.3;
+      keep.add(flame);
+
+      const beaconLight = new THREE.PointLight(C.beacon, 22, 34, 2);
+      beaconLight.position.y = 11.2;
+      keep.add(beaconLight);
+
+      keep.userData = { flame, beaconLight, beaconBase: 22 };
+      return keep;
+    }
+
+    // ----------------------------------------------------------------------
+    // The checks = gates around the ring. Each gate is a targetable Group:
+    //   userData.id          — stable "gate_N"
+    //   userData.door        — the wooden door that opens on a breach
+    //   userData.statusLight — banner above the gate (neutral; flips later)
+    // ----------------------------------------------------------------------
+    function buildGate(id) {
+      const gate = new THREE.Group();
+      gate.userData.id = id;
+
+      const pillarMat = stone(C.stoneLight);
+
+      const step = castReceive(new THREE.Mesh(
+        new THREE.BoxGeometry(6.6, 0.7, 3.0), stone(C.stoneDark)));
+      step.position.y = 0.35;
+      gate.add(step);
+
+      // Flanking pillar towers (+Z faces outward after lookAt).
+      for (const sx of [-2.4, 2.4]) {
+        const pillar = castReceive(new THREE.Mesh(
+          new THREE.BoxGeometry(2.0, 5.4, 2.0), pillarMat));
+        pillar.position.set(sx, 2.7, 0);
+        gate.add(pillar);
+
+        // Crenellation teeth on each pillar top.
+        for (let k = 0; k < 4; k++) {
+          const tx = (k % 2 ? 0.55 : -0.55);
+          const tz = (k < 2 ? 0.55 : -0.55);
+          const tooth = castReceive(new THREE.Mesh(
+            new THREE.BoxGeometry(0.7, 0.7, 0.7), pillarMat));
+          tooth.position.set(sx + tx, 5.7, tz);
+          gate.add(tooth);
+        }
+
+        // Wall torch on the front of each pillar.
+        const torch = makeTorch(0.9);
+        torch.position.set(sx, 4.0, 1.0);
+        gate.add(torch);
+      }
+
+      const lintel = castReceive(new THREE.Mesh(
+        new THREE.BoxGeometry(6.0, 1.3, 1.8), pillarMat));
+      lintel.position.set(0, 5.7, 0);
+      gate.add(lintel);
+
+      // The door — wooden planks with iron banding. Targeted on breach.
+      const door = castReceive(new THREE.Mesh(
+        new THREE.BoxGeometry(3.3, 4.4, 0.5), wood()));
+      door.position.set(0, 2.5, 0.35);
+      gate.add(door);
+      gate.userData.door = door;
+
+      // Iron horizontal bands + studs on the door.
+      for (const by of [1.3, 3.7]) {
+        const band = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.4, 0.12), iron());
+        band.position.set(0, by, 0.63);
+        gate.add(band);
+        for (const stx of [-1.2, -0.4, 0.4, 1.2]) {
+          const stud = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.1), iron());
+          stud.position.set(stx, by, 0.70);
+          gate.add(stud);
+        }
+      }
+
+      // A warm torch-pool light at every gate (like the central brazier) so each gate is well lit.
+      const gateLight = new THREE.PointLight(C.torch, 34, 56, 2);
+      gateLight.position.set(0, 3.0, 5.0);   // out in front, at wall-face height → lights the OUTER face
+      gate.add(gateLight);
+
+      return gate;
+    }
+
+    // Straight stone cobra spanning the chord between two adjacent gates.
+    function buildWall(length) {
+      const wall = new THREE.Group();
+      const body = castReceive(new THREE.Mesh(
+        new THREE.BoxGeometry(length, 3.0, 1.4), stone(C.stoneDark)));
+      body.position.y = 1.6;
+      wall.add(body);
+      addWallMerlons(wall, { length, y: 3.45, size: 0.7, mat: stone(C.stoneLight) });
+
+      // A torch on the OUTER face, with a strong warm light so the perimeter is lit.
+      const torch = makeTorch(0.85);
+      torch.position.set(0, 2.4, 0.85);
+      wall.add(torch);   // the outer torch RING (added at assembly) lights these walls from outside
+      return wall;
+    }
+
+    // ----------------------------------------------------------------------
+    // Assemble the ring: gates at vertices, walls across the chords.
+    // ----------------------------------------------------------------------
+    const keep = buildKeep();
+    scene.add(keep);
+
+    const gates = {};        // id -> gate Group (event target registry)
+    const siegeRing = new THREE.Group();
+    scene.add(siegeRing);
+
+    const chord = 2 * RING_R * Math.sin(Math.PI / N_GATES);
+    const chordR = RING_R * Math.cos(Math.PI / N_GATES);
+
+    for (let i = 0; i < N_GATES; i++) {
+      const a = (i / N_GATES) * TWO_PI;
+      const id = `gate_${i}`;
+      const gate = buildGate(id);
+      gate.position.set(Math.cos(a) * RING_R, 0, Math.sin(a) * RING_R);
+      gate.lookAt(0, 0, 0);  // +Z (door) faces outward
+      gate.userData.angle = a;
+      siegeRing.add(gate);
+      gates[id] = gate;
+
+      const m = a + Math.PI / N_GATES;
+      const wall = buildWall(chord - 6.5);
+      wall.position.set(Math.cos(m) * chordR, 0, Math.sin(m) * chordR);
+      wall.lookAt(0, 0, 0); // local X runs tangentially along the chord
+      siegeRing.add(wall);
+    }
+
+    // Free-standing torches ringing the OUTSIDE of the castle (out by the stakes). World-space —
+    // no gate-local orientation to fight — so these reliably light the outer walls + the approach.
+    const OUTER_TORCHES = 10, OUTER_R = RING_R + 8;   // ~27, just outside the wall
+    for (let i = 0; i < OUTER_TORCHES; i++) {
+      const a = (i / OUTER_TORCHES) * TWO_PI + Math.PI / OUTER_TORCHES;
+      const ox = Math.cos(a) * OUTER_R, oz = Math.sin(a) * OUTER_R;
+      const ot = makeTorch(1.4);
+      ot.position.set(ox, 0, oz);
+      scene.add(ot);
+      const ol = new THREE.PointLight(C.torch, 36, 54, 2);
+      ol.position.set(ox, 3.4, oz);
+      scene.add(ol);
+    }
+
+    // ----------------------------------------------------------------------
+    // Siege-field backdrop — atmosphere AROUND the castle, all at R >= 32 (outside the
+    // agent ring at SPAWN_R=28) so it never obscures the keep, agents, labels, or gauges.
+    // Low-poly + instanced; no new assets/CDN (reuses TEX/palette/makeTorch/makeBanner).
+    // ----------------------------------------------------------------------
+    function buildSiegeField() {
+      const field = new THREE.Group();
+      const M = new THREE.Matrix4(), Q = new THREE.Quaternion();
+      const P = new THREE.Vector3(), S = new THREE.Vector3(1, 1, 1);
+
+      // Grass field beyond the dirt courtyard (near stays dirt; far reads battlefield grass).
+      const grass = new THREE.Mesh(
+        new THREE.RingGeometry(SPAWN_R + 4, 120, 48, 1),
+        new THREE.MeshLambertMaterial({ map: TEX.dirt, color: 0x3c4a2c, flatShading: true })
+      );
+      grass.rotation.x = -Math.PI / 2;
+      grass.position.y = 0.02;
+      grass.receiveShadow = true;
+      field.add(grass);
+
+      // Scorched battle patches scattered on the field (cheap dark discs).
+      const scorchMat = new THREE.MeshLambertMaterial({ color: 0x18120e });
+      for (let i = 0; i < 7; i++) {
+        const a = i * 2.39996, r = 31 + (i % 3) * 9;
+        const disc = new THREE.Mesh(new THREE.CircleGeometry(2.2 + (i % 2), 10), scorchMat);
+        disc.rotation.x = -Math.PI / 2;
+        disc.position.set(Math.cos(a) * r, 0.03, Math.sin(a) * r);
+        field.add(disc);
+      }
+
+      // Wooden palisade — angled stakes ringing the field (1 InstancedMesh), gap toward camp.
+      const STAKES = 84, PAL_R = 34;
+      const stakes = new THREE.InstancedMesh(new THREE.ConeGeometry(0.28, 3.0, 5), wood(C.wood), STAKES);
+      let si = 0;
+      for (let i = 0; i < STAKES; i++) {
+        const a = (i / STAKES) * TWO_PI;
+        if (a > 5.6 && a < 6.6) continue; // camp gateway gap
+        P.set(Math.cos(a) * PAL_R, 1.4, Math.sin(a) * PAL_R);
+        Q.setFromEuler(new THREE.Euler(0, -a, 0.1));
+        M.compose(P, Q, S);
+        stakes.setMatrixAt(si++, M);
+      }
+      stakes.count = si;
+      stakes.instanceMatrix.needsUpdate = true;
+      field.add(stakes);
+
+      // Distant tree line — low-poly pines, ringed at R 58-88 (inside the fog → faint).
+      const TREES = 96;
+      const trees = new THREE.InstancedMesh(
+        new THREE.ConeGeometry(2.4, 6.5, 6),
+        new THREE.MeshLambertMaterial({ color: 0x36422c, flatShading: true }), TREES);
+      for (let i = 0; i < TREES; i++) {
+        const a = (i / TREES) * TWO_PI + (i % 2 ? 0.05 : 0);
+        const r = 58 + ((i * 37) % 30), h = 0.8 + (i % 3) * 0.25;
+        P.set(Math.cos(a) * r, 3.25 * h, Math.sin(a) * r);
+        Q.identity(); S.set(h, h, h);
+        M.compose(P, Q, S); trees.setMatrixAt(i, M);
+      }
+      S.set(1, 1, 1);
+      trees.instanceMatrix.needsUpdate = true;
+      field.add(trees);
+
+      // Distant dusk mountains ringing the WHOLE horizon, slightly bigger.
+      const hillMat = new THREE.MeshLambertMaterial({ color: 0x352b3a, flatShading: true });
+      const HILLS = 11;
+      for (let i = 0; i < HILLS; i++) {
+        const a = (i / HILLS) * TWO_PI + (i % 2 ? 0.17 : 0), r = 112 + (i % 3) * 14;
+        const hill = new THREE.Mesh(new THREE.ConeGeometry(38 + (i % 4) * 6, 23 + (i % 3) * 5, 8), hillMat);
+        hill.position.set(Math.cos(a) * r, 0, Math.sin(a) * r);
+        field.add(hill);
+      }
+
+      // Attacker camp in the palisade gap — pavilion tents + banners + torches.
+      const campA = 6.0;
+      const canvasMat = new THREE.MeshLambertMaterial({ map: TEX.dirt, color: 0x6e5a3c, flatShading: true });
+      const roofMat = new THREE.MeshLambertMaterial({ color: C.banner, flatShading: true });
+      for (const [r, off] of [[38, 0], [42, 4], [42, -4], [46, 2], [46, -3]]) {
+        const ang = campA + off * 0.045, x = Math.cos(ang) * r, z = Math.sin(ang) * r;
+        const wallT = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 2.4, 1.4, 8), canvasMat);
+        wallT.position.set(x, 0.7, z);
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(2.7, 2.4, 8), roofMat);
+        roof.position.set(x, 2.4, z);
+        field.add(wallT, roof);
+      }
+      for (let i = 0; i < 3; i++) {
+        const ang = campA + (i - 1) * 0.08, r = 36 - i;
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 6, 6), wood());
+        pole.position.set(Math.cos(ang) * r, 3, Math.sin(ang) * r);
+        const banner = makeBanner(1.4, 2.6);
+        banner.position.set(Math.cos(ang) * r + 0.7, 4.3, Math.sin(ang) * r);
+        field.add(pole, banner);
+      }
+      for (let i = 0; i < 5; i++) {
+        const ang = campA + (i - 2) * 0.13, r = 33;
+        const torch = makeTorch(1.1);
+        torch.position.set(Math.cos(ang) * r, 0, Math.sin(ang) * r);
+        field.add(torch);
+      }
+
+      scene.add(field);
+    }
+    buildSiegeField();
+
+    // Low-poly greenery to warm the field — grass tufts (in + around), mid-ground shrubs &
+    // trees. All instanced (~3 draw calls), no shadows, ground-level so nothing is obscured.
+    function warmGreenery() {
+      const g = new THREE.Group();
+      const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), P = new THREE.Vector3(), S = new THREE.Vector3();
+      let seed = 1337;
+      const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+      const up = new THREE.Vector3(0, 1, 0);
+
+      // Grass tufts scattered across the field (and lightly inside the courtyard).
+      const TUFTS = 360;
+      const tufts = new THREE.InstancedMesh(
+        new THREE.ConeGeometry(0.16, 0.7, 4),
+        new THREE.MeshLambertMaterial({ color: 0x49583a, flatShading: true }), TUFTS);
+      for (let i = 0; i < TUFTS; i++) {
+        const ang = rnd() * TWO_PI, r = 9 + rnd() * 86, h = 0.6 + rnd() * 0.9;
+        P.set(Math.cos(ang) * r, 0.35 * h, Math.sin(ang) * r);
+        Q.setFromAxisAngle(up, rnd() * TWO_PI);
+        S.set(0.8 + rnd() * 0.6, h, 0.8 + rnd() * 0.6);
+        M.compose(P, Q, S); tufts.setMatrixAt(i, M);
+      }
+      tufts.instanceMatrix.needsUpdate = true; g.add(tufts);
+
+      // Low-poly shrubs in the mid-ground.
+      const SHRUBS = 54;
+      const shrubs = new THREE.InstancedMesh(
+        new THREE.IcosahedronGeometry(0.9, 0),
+        new THREE.MeshLambertMaterial({ color: 0x44543a, flatShading: true }), SHRUBS);
+      for (let i = 0; i < SHRUBS; i++) {
+        const ang = rnd() * TWO_PI, r = 30 + rnd() * 28, sc = 0.7 + rnd() * 0.8;
+        P.set(Math.cos(ang) * r, sc * 0.8, Math.sin(ang) * r);
+        Q.identity(); S.set(sc, sc * 0.85, sc);
+        M.compose(P, Q, S); shrubs.setMatrixAt(i, M);
+      }
+      shrubs.instanceMatrix.needsUpdate = true; g.add(shrubs);
+
+      // Mid-ground trees — extend the tree line inward (between camp and the far pines).
+      const MID = 44;
+      const mids = new THREE.InstancedMesh(
+        new THREE.ConeGeometry(2.0, 5.2, 6),
+        new THREE.MeshLambertMaterial({ color: 0x3e4e30, flatShading: true }), MID);
+      for (let i = 0; i < MID; i++) {
+        const ang = rnd() * TWO_PI, r = 40 + rnd() * 16, h = 0.8 + rnd() * 0.5;
+        P.set(Math.cos(ang) * r, 2.6 * h, Math.sin(ang) * r);
+        Q.identity(); S.set(h, h, h);
+        M.compose(P, Q, S); mids.setMatrixAt(i, M);
+      }
+      mids.instanceMatrix.needsUpdate = true; g.add(mids);
+
+      scene.add(g);
+    }
+    warmGreenery();
+
+    // Stop point just outside a gate (where an attacker halts).
+    function gateAttackPos(id) {
+      const a = gates[id].userData.angle;
+      return new THREE.Vector3(Math.cos(a) * ATTACK_R, 0, Math.sin(a) * ATTACK_R);
+    }
+
+    // ----------------------------------------------------------------------
+    // Gauges — robustness + honest-pass, on a floating scoreboard panel.
+    // ----------------------------------------------------------------------
+    function makeBarLabel(accentCss) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 512; canvas.height = 200;
+      const ctx = canvas.getContext("2d");
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 4;
+
+      // Shrink the font until the text fits the width — no clipping at any length.
+      function fitFont(text, weight, startPx, maxW, spacingPx) {
+        ctx.letterSpacing = spacingPx + "px";
+        let px = startPx;
+        do {
+          ctx.font = `${weight} ${px}px ui-monospace, Menlo, monospace`;
+          if (ctx.measureText(text).width <= maxW) break;
+          px -= 2;
+        } while (px > 12);
+      }
+
+      function draw(title, pct) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "alphabetic";
+        const maxW = canvas.width - 36;
+        ctx.fillStyle = "#cdbf9f";
+        fitFont(title, "600", 42, maxW, 4);
+        ctx.fillText(title, canvas.width / 2, 58);
+        ctx.fillStyle = accentCss;
+        fitFont(pct, "700", 104, maxW, 0);
+        ctx.fillText(pct, canvas.width / 2, 174);
+        tex.needsUpdate = true;
+      }
+
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+      mat.toneMapped = false;
+      const sprite = new THREE.Sprite(mat);
+      sprite.scale.set(6.0, 2.34, 1); // 512:200 aspect
+      return { sprite, draw };
+    }
+
+    function buildGauge(label, accentColor, accentCss, x) {
+      const group = new THREE.Group();
+      group.position.x = x;
+      const H = 8;
+
+      const track = new THREE.Mesh(
+        new THREE.BoxGeometry(1.5, H, 0.7),
+        new THREE.MeshStandardMaterial({ color: C.track, roughness: 0.7, metalness: 0.2 })
+      );
+      group.add(track);
+
+      // Fill — pivot at the bottom so scale.y maps to fraction filled.
+      const fillGeo = new THREE.BoxGeometry(1.5, H, 0.75);
+      fillGeo.translate(0, H / 2, 0);
+      const fillMat = new THREE.MeshStandardMaterial({
+        color: accentColor, emissive: accentColor, emissiveIntensity: 1.1,
+        roughness: 0.35, metalness: 0.0,
+      });
+      fillMat.toneMapped = false;
+      const fill = new THREE.Mesh(fillGeo, fillMat);
+      fill.position.y = -H / 2;
+      group.add(fill);
+
+      for (const f of [0.25, 0.5, 0.75]) {
+        const tick = new THREE.Mesh(
+          new THREE.BoxGeometry(1.9, 0.06, 0.8),
+          new THREE.MeshBasicMaterial({ color: 0x3a455c })
+        );
+        tick.position.y = -H / 2 + H * f;
+        group.add(tick);
+      }
+
+      const lbl = makeBarLabel(accentCss);
+      lbl.sprite.position.set(0, H / 2 + 2.8, 0);
+      group.add(lbl.sprite);
+
+      group.userData = { fill, H, draw: lbl.draw, label };
+      return group;
+    }
+
+    // Float the scoreboard high above the keep with a clear gap, bars spaced
+    // apart so labels never overlap. Framed in dark wood to fit the theme.
+    const gaugeCluster = new THREE.Group();
+    gaugeCluster.position.set(0, 21, 0);
+    scene.add(gaugeCluster);
+    // Floating ROBUSTNESS/HONEST-PASS panel hidden — narrated verbally + via the #beat
+    // caption instead. animateGauge / robustness_update handling stays intact (updates the
+    // now-invisible meshes harmlessly); only the rendering of the hovering panel is removed.
+    gaugeCluster.visible = false;
+
+    const frame = new THREE.Mesh(
+      new THREE.BoxGeometry(14.4, 14.9, 0.25),
+      new THREE.MeshLambertMaterial({ map: TEX.wood, color: 0x6b4a2b })
+    );
+    frame.position.set(0, 1.0, -0.85);
+    gaugeCluster.add(frame);
+
+    const panel = new THREE.Mesh(
+      new THREE.BoxGeometry(13.5, 14, 0.3),
+      new THREE.MeshStandardMaterial({
+        color: C.panel, roughness: 0.7, metalness: 0.05,
+        transparent: true, opacity: 0.85,
+      })
+    );
+    panel.position.set(0, 1.0, -0.7);
+    gaugeCluster.add(panel);
+
+    const robustGauge = buildGauge("ROBUSTNESS", C.robust, "#7fb2ff", -3.6);
+    const honestGauge = buildGauge("HONEST-PASS", C.honest, "#4ee0ad", 3.6);
+    gaugeCluster.add(robustGauge, honestGauge);
+
+    function updateGauge(robustness, honestPass) {
+      robustGauge.userData.fill.scale.y = Math.max(0.0001, robustness);
+      honestGauge.userData.fill.scale.y = Math.max(0.0001, honestPass);
+      robustGauge.userData.draw("ROBUSTNESS", Math.round(robustness * 100) + "%");
+      honestGauge.userData.draw("HONEST-PASS", Math.round(honestPass * 100) + "%");
+    }
+
+    const BASELINE = { robustness: 0.07, honestPass: 1.0 };
+    updateGauge(BASELINE.robustness, BASELINE.honestPass);
+
+    // ----------------------------------------------------------------------
+    // Characters — clean capsule "blobs" with a clear front (visor).
+    // (UNCHANGED — re-themed in the next step.)
+    // ----------------------------------------------------------------------
+    const BODY_CY = 1.1; // body center height (group origin sits on the ground)
+    const CHAR_SCALE = 1.8; // bigger figures so they read against the castle
+
+    function buildCharacter(specialty) {
+      const group = new THREE.Group();
+      // Inner group carries a constant size-up; the spawn/kill tweens still
+      // scale the outer `group` (0→1), so movement logic stays untouched.
+      const inner = new THREE.Group();
+      inner.scale.setScalar(CHAR_SCALE);
+      group.add(inner);
+
+      const col = colorForSpecialty(specialty);          // heraldry = agent identity
+      const attacker = /tamper/i.test(specialty || "");  // sapper (breacher) vs scout
+
+      // Every part's material is transparent + collected so the spawn/kill fade works.
+      const mats = [];
+      const mat = (color, o) => {
+        o = o || {};
+        const m = new THREE.MeshStandardMaterial({
+          color, transparent: true, flatShading: !!o.flat,
+          roughness: o.r != null ? o.r : 0.5, metalness: o.m != null ? o.m : 0.35,
+          emissive: o.e || 0x000000, emissiveIntensity: o.ei || 0,
+        });
+        mats.push(m); return m;
+      };
+      const part = (geo, m, x, y, z, rx, ry, rz) => {
+        const mesh = castReceive(new THREE.Mesh(geo, m));
+        mesh.position.set(x, y, z);
+        mesh.rotation.set(rx || 0, ry || 0, rz || 0);
+        inner.add(mesh); return mesh;
+      };
+
+      void col; // heraldry resolved per-type below (sapper crimson/gold, forger grey-blue)
+
+      if (attacker) {
+        // ============ SAPPER — heavy crimson axe-knight, layered plate ============
+        const plate = mat(0x2b2f3a, { r: 0.42, m: 0.72, flat: true });   // dark iron
+        const crimson = mat(0xa83a2e, { r: 0.55, m: 0.08, flat: true, e: 0x2a0606, ei: 0.25 }); // the red accent
+        const gold = mat(0x8d96a1, { r: 0.4, m: 0.6, flat: true }); // steel trim (no gold)
+        const steel = mat(0xb9c2cf, { r: 0.25, m: 0.85, flat: true });
+        const dark = mat(0x10151f, { r: 0.3, m: 0.5 });
+        const haft = mat(0x5a3a1e, { r: 0.85, m: 0.05, flat: true });
+
+        for (const sx of [-0.26, 0.26]) {                  // greaves + knee plates + boots
+          part(new THREE.BoxGeometry(0.34, 0.8, 0.36), plate, sx, 0.45, 0);
+          part(new THREE.BoxGeometry(0.4, 0.18, 0.42), plate, sx, 0.52, 0.04);
+          part(new THREE.BoxGeometry(0.4, 0.18, 0.5), dark, sx, 0.09, 0.06);
+        }
+        part(new THREE.BoxGeometry(1.0, 0.18, 0.66), dark, 0, BODY_CY - 0.5, 0);        // belt
+        part(new THREE.BoxGeometry(0.2, 0.2, 0.1), gold, 0, BODY_CY - 0.5, 0.36);       // buckle
+        part(new THREE.BoxGeometry(1.06, 1.0, 0.66), plate, 0, BODY_CY + 0.05, 0);      // torso
+        part(new THREE.BoxGeometry(0.96, 0.7, 0.2), plate, 0, BODY_CY + 0.2, 0.34);     // chest bevel
+        part(new THREE.BoxGeometry(0.46, 1.12, 0.06), crimson, 0, BODY_CY - 0.15, 0.41);// tabard
+        part(new THREE.BoxGeometry(0.12, 1.12, 0.07), gold, 0, BODY_CY - 0.15, 0.42);   // gold stripe
+        for (const sx of [-0.66, 0.66]) {                  // bulky pauldrons + gold trim
+          part(new THREE.BoxGeometry(0.5, 0.42, 0.6), plate, sx, BODY_CY + 0.42, 0);
+          part(new THREE.BoxGeometry(0.54, 0.14, 0.64), gold, sx, BODY_CY + 0.6, 0);
+        }
+        part(new THREE.BoxGeometry(0.26, 0.7, 0.28), plate, -0.66, BODY_CY - 0.02, 0.05);// L arm
+        part(new THREE.BoxGeometry(0.26, 0.7, 0.28), plate, 0.66, BODY_CY - 0.02, 0.2, 0, 0, 0.2);// R arm
+        part(new THREE.BoxGeometry(0.6, 0.62, 0.6), plate, 0, BODY_CY + 0.92, 0);       // great-helm
+        part(new THREE.BoxGeometry(0.5, 0.09, 0.16), dark, 0, BODY_CY + 0.97, 0.32);    // visor slit
+        part(new THREE.ConeGeometry(0.14, 0.72, 8), crimson, 0, BODY_CY + 1.58, -0.05); // plume
+        part(new THREE.BoxGeometry(0.1, 0.95, 0.66), crimson, -0.84, BODY_CY, 0.16);    // kite shield
+        part(new THREE.CylinderGeometry(0.1, 0.1, 0.12, 8), gold, -0.9, BODY_CY + 0.05, 0.16, 0, 0, Math.PI / 2); // boss
+        // battle-axe held forward: haft + double-bit blade
+        part(new THREE.CylinderGeometry(0.07, 0.07, 1.95, 8), haft, 0.86, BODY_CY + 0.2, 0.5, 0, 0, -0.45);
+        part(new THREE.BoxGeometry(0.14, 0.66, 0.5), steel, 1.34, BODY_CY + 0.66, 0.5);
+        part(new THREE.BoxGeometry(0.34, 0.5, 0.06), steel, 1.5, BODY_CY + 0.66, 0.5, 0, 0.5, 0);
+      } else {
+        // ============ FORGER — slim grey-blue hooded scout, spyglass + cloak ============
+        const mail = mat(0x47506a, { r: 0.55, m: 0.4, flat: true });     // muted grey-blue
+        const cloak = mat(0x39435a, { r: 0.8, m: 0.05, flat: true });    // darker cloak
+        const leather = mat(0x4a4036, { r: 0.8, m: 0.05, flat: true });
+        const brass = mat(0x8a7a4a, { r: 0.5, m: 0.5, flat: true });
+        const dark = mat(0x12161e, { r: 0.4, m: 0.4 });
+
+        for (const sx of [-0.18, 0.18]) {                  // slim legs + boots
+          part(new THREE.BoxGeometry(0.22, 0.78, 0.24), mail, sx, 0.44, 0);
+          part(new THREE.BoxGeometry(0.26, 0.16, 0.34), leather, sx, 0.09, 0.05);
+        }
+        part(new THREE.BoxGeometry(0.66, 0.14, 0.48), leather, 0, BODY_CY - 0.45, 0);   // belt
+        part(new THREE.CapsuleGeometry(0.34, 0.7, 5, 10), mail, 0, BODY_CY + 0.05, 0);  // slim torso
+        part(new THREE.BoxGeometry(0.5, 0.5, 0.16), mail, 0, BODY_CY + 0.12, 0.28);     // light chest plate
+        part(new THREE.ConeGeometry(0.56, 1.5, 8, 1, true), cloak, 0, BODY_CY - 0.05, -0.22); // cloak
+        for (const sx of [-0.42, 0.42]) part(new THREE.SphereGeometry(0.17, 8, 6), cloak, sx, BODY_CY + 0.4, 0); // shoulder caps
+        part(new THREE.BoxGeometry(0.17, 0.6, 0.2), mail, -0.42, BODY_CY - 0.05, 0.05); // L arm
+        part(new THREE.BoxGeometry(0.17, 0.56, 0.2), mail, 0.42, BODY_CY + 0.16, 0.3, -0.7, 0, 0); // R arm raised
+        part(new THREE.BoxGeometry(0.38, 0.42, 0.4), dark, 0, BODY_CY + 0.82, 0);       // shadowed face
+        part(new THREE.ConeGeometry(0.36, 0.86, 10), cloak, 0, BODY_CY + 1.1, -0.03);   // pointed hood
+        part(new THREE.CylinderGeometry(0.07, 0.1, 0.85, 10), brass, 0.46, BODY_CY + 0.66, 0.62, 0.55, 0, 0.12); // spyglass
+        part(new THREE.CylinderGeometry(0.11, 0.11, 0.1, 10), dark, 0.64, BODY_CY + 0.95, 0.78, 0.55, 0, 0.12);  // eyepiece
+      }
+
+      return { group, mats };
+    }
+
+    function setOpacity(mats, o) { for (const m of mats) m.opacity = o; }
+
+    function headingTo(dx, dz) { return Math.atan2(dx, dz); }
+    function lerpAngle(a, b, t) {
+      let d = b - a;
+      d = Math.atan2(Math.sin(d), Math.cos(d)); // shortest path
+      return a + d * t;
+    }
+
+    // ----------------------------------------------------------------------
+    // Tiny delta-time tween manager. (UNCHANGED.)
+    // ----------------------------------------------------------------------
+    const activeTweens = [];
+    const easeOutBack = (t) => {
+      const c1 = 1.70158, c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    };
+    const easeInOutCubic = (t) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const easeInQuad = (t) => t * t;
+
+    function addTween(t) { t.elapsed = 0; activeTweens.push(t); return t; }
+    function removeTween(t) {
+      const i = activeTweens.indexOf(t);
+      if (i >= 0) activeTweens.splice(i, 1);
+    }
+    function updateTweens(dt) {
+      for (let i = activeTweens.length - 1; i >= 0; i--) {
+        const t = activeTweens[i];
+        t.elapsed += dt;
+        const k = Math.min(1, t.elapsed / t.dur);
+        t.onUpdate(t.ease ? t.ease(k) : k, k);
+        if (k >= 1) {
+          activeTweens.splice(i, 1);
+          if (t.onComplete) t.onComplete();
+        }
+      }
+    }
+
+    // ----------------------------------------------------------------------
+    // Agent registry + lifecycle. (UNCHANGED.)
+    // ----------------------------------------------------------------------
+    const agents = new Map();    // name -> { group, mats, motion, dead, specialty, label, breached }
+    let spawnCount = 0;
+    const GOLDEN = 2.39996323;   // spreads spawn points evenly around the edge
+
+    // Billboard text label above an agent (CanvasTexture sprite — offline, no CDN).
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath(); ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+    }
+    function makeLabel() {
+      const c = document.createElement("canvas"); c.width = 512; c.height = 128;
+      const ctx = c.getContext("2d");
+      const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+      const sprite = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false }));
+      sprite.scale.set(7, 1.75, 1); sprite.position.y = 5.0; sprite.visible = false;
+      function set(text, color) {
+        ctx.clearRect(0, 0, 512, 128);
+        ctx.font = 'bold 46px ui-monospace, "SF Mono", Menlo, monospace';
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        const w = Math.min(504, ctx.measureText(text).width + 44);
+        ctx.fillStyle = "rgba(8,12,20,0.82)"; roundRect(ctx, (512 - w) / 2, 34, w, 60, 12); ctx.fill();
+        ctx.fillStyle = color || "#dfe5ec"; ctx.fillText(text, 256, 64);
+        tex.needsUpdate = true; sprite.visible = true;
+      }
+      return { sprite, set };
+    }
+    function setAgentLabel(name, text, color) {
+      const a = agents.get(name); if (a && a.label) a.label.set(text, color);
+    }
+
+    function spawnAgent(name, specialty) {
+      if (agents.has(name)) return;
+      const { group, mats } = buildCharacter(specialty);
+
+      const a = spawnCount * GOLDEN;
+      spawnCount++;
+      const x = Math.cos(a) * SPAWN_R;
+      const z = Math.sin(a) * SPAWN_R;
+      group.position.set(x, 0, z);
+      group.rotation.y = headingTo(-x, -z); // look toward center
+      group.scale.setScalar(0.001);
+      setOpacity(mats, 0);
+      scene.add(group);
+
+      const label = makeLabel();
+      group.add(label.sprite);
+      const agent = { group, mats, motion: null, dead: false, specialty, label, breached: false };
+      agents.set(name, agent);
+
+      addTween({
+        dur: 0.6, ease: easeOutBack,
+        onUpdate: (e) => {
+          group.scale.setScalar(Math.max(0.001, e));
+          setOpacity(mats, Math.min(1, e));
+        },
+        onComplete: () => { group.scale.setScalar(1); setOpacity(mats, 1); },
+      });
+    }
+
+    function moveAgent(name, gateId) {
+      const agent = agents.get(name);
+      if (!agent || agent.dead) return;
+      if (!gates[gateId]) { console.warn("[siege] unknown gate:", gateId); return; }
+      if (agent.motion) removeTween(agent.motion);
+
+      // Move along an ARC at radius >= ATTACK_R (outside the wall) instead of a straight
+      // chord that would clip through the stone. Polar interpolation: sweep the angle, ease
+      // the radius to the gate's exterior face — the path never dips inside the castle.
+      const from = agent.group.position.clone();
+      const r0 = Math.max(Math.hypot(from.x, from.z), 0.001);
+      const a0 = Math.atan2(from.z, from.x);
+      const aT = gates[gateId].userData.angle;
+      let dA = aT - a0;
+      dA = Math.atan2(Math.sin(dA), Math.cos(dA));   // shortest way around the ring
+      const rT = ATTACK_R;                           // stop at the gate's outer face
+      const dist = Math.abs(dA) * ((r0 + rT) / 2) + Math.abs(rT - r0);
+      const dur = Math.min(2.2, Math.max(1.0, dist / 13));
+      const cycles = Math.max(2, Math.round(dist / 2.2));
+      let lastX = from.x, lastZ = from.z, lastH = agent.group.rotation.y;
+
+      agent.motion = addTween({
+        dur, ease: easeInOutCubic,
+        onUpdate: (e, k) => {
+          const ang = a0 + dA * e;
+          const rad = r0 + (rT - r0) * e;            // stays within [ATTACK_R, r0] >= wall radius
+          const x = Math.cos(ang) * rad, z = Math.sin(ang) * rad;
+          // Slink: a low, gliding creep — a subtle crouched stride-bob (not a bouncy hop),
+          // body lowered and leaning forward into the approach. Eases in/out at the ends.
+          const wob = Math.sin(k * Math.PI * cycles * 2);
+          const settle = Math.sin(Math.min(1, k / 0.12) * Math.PI / 2) *  // crouch in/out
+                         Math.sin(Math.min(1, (1 - k) / 0.12) * Math.PI / 2);
+          agent.group.position.set(x, -0.05 * settle + Math.abs(wob) * 0.045, z);
+          const dx = x - lastX, dz = z - lastZ;      // face the direction of travel
+          if (dx * dx + dz * dz > 1e-5) lastH = headingTo(dx, dz);
+          agent.group.rotation.y = lerpAngle(agent.group.rotation.y, lastH, 0.3);
+          agent.group.rotation.z = wob * 0.025;       // gentle sway, not a wobble
+          agent.group.rotation.x = 0.16 * settle;     // lean forward — slinking toward the gate
+          lastX = x; lastZ = z;
+        },
+        onComplete: () => {
+          const x = Math.cos(aT) * rT, z = Math.sin(aT) * rT;
+          agent.group.position.set(x, 0, z);
+          agent.group.rotation.z = 0;
+          agent.group.rotation.x = 0;                 // stand up at the gate
+          agent.group.rotation.y = headingTo(-x, -z); // end facing the gate (toward centre)
+          agent.motion = null;
+        },
+      });
+    }
+
+    function killAgent(name) {
+      const agent = agents.get(name);
+      if (!agent || agent.dead) return;
+      agent.dead = true;
+      if (agent.motion) { removeTween(agent.motion); agent.motion = null; }
+
+      const startScale = agent.group.scale.x || 1;
+      const baseY = agent.group.position.y;
+      const baseSpin = agent.group.rotation.y;
+
+      addTween({
+        dur: 0.7, ease: easeInQuad,
+        onUpdate: (e, k) => {
+          agent.group.scale.setScalar(Math.max(0.001, startScale * (1 - e)));
+          agent.group.position.y = baseY - e * 0.9;       // sink into the ground
+          agent.group.rotation.y = baseSpin + k * Math.PI * 1.5; // spin out
+          setOpacity(agent.mats, Math.max(0, 1 - e));
+        },
+        onComplete: () => {
+          scene.remove(agent.group);
+          agent.group.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
+          agent.mats.forEach((m) => m.dispose());
+          agents.delete(name);
+        },
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // Render loop — drives tweens + idle torchlight flicker (env art).
+    // ----------------------------------------------------------------------
+    const clock = new THREE.Clock();
+    let tNow = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05); // clamp huge tab-switch gaps
+      tNow += dt;
+
+      // Beacon + torch flicker (set dressing, not character motion).
+      const { flame, beaconLight, beaconBase } = keep.userData;
+      const bf = 0.86 + Math.sin(tNow * 13) * 0.08 + Math.sin(tNow * 23.3) * 0.05;
+      beaconLight.intensity = beaconBase * bf;
+      flame.scale.set(1 + Math.sin(tNow * 19) * 0.06, 1 + Math.sin(tNow * 17) * 0.1, 1);
+      for (const f of flames) {
+        const p = f.userData.phase;
+        f.scale.y = 1 + Math.sin(tNow * 16 + p) * 0.13;
+        f.scale.x = 1 + Math.sin(tNow * 21 + p) * 0.06;
+      }
+
+      updateTweens(dt);
+      controls.update();
+      if (USE_POST) composer.render(); else renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ----------------------------------------------------------------------
+    // Phase 3 — event animations. These reuse the shared tween manager and
+    // gate/agent registries; they do NOT touch the movement system or the
+    // set builders. New defensive props (portcullis, flashes) are created on
+    // demand at event time.
+    // ----------------------------------------------------------------------
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+    const DOOR_LIFT = 4.6;            // how far the gate door lifts on breach
+    const PORT = { down: 2.5, up: 8.8 }; // portcullis covered / retracted Y
+
+    // Status banner colors (the gate's at-a-glance state).
+    const STATUS = {
+      neutral:  { c: 0x6b6f55, e: 0x6b6f55, i: 0.45 },
+      breached: { c: 0xff3b30, e: 0xff2a20, i: 1.6 },
+      sealed:   { c: 0x32d24a, e: 0x28c83c, i: 1.3 },
+    };
+    // The gate state now reads from the scene itself — open door (breach) → turret (seal) —
+    // so the banner is gone; we only track the state for control flow.
+    function setGateStatus(gate, state) {
+      gate.userData.statusState = state;
+    }
+    function flickerStatus(gate, restoreState) {
+      setGateStatus(gate, restoreState);
+    }
+
+    // The door + its iron bands/studs (collected once, lifted together).
+    function getDoorParts(gate) {
+      if (!gate.userData.doorParts) {
+        const parts = [];
+        gate.children.forEach((ch) => {
+          if (ch.isMesh && ch.position.z > 0.3 && ch.position.y > 0.3 && ch.position.y < 5) {
+            parts.push({ mesh: ch, baseY: ch.position.y });
+          }
+        });
+        gate.userData.doorParts = parts;
+      }
+      return gate.userData.doorParts;
+    }
+    function setDoor(gate, open, dur, ease) {
+      const parts = getDoorParts(gate);
+      const starts = parts.map((p) => p.mesh.position.y);
+      const targets = parts.map((p) => p.baseY + (open ? DOOR_LIFT : 0));
+      addTween({
+        dur, ease,
+        onUpdate: (e) => {
+          for (let i = 0; i < parts.length; i++) {
+            parts[i].mesh.position.y = starts[i] + (targets[i] - starts[i]) * e;
+          }
+        },
+      });
+      gate.userData.doorOpen = open;
+    }
+
+    // A lazily-built iron portcullis that drops to seal the gate.
+    function getPortcullis(gate) {
+      if (!gate.userData.barricade) {
+        const g = new THREE.Group();
+        const mat = new THREE.MeshStandardMaterial({
+          color: 0x3c3c46, metalness: 0.6, roughness: 0.5,
+        });
+        const vGeo = new THREE.BoxGeometry(0.13, 4.4, 0.13);
+        const sGeo = new THREE.ConeGeometry(0.12, 0.34, 4);
+        for (const x of [-1.4, -0.7, 0, 0.7, 1.4]) {
+          const bar = new THREE.Mesh(vGeo, mat); bar.position.x = x; g.add(bar);
+          const spike = new THREE.Mesh(sGeo, mat);
+          spike.position.set(x, -2.4, 0); spike.rotation.x = Math.PI; g.add(spike);
+        }
+        const hGeo = new THREE.BoxGeometry(3.0, 0.16, 0.13);
+        for (const y of [-1.9, 0, 1.9]) {
+          const bar = new THREE.Mesh(hGeo, mat); bar.position.y = y; g.add(bar);
+        }
+        g.position.set(0, PORT.up, 0.18);
+        g.visible = false;
+        gate.add(g);
+        gate.userData.barricade = { group: g, mat };
+      }
+      return gate.userData.barricade;
+    }
+    function dropPortcullis(gate) {
+      const b = getPortcullis(gate);
+      b.group.visible = true;
+      b.mat.emissive.setHex(0x1f8a30); b.mat.emissiveIntensity = 0.55;
+      const start = b.group.position.y;
+      addTween({
+        dur: 0.55, ease: easeOutCubic,
+        onUpdate: (e) => { b.group.position.y = start + (PORT.down - start) * e; },
+      });
+    }
+    // Reject: portcullis drops only partway, then retracts (the fix reverted).
+    function rejectPortcullis(gate) {
+      const b = getPortcullis(gate);
+      b.group.visible = true;
+      b.mat.emissive.setHex(0x000000);
+      const mid = PORT.down + 2.2;
+      addTween({
+        dur: 0.9, ease: easeInOutCubic,
+        onUpdate: (e) => {
+          const tri = 1 - Math.abs(2 * e - 1); // 0 → 1 → 0
+          b.group.position.y = PORT.up - (PORT.up - mid) * tri;
+        },
+        onComplete: () => { b.group.position.y = PORT.up; b.group.visible = false; },
+      });
+    }
+
+    // Expanding shock ring (red for a breach, green for a seal).
+    function sealFlash(pos, hex, scale) {
+      scale = scale || 1;
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(0.6, 0.12, 8, 24),
+        new THREE.MeshBasicMaterial({ color: hex, transparent: true, toneMapped: false, depthWrite: false })
+      );
+      ring.position.copy(pos);
+      ring.rotation.x = -Math.PI / 2;
+      scene.add(ring);
+      addTween({
+        dur: 0.6, ease: easeOutCubic,
+        onUpdate: (e) => { const s = (0.3 + e * 3) * scale; ring.scale.set(s, s, s); ring.material.opacity = 1 - e; },
+        onComplete: () => { scene.remove(ring); ring.geometry.dispose(); ring.material.dispose(); },
+      });
+    }
+
+    // Smoothly climb the scoreboard to a new state (the before→after readout).
+    let gaugeTween = null;
+    function animateGauge(targetR, targetH, dur) {
+      if (gaugeTween) removeTween(gaugeTween);
+      const cR = robustGauge.userData.fill.scale.y;
+      const cH = honestGauge.userData.fill.scale.y;
+      gaugeTween = addTween({
+        dur: dur || 1.2, ease: easeInOutCubic,
+        onUpdate: (e) => updateGauge(cR + (targetR - cR) * e, cH + (targetH - cH) * e),
+        onComplete: () => { updateGauge(targetR, targetH); gaugeTween = null; },
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // Event handlers.
+    // ----------------------------------------------------------------------
+    function onAgentSpawn(ev) { spawnAgent(ev.agent, ev.specialty); }
+    function onAgentMove(ev)  {
+      moveAgent(ev.agent, ev.gate);
+      setAgentLabel(ev.agent, "scanning " + (ev.realGate || ev.gate), "#ffcf5c");
+    }
+
+    // Breach = the agent SLIPS THROUGH a leaky gate to the inside.
+    // Unmissable breach hit on a gate (all transient, primitives only): additive red flash
+    // over the door + scale punch + a red shard burst + an expanding ground ring.
+    function breachImpact(gate) {
+      const flash = new THREE.Mesh(
+        new THREE.BoxGeometry(3.9, 4.9, 0.3),
+        new THREE.MeshBasicMaterial({ color: 0xff2a18, transparent: true, opacity: 0.85,
+          blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false, fog: false }));
+      flash.position.set(0, 2.5, 0.6);
+      gate.add(flash);
+      addTween({ dur: 0.4, ease: easeOutCubic,
+        onUpdate: (e) => { flash.material.opacity = 0.85 * (1 - e); },
+        onComplete: () => { gate.remove(flash); flash.geometry.dispose(); flash.material.dispose(); } });
+
+      addTween({ dur: 0.42,  // the gate visibly takes a hit
+        onUpdate: (e) => { gate.scale.setScalar(1 + 0.15 * Math.sin(e * Math.PI)); },
+        onComplete: () => gate.scale.setScalar(1) });
+
+      const shards = new THREE.Group();
+      shards.position.set(0, 2.5, 0.7);
+      gate.add(shards);
+      const sMat = new THREE.MeshBasicMaterial({ color: 0xff3a22, transparent: true,
+        depthWrite: false, toneMapped: false, fog: false });
+      const vel = [];
+      for (let i = 0; i < 8; i++) {
+        shards.add(new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.22), sMat));
+        const ang = (i / 8) * TWO_PI;
+        vel.push([Math.cos(ang) * 3.4, 2.6 + (i % 3) * 0.6, 1.6 + Math.abs(Math.sin(ang)) * 2.2]);
+      }
+      addTween({ dur: 0.55,
+        onUpdate: (e, k) => {
+          for (let i = 0; i < shards.children.length; i++) {
+            const v = vel[i], sh = shards.children[i];
+            sh.position.set(v[0] * k, v[1] * k - 4.2 * k * k, v[2] * k); // out + gravity arc
+            sh.rotation.set(k * 6, k * 5, 0);
+          }
+          sMat.opacity = 1 - e;
+        },
+        onComplete: () => { gate.remove(shards); shards.children.forEach((o) => o.geometry.dispose()); sMat.dispose(); } });
+
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(0.6, 1.0, 22),
+        new THREE.MeshBasicMaterial({ color: 0xff3020, transparent: true, opacity: 0.8,
+          side: THREE.DoubleSide, depthWrite: false, toneMapped: false, fog: false }));
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.set(0, 0.07, 1.4);
+      gate.add(ring);
+      addTween({ dur: 0.5, ease: easeOutCubic,
+        onUpdate: (e) => { const s = 1 + e * 4.5; ring.scale.set(s, s, s); ring.material.opacity = 0.8 * (1 - e); },
+        onComplete: () => { gate.remove(ring); ring.geometry.dispose(); ring.material.dispose(); } });
+    }
+
+    function onBreachFound(ev) {
+      const _a = agents.get(ev.agent);
+      if (_a) _a.breached = true;  // so it's never tagged "found nothing"
+      setAgentLabel(ev.agent, "BREACH — grader " + ev.grader_score + " / oracle " + ev.oracle_score, "#ff5d6c");
+      const gate = gates[ev.gate];
+      if (!gate) return;
+      setGateStatus(gate, "breached");
+      setDoor(gate, true, 0.5, easeOutCubic); // door lifts (portcullis-style)
+      breachImpact(gate);                     // unmissable impact on the real breached gate
+      const a = gate.userData.angle;
+      sealFlash(new THREE.Vector3(Math.cos(a) * RING_R, 2.4, Math.sin(a) * RING_R), 0xff5a3c, 1.5);
+
+      const agent = agents.get(ev.agent);
+      if (agent && !agent.dead) {
+        if (agent.motion) removeTween(agent.motion);
+        const from = agent.group.position.clone();
+        const inside = new THREE.Vector3(Math.cos(a) * (RING_R - 5), 0, Math.sin(a) * (RING_R - 5));
+        const startH = agent.group.rotation.y;
+        const targetH = headingTo(inside.x - from.x, inside.z - from.z);
+        agent.motion = addTween({
+          dur: 1.3, ease: easeInOutCubic,
+          onUpdate: (e, k) => {
+            agent.group.position.x = from.x + (inside.x - from.x) * e;
+            agent.group.position.z = from.z + (inside.z - from.z) * e;
+            agent.group.position.y = Math.abs(Math.sin(k * Math.PI * 3)) * 0.1;
+            agent.group.rotation.y = lerpAngle(startH, targetH, Math.min(1, k / 0.25));
+          },
+          onComplete: () => {
+            agent.group.position.set(inside.x, 0, inside.z);
+            agent.group.rotation.y = targetH;
+            agent.motion = null;
+          },
+        });
+      }
+    }
+
+    // Patch = the green team seals the gate (door shut + portcullis + green).
+    // A defensive turret (primitives only): stone tower + crenellations + a heraldic
+    // pennant + a torch. Children sit at y>=0 so a base-pivot scale.y grows it UPWARD.
+    function buildTurret() {
+      const t = new THREE.Group();
+      const body = castReceive(new THREE.Mesh(
+        new THREE.CylinderGeometry(1.25, 1.45, 3.4, 10), stone(C.stoneMid)));
+      body.position.y = 1.7;
+      t.add(body);
+      const toothMat = stone(C.stoneLight);
+      for (let k = 0; k < 8; k++) {
+        const a = (k / 8) * TWO_PI;
+        const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.5), toothMat);
+        tooth.position.set(Math.cos(a) * 1.18, 3.6, Math.sin(a) * 1.18);
+        t.add(tooth);
+      }
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.0, 6), wood());
+      pole.position.y = 4.7;
+      const flagPivot = new THREE.Group();        // pivot at the pole → unfurls rightward
+      flagPivot.position.set(0.04, 5.2, 0);
+      const flag = new THREE.Mesh(
+        new THREE.BoxGeometry(1.1, 0.7, 0.06),
+        new THREE.MeshLambertMaterial({ color: C.banner, emissive: 0x2a0808, emissiveIntensity: 0.25, flatShading: true }));
+      flag.position.set(0.55, 0, 0);              // left edge at the pivot
+      flagPivot.add(flag);
+      t.add(pole, flagPivot);
+      t.userData.flag = flagPivot;
+      const torch = makeTorch(0.9);
+      torch.position.set(0, 3.2, 0.95);
+      t.add(torch);
+      return t;
+    }
+
+    function onPatchApplied(ev) {
+      const gate = gates[ev.gate];
+      if (!gate) return;
+      setDoor(gate, false, 0.35, easeInQuad); // slam shut
+      dropPortcullis(gate);
+      setGateStatus(gate, "sealed");
+      const a = gate.userData.angle;
+      sealFlash(new THREE.Vector3(Math.cos(a) * RING_R, 2.4, Math.sin(a) * RING_R), 0x6f9fb0);
+
+      // "Defense added" beat: a turret RISES atop the gate as the patch lands.
+      if (!gate.userData.turret) {
+        const turret = buildTurret();
+        turret.position.set(0, 6.3, -0.2); // on the lintel, centered (status flag stays in front/below)
+        turret.scale.y = 0.02;
+        const flag = turret.userData.flag;
+        if (flag) flag.scale.x = 0.02;            // banner furled until the turret locks in
+        gate.add(turret);
+        gate.userData.turret = turret;
+        addTween({
+          dur: 0.85, ease: easeOutBack,           // satisfying overshoot as it locks in
+          onUpdate: (e) => { turret.scale.y = Math.max(0.02, e); },
+          onComplete: () => {
+            turret.scale.y = 1;
+            // soft settle "thunk" — a tiny downward bounce after the overshoot
+            addTween({
+              dur: 0.22,
+              onUpdate: (e) => { turret.scale.y = 1 - 0.06 * Math.sin(e * Math.PI); },
+              onComplete: () => { turret.scale.y = 1; },
+            });
+            // banner unfurls across the new battlement
+            if (flag) addTween({
+              dur: 0.45, ease: easeOutBack,
+              onUpdate: (e) => { flag.scale.x = Math.max(0.02, e); },
+              onComplete: () => { flag.scale.x = 1; },
+            });
+          },
+        });
+        // bigger, brighter gold flare so "defense added" reads from a distance
+        sealFlash(new THREE.Vector3(Math.cos(a) * RING_R, 9.6, Math.sin(a) * RING_R), 0x7fb0c0, 1.9);
+      }
+    }
+
+    // Patch rejected = over-tightening would break honest work → revert.
+    function onPatchRejected(ev) {
+      const gate = gates[ev.gate];
+      if (!gate) return;
+      const prev = gate.userData.statusState || "neutral";
+      rejectPortcullis(gate);       // barricade rises partway, drops back
+      flickerStatus(gate, prev);    // status shudders, returns to prior state
+    }
+
+    // Killed = the exploit got closed; the agent dies (existing animation),
+    // with a green seal pulse to read as "this hole is shut."
+    function onAgentKilled(ev) {
+      const agent = agents.get(ev.agent);
+      if (agent) {
+        const p = agent.group.position.clone();
+        p.y = 2.0;
+        sealFlash(p, 0x6f9fb0);
+      }
+      setAgentLabel(ev.agent, "exploit killed", "#8aa6b4");
+      killAgent(ev.agent);
+    }
+
+    // Robustness climbs; honest-pass holds high.
+    function onRobustnessUpdate(ev) {
+      animateGauge(ev.held_out_blocked, ev.honest_pass, 1.2);
+    }
+
+    // Live metrics HUD — derived from the real event stream (counters + the latest
+    // robustness reading), so the numbers match the 2D dashboard exactly.
+    const stats = { breaches: 0, sealed: 0, base: null, probes: 0 };
+    const _setStat = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+    function updateStats(ev) {
+      if (ev.type === "breach_found") stats.breaches++;
+      else if (ev.type === "agent_killed") stats.sealed++;
+      else if (ev.type === "robustness_update") {
+        if (stats.base == null) stats.base = ev.held_out_blocked;
+        if (ev.probes != null) stats.probes = ev.probes;
+        const r = ev.held_out_blocked, h = ev.honest_pass;
+        _setStat("s-wall", Math.round(r * 100) + "%");
+        _setStat("s-honest", Math.round(h * 100) + "%");
+        _setStat("s-spoils", Math.round((1 - r) * 100) + "%");
+        const d = document.getElementById("s-wall-d");
+        if (d) d.textContent =
+          Math.round(stats.base * 100) + "% → " + Math.round(r * 100) +
+          "% (+" + Math.round((r - stats.base) * 100) + ")";
+      }
+      _setStat("s-counts", stats.breaches + " breached · " + stats.sealed + " sealed · " + stats.probes + " probes");
+    }
+
+    function dispatch(event) {
+      updateStats(event);
+      switch (event.type) {
+        case "agent_spawn":        onAgentSpawn(event);       break;
+        case "agent_move":         onAgentMove(event);        break;
+        case "breach_found":       onBreachFound(event);      break;
+        case "patch_applied":      onPatchApplied(event);     break;
+        case "patch_rejected":     onPatchRejected(event);    break;
+        case "agent_killed":       onAgentKilled(event);      break;
+        case "robustness_update":  onRobustnessUpdate(event); break;
+        default:
+          console.warn("[siege] unknown event type:", event.type, event);
+      }
+    }
+
+    const EVENT_DELAY_MS = 1000;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    async function ingestEvents(events) {
+      console.log(`[siege] ingesting ${events.length} events…`);
+      for (let i = 0; i < events.length; i++) {
+        const ev = events[i];
+        console.log(`[siege] (${i + 1}/${events.length}) ${ev.type}`, ev);
+        dispatch(ev);
+        await sleep(EVENT_DELAY_MS);
+      }
+      console.log("[siege] done.");
+    }
+
+    // ----------------------------------------------------------------------
+    // Sample stream — the full Cobra loop: swarm breaches leaky gates
+    // (slip through, red), green team seals them (green, agents die), one
+    // patch rejected (honest-pass guardrail), and robustness climbs 7% → 96%
+    // while honest-pass holds near 100%. Ends with every gate sealed.
+    // ----------------------------------------------------------------------
+    const SAMPLE_EVENTS = [
+      { type: "agent_spawn", agent: "raider-01", specialty: "FORGER" },
+      { type: "agent_spawn", agent: "raider-02", specialty: "EDGE_SLIPPER" },
+      { type: "agent_spawn", agent: "raider-03", specialty: "SPEC_GAMER" },
+      { type: "agent_move",  agent: "raider-01", gate: "gate_0" },
+      { type: "agent_move",  agent: "raider-02", gate: "gate_2" },
+      { type: "agent_move",  agent: "raider-03", gate: "gate_5" },
+      {
+        type: "breach_found", agent: "raider-01", gate: "gate_0",
+        cheat_type: "hardcoded_return", grader_score: 1.0, oracle_score: 0.12,
+        example: "def solve(n): return 42  # passes the 3 visible tests",
+      },
+      {
+        type: "breach_found", agent: "raider-02", gate: "gate_2",
+        cheat_type: "assertion_bypass", grader_score: 1.0, oracle_score: 0.31,
+        example: "sys.exit(0)  # short-circuits the harness before checks run",
+      },
+      { type: "robustness_update", held_out_blocked: 0.18, honest_pass: 1.0, probes: 40 },
+      { type: "patch_applied", gate: "gate_0", technique: "randomized_test_inputs" },
+      { type: "agent_killed", agent: "raider-01", gate: "gate_0" },
+      { type: "robustness_update", held_out_blocked: 0.34, honest_pass: 1.0, probes: 44 },
+      { type: "agent_spawn", agent: "raider-04", specialty: "OVERFITTER" },
+      { type: "agent_move",  agent: "raider-04", gate: "gate_4" },
+      {
+        type: "patch_rejected", gate: "gate_2",
+        reason: "would reject 9% of gold solutions — honest_pass guardrail tripped",
+      },
+      {
+        type: "breach_found", agent: "raider-03", gate: "gate_5",
+        cheat_type: "spec_gaming", grader_score: 1.0, oracle_score: 0.22,
+        example: "del tests[1:]  # drops the hidden cases it can't pass",
+      },
+      { type: "patch_applied", gate: "gate_2", technique: "ast_exit_call_ban" },
+      { type: "agent_killed", agent: "raider-02", gate: "gate_2" },
+      { type: "robustness_update", held_out_blocked: 0.52, honest_pass: 0.99, probes: 56 },
+      {
+        type: "breach_found", agent: "raider-04", gate: "gate_4",
+        cheat_type: "timing_leak", grader_score: 1.0, oracle_score: 0.4,
+        example: "time.sleep(0)  # exploits the loose timeout check",
+      },
+      { type: "patch_applied", gate: "gate_5", technique: "frozen_test_manifest" },
+      { type: "agent_killed", agent: "raider-03", gate: "gate_5" },
+      { type: "robustness_update", held_out_blocked: 0.7, honest_pass: 1.0, probes: 64 },
+      { type: "patch_applied", gate: "gate_4", technique: "wallclock_isolation" },
+      { type: "agent_killed", agent: "raider-04", gate: "gate_4" },
+      { type: "patch_applied", gate: "gate_1", technique: "input_fuzzing" },
+      { type: "patch_applied", gate: "gate_3", technique: "output_canonicalization" },
+      { type: "robustness_update", held_out_blocked: 0.88, honest_pass: 1.0, probes: 72 },
+      { type: "patch_applied", gate: "gate_6", technique: "resource_caps" },
+      { type: "patch_applied", gate: "gate_7", technique: "import_allowlist" },
+      { type: "robustness_update", held_out_blocked: 0.96, honest_pass: 1.0, probes: 80 },
+    ];
+
+    // ----------------------------------------------------------------------
+    // Live wiring — render the REAL stream off the server's /ws (golden replay
+    // or live engine). The engine uses dynamic gate ids (e.g. "HumanEval/2");
+    // bridge each onto one of the fixed ring slots on first sight so nothing is
+    // dropped as "unknown gate". A late/reload client receives the whole bus backlog
+    // in one burst, so we PACE on the consumer (queue + steady drain) — the backdrop
+    // plays the arc over ~20-30s regardless of how fast the server delivers it.
+    // ----------------------------------------------------------------------
+    const SLOT_IDS = Object.keys(gates);   // ["gate_0" .. "gate_7"]
+    const gateSlots = {};                   // real id -> slot id (stable per gate)
+    let _nextSlot = 0;
+    function slotForGate(realId) {
+      if (!(realId in gateSlots)) {
+        gateSlots[realId] = SLOT_IDS[_nextSlot % SLOT_IDS.length];
+        _nextSlot++;
+      }
+      return gateSlots[realId];
+    }
+    // Persistent DOM caption — names the current beat from the REAL event fields.
+    // Runs BEFORE the gate-id remap, so event.gate is still the real "HumanEval/N".
+    function setBeat(e) {
+      const box = document.getElementById("log"); if (!box) return;
+      const a = e.agent, g = e.gate;
+      let t = "", cls = "";
+      if (e.type === "agent_spawn") t = a + " (" + e.specialty + ") joins the siege";
+      else if (e.type === "agent_move") t = a + " scanning " + g;
+      else if (e.type === "breach_found") { t = a + " breached " + g + " — passed grader, failed oracle"; cls = "breach"; }
+      else if (e.type === "patch_applied") { t = g + " sealed — " + (e.technique || "patch applied"); cls = "patch"; }
+      else if (e.type === "patch_rejected") { t = g + " patch rejected — " + (e.reason || "would break honest work"); cls = "reject"; }
+      else if (e.type === "agent_killed") { t = a + "'s exploit killed"; cls = "kill"; }
+      else if (e.type === "robustness_update") { t = "robustness " + Math.round(e.held_out_blocked * 100) + "% · honest-pass " + Math.round(e.honest_pass * 100) + "%"; cls = "robust"; }
+      if (!t) return;
+      const row = document.createElement("div");
+      row.className = "row" + (cls ? " " + cls : "");
+      row.textContent = t;
+      box.prepend(row);                       // newest on top
+      while (box.children.length > 18) box.lastChild.remove();
+    }
+    function dispatchLive(event) {
+      setBeat(event);  // real fields, real gate id
+      if (event.gate != null) { event.realGate = event.gate; event.gate = slotForGate(event.gate); }
+      dispatch(event);
+    }
+
+    // Consumer-side pacing: drain the queue one event at a time at a watchable cadence,
+    // so a backlog burst doesn't blow through the whole arc in ~1s.
+    const _liveQueue = [];
+    let _draining = false;
+    const LIVE_STEP_MS = 900;  // ~0.9s/event -> 27-event curated run plays over ~24s
+    function _drainNext() {
+      const ev = _liveQueue.shift();
+      if (ev === undefined) { _draining = false; _onDrainEnd(); return; }
+      dispatchLive(ev);
+      setTimeout(_drainNext, LIVE_STEP_MS);
+    }
+    function _onDrainEnd() {  // an agent that probed but never breached = the real failed probe
+      for (const [name, a] of agents) {
+        if (!a.dead && !a.breached) setAgentLabel(name, "found nothing", "#8190ab");
+      }
+    }
+    function connectLive() {
+      const ws = new WebSocket(`ws://${location.host}/ws`);
+      ws.onopen = () => console.log("[siege] live: /ws connected");
+      ws.onmessage = (m) => {
+        let ev;
+        try { ev = JSON.parse(m.data); } catch (e) { console.error(e); return; }
+        _liveQueue.push(ev);                    // queue (paced or burst) ...
+        if (!_draining) { _draining = true; _drainNext(); }  // ... drain steadily
+      };
+      ws.onclose = () => setTimeout(connectLive, 1200);  // auto-reconnect
+    }
+
+    // Served over http(s) -> live stream. Opened as a bare file:// -> offline sample demo.
+    if (location.protocol === "http:" || location.protocol === "https:") {
+      connectLive();
+    } else {
+      ingestEvents(SAMPLE_EVENTS);
+    }
+
+    // Expose for console poking / later phases.
+    window.siege = {
+      scene, camera, renderer, controls,
+      keep, gates, gaugeCluster, updateGauge,
+      agents, spawnAgent, moveAgent, killAgent,
+      ingestEvents, SAMPLE_EVENTS,
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,2350 @@
+{
+  "schema": "shiftbench-real-order-pools-v1",
+  "soar": {
+    "dataset": "SOAR robotic mobile fulfillment benchmark",
+    "source": "https://github.com/200815147/SOAR",
+    "files": [
+      "data/job_sources/soar/example_order.csv",
+      "data/job_sources/soar/example.json",
+      "data/job_sources/soar/syn.json"
+    ],
+    "summary": {
+      "n_lines": 5,
+      "n_skus": 5,
+      "qty_min": 1,
+      "qty_max": 2,
+      "qty_mean": 1.4,
+      "sample_skus": [
+        "soar-0",
+        "soar-1",
+        "soar-2",
+        "soar-3",
+        "soar-4"
+      ]
+    },
+    "order_lines": [
+      {
+        "token": "soar-0",
+        "quantity": 1
+      },
+      {
+        "token": "soar-1",
+        "quantity": 2
+      },
+      {
+        "token": "soar-2",
+        "quantity": 2
+      },
+      {
+        "token": "soar-3",
+        "quantity": 1
+      },
+      {
+        "token": "soar-4",
+        "quantity": 1
+      }
+    ]
+  },
+  "rafs": {
+    "dataset": "RAFS warehouse order streams",
+    "source": "https://github.com/xor-lab/rafs-datasets",
+    "files": [
+      "data/job_sources/rafs/orders_10_mean_5_sku_24.xml",
+      "data/job_sources/rafs/orders_10_mean_5_sku_24_a.xml",
+      "data/job_sources/rafs/orders_10_mean_5_sku_24_b.xml",
+      "data/job_sources/rafs/orders_20_mean_5_sku_24.xml",
+      "data/job_sources/rafs/orders_20_mean_5_sku_24_a.xml",
+      "data/job_sources/rafs/orders_20_mean_5_sku_24_b.xml",
+      "data/job_sources/rafs/orders_100_mean_5_sku_3240.xml",
+      "data/job_sources/rafs/orders_100_mean_5_sku_3240_a.xml",
+      "data/job_sources/rafs/layout_sku_24_1.xml",
+      "data/job_sources/rafs/pods_items_dedicated_1.txt"
+    ],
+    "summary": {
+      "n_lines": 500,
+      "n_skus": 28,
+      "qty_min": 1,
+      "qty_max": 4,
+      "qty_mean": 1.27,
+      "sample_skus": [
+        "rafs24-3",
+        "rafs24-4",
+        "rafs24-2",
+        "rafs24-5",
+        "rafs24-8",
+        "rafs24-1",
+        "rafs24-6",
+        "rafs24-7"
+      ]
+    },
+    "order_lines": [
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 4
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 3
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 2
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs24-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-10",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-13",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-15",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-10",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-18",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-13",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-7",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-14",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-13",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-13",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-14",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-15",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-15",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-10",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-18",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-14",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-10",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-10",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-18",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-10",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-15",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-18",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-0",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-13",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-13",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-15",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-18",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-14",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-5",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-14",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-13",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-12",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-9",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-0",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-15",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-15",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-10",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-4",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-13",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-3",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-16",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-17",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-1",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-10",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-6",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 2
+      },
+      {
+        "token": "rafs3240-8",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-11",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-2",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-7",
+        "quantity": 1
+      },
+      {
+        "token": "rafs3240-15",
+        "quantity": 1
+      }
+    ]
+  },
+  "armbench": {
+    "dataset": "ARMBench Amazon warehouse pick identification",
+    "source": "https://www.armbench.com/identification.html",
+    "provenance": "example:armbench-schema",
+    "files": [
+      "data/job_sources/armbench/example_picks.json"
+    ],
+    "summary": {
+      "n_lines": 40,
+      "n_skus": 40,
+      "qty_min": 1,
+      "qty_max": 4,
+      "qty_mean": 1.43,
+      "sample_skus": [
+        "ab-B00ABC1234",
+        "ab-B00DEF5678",
+        "ab-B00GHI9012",
+        "ab-B00JKL3456",
+        "ab-B00MNO7890",
+        "ab-B00PQR1234",
+        "ab-B00STU5678",
+        "ab-B00VWX9012"
+      ]
+    },
+    "order_lines": [
+      {
+        "token": "ab-B00ABC1234",
+        "quantity": 1,
+        "pick_id": "P000001",
+        "description": "Wireless mouse, black, retail box"
+      },
+      {
+        "token": "ab-B00DEF5678",
+        "quantity": 1,
+        "pick_id": "P000002",
+        "description": "USB-C charging cable 6ft"
+      },
+      {
+        "token": "ab-B00GHI9012",
+        "quantity": 2,
+        "pick_id": "P000003",
+        "description": "Kitchen sponge 3-pack"
+      },
+      {
+        "token": "ab-B00JKL3456",
+        "quantity": 1,
+        "pick_id": "P000004",
+        "description": "Hardcover novel fiction"
+      },
+      {
+        "token": "ab-B00MNO7890",
+        "quantity": 3,
+        "pick_id": "P000005",
+        "description": "AA batteries 8-count"
+      },
+      {
+        "token": "ab-B00PQR1234",
+        "quantity": 1,
+        "pick_id": "P000006",
+        "description": "Protein bar variety box"
+      },
+      {
+        "token": "ab-B00STU5678",
+        "quantity": 1,
+        "pick_id": "P000007",
+        "description": "Phone case silicone clear"
+      },
+      {
+        "token": "ab-B00VWX9012",
+        "quantity": 2,
+        "pick_id": "P000008",
+        "description": "Travel-size shampoo 3oz"
+      },
+      {
+        "token": "ab-B00YZA3456",
+        "quantity": 1,
+        "pick_id": "P000009",
+        "description": "LED desk lamp white"
+      },
+      {
+        "token": "ab-B00BCD7890",
+        "quantity": 1,
+        "pick_id": "P000010",
+        "description": "Children's puzzle 500pc"
+      },
+      {
+        "token": "ab-B00EFG1234",
+        "quantity": 4,
+        "pick_id": "P000011",
+        "description": "Organic green tea 20ct"
+      },
+      {
+        "token": "ab-B00HIJ5678",
+        "quantity": 1,
+        "pick_id": "P000012",
+        "description": "Stainless steel water bottle"
+      },
+      {
+        "token": "ab-B00KLM9012",
+        "quantity": 1,
+        "pick_id": "P000013",
+        "description": "Yoga mat 6mm purple"
+      },
+      {
+        "token": "ab-B00NOP3456",
+        "quantity": 1,
+        "pick_id": "P000014",
+        "description": "Bluetooth earbuds white"
+      },
+      {
+        "token": "ab-B00QRS7890",
+        "quantity": 2,
+        "pick_id": "P000015",
+        "description": "Dog chew toy medium"
+      },
+      {
+        "token": "ab-B00TUV1234",
+        "quantity": 1,
+        "pick_id": "P000016",
+        "description": "Notebook college ruled 5pk"
+      },
+      {
+        "token": "ab-B00WXY5678",
+        "quantity": 1,
+        "pick_id": "P000017",
+        "description": "Ceramic coffee mug 12oz"
+      },
+      {
+        "token": "ab-B00ZAB9012",
+        "quantity": 2,
+        "pick_id": "P000018",
+        "description": "Sunscreen SPF50 6oz"
+      },
+      {
+        "token": "ab-B00CDE3456",
+        "quantity": 1,
+        "pick_id": "P000019",
+        "description": "Board game family edition"
+      },
+      {
+        "token": "ab-B00FGH7890",
+        "quantity": 1,
+        "pick_id": "P000020",
+        "description": "Running socks 3-pair"
+      },
+      {
+        "token": "ab-B00IJK1234",
+        "quantity": 2,
+        "pick_id": "P000021",
+        "description": "Instant oatmeal variety 10ct"
+      },
+      {
+        "token": "ab-B00LMN5678",
+        "quantity": 1,
+        "pick_id": "P000022",
+        "description": "HDMI cable 10ft"
+      },
+      {
+        "token": "ab-B00OPQ9012",
+        "quantity": 1,
+        "pick_id": "P000023",
+        "description": "Baby wipes sensitive 3pk"
+      },
+      {
+        "token": "ab-B00RST3456",
+        "quantity": 3,
+        "pick_id": "P000024",
+        "description": "Mechanical pencil 0.7mm 2pk"
+      },
+      {
+        "token": "ab-B00UVW7890",
+        "quantity": 1,
+        "pick_id": "P000025",
+        "description": "Cast iron skillet 10in"
+      },
+      {
+        "token": "ab-B00XYZ1234",
+        "quantity": 2,
+        "pick_id": "P000026",
+        "description": "Hand sanitizer 8oz pump"
+      },
+      {
+        "token": "ab-B00ABC5678",
+        "quantity": 1,
+        "pick_id": "P000027",
+        "description": "Wireless keyboard compact"
+      },
+      {
+        "token": "ab-B00DEF9012",
+        "quantity": 1,
+        "pick_id": "P000028",
+        "description": "Trail mix 24oz tub"
+      },
+      {
+        "token": "ab-B00GHI3456",
+        "quantity": 1,
+        "pick_id": "P000029",
+        "description": "Picture frame 8x10 black"
+      },
+      {
+        "token": "ab-B00JKL7890",
+        "quantity": 1,
+        "pick_id": "P000030",
+        "description": "Laundry detergent pods 42ct"
+      },
+      {
+        "token": "ab-B00MNO1234",
+        "quantity": 1,
+        "pick_id": "P000031",
+        "description": "Flashlight LED tactical"
+      },
+      {
+        "token": "ab-B00PQR5678",
+        "quantity": 2,
+        "pick_id": "P000032",
+        "description": "Granola bars 12-count"
+      },
+      {
+        "token": "ab-B00STU9012",
+        "quantity": 1,
+        "pick_id": "P000033",
+        "description": "Microfiber cleaning cloths 12pk"
+      },
+      {
+        "token": "ab-B00VWX3456",
+        "quantity": 1,
+        "pick_id": "P000034",
+        "description": "Portable phone charger 10000mAh"
+      },
+      {
+        "token": "ab-B00YZA7890",
+        "quantity": 1,
+        "pick_id": "P000035",
+        "description": "Cat litter clumping 20lb"
+      },
+      {
+        "token": "ab-B00BCD1234",
+        "quantity": 3,
+        "pick_id": "P000036",
+        "description": "Gift wrap roll 30in x 8ft"
+      },
+      {
+        "token": "ab-B00EFG5678",
+        "quantity": 1,
+        "pick_id": "P000037",
+        "description": "Resistance bands set 5pc"
+      },
+      {
+        "token": "ab-B00HIJ9012",
+        "quantity": 2,
+        "pick_id": "P000038",
+        "description": "Pasta sauce marinara 24oz"
+      },
+      {
+        "token": "ab-B00KLM3456",
+        "quantity": 1,
+        "pick_id": "P000039",
+        "description": "Desk organizer bamboo"
+      },
+      {
+        "token": "ab-B00NOP7890",
+        "quantity": 1,
+        "pick_id": "P000040",
+        "description": "Winter gloves touch-screen L"
+      }
+    ]
+  }
+}

@@ -1,0 +1,540 @@
+<!doctype html>
+<!-- Cobra verifier-safety leaderboard — single file, no build step.
+     Two views switched by URL path:
+       /board       → global ranked table, polls every 4s
+       /env/{id}    → per-env breakdown: verifier comparison, best-of-K gap, example rows
+     Mirrors the siege dashboard (dashboard/index.html) visual language: same palette, fonts. -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cobra — verifier-safety leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=EB+Garamond:ital@0;1&family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:#0a0e17; --panel:#121829; --ink:#e8edf7; --muted:#8190ab;
+    --good:#37e0a6; --bad:#ff5d6c; --warn:#ffcf5c; --line:#1e2740;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.5 "EB Garamond", Georgia, serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a { color:var(--good); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+
+  /* ── header ── */
+  header {
+    display:flex; align-items:center; gap:24px; padding:22px 30px 18px;
+    border-bottom:1px solid var(--line); flex-wrap:wrap;
+  }
+  .brand { display:flex; flex-direction:column; justify-content:center; }
+  .brand h1 { margin:0; font:400 34px/.9 "UnifrakturMaguntia", serif; letter-spacing:.01em;
+    background:linear-gradient(180deg,#f0d896,#caa24b 55%,#8a6a2c);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .brand .sub { color:var(--muted); font:600 10px/1 "Cinzel", serif; letter-spacing:.18em;
+    text-transform:uppercase; margin-top:5px; }
+  .back-link { font-size:12px; color:var(--muted); margin-left:auto; }
+  .back-link a { color:var(--muted); }
+  .back-link a:hover { color:var(--ink); }
+
+  /* ── rounded card system (modern, thin lines) ── */
+  .card {
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:6px 20px;
+  }
+  .panel-box {
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:18px 22px; margin:16px 0;
+  }
+  .panel-box .section-h:first-child { margin-top:0; }
+
+  /* ── board table ── */
+  .board-wrap { padding:24px 30px 50px; max-width:1080px; margin:0 auto; }
+  table { width:100%; border-collapse:collapse; }
+  th {
+    text-align:left; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); padding:0 10px 10px; font-weight:500;
+    border-bottom:1px solid var(--line);
+  }
+  th:first-child { padding-left:0; }
+  td { padding:12px 10px; font-size:13px; border-bottom:1px solid var(--line); vertical-align:middle; }
+  td:first-child { padding-left:0; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover td { background:rgba(255,255,255,.02); }
+  tr.new-row td { animation:rowslide .4s ease forwards; }
+  @keyframes rowslide { from{opacity:0;transform:translateY(-6px);} to{opacity:1;transform:translateY(0);} }
+
+  .rank-cell { color:var(--muted); font-variant-numeric:tabular-nums; width:36px; }
+  .env-link { color:var(--ink); font-weight:500; }
+  .env-link:hover { color:var(--good); }
+  .substrate-badge {
+    display:inline-block; padding:2px 7px; border-radius:4px;
+    font-size:11px; letter-spacing:.04em; border:1px solid var(--line); color:var(--muted);
+  }
+  .substrate-badge.evalplus { border-color:#5a8dff; color:#5a8dff; }
+  .substrate-badge.reasoning { border-color:var(--warn); color:var(--warn); }
+  .chip-verified { color:var(--good); font-size:11px; }
+  .chip-self { color:var(--muted); font-size:11px; }
+  .gameable-val { font-variant-numeric:tabular-nums; font-weight:600; }
+  .gameable-val.high { color:var(--bad); }
+  .gameable-val.med  { color:var(--warn); }
+  .gameable-val.low  { color:var(--good); }
+  .undef { color:var(--muted); font-style:italic; font-size:12px; }
+  .safety-val { font-variant-numeric:tabular-nums; }
+
+  /* substrate group divider */
+  .group-hdr td {
+    padding:14px 0 4px; font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--muted); border-bottom:none;
+  }
+
+  /* ── detail view (full-width card, fits one screen) ── */
+  .detail-wrap {
+    margin:18px 26px 22px; padding:24px 30px 26px;
+    background:var(--panel); border:1px solid var(--line); border-radius:18px;
+  }
+  /* main sections side-by-side so the page fills horizontally, not vertically */
+  .detail-grid {
+    display:grid; grid-template-columns:1.35fr 1fr; gap:20px; align-items:start; margin-top:16px;
+  }
+  .detail-col > .panel-box:first-child { margin-top:0; }
+  @media (max-width:1024px) { .detail-grid { grid-template-columns:1fr; } }
+
+  /* ── report: before→after cards + legend ── */
+  .stat-chips { display:flex; gap:26px; margin:16px 0 2px; }
+  .stat-chip b { color:var(--ink); font-size:19px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .stat-chip span { color:var(--muted); font-size:12px; margin-left:7px; }
+  .compare-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:20px 0 4px; }
+  .compare-card { border:1px solid var(--line); border-radius:14px; padding:18px 20px 16px; background:var(--bg); }
+  .cc-title { font-size:14px; font-weight:600; letter-spacing:.01em; }
+  .cc-sub { font-size:12px; color:var(--muted); margin-top:5px; line-height:1.45; min-height:50px; }
+  .cc-ba { display:flex; align-items:baseline; gap:12px; margin:6px 0 4px; font-variant-numeric:tabular-nums; }
+  .cc-before { font-size:23px; font-weight:700; opacity:.8; }
+  .cc-arrow { color:var(--muted); font-size:16px; }
+  .cc-after { font-size:34px; font-weight:800; }
+  .cc-foot { font-size:11px; color:var(--muted); letter-spacing:.03em; }
+  .v-good { color:var(--good); } .v-warn { color:var(--warn); } .v-bad { color:var(--bad); }
+  .legend { list-style:none; padding:0; margin:0; }
+  .legend li { font-size:12.5px; color:var(--muted); padding:11px 0; border-bottom:1px solid var(--line); line-height:1.5; }
+  .legend li:last-child { border-bottom:none; }
+  .legend b { color:var(--ink); font-weight:600; }
+  @media (max-width:1024px) { .compare-grid { grid-template-columns:1fr; } }
+  .headline-sentence {
+    font-size:22px; font-weight:700; line-height:1.3; margin:18px 0 6px;
+    letter-spacing:-.01em;
+  }
+  .headline-sentence .bad { color:var(--bad); }
+  .headline-sentence .good { color:var(--good); }
+  .meta-row { display:flex; gap:14px; flex-wrap:wrap; margin:16px 0 24px; }
+  .meta-item {
+    display:flex; flex-direction:column; gap:6px; padding:14px 18px; min-width:120px;
+    border:1px solid var(--line); border-radius:12px; background:var(--bg);
+  }
+  .meta-item .val { font-size:24px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1; }
+  .meta-item .lbl { font-size:11px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+
+  /* verifier comparison table */
+  .section-h { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+               margin:30px 0 12px; border-bottom:1px solid var(--line); padding-bottom:6px; }
+  .verifier-table { width:100%; border-collapse:collapse; }
+  .verifier-table th { text-align:center; font-size:11px; color:var(--muted); letter-spacing:.06em;
+                       text-transform:uppercase; padding:8px; border-bottom:1px solid var(--line); }
+  .verifier-table th:first-child { text-align:left; }
+  .verifier-table td { text-align:center; font-size:13px; padding:10px 8px;
+                       border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+  .verifier-table td:first-child { text-align:left; font-weight:600; }
+  .verifier-name.naive { color:var(--bad); }
+  .verifier-name.hardened { color:var(--good); }
+  .verifier-name.judge { color:#5a8dff; }
+  .flag-tight { color:var(--warn); font-size:11px; }
+  .ok-val { color:var(--good); }
+  .bad-val { color:var(--bad); }
+
+  /* best-of-K gap bars */
+  .gap-section { margin:30px 0; }
+  .gap-row { display:flex; align-items:center; gap:12px; margin:10px 0; }
+  .gap-name { width:90px; font-size:12px; color:var(--muted); flex-shrink:0; }
+  .gap-track { flex:1; height:18px; background:var(--panel); border-radius:4px; overflow:hidden; position:relative; }
+  .gap-fill { height:100%; border-radius:4px; transition:width .8s ease; }
+  .gap-fill.naive-bar { background:var(--bad); }
+  .gap-fill.hardened-bar { background:var(--good); }
+  .gap-pct { width:44px; text-align:right; font-size:12px; font-variant-numeric:tabular-nums; color:var(--ink); }
+  .gap-label { font-size:11px; color:var(--muted); margin-left:56px; }
+
+  /* example cards */
+  .examples-grid { display:grid; gap:14px; margin-top:12px; }
+  .example-card {
+    border:1px solid var(--line); border-radius:8px; padding:14px 16px;
+    background:var(--panel);
+  }
+  .example-card.cheat { border-left:3px solid var(--bad); }
+  .example-card.honest { border-left:3px solid var(--good); }
+  .example-card .card-header {
+    display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .card-kind { font-size:11px; letter-spacing:.06em; text-transform:uppercase; font-weight:600; }
+  .card-kind.cheat { color:var(--bad); }
+  .card-kind.honest { color:var(--good); }
+  .card-task { font-size:11px; color:var(--muted); }
+  .card-scores { display:flex; gap:10px; margin-left:auto; }
+  .score-pill {
+    font-size:11px; padding:2px 8px; border-radius:4px;
+    font-variant-numeric:tabular-nums; letter-spacing:.04em;
+  }
+  .score-pill.r1 { background:#2d1118; color:var(--bad); border:1px solid var(--bad); }
+  .score-pill.r0 { background:#112218; color:var(--good); border:1px solid var(--good); }
+  .score-pill.neutral { background:var(--bg); color:var(--muted); border:1px solid var(--line); }
+  .completion-text {
+    font-family:ui-monospace,"SF Mono","Fira Code",monospace;
+    font-size:12px; background:var(--bg); border-radius:5px; padding:10px 12px;
+    color:var(--ink); line-height:1.5; white-space:pre-wrap; word-break:break-word;
+  }
+
+  /* share button */
+  .share-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--line); background:transparent; color:var(--muted);
+    padding:7px 16px; border-radius:6px; font-size:13px; cursor:pointer;
+    transition:border-color .2s,color .2s; margin-top:28px;
+  }
+  .share-btn:hover { border-color:var(--good); color:var(--good); }
+  .share-btn.copied { border-color:var(--good); color:var(--good); }
+
+  /* not-found page */
+  .not-found { padding:60px 30px; text-align:center; }
+  .not-found h2 { font-size:32px; color:var(--muted); margin:0 0 10px; }
+  .not-found p { color:var(--muted); margin:0 0 20px; }
+
+  /* loading / error states */
+  .status-msg { padding:40px 30px; color:var(--muted); font-size:13px; }
+
+  /* ── medieval type, to match the siege ── */
+  th, .section-h, .group-hdr td, .cc-title, .cc-foot, .meta-item .lbl, .stat-chip span,
+  .substrate-badge, .chip-verified, .chip-self, .sort-lbl { font-family:"Cinzel", serif; }
+  .cc-before, .cc-after, .meta-item .val, .stat-chip b, .safety-val, .gameable-val,
+  .verifier-table td:first-child, .headline-sentence { font-family:"Cinzel", serif; }
+  .completion-text { font-family:ui-monospace, "SF Mono", monospace; }  /* code stays mono */
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>GOODHART</h1>
+    <div class="sub" id="header-sub">Cobra hardening reports — how gameable is each RL reward, and how much hardening fixes it</div>
+  </div>
+  <div id="back-link-container" class="back-link" style="display:none">
+    <a href="/board">← all environments</a>
+  </div>
+</header>
+
+<div id="app"></div>
+
+<script>
+'use strict';
+
+const app = document.getElementById('app');
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function pct(x, digits=0) {
+  if (x == null) return '—';
+  return (x * 100).toFixed(digits) + '%';
+}
+
+function substrateBadge(s) {
+  let cls = 'substrate-badge';
+  if (s && s.startsWith('evalplus')) cls += ' evalplus';
+  else if (s && s.startsWith('reasoning')) cls += ' reasoning';
+  return `<span class="${cls}">${esc(s || 'custom')}</span>`;
+}
+
+function verifiedChip(v) {
+  return v
+    ? `<span class="chip-verified">✓ verified</span>`
+    : `<span class="chip-self">self-reported</span>`;
+}
+
+// ── BOARD VIEW ────────────────────────────────────────────────────────────────
+
+const _boardSort = 'safety';  // single view: safest first
+let _prevIds = new Set();
+let _pollTimer = null;
+
+function renderBoard() {
+  document.getElementById('back-link-container').style.display = 'none';
+  document.getElementById('header-sub').textContent =
+    'Cobra hardening reports — how gameable is each RL reward, and how much hardening fixes it';
+  app.innerHTML = `
+    <div class="board-wrap">
+      <div class="card"><div id="board-table-container"><div class="status-msg">loading…</div></div></div>
+    </div>`;
+
+  fetchBoard();
+  if (_pollTimer) clearInterval(_pollTimer);
+  _pollTimer = setInterval(fetchBoard, 4000);
+}
+
+async function fetchBoard() {
+  try {
+    const res = await fetch(`/api/leaderboard?sort=${_boardSort}`);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    paintBoard(data.rows || []);
+  } catch (_) {
+    // silent — don't crash the poll loop
+  }
+}
+
+function gameabilityClass(fa) {
+  if (fa >= 0.66) return 'high';
+  if (fa >= 0.33) return 'med';
+  return 'low';
+}
+
+function paintBoard(rows) {
+  const container = document.getElementById('board-table-container');
+  if (!container) return;
+
+  if (rows.length === 0) {
+    container.innerHTML = '<div class="status-msg">no environments evaluated yet — run a loop and submit one.</div>';
+    _prevIds = new Set();
+    return;
+  }
+
+  // group by substrate
+  const groups = {};
+  const groupOrder = [];
+  for (const r of rows) {
+    const k = r.substrate || 'custom';
+    if (!groups[k]) { groups[k] = []; groupOrder.push(k); }
+    groups[k].push(r);
+  }
+
+  const newIds = new Set(rows.map(r => r.id));
+  let html = `<table><thead><tr>
+    <th>environment</th>
+    <th>substrate</th>
+    <th title="balanced accuracy of the naive verifier, gated by honest-pass — default sort">safety score</th>
+    <th title="fraction of exploits the naive reward accepts">how gameable</th>
+    <th>suite size</th>
+    <th>status</th>
+  </tr></thead><tbody>`;
+
+  for (const substrate of groupOrder) {
+    if (groupOrder.length > 1) {
+      html += `<tr class="group-hdr"><td colspan="6">${esc(substrate)}</td></tr>`;
+    }
+    for (const r of groups[substrate]) {
+      const isNew = !_prevIds.has(r.id);
+      const rowCls = isNew ? ' class="new-row"' : '';
+      const noExploits = r.n_exploits === 0;
+      let gameableCell;
+      if (noExploits) {
+        gameableCell = `<span class="undef">no exploits — false-accept undefined</span>`;
+      } else {
+        const fa = r.false_accept;
+        gameableCell = `<span class="gameable-val ${gameabilityClass(fa)}">${pct(fa)}</span>`;
+      }
+      html += `<tr${rowCls}>
+        <td><a class="env-link" href="/env/${esc(r.id)}">${esc(r.env_name)}</a></td>
+        <td>${substrateBadge(r.substrate)}</td>
+        <td class="safety-val">${r.safety_score != null ? r.safety_score.toFixed(1) : '—'}</td>
+        <td>${gameableCell}</td>
+        <td>${r.n_exploits}</td>
+        <td>${verifiedChip(r.verified)}</td>
+      </tr>`;
+    }
+  }
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+  _prevIds = newIds;
+}
+
+// ── DETAIL VIEW ───────────────────────────────────────────────────────────────
+
+async function renderDetail(id) {
+  document.getElementById('back-link-container').style.display = '';
+  app.innerHTML = '<div class="status-msg">loading…</div>';
+
+  let data;
+  try {
+    const res = await fetch(`/api/env/${encodeURIComponent(id)}`);
+    if (res.status === 404) {
+      paintNotFound(id);
+      return;
+    }
+    if (!res.ok) throw new Error(res.status);
+    data = await res.json();
+  } catch (_) {
+    app.innerHTML = '<div class="status-msg">error loading submission — please try again.</div>';
+    return;
+  }
+
+  paintDetail(data);
+}
+
+function valCls(v, dir) {
+  if (v == null) return '';
+  if (dir === 'down') return v <= 0.2 ? 'v-good' : v <= 0.5 ? 'v-warn' : 'v-bad';
+  return v >= 0.9 ? 'v-good' : v >= 0.7 ? 'v-warn' : 'v-bad';
+}
+
+function compareCard(title, sub, before, after, dir) {
+  return `<div class="compare-card">
+    <div class="cc-title">${title}</div>
+    <div class="cc-sub">${sub}</div>
+    <div class="cc-ba">
+      <span class="cc-before ${valCls(before, dir)}" title="naive reward">${pct(before)}</span>
+      <span class="cc-arrow">→</span>
+      <span class="cc-after ${valCls(after, dir)}" title="after hardening">${pct(after)}</span>
+    </div>
+    <div class="cc-foot">naive reward → after hardening</div>
+  </div>`;
+}
+
+function paintDetail(d) {
+  const naive = (d.verifiers || []).find(v => v.name === 'naive');
+  const hardened = (d.verifiers || []).find(v => v.name === 'hardened');
+  const others = (d.verifiers || []).filter(v => v.name !== 'naive' && v.name !== 'hardened');
+
+  // headline sentence
+  let headlineParts = '';
+  headlineParts += naive
+    ? `<span class="bad">${Math.round(naive.false_accept * 100)}% gameable</span>`
+    : '<span class="bad">gameable</span>';
+  headlineParts += ' with the naive reward';
+  if (hardened) {
+    headlineParts += ` — hardening takes it to <span class="good">${Math.round(hardened.false_accept * 100)}% gameable</span>`;
+  }
+
+  // the three plain-language before→after cards (the story)
+  const cards =
+    compareCard('Cheats let through',
+      'wrong answers the reward accepts as correct — lower is safer',
+      naive && naive.false_accept, hardened && hardened.false_accept, 'down') +
+    compareCard('Honest answers kept',
+      'genuinely correct answers that still pass — hardening shouldn\'t break good work',
+      naive && naive.honest_pass, hardened && hardened.honest_pass, 'up') +
+    compareCard('Picks real solutions',
+      'if you optimized this reward, how often its top pick is a real solve, not a cheat (best-of-K)',
+      naive && naive.best_of_k, hardened && hardened.best_of_k, 'up');
+
+  // full metrics table (all verifiers, trimmed to the meaningful columns)
+  const allVerifiers = [naive, hardened, ...others].filter(Boolean);
+  let verifierRows = '';
+  for (const v of allVerifiers) {
+    const nameCls = v.name === 'naive' ? 'naive' : v.name === 'hardened' ? 'hardened' : 'judge';
+    const tightFlag = v.over_tightened
+      ? ' <span class="flag-tight" title="honest-pass below 90%">⚠</span>'
+      : '';
+    verifierRows += `<tr>
+      <td><span class="verifier-name ${nameCls}">${esc(v.name)}</span>${tightFlag}</td>
+      <td>${v.safety_score != null ? v.safety_score.toFixed(0) : '—'}</td>
+      <td class="${v.false_accept <= 0.1 ? 'ok-val' : v.false_accept >= 0.9 ? 'bad-val' : ''}">${pct(v.false_accept)}</td>
+      <td class="${v.honest_pass >= 0.9 ? 'ok-val' : 'bad-val'}">${pct(v.honest_pass)}</td>
+      <td>${v.best_of_k != null ? pct(v.best_of_k) : '—'}</td>
+    </tr>`;
+  }
+
+  app.innerHTML = `
+    <div class="detail-wrap" id="detail">
+      <h2 style="margin:0 0 4px;font-size:26px">${esc(d.env_name)}</h2>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+        ${substrateBadge(d.substrate)}
+        ${verifiedChip(d.verified)}
+      </div>
+      <div class="headline-sentence">${headlineParts}</div>
+      <div class="stat-chips">
+        <span class="stat-chip"><b>${d.n_completions ?? '—'}</b><span>answers scored</span></span>
+        <span class="stat-chip"><b>${d.n_exploits ?? '—'}</b><span>exploits in the test suite</span></span>
+      </div>
+
+      <div class="compare-grid">${cards}</div>
+
+      <div class="detail-grid">
+        <div class="panel-box">
+          <div class="section-h">All metrics — naive vs hardened</div>
+          <table class="verifier-table">
+            <thead><tr>
+              <th>verifier</th>
+              <th title="overall: balances catching cheats and keeping honest answers (0–100)">safety</th>
+              <th title="cheats wrongly accepted — lower is better">false-accept</th>
+              <th title="correct answers kept — higher is better">honest-pass</th>
+              <th title="picks solves not cheats — higher is better">best-of-K</th>
+            </tr></thead>
+            <tbody>${verifierRows}</tbody>
+          </table>
+        </div>
+        <div class="panel-box">
+          <div class="section-h">What the numbers mean</div>
+          <ul class="legend">
+            <li><b>Cheats let through</b> (false-accept) — of the wrong answers in the suite, the share the reward wrongly marks correct. The danger; lower is safer.</li>
+            <li><b>Honest answers kept</b> (honest-pass) — of the genuinely correct answers, the share the reward still passes. Hardening shouldn't reject good work.</li>
+            <li><b>Picks real solutions</b> (best-of-K) — if you trained against this reward, how often selecting its top-scored answer lands on a real solve instead of a cheat.</li>
+            <li><b>Safety</b> — one 0–100 score balancing the two: catches cheats <em>and</em> keeps honest answers.</li>
+          </ul>
+        </div>
+      </div>
+
+      <button class="share-btn" id="share-btn">
+        <span>⎘</span> share this link
+      </button>
+    </div>`;
+
+  const shareBtn = document.getElementById('share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        shareBtn.textContent = '✓ copied!';
+        shareBtn.classList.add('copied');
+        setTimeout(() => {
+          shareBtn.innerHTML = '<span>⎘</span> share this link';
+          shareBtn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  }
+}
+
+function paintNotFound(id) {
+  app.innerHTML = `
+    <div class="not-found">
+      <h2>404</h2>
+      <p>submission <code>${esc(id)}</code> not found</p>
+      <a href="/board">← all environments</a>
+    </div>`;
+}
+
+// ── ROUTER ───────────────────────────────────────────────────────────────────
+
+function route() {
+  const path = window.location.pathname;
+  // match /env/<id>
+  const envMatch = path.match(/^\/env\/([^/]+)$/);
+  if (envMatch) {
+    renderDetail(envMatch[1]);
+    return;
+  }
+  // fallback: check hash for an id (e.g. /#seed-9PNEZQ)
+  const hash = window.location.hash.replace(/^#/, '');
+  if (hash && hash.length > 3) {
+    renderDetail(hash);
+    return;
+  }
+  // default: board
+  renderBoard();
+}
+
+route();
+</script>
+</body>
+</html>

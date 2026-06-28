@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "status": "not_run",
+  "claim_guard": "Disposable private pipeline demonstration only. Labels are diff-based, lineage is incomplete, no adversarial held-out claim is possible, and this run cannot support Model A versus Model B or improvement claims.",
+  "dataset_id": "chronos-model-a-preliminary-disposable-d449a3cad122",
+  "evaluation_dataset_id": "chronos-model-a-preliminary-disposable-heldout-legit-4437384bf0b3",
+  "expected_example_count": 25,
+  "expected_evaluation_example_count": 7,
+  "training_file_sha256": "d449a3cad122153c766a2187c25fa198e6523e59ab48c234e3f06f769391bc04",
+  "evaluation_file_sha256": "4437384bf0b3d9601b0e23b4e33224b7c134ca8f818f662bea281df9401765d4",
+  "dataset_state": "TBD",
+  "dataset_status": "TBD",
+  "estimated_token_count": "TBD"
+}

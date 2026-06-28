@@ -1,0 +1,30 @@
+{
+  "name":  "accounts/desaikrrish-8x76pqk3/deployments/chronos-model-a-rsh-qwen3-4b-20260621-1909",
+  "create_time":  "2026-06-21T19:37:16.206828Z",
+  "created_by":  "desaikrrish@gmail.com",
+  "state":  "READY",
+  "status":  {},
+  "max_replica_count":  1,
+  "desired_replica_count":  1,
+  "replica_count":  1,
+  "autoscaling_policy":  {
+    "scale_up_window":  "30s",
+    "scale_down_window":  "600s",
+    "scale_to_zero_window":  "300s",
+    "load_targets":  {
+      "default":  0.8
+    }
+  },
+  "base_model":  "accounts/desaikrrish-8x76pqk3/models/chronos-model-a-rsh-qwen3-4b-20260621-1909",
+  "enable_session_affinity":  true,
+  "auto_tune":  {},
+  "placement":  {
+    "multi_region":  "GLOBAL"
+  },
+  "update_time":  "2026-06-21T19:41:16.308265Z",
+  "deployment_shape":  "accounts/fireworks/deploymentShapes/qwen3-4b-minimal/versions/t43srbow",
+  "replica_stats":  {
+    "ready_replica_count":  1,
+    "effective_replica_count":  1
+  }
+}

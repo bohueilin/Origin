@@ -1,0 +1,12 @@
+{
+  "digestMatch": true,
+  "gradeOutputSha256": "9cd400da803de0667c5762ebd833bf69f7bff5d8f252b4dd68293a91f7170942",
+  "graderDigest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+  "queryPySha256": "de1e37e62188483a86a585c7cc8660b395b84b071c48ac5c1a37e9d6a5ff2100",
+  "replayAttempts": 3,
+  "replayedToolCount": 29,
+  "snapshotDigest": "6f1647df93375a394153a0bca890ffac5af974738a2b931671c2dc96ded1716a",
+  "snapshotMode": "filesystem",
+  "status": "sealed · 3/3 deterministic replays",
+  "verifierOutputDigest": "27d9a5e69647a62e54161ba144f8b974c57e1763c30fedb3ad1d550f0a351e60"
+}

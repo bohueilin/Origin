@@ -1,0 +1,121 @@
+{
+  "artifact_refs": {
+    "forkpoint_ref": "docs/plans/evidence/002/artifacts/forkpoint-record.json",
+    "metrics_report_ref": "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/report.json",
+    "prior_witness_ref": "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json",
+    "proofset_ref": "artifacts/chronos/releases/release-results/proofset-e497370b2c3d2a69.json",
+    "publication_attempt_or_block_ref": "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/publication-attempt.json",
+    "release_candidate_ref": "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json",
+    "release_proof_ref": "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+    "replay_entrypoint_ref": "chronos.witnesses.sealing.seal_witness",
+    "source_trace_ref": "docs/plans/evidence/002/artifacts/trace-boundary-summary.json"
+  },
+  "checks": [
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json"
+      ],
+      "name": "hud_auth",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json"
+      ],
+      "name": "modal_auth",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json"
+      ],
+      "name": "model_gateway_auth",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json"
+      ],
+      "name": "network_reachability",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json"
+      ],
+      "name": "quota_headroom",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/002/artifacts/trace-boundary-summary.json",
+        "docs/plans/evidence/002/artifacts/forkpoint-record.json"
+      ],
+      "name": "source_trace",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/002/artifacts/forkpoint-record.json"
+      ],
+      "name": "forkpoint",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json"
+      ],
+      "name": "prior_witness",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json"
+      ],
+      "name": "replay_entrypoint",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/releases/release-results/proofset-e497370b2c3d2a69.json"
+      ],
+      "name": "proofset",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json"
+      ],
+      "name": "release_proof",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json"
+      ],
+      "name": "release_candidate",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/publication-attempt.json"
+      ],
+      "name": "publication_attempt_or_expected_block",
+      "status": "pass"
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/report.json"
+      ],
+      "name": "local_artifact_paths",
+      "status": "pass"
+    }
+  ],
+  "content_digest": "b829b7f33a37d764e546b0b20ffb98e2acc1d0ef6ebe50ad751893e70c74c716",
+  "created_at": "2026-06-21T14:34:43Z",
+  "mode": "acceptance",
+  "readiness_pack_id": "readiness-demo-20260621T142614Z-6c33ae7",
+  "redaction_status": "redacted",
+  "schema_version": 1,
+  "status": "pass"
+}

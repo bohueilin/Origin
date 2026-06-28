@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hack2Fix2Hack · Chronos — Fork the state. Prove the fix.</title>
+<meta name="description" content="Hack2Fix2Hack turns suspicious HUD traces into replayable Exploit Witnesses. Chronos forks the corresponding Modal machine state, branches stochastically to discover attacks, and ships the verifier patch only when those attacks fail and legitimate solutions still pass.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F6FA;
+    --paper-2:#ECEFF6;
+    --raised:#FFFFFF;
+    --ink:#10141B;
+    --ink-soft:#434C5A;
+    --ink-faint:#737E8E;
+    --line:#DCE2EC;
+    --line-soft:#E7ECF3;
+    --node:#C5CDDA;
+    --accent:#2347C9;
+    --accent-ink:#1B379E;
+    --accent-soft:#E6EBFB;
+    --accent-glow:#9FB0FF;
+    --found:#A85B12;
+    --found-soft:#F6EAD7;
+    --good:#1C8A57;
+    --good-soft:#DEF0E7;
+    --research:#6A4FB6;
+    --research-soft:#ECE6F7;
+    --display:'Fraunces',Georgia,serif;
+    --body:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --maxw:840px;
+    --wide:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.72;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent);color:#fff}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 30px}
+
+  /* ---- structural type ---- */
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .eyebrow .num{font-weight:600;color:var(--ink);background:var(--accent-soft);border:1px solid #cdd8f6;border-radius:6px;padding:2px 8px;font-size:11px;letter-spacing:.05em}
+  .eyebrow::after{content:"";flex:0 0 auto;width:26px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
+
+  h2{font-family:var(--display);font-optical-sizing:auto;font-weight:560;font-size:clamp(1.7rem,3.7vw,2.35rem);line-height:1.1;letter-spacing:-.018em;color:var(--ink);margin-bottom:18px}
+  h3{font-family:var(--body);font-weight:650;font-size:1.04rem;letter-spacing:-.005em;color:var(--ink);margin:30px 0 8px}
+  p{margin-bottom:16px;color:var(--ink-soft)}
+  p strong,li strong{color:var(--ink);font-weight:650}
+  em{font-style:italic}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-soft);transition:border-color .15s,color .15s}
+  a:hover{border-color:var(--accent)}
+  a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+  code{font-family:var(--mono);font-size:.84em;background:#EEF1F7;border:1px solid var(--line);padding:.06em .4em;border-radius:5px;color:var(--accent-ink)}
+
+  section{padding:62px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+
+  /* ---- nav ---- */
+  .topnav{position:sticky;top:0;z-index:40;background:rgba(244,246,250,.82);backdrop-filter:saturate(150%) blur(10px);-webkit-backdrop-filter:saturate(150%) blur(10px);border-bottom:1px solid var(--line)}
+  .topnav .inner{max-width:var(--wide);margin:0 auto;padding:10px 30px;display:flex;align-items:center;gap:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .topnav .inner::-webkit-scrollbar{display:none}
+  .topnav .brand{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;border:none}
+  .topnav .brand b{color:var(--accent);font-weight:600}
+  .topnav a{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink-faint);white-space:nowrap;border:none;text-transform:uppercase}
+  .topnav a:hover{color:var(--accent)}
+  .topnav .sp{flex:1 0 8px;min-width:8px}
+
+  /* ---- hero ---- */
+  header{padding:84px 0 64px}
+  .tagline{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:26px}
+  .tagline b{color:var(--accent);font-weight:600}
+  h1{font-family:var(--display);font-optical-sizing:auto;font-weight:600;font-size:clamp(2.9rem,8vw,5rem);line-height:.96;letter-spacing:-.035em;color:var(--ink);margin-bottom:14px}
+  h1 .br{color:var(--accent);font-style:italic;font-weight:500}
+  .capline{font-family:var(--mono);font-weight:500;font-size:clamp(.92rem,1.9vw,1.05rem);letter-spacing:.02em;color:var(--accent);margin-bottom:8px;text-transform:none}
+  .capline .slash{color:var(--node);font-weight:400;margin:0 4px}
+  .subtitle{font-family:var(--display);font-optical-sizing:auto;font-weight:400;font-size:clamp(1.2rem,2.9vw,1.6rem);line-height:1.32;letter-spacing:-.01em;color:var(--ink);margin:18px 0 22px;max-width:24em}
+  .thesis{font-size:1.12rem;line-height:1.62;color:var(--ink-soft);max-width:40em}
+  .thesis b{color:var(--ink);font-weight:600}
+  .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:34px}
+  .chip{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--ink-soft);background:var(--raised);border:1px solid var(--line);padding:6px 12px;border-radius:8px;display:inline-flex;align-items:center;gap:8px}
+  .chip b{color:var(--accent);font-weight:600}
+  .chip .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+  .chip .dot.beta{background:var(--found)}
+  .chip .dot.alpha{background:var(--research)}
+  .chip .dot.core{background:var(--good)}
+
+  /* ---- status pills ---- */
+  .status{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;vertical-align:middle;border:1px solid transparent;white-space:nowrap}
+  .status.core{background:var(--good-soft);color:var(--good);border-color:#bfe2cf}
+  .status.beta{background:var(--found-soft);color:var(--found);border-color:#ecd9bc}
+  .status.alpha{background:var(--research-soft);color:var(--research);border-color:#d8cdee}
+  .status.research{background:var(--accent-soft);color:var(--accent);border-color:#cbd6f4}
+
+  /* ---- source-of-truth panel ---- */
+  .sot{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:0;box-shadow:0 1px 2px rgba(16,20,27,.03)}
+  .sot .sot-head{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--good);display:flex;align-items:center;gap:9px;margin-bottom:15px}
+  .sot .sot-head::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good);display:inline-block;box-shadow:0 0 0 3px var(--good-soft)}
+  .sot ul{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:0 26px}
+  .sot li{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px dotted var(--line);padding:8px 0}
+  .sot li b{color:var(--ink);font-weight:500;text-align:right}
+
+  /* ---- figures: breakout plate ---- */
+  .figure{margin:40px 0 8px}
+  .figure.wide{width:min(var(--wide),95vw);position:relative;left:50%;transform:translateX(-50%)}
+  .plate{background:var(--raised);border:1px solid var(--line);border-radius:18px;padding:30px 34px 22px;box-shadow:0 1px 2px rgba(16,20,27,.04),0 24px 48px -34px rgba(16,20,27,.30);position:relative;overflow:hidden}
+  .plate::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(16,20,27,.045) 1px,transparent 0);background-size:22px 22px;opacity:.5;pointer-events:none}
+  .plate svg{width:100%;height:auto;display:block;overflow:visible;position:relative}
+  .plate-head{position:relative;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line-soft)}
+  .plate-title{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);font-weight:600}
+  .plate-meta{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink-faint)}
+  .duo{display:inline-flex;gap:14px;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.05em}
+  .duo b{font-weight:600}
+  .duo .dsc{color:var(--found)} .duo .prf{color:var(--good)}
+  .fig-cap{font-family:var(--body);font-size:.9rem;color:var(--ink-faint);line-height:1.5;margin-top:16px;text-align:center;max-width:60em;margin-left:auto;margin-right:auto}
+  .legend{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-top:18px;position:relative}
+  .legend span{display:inline-flex;align-items:center}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:7px}
+  .legend i.dash{border-radius:0;height:0;border-top:2px dashed var(--found);width:16px}
+  .legend i.solid{border-radius:0;height:0;border-top:2px solid var(--good);width:16px}
+
+  /* ---- skim strip ---- */
+  .skim{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-soft);background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin:22px 0 4px}
+  .skim .lab{color:var(--accent);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:10px;margin-right:4px}
+  .skim .step{white-space:nowrap;color:var(--ink)}
+  .skim .step.d{color:var(--found)} .skim .step.p{color:var(--good)}
+  .skim .arw{color:var(--node)}
+
+  /* ---- prose accents ---- */
+  .lead{font-size:1.08rem;color:var(--ink-soft);max-width:42em}
+  .lead b{color:var(--ink)}
+  .oneliner{background:var(--ink);color:#E9ECF3;border-radius:16px;padding:32px 34px;margin:30px 0 4px;font-family:var(--display);font-optical-sizing:auto;font-size:1.22rem;line-height:1.46;font-weight:400;letter-spacing:-.005em}
+  .oneliner b{color:#fff;font-weight:600}
+  .oneliner .accent{color:var(--accent-glow)}
+  .pull{font-family:var(--display);font-optical-sizing:auto;font-weight:480;font-size:1.32rem;line-height:1.34;letter-spacing:-.012em;color:var(--ink);border-left:2px solid var(--accent);padding:6px 0 6px 22px;margin:24px 0 20px}
+  .eg{background:var(--raised);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:0 12px 12px 0;padding:20px 24px;margin:24px 0 6px}
+  .eg .egk{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:11px}
+  .eg p{margin:0 0 12px;font-size:.96rem}
+  .eg p:last-child{margin-bottom:0}
+
+  /* ---- compare cards ---- */
+  .compare{display:grid;gap:14px;margin-top:8px}
+  .compare.c3{grid-template-columns:repeat(3,1fr)}
+  .compare.c2{grid-template-columns:repeat(2,1fr)}
+  .ccard{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:20px 20px}
+  .ccard.accentbar{border-top:3px solid var(--accent)}
+  .ccard.goodbar{border-top:3px solid var(--good)}
+  .ccard .ch{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:12px}
+  .ccard.accentbar .ch{color:var(--accent)}
+  .ccard.goodbar .ch{color:var(--good)}
+  .ccard ul{list-style:none;display:grid;gap:8px}
+  .ccard li{font-size:.92rem;color:var(--ink-soft);padding-left:17px;position:relative;line-height:1.45}
+  .ccard li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:1px;background:var(--ink-faint)}
+  .ccard.accentbar li::before{background:var(--accent)}
+  .ccard.goodbar li::before{background:var(--good)}
+
+  /* ---- core objects ---- */
+  .objects{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:10px}
+  .obj{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(16,20,27,.03)}
+  .obj.full{grid-column:1 / -1;border:1px solid #bfe2cf;background:linear-gradient(180deg,var(--good-soft),var(--raised) 60%)}
+  .obj .ok{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .obj .ok .nm{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--accent);letter-spacing:-.01em}
+  .obj.full .ok .nm{color:var(--good)}
+  .obj .def{margin:0 0 14px;font-size:.93rem;line-height:1.5;color:var(--ink-soft)}
+  .obj .flabel{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin:auto 0 8px;padding-top:12px;border-top:1px dotted var(--line)}
+  .fields{display:flex;flex-wrap:wrap;gap:5px}
+  .fields .f{font-family:var(--mono);font-size:10px;color:var(--ink-soft);background:var(--paper-2);border:1px solid var(--line);border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .obj.full .fields .f{background:rgba(255,255,255,.7);border-color:#cbe6d7}
+  .obj .proofline{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--ink-soft)}
+  .obj .proofline b{color:var(--ink);font-weight:600}
+  .obj .proofline .v1 b{color:var(--found)} .obj .proofline .v2 b{color:var(--good)}
+
+  /* ---- discovery / proof phases ---- */
+  .phases{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+  .phase{border-radius:14px;padding:22px 24px;border:1px solid var(--line);position:relative;overflow:hidden}
+  .phase.discovery{background:var(--found-soft);border-color:#ecd9bc}
+  .phase.proof{background:var(--good-soft);border-color:#bfe2cf}
+  .phase .ph-k{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:9px;margin-bottom:14px}
+  .phase.discovery .ph-k{color:var(--found)}
+  .phase.proof .ph-k{color:var(--good)}
+  .phase .ph-k .tagword{margin-left:auto;font-size:9px;letter-spacing:.08em;opacity:.7}
+  .phase ul{list-style:none;display:grid;gap:8px}
+  .phase li{font-size:.92rem;color:var(--ink-soft);padding-left:17px;position:relative;line-height:1.45}
+  .phase li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px}
+  .phase.discovery li::before{background:var(--found);border-radius:50%;box-shadow:0 0 0 2px var(--found-soft)}
+  .phase.proof li::before{background:var(--good);border-radius:1px}
+  .phase-note{font-family:var(--display);font-optical-sizing:auto;font-weight:480;font-size:1.18rem;text-align:center;color:var(--ink);margin:22px 0 2px;letter-spacing:-.01em}
+  .phase-note .d{color:var(--found)}
+  .phase-note .p{color:var(--good)}
+
+  /* ---- matrix ---- */
+  .matrix{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem;background:var(--raised);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .matrix th,.matrix td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  .matrix th{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);font-weight:500;background:var(--paper-2)}
+  .matrix td:first-child{font-family:var(--mono);font-size:.82rem;color:var(--ink);white-space:nowrap;font-weight:500}
+  .matrix td{color:var(--ink-soft);line-height:1.45}
+  .matrix tr:last-child td{border-bottom:none}
+
+  /* ---- numbered steps ---- */
+  .steps{list-style:none;counter-reset:s;margin-top:8px}
+  .steps>li{counter-increment:s;position:relative;padding:0 0 4px 54px;margin-bottom:22px}
+  .steps>li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:1px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);border:1px solid #cdd8f6;background:var(--accent-soft);border-radius:9px;width:38px;height:32px;display:flex;align-items:center;justify-content:center}
+  .steps h3{margin:0 0 4px;font-size:1.0rem}
+  .steps p{margin:0;font-size:.94rem}
+  .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:6px;margin-left:8px;vertical-align:middle;font-weight:600}
+  .tag.mvp{background:var(--good-soft);color:var(--good)}
+  .tag.stretch{background:var(--research-soft);color:var(--research)}
+  .tag.done{background:var(--accent-soft);color:var(--accent-ink)}
+
+  /* ---- demo list ---- */
+  .demo{list-style:none;counter-reset:d;margin-top:8px;display:grid;gap:0}
+  .demo>li{counter-increment:d;position:relative;padding:12px 0 12px 46px;border-bottom:1px solid var(--line-soft);font-size:.97rem;color:var(--ink-soft)}
+  .demo>li:last-child{border-bottom:none}
+  .demo>li::before{content:counter(d);position:absolute;left:0;top:11px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);border:1px solid #cdd8f6;background:var(--accent-soft);border-radius:7px;width:28px;height:26px;display:flex;align-items:center;justify-content:center}
+  .demo>li b{color:var(--ink)}
+
+  /* ---- seams ---- */
+  .seams{list-style:none;margin-top:8px;display:grid;gap:12px}
+  .seams>li{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .seam-no{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);border:1px solid #cdd8f6;background:var(--accent-soft);border-radius:7px;padding:4px 9px;white-space:nowrap}
+  .seams h3{margin:0 0 3px;font-size:.97rem}
+  .seams p{margin:0;font-size:.92rem}
+
+  /* ---- risks ---- */
+  .risks{list-style:none;margin-top:6px}
+  .risks>li{padding:18px 0;border-bottom:1px solid var(--line-soft);display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+  .risks>li:last-child{border-bottom:none}
+  .risk-no{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--found);border:1px solid #ecd9bc;background:var(--found-soft);border-radius:7px;padding:4px 9px;white-space:nowrap}
+  .risks h3{margin:0 0 3px;font-size:1.0rem}
+  .risks p{margin:0;font-size:.94rem}
+  .risks p .mit{color:var(--good);font-weight:600}
+
+  /* ---- ship / outputs ---- */
+  .ship{display:grid;gap:0;margin-top:8px;background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:4px 20px}
+  .ship .item{display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line-soft)}
+  .ship .item:last-child{border-bottom:none}
+  .ship .k{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.03em;font-weight:500}
+  .ship p{margin:0;font-size:.95rem}
+  .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:0 26px;margin-top:18px;list-style:none}
+  .metrics li{font-size:.93rem;color:var(--ink-soft);display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-bottom:1px dotted var(--line-soft);padding:9px 0}
+  .metrics li b{color:var(--ink);font-weight:500}
+  .metrics .tbd{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--found);background:var(--found-soft);border:1px solid #ecd9bc;border-radius:6px;padding:2px 7px;white-space:nowrap}
+
+  /* ---- references ---- */
+  .refgroup{margin-top:26px}
+  .refgroup h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 12px;font-weight:500}
+  .refs{list-style:none;counter-reset:r;margin:0}
+  .refs>li{counter-increment:r;position:relative;padding-left:40px;margin-bottom:13px;font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .refs>li::before{content:"["counter(r)"]";position:absolute;left:0;top:0;font-family:var(--mono);font-size:11px;color:var(--accent)}
+  .refs .src{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);display:block;margin-top:2px}
+
+  /* ---- appendix ---- */
+  details.appendix{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:var(--raised);overflow:hidden}
+  details.appendix>summary{cursor:pointer;list-style:none;padding:22px 24px;font-family:var(--display);font-optical-sizing:auto;font-weight:520;font-size:1.12rem;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:12px;letter-spacing:-.01em}
+  details.appendix>summary::-webkit-details-marker{display:none}
+  details.appendix>summary .hint{font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.06em;text-transform:uppercase;color:var(--research);margin-left:auto;margin-right:6px}
+  details.appendix>summary .chev{transition:transform .2s ease;color:var(--ink-faint)}
+  details.appendix[open]>summary .chev{transform:rotate(90deg)}
+  details.appendix .ap-body{padding:0 24px 26px;border-top:1px solid var(--line-soft)}
+  details.appendix .ap-body>*:first-child{margin-top:20px}
+
+  footer{padding:48px 0 76px;border-top:1px solid var(--line)}
+  footer p{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.03em;margin:0;line-height:1.7}
+
+  /* ---- responsive ---- */
+  @media (max-width:720px){
+    .sot ul{grid-template-columns:1fr}
+    .compare.c3,.compare.c2,.objects,.phases{grid-template-columns:1fr}
+    .matrix,.matrix tbody,.matrix tr,.matrix td{display:block;width:100%}
+    .matrix thead{display:none}
+    .matrix td{border-bottom:none;padding:3px 0}
+    .matrix tr{border-bottom:1px solid var(--line);padding:14px 0}
+    .matrix td:first-child{font-weight:600;font-size:.95rem}
+    .ship .item{grid-template-columns:1fr;gap:3px}
+    .metrics{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){
+    body{font-size:16px}
+    header{padding:60px 0 44px}
+    section{padding:46px 0}
+    .wrap{padding:0 22px}
+    .plate{padding:20px 16px 16px}
+    .oneliner{padding:26px 22px;font-size:1.1rem}
+    .pull{font-size:1.14rem}
+    .risks>li,.seams>li{grid-template-columns:1fr;gap:6px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+  }
+
+</style>
+</head>
+<body>
+
+<nav class="topnav" aria-label="Section navigation">
+  <div class="inner">
+    <a class="brand" href="#top">Hack<b>2</b>Fix<b>2</b>Hack</a>
+    <span class="sp"></span>
+    <a href="#problem">Problem</a>
+    <a href="#existing">Existing</a>
+    <a href="#vs-qa">vs&nbsp;QA</a>
+    <a href="#objects">Objects</a>
+    <a href="#workflow">Workflow</a>
+    <a href="#tree">Tree</a>
+    <a href="#example">Example</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#profiles">Profiles</a>
+    <a href="#build">Build</a>
+    <a href="#demo">Demo</a>
+    <a href="#risks">Risks</a>
+    <a href="#outputs">Outputs</a>
+    <a href="#refs">References</a>
+    <a href="#appendix">SFT</a>
+  </div>
+</nav>
+
+<header id="top">
+  <div class="wrap">
+    <div class="tagline">Project <b>Hack2Fix2Hack</b> &nbsp;·&nbsp; HUD Frontier / RSI Hackathon &nbsp;·&nbsp; 24-hour build</div>
+    <h1>Hack<span class="br">2</span>Fix<span class="br">2</span>Hack</h1>
+    <p class="capline">Powered by Chronos <span class="slash">/</span> Fork the state. Prove the fix.</p>
+    <p class="subtitle">Turn a suspicious HUD trace into a replayable Exploit Witness, then ship the verifier patch only when the attack is dead and legitimate solutions still pass.</p>
+
+    <p class="thesis">Fork a suspicious HUD trace into stochastic Modal continuations. Save every successful attack as a replayable <b>Witness</b>. Ship the verifier patch only when the Witnesses fail and legitimate solutions survive. Discovery is stochastic; proof is deterministic.</p>
+
+    <div class="meta-row">
+      <span class="chip"><b>HUD</b> v0.6.4</span>
+      <span class="chip"><b>Chronos</b></span>
+      <span class="chip"><span class="dot beta"></span>Directory Snapshots · Beta</span>
+      <span class="chip"><span class="dot alpha"></span>Memory Snapshots · Alpha</span>
+      <span class="chip">Terminal Wrench</span>
+    </div>
+
+    <div class="skim">
+      <span class="lab">Lifecycle</span>
+      <span class="step">HUD trace</span><span class="arw">&rarr;</span>
+      <span class="step d">ForkPoint</span><span class="arw">&rarr;</span>
+      <span class="step d">branches</span><span class="arw">&rarr;</span>
+      <span class="step d">Witness</span><span class="arw">&rarr;</span>
+      <span class="step">ProofSet</span><span class="arw">&rarr;</span>
+      <span class="step p">patch</span><span class="arw">&rarr;</span>
+      <span class="step p">ReleaseProof</span><span class="arw">&rarr;</span>
+      <span class="step p">publish</span>
+    </div>
+    <div class="figure wide">
+      <div class="plate">
+        <div class="plate-head">
+          <span class="plate-title">Product lifecycle</span>
+          <span class="duo"><span class="dsc">&#9679; discovery is stochastic</span><span class="prf">&#9632; proof is deterministic</span></span>
+        </div>
+        <svg viewBox="0 0 1180 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Product lifecycle. A suspicious HUD trace becomes a ForkPoint; Modal stochastically branches the machine state; successful branches terminate in Exploit Witnesses; Witnesses compile into a HUD ProofSet that gates the verifier patch; the result ships as a ReleaseProof and a published environment version.">
+  <defs>
+    <marker id="lf" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#C5CDDA"/></marker>
+    <marker id="lfA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#2347C9"/></marker>
+    <marker id="lfG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#1C8A57"/></marker>
+    <marker id="lfO" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#A85B12"/></marker>
+  </defs>
+
+  <!-- phase bands -->
+  <rect x="14" y="44" width="576" height="150" rx="16" fill="#FBF4EA" stroke="#EAD9BE"/>
+  <rect x="596" y="44" width="560" height="150" rx="16" fill="#E6F2EB" stroke="#C7E4D4"/>
+  <line x1="593" y1="50" x2="593" y2="188" stroke="#C5CDDA" stroke-width="1" stroke-dasharray="3 4"/>
+
+  <text x="26" y="34" font-family="JetBrains Mono" font-size="11.5" font-weight="600" letter-spacing="1.4" fill="#A85B12">DISCOVERY</text>
+  <text x="120" y="34" font-family="JetBrains Mono" font-size="10" fill="#9a7a48">stochastic search</text>
+  <text x="608" y="34" font-family="JetBrains Mono" font-size="11.5" font-weight="600" letter-spacing="1.4" fill="#1C8A57">PROOF</text>
+  <text x="673" y="34" font-family="JetBrains Mono" font-size="10" fill="#5b8a73">deterministic gate</text>
+
+  <!-- fan on Modal branches node -->
+  <g stroke="#A85B12" stroke-width="1.2" stroke-dasharray="3 3" fill="none" opacity=".8">
+    <path d="M380 86 C 372 72, 356 64, 346 60"/>
+    <path d="M384 86 C 384 70, 380 60, 378 54"/>
+    <path d="M388 86 C 396 72, 408 64, 416 60"/>
+    <path d="M380 144 C 372 158, 356 168, 346 173"/>
+    <path d="M388 144 C 396 158, 408 168, 416 173"/>
+  </g>
+  <g fill="#C28a45">
+    <circle cx="345" cy="59" r="2.6"/><circle cx="377" cy="53" r="2.6"/><circle cx="417" cy="59" r="2.6"/>
+    <circle cx="345" cy="174" r="2.6"/><circle cx="417" cy="174" r="2.6"/>
+  </g>
+
+  <!-- spine arrows -->
+  <g fill="none" stroke="#C5CDDA" stroke-width="1.6">
+    <path d="M144 115 H172" marker-end="url(#lfA)"/>
+    <path d="M292 115 H320" marker-end="url(#lf)"/>
+    <path d="M440 115 H468" marker-end="url(#lfO)"/>
+    <path d="M588 115 H600" marker-end="url(#lf)"/>
+    <path d="M720 115 H745" marker-end="url(#lf)"/>
+    <path d="M865 115 H890" marker-end="url(#lfG)"/>
+    <path d="M1010 115 H1035" marker-end="url(#lfG)"/>
+  </g>
+
+  <!-- cards -->
+  <g font-family="JetBrains Mono" text-anchor="middle">
+    <!-- 1 trace -->
+    <rect x="24" y="86" width="120" height="58" rx="11" fill="#FFFFFF" stroke="#DCE2EC"/>
+    <text x="84" y="112" font-size="11.5" fill="#10141B">HUD trace</text>
+    <text x="84" y="128" font-size="9" fill="#737E8E">reward 1 · suspicious</text>
+    <!-- 2 forkpoint -->
+    <rect x="172" y="86" width="120" height="58" rx="11" fill="#E6EBFB" stroke="#2347C9"/>
+    <text x="232" y="112" font-size="11.5" fill="#2347C9" font-weight="600">ForkPoint</text>
+    <text x="232" y="128" font-size="9" fill="#5b6c93">trace + state</text>
+    <!-- 3 branches -->
+    <rect x="320" y="86" width="120" height="58" rx="11" fill="#F6EAD7" stroke="#A85B12"/>
+    <text x="380" y="112" font-size="11.5" fill="#A85B12" font-weight="600">Modal branches</text>
+    <text x="380" y="128" font-size="9" fill="#9a6a2e">stochastic fan-out</text>
+    <!-- 4 witness -->
+    <rect x="468" y="86" width="120" height="58" rx="11" fill="#F1DFC4" stroke="#A85B12"/>
+    <text x="528" y="112" font-size="11.5" fill="#A85B12" font-weight="600">Exploit Witness</text>
+    <text x="528" y="128" font-size="9" fill="#9a6a2e">replayable</text>
+    <!-- 5 proofset -->
+    <rect x="600" y="86" width="120" height="58" rx="11" fill="#E6EBFB" stroke="#2347C9"/>
+    <text x="660" y="112" font-size="11.5" fill="#2347C9" font-weight="600">HUD ProofSet</text>
+    <text x="660" y="128" font-size="9" fill="#5b6c93">witnesses + controls</text>
+    <!-- 6 patch -->
+    <rect x="745" y="86" width="120" height="58" rx="11" fill="#FFFFFF" stroke="#DCE2EC"/>
+    <text x="805" y="112" font-size="11.5" fill="#10141B">verifier patch</text>
+    <text x="805" y="128" font-size="9" fill="#737E8E">harden-v0 fixer</text>
+    <!-- 7 releaseproof -->
+    <rect x="890" y="86" width="120" height="58" rx="11" fill="#DEF0E7" stroke="#1C8A57"/>
+    <text x="950" y="112" font-size="11.5" fill="#1C8A57" font-weight="600">ReleaseProof</text>
+    <text x="950" y="128" font-size="9" fill="#3f8f6c">before / after</text>
+    <!-- 8 published -->
+    <rect x="1035" y="86" width="120" height="58" rx="11" fill="#CFE9DB" stroke="#1C8A57"/>
+    <text x="1095" y="112" font-size="11.5" fill="#1C8A57" font-weight="600">published</text>
+    <text x="1095" y="128" font-size="9" fill="#3f8f6c">env version</text>
+  </g>
+</svg>
+      </div>
+      <div class="fig-cap">The state tree is the discovery engine; Exploit Witnesses, ProofSets, and ReleaseProofs are the durable outputs. Read left to right &mdash; a suspicious trace is forked and branched until an attack survives, then the patch ships only when the proof passes.</div>
+    </div>
+  </div>
+</header>
+
+<section id="sot" aria-label="Source of truth">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">01</span> Source of truth</div>
+    <h2>Facts verified June&nbsp;20,&nbsp;2026.</h2>
+    <p class="lead">Maturity labels below are taken from the official HUD and Modal documentation on the date shown. Anything marked Alpha, Beta, or experimental is treated as such throughout. Numeric results are labelled TBD until measured during the build.</p>
+    <div class="sot">
+      <div class="sot-head">Verified against official sources · June 2026</div>
+      <ul>
+        <li>HUD Python SDK <b>v0.6.4</b></li>
+        <li>HUD protocol <b>v6</b> (introduced in v0.6.0)</li>
+        <li>Modal Filesystem Snapshots <b>GA · 30-day TTL</b></li>
+        <li>Modal Directory Snapshots <b>Beta</b></li>
+        <li>Modal Memory Snapshots <b>Alpha · experimental</b></li>
+        <li>Modal VM Sandboxes <b>Alpha · access requested</b></li>
+        <li>Terminal Wrench <b>331 tasks</b></li>
+        <li>Illustrative metrics <b>TBD — measured during build</b></li>
+      </ul>
+    </div>
+    <p style="margin-top:18px;font-size:.95rem">HUD v0.6.4 ("Prep more training") is the current release; v0.6.0 brought the v6 protocol, native Modal and Daytona rollout runtimes, and file tracking. Modal treats any feature not marked Alpha or Beta as GA, and tracks SDK API stability ("experimental") separately from infrastructure maturity.</p>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">02</span> The user problem</div>
+    <h2>A suspicious reward is not an actionable bug report.</h2>
+    <p>An environment author opens a reward-1 trace and HUD's <a href="https://docs.hud.ai/platform/agents/qa" target="_blank" rel="noopener">Reward Hacking QA agent</a> flags it as likely gaming the evaluator. That is a useful signal, but it is not yet something the author can act on. To actually fix the environment they need four things the verdict does not give them: a reproducible exploit, the nearby adversarial variants that share its mechanism, a verifier patch that removes them, and proof that the patch still admits legitimate solutions.</p>
+    <p>The job to be done is to turn that single suspicious success into a durable, replayable test and a defended verifier version. <b>Hack2Fix2Hack</b> does exactly that: it reopens the exact machine state behind the trace, attacks it many ways, saves every confirmed attack as an Exploit Witness, and gates the patch on those Witnesses failing while legitimate controls keep passing.</p>
+    <p class="pull">Detection tells you a trace looks wrong. The author still has to reproduce it, expand it, eliminate it, and prove the fix. Chronos is the part that does that.</p>
+    <p style="font-size:.95rem">The research literature is consistent that turning up optimization pressure surfaces verifier attacks rather than task solutions, and that strengthening a weak verifier can sharply lower apparent agent scores. We keep that evidence subordinate to the product problem and collect it in the <a href="#refs">references</a>; the point here is the author's workflow, not the survey.</p>
+  </div>
+</section>
+
+<section id="existing">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">03</span> What already exists</div>
+    <h2>We credit the platform and the loop. We add the missing link.</h2>
+    <p>The hacker-fixer-solver loop is current, active research, and HUD already provides most of the surrounding product. Claiming to have invented either loses points. The direct precedent is <a href="https://arxiv.org/abs/2606.08960" target="_blank" rel="noopener">Hardening Agent Benchmarks with Adversarial Hacker-Fixer Loops</a> (CMU + Fewshot), whose open-source <a href="https://github.com/few-sh/harden-v0" target="_blank" rel="noopener">harden-v0</a> alternates a hacker, a fixer, and a solver. <b>We fork harden-v0 directly</b> so the 24 hours go to our delta, not to plumbing they already shipped.</p>
+
+    <div class="compare c3">
+      <div class="ccard accentbar">
+        <span class="ch">HUD already provides</span>
+        <ul>
+          <li>Tasks and rewards</li>
+          <li>Traces and environment versions</li>
+          <li>Reward-hacking and false-positive QA agents</li>
+          <li>Step-level file evidence</li>
+          <li>Tasksets, analytics, and version comparison</li>
+        </ul>
+      </div>
+      <div class="ccard accentbar">
+        <span class="ch">harden-v0 already provides</span>
+        <ul>
+          <li>Hacker / fixer / solver loop</li>
+          <li>Verifier patching from the hack trajectory</li>
+          <li>Replay-based validation gate</li>
+          <li>Legitimate-solution handling</li>
+          <li>Shared defense pool and hack deduplication</li>
+        </ul>
+      </div>
+      <div class="ccard goodbar">
+        <span class="ch">Chronos adds</span>
+        <ul>
+          <li>Trace-to-executable-state binding</li>
+          <li>Fork-point selection</li>
+          <li>Stochastic state fan-out</li>
+          <li>Deeper re-snapshotting</li>
+          <li>Exploit Witness generation and ProofSets</li>
+          <li>A release gate and ReleaseProof</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="margin-top:22px">Two facts about the precedent shape our positioning. First, harden-v0 already does cross-task transfer through its shared defense pool, so transfer is not our novelty. Second, and more important, its hacker is <b>sequential</b>: it attacks, surfaces one exploit, the fixer patches, and it repeats over a handful of independent rollouts. The multi-step exploits that need a rare state <em>and</em> a verifier break from it tend to fall in the gap that sequential, from-scratch sampling leaves. That gap is what Chronos works in.</p>
+    <p class="pull">What the precedent does not do: branch on executable <em>state</em>, and use all of a trace's evidence to choose where to branch. That is the link we add.</p>
+  </div>
+</section>
+
+<section id="vs-qa">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">04</span> Chronos vs HUD Reward Hacking QA</div>
+    <h2>HUD detects the signal. Chronos turns it into an executable test.</h2>
+    <p>This distinction has to be explicit, because a judge will reasonably ask why HUD's existing Reward Hacking QA agent is not already enough. It is a different job. HUD's QA agents analyse a completed trace with coding tools and return a structured verdict; the standard Reward Hacking agent emits <code>is_reward_hacking</code>, <code>hacking_strategy</code>, and <code>severity</code>. It never reopens the machine, executes an alternate attack, or proves a patch. Chronos starts where QA stops.</p>
+
+    <div class="compare c2">
+      <div class="ccard accentbar">
+        <span class="ch">HUD Reward Hacking QA</span>
+        <ul>
+          <li>Analyses a completed trace</li>
+          <li>Classifies suspicious behavior</li>
+          <li>Returns a verdict, strategy, and severity</li>
+          <li>Answers: &ldquo;Was this likely reward hacking?&rdquo;</li>
+        </ul>
+      </div>
+      <div class="ccard goodbar">
+        <span class="ch">Chronos</span>
+        <ul>
+          <li>Reopens an exact trace state</li>
+          <li>Executes alternate attacks from that state</li>
+          <li>Saves replayable Witnesses and expands exploit families</li>
+          <li>Validates the patch from the same state</li>
+          <li>Answers: &ldquo;Can we reproduce, expand, eliminate, and prove the fix?&rdquo;</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:22px">QA is the trigger and the evidence source, not a competitor. A Reward Hacking verdict is one of the inputs Chronos reads when it selects a ForkPoint, and after the patch ships, QA should stop classifying the formerly-successful cases as hacks. We position Chronos as the executable layer beneath HUD's analysis, not as a replacement for it.</p>
+  </div>
+</section>
+
+<section id="objects">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">05</span> Core product objects</div>
+    <h2>Five objects give engineering, UI, and the pitch one vocabulary.</h2>
+    <p class="lead">The tree is the engine, but the product is a small set of durable objects. Each has a short definition and only its load-bearing fields.</p>
+
+    <div class="objects">
+      <div class="obj">
+        <div class="ok"><span class="nm">ForkPoint</span><span class="status core">CORE</span></div>
+        <div class="def">A HUD trace boundary bound to the corresponding executable Modal state and the agent-history prefix up to that step.</div>
+        <div class="flabel">Fields</div>
+        <div class="fields"><span class="f">hud_trace_id</span><span class="f">hud_step_id</span><span class="f">task_id</span><span class="f">environment_version</span><span class="f">history_hash</span><span class="f">snapshot_id</span><span class="f">snapshot_mode</span><span class="f">grader_digest</span><span class="f">fork_reason</span></div>
+      </div>
+      <div class="obj">
+        <div class="ok"><span class="nm">BranchRun</span><span class="status core">CORE</span></div>
+        <div class="def">One stochastic continuation from a ForkPoint, with everything needed to reproduce or compare it.</div>
+        <div class="flabel">Fields</div>
+        <div class="fields"><span class="f">parent_fork_point</span><span class="f">branch_id</span><span class="f">seed</span><span class="f">model</span><span class="f">sampling_config</span><span class="f">hud_trace_id</span><span class="f">reward</span><span class="f">lineage</span></div>
+      </div>
+      <div class="obj">
+        <div class="ok"><span class="nm">ExploitWitness</span><span class="status core">CORE</span></div>
+        <div class="def">A confirmed reward hack, packaged with enough state and provenance to reproduce it on demand. More than a trace: concrete evidence that a specific verifier version can be fooled from a specific machine state.</div>
+        <div class="flabel">Fields</div>
+        <div class="fields"><span class="f">pre_attack_snapshot</span><span class="f">history_prefix</span><span class="f">recorded_actions</span><span class="f">file_diff</span><span class="f">verifier_output</span><span class="f">qa_result</span><span class="f">env + grader versions</span><span class="f">seed + model</span><span class="f">replay_entrypoint</span></div>
+      </div>
+      <div class="obj">
+        <div class="ok"><span class="nm">ProofSet</span><span class="status core">CORE</span></div>
+        <div class="def">A HUD taskset that gates the patch: Exploit Witnesses that must score reward 0 under the patched verifier, legitimate controls that must keep reward 1, and optional re-seeded exploit-family variants.</div>
+        <div class="flabel">Fields</div>
+        <div class="fields"><span class="f">exploit_witnesses[]</span><span class="f">legitimate_controls[]</span><span class="f">exploit_family_variants[]</span></div>
+      </div>
+      <div class="obj full">
+        <div class="ok"><span class="nm">ReleaseProof</span><span class="status core">OUTCOME</span></div>
+        <div class="def">The before-and-after evidence for a hardened environment version. Stronger than &ldquo;we patched the verifier&rdquo;: v1 rewards every Witness and every control; v2 rewards no Witness and every control. Published alongside the new environment version and linked to its ProofSet.</div>
+        <div class="flabel">Before / after</div>
+        <div class="proofline">
+          <span class="v1"><b>environment_v1</b></span> &rarr; witnesses 4/4 rewarded, controls 3/3 rewarded<br>
+          <span class="v2"><b>environment_v2</b></span> &rarr; witnesses 0/4 rewarded, controls 3/3 rewarded <span style="color:var(--ink-faint)">(counts illustrative)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lucky">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">06</span> The differentiator</div>
+    <h2>Don't make the attacker get lucky twice.</h2>
+    <p>The reward hacks that stay hidden are usually multi-step: the agent first has to reach a rare, exploitable state, then break the verifier from it. Searched the normal way (fresh run, fresh luck) a single rollout rarely gets both in one trajectory, so a handful of independent rollouts per task miss them, and they only surface when a model in the wild trips over one.</p>
+    <p>The fix is to <b>stop starting over</b>. The first time any rollout reaches the interesting state, freeze it, then attack that one frozen state many ways. You pay the cost of reaching the state once and amortize the adversarial search across stochastic branches. When a branch reaches a <em>deeper</em> interesting state, re-snapshot it and search again, exposing multi-step exploit paths a flat search structurally misses.</p>
+
+    <div class="eg">
+      <span class="egk">Illustrative · the efficiency intuition</span>
+      <p>Let state reachability be <code>p</code> and exploit discovery from that state be <code>q</code>. A flat, from-scratch search has to land both in one trajectory, succeeding at roughly <code>p&nbsp;&times;&nbsp;q</code>. State branching pays <code>p</code> once to reach the state, then searches <code>q</code> repeatedly from the frozen snapshot. A three-step hack adds a further factor <code>r</code>: flat search needs <code>p&nbsp;&times;&nbsp;q&nbsp;&times;&nbsp;r</code> in one run; branching pays each reach-cost once per level and decouples the factors.</p>
+      <p>These are illustrative probabilities, not measured rates. The coverage-versus-compute curve that quantifies the gain for a given task is something we <b>measure during the build</b>; until then it is labelled TBD rather than asserted.</p>
+    </div>
+    <div class="oneliner">Detection is cheap and stochastic; reproduction and proof are what the author actually needs. <span class="accent">Pay once to reach the state, then attack it many ways</span>, and turn every confirmed branch into a permanent test that the patch has to defeat.</div>
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">07</span> Discovery vs proof</div>
+    <h2>Discovery is stochastic. Proof is deterministic.</h2>
+    <p class="lead">The whole system has exactly two modes, and keeping them separate is the single most important idea in the design. One searches; the other reproduces. Confusing them is what makes &ldquo;stochastic hacking&rdquo; sound at odds with &ldquo;reproducible artifact,&rdquo; and the split resolves it.</p>
+
+    <div class="phases">
+      <div class="phase discovery">
+        <div class="ph-k">Stochastic discovery</div>
+        <ul>
+          <li>Independent seeds per branch</li>
+          <li>Sampling diversity and temperature</li>
+          <li>Agentic branches, no fixed taxonomy</li>
+          <li>Optional multiple attacker models</li>
+          <li>Adaptive branch allocation</li>
+          <li>Re-snapshot promising children</li>
+        </ul>
+      </div>
+      <div class="phase proof">
+        <div class="ph-k">Deterministic proof</div>
+        <ul>
+          <li>Restore the saved pre-attack state</li>
+          <li>Replay recorded actions and tool calls</li>
+          <li>Fixed environment and grader versions</li>
+          <li>Confirm reward before the patch</li>
+          <li>Confirm reward 0 after the patch</li>
+          <li>Confirm legitimate controls stay reward 1</li>
+        </ul>
+      </div>
+    </div>
+    <p class="phase-note"><span class="d">Discovery is stochastic.</span> &nbsp;<span class="p">Proof is deterministic.</span></p>
+
+    <h3>Beat by beat</h3>
+    <p>An author sees a suspicious reward-1 trace and HUD QA flags it. A ForkPoint QA workflow inspects the trajectory, reward, environment and worker logs, screenshots, step-level file changes, and any exposed reasoning, and emits a <code>ForkPoint</code> rather than just a suspicion score. Chronos binds that trace step to the correct Modal snapshot and history prefix, then fans the state into isolated stochastic continuations; promising branches are re-snapshotted and expanded again. Successful branches are graded, classified, deduplicated, and saved as Exploit Witnesses with a deterministic replay entrypoint. The Witnesses become a HUD ProofSet. harden-v0's fixer proposes the verifier patch; Chronos reruns the exact Witnesses, re-seeded family variants, and legitimate controls against v2; and HUD publishes a new environment version with its ProofSet and ReleaseProof.</p>
+
+    <div class="figure wide">
+      <div class="plate">
+        <div class="plate-head">
+          <span class="plate-title">ReleaseProof gate</span>
+          <span class="plate-meta">deterministic &middot; both checks restore the same ProofSet states</span>
+        </div>
+        <svg viewBox="0 0 1180 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The release gate. The patched verifier v2 passes through two deterministic checks: controls still pass at reward 1, then Witnesses are now dead at reward 0. A control failure rejects and relaxes the patch; a surviving Witness rejects and widens it; both feed back to the fixer as a re-fix loop. Only when both checks pass does the system publish environment v2 as a ReleaseProof.">
+  <defs>
+    <marker id="gy" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#9AA4B5"/></marker>
+    <marker id="gam" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#A85B12"/></marker>
+    <marker id="ggn" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#1C8A57"/></marker>
+  </defs>
+
+  <!-- spine flow -->
+  <path d="M222 150 H306" fill="none" stroke="#9AA4B5" stroke-width="1.6" marker-end="url(#gy)"/>
+  <path d="M450 150 H614" fill="none" stroke="#1C8A57" stroke-width="1.8" marker-end="url(#ggn)"/>
+  <text x="532" y="143" font-family="JetBrains Mono" font-size="9" fill="#1C8A57" text-anchor="middle">yes</text>
+  <path d="M760 150 H934" fill="none" stroke="#1C8A57" stroke-width="1.8" marker-end="url(#ggn)"/>
+  <text x="847" y="143" font-family="JetBrains Mono" font-size="9" fill="#1C8A57" text-anchor="middle">yes</text>
+
+  <!-- reject downs -->
+  <path d="M380 194 V249" fill="none" stroke="#A85B12" stroke-width="1.6" marker-end="url(#gam)"/>
+  <text x="393" y="226" font-family="JetBrains Mono" font-size="9" fill="#A85B12">no</text>
+  <path d="M690 194 V249" fill="none" stroke="#A85B12" stroke-width="1.6" marker-end="url(#gam)"/>
+  <text x="703" y="226" font-family="JetBrains Mono" font-size="9" fill="#A85B12">no</text>
+
+  <!-- re-fix loop -->
+  <path d="M380 297 V356" fill="none" stroke="#A85B12" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <path d="M690 297 V356" fill="none" stroke="#A85B12" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <path d="M690 356 H145 V172" fill="none" stroke="#A85B12" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#gam)"/>
+  <text x="250" y="349" font-family="JetBrains Mono" font-size="9" fill="#A85B12">re-fix &middot; back to the fixer</text>
+
+  <!-- patched verifier v2 -->
+  <rect x="70" y="132" width="152" height="36" rx="18" fill="#F6EAD7" stroke="#A85B12"/>
+  <text x="146" y="155" font-family="JetBrains Mono" font-size="10.5" fill="#A85B12" text-anchor="middle">patched verifier v2</text>
+
+  <!-- decision 1: controls -->
+  <text x="380" y="96" font-family="JetBrains Mono" font-size="9.5" font-weight="600" fill="#1C8A57" text-anchor="middle">PRESERVE &middot; reward 1</text>
+  <polygon points="380,106 450,150 380,194 310,150" fill="#DEF0E7" stroke="#1C8A57"/>
+  <text x="380" y="147" font-family="JetBrains Mono" font-size="9.5" fill="#1C8A57" text-anchor="middle">controls still</text>
+  <text x="380" y="160" font-family="JetBrains Mono" font-size="9.5" fill="#1C8A57" text-anchor="middle">pass?</text>
+
+  <!-- decision 2: witnesses -->
+  <text x="690" y="96" font-family="JetBrains Mono" font-size="9.5" font-weight="600" fill="#2347C9" text-anchor="middle">KILL &middot; reward 0</text>
+  <polygon points="690,106 760,150 690,194 620,150" fill="#E6EBFB" stroke="#2347C9"/>
+  <text x="690" y="147" font-family="JetBrains Mono" font-size="9.5" fill="#2347C9" text-anchor="middle">Witnesses</text>
+  <text x="690" y="160" font-family="JetBrains Mono" font-size="9.5" fill="#2347C9" text-anchor="middle">now dead?</text>
+
+  <!-- success terminal -->
+  <rect x="940" y="124" width="192" height="52" rx="11" fill="#DEF0E7" stroke="#1C8A57" stroke-width="1.6"/>
+  <text x="1036" y="146" font-family="JetBrains Mono" font-size="10.5" font-weight="600" fill="#1C8A57" text-anchor="middle">publish environment v2</text>
+  <text x="1036" y="161" font-family="JetBrains Mono" font-size="8.5" fill="#3f8f6c" text-anchor="middle">ReleaseProof committed</text>
+
+  <!-- reject boxes -->
+  <rect x="290" y="253" width="180" height="44" rx="8" fill="#F6EAD7" stroke="#A85B12"/>
+  <text x="380" y="272" font-family="JetBrains Mono" font-size="9.5" fill="#A85B12" text-anchor="middle">reject: relax patch</text>
+  <text x="380" y="286" font-family="JetBrains Mono" font-size="8.5" fill="#9a6a2e" text-anchor="middle">control broken</text>
+
+  <rect x="600" y="253" width="180" height="44" rx="8" fill="#F6EAD7" stroke="#A85B12"/>
+  <text x="690" y="272" font-family="JetBrains Mono" font-size="9.5" fill="#A85B12" text-anchor="middle">reject: widen patch</text>
+  <text x="690" y="286" font-family="JetBrains Mono" font-size="8.5" fill="#9a6a2e" text-anchor="middle">Witness survived</text>
+</svg>
+        <div class="legend">
+          <span><i style="background:#1C8A57"></i>PRESERVE &mdash; controls stay reward 1</span>
+          <span><i style="background:#2347C9"></i>KILL &mdash; Witnesses go reward 0</span>
+          <span><i class="dash" style="border-top-color:#A85B12"></i>reject &rarr; re-fix loop</span>
+        </div>
+      </div>
+      <div class="fig-cap">The ReleaseProof gate. The patch ships only when every Witness scores reward 0 and every legitimate control still scores reward 1.</div>
+    </div>
+  </div>
+</section>
+
+<section id="tree">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">08</span> The state-tree research engine</div>
+    <h2>The tree is the discovery engine.</h2>
+    <p class="lead">The research thesis stays in the main body: pay once to reach an interesting state, amortize adversarial search across stochastic branches, and re-snapshot promising descendants to expose deeper, multi-step exploit paths. The tree is how Chronos discovers Witnesses; the Witnesses, ProofSets, and ReleaseProofs are what it ships.</p>
+
+    <div class="figure wide">
+      <div class="plate">
+        <div class="plate-head">
+          <span class="plate-title">State-tree search</span>
+          <span class="plate-meta">reach once &middot; fork &times;K &middot; re-snapshot promising children</span>
+        </div>
+        <svg viewBox="0 0 1180 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Chronos state tree. An agent rollout reaches snapshot S1; forking it many ways, one branch reaches a deeper state S2, which is snapshotted and forked again, reaching S3. A successful leaf terminates in an Exploit Witness. Depth 1 is the must-ship target; depths 2 and 3 are research stretch.">
+  <defs>
+    <marker id="tbB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#2347C9"/></marker>
+    <marker id="tbO" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#A85B12"/></marker>
+  </defs>
+
+  <!-- depth bands -->
+  <rect x="150" y="28" width="276" height="166" rx="14" fill="#2347C9" fill-opacity=".03" stroke="#2347C9" stroke-opacity=".5" stroke-dasharray="5 4"/>
+  <text x="162" y="22" font-family="JetBrains Mono" font-size="10.5" font-weight="600" fill="#2347C9">depth 1 &middot; must-ship</text>
+  <rect x="436" y="120" width="724" height="300" rx="14" fill="#6A4FB6" fill-opacity=".025" stroke="#6A4FB6" stroke-opacity=".45" stroke-dasharray="5 4"/>
+  <text x="448" y="414" font-family="JetBrains Mono" font-size="10.5" font-weight="600" fill="#6A4FB6">depth 2&ndash;3 &middot; research stretch &mdash; multi-step exploit paths a flat search misses</text>
+
+  <!-- rollout -->
+  <text x="40" y="78" font-family="JetBrains Mono" font-size="10" fill="#737E8E">agent rollout</text>
+  <line x1="40" y1="96" x2="184" y2="96" stroke="#10141B" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 8"/>
+  <circle cx="70" cy="96" r="3" fill="#10141B"/><circle cx="110" cy="96" r="3" fill="#10141B"/><circle cx="150" cy="96" r="3" fill="#10141B"/>
+
+  <!-- explored (dead) branches: gray dashed -->
+  <g fill="none" stroke="#C5CDDA" stroke-width="1.4" stroke-dasharray="4 4">
+    <path d="M228 92 C 280 70, 300 56, 332 50"/>
+    <path d="M228 90 C 280 78, 300 66, 332 64"/>
+    <path d="M228 102 C 280 122, 300 134, 332 140"/>
+    <path d="M228 104 C 280 140, 300 152, 332 154"/>
+    <path d="M490 186 C 540 162, 560 150, 592 146"/>
+    <path d="M490 184 C 540 174, 560 164, 592 162"/>
+    <path d="M490 196 C 540 220, 560 230, 592 234"/>
+    <path d="M750 281 C 800 257, 820 246, 852 242"/>
+    <path d="M750 279 C 800 269, 820 258, 852 256"/>
+    <path d="M750 291 C 800 314, 820 324, 852 328"/>
+  </g>
+  <g fill="#FFFFFF" stroke="#C5CDDA" stroke-width="1.3">
+    <circle cx="335" cy="49" r="3.4"/><circle cx="335" cy="64" r="3.4"/><circle cx="335" cy="141" r="3.4"/><circle cx="335" cy="155" r="3.4"/>
+    <circle cx="595" cy="145" r="3.4"/><circle cx="595" cy="162" r="3.4"/><circle cx="595" cy="235" r="3.4"/>
+    <circle cx="855" cy="241" r="3.4"/><circle cx="855" cy="256" r="3.4"/><circle cx="855" cy="329" r="3.4"/>
+  </g>
+
+  <!-- survival path: bold -->
+  <path d="M228 104 C 320 130, 380 160, 452 184" fill="none" stroke="#2347C9" stroke-width="2.6" marker-end="url(#tbB)"/>
+  <path d="M490 200 C 580 224, 640 254, 712 278" fill="none" stroke="#2347C9" stroke-width="2.6" marker-end="url(#tbB)"/>
+  <path d="M750 300 C 830 322, 880 340, 944 354" fill="none" stroke="#A85B12" stroke-width="2.8" marker-end="url(#tbO)"/>
+
+  <text x="300" y="40" font-family="JetBrains Mono" font-size="10" fill="#737E8E">fork &times;K stochastic branches</text>
+
+  <!-- snapshot S1 -->
+  <g>
+    <rect x="192" y="78" width="36" height="36" rx="8" fill="#E6EBFB" stroke="#2347C9" stroke-width="2"/>
+    <rect x="200" y="86" width="20" height="20" rx="3" fill="none" stroke="#2347C9" stroke-opacity=".55"/>
+    <circle cx="205" cy="91" r="1.3" fill="#2347C9"/><circle cx="215" cy="91" r="1.3" fill="#2347C9"/><circle cx="205" cy="101" r="1.3" fill="#2347C9"/><circle cx="215" cy="101" r="1.3" fill="#2347C9"/>
+  </g>
+  <text x="210" y="70" font-family="JetBrains Mono" font-size="10.5" font-weight="600" fill="#2347C9" text-anchor="middle">snapshot S&#8321;</text>
+  <text x="210" y="130" font-family="JetBrains Mono" font-size="9" fill="#737E8E" text-anchor="middle">reach once, freeze</text>
+
+  <!-- snapshot S2 -->
+  <g>
+    <rect x="452" y="172" width="36" height="36" rx="8" fill="#E6EBFB" stroke="#2347C9" stroke-width="2"/>
+    <rect x="460" y="180" width="20" height="20" rx="3" fill="none" stroke="#2347C9" stroke-opacity=".55"/>
+    <circle cx="465" cy="185" r="1.3" fill="#2347C9"/><circle cx="475" cy="185" r="1.3" fill="#2347C9"/><circle cx="465" cy="195" r="1.3" fill="#2347C9"/><circle cx="475" cy="195" r="1.3" fill="#2347C9"/>
+  </g>
+  <text x="470" y="164" font-family="JetBrains Mono" font-size="10.5" font-weight="600" fill="#2347C9" text-anchor="middle">snapshot S&#8322;</text>
+  <text x="470" y="224" font-family="JetBrains Mono" font-size="9" fill="#737E8E" text-anchor="middle">re-snapshot deeper state</text>
+
+  <!-- snapshot S3 -->
+  <g>
+    <rect x="712" y="267" width="36" height="36" rx="8" fill="#E6EBFB" stroke="#2347C9" stroke-width="2"/>
+    <rect x="720" y="275" width="20" height="20" rx="3" fill="none" stroke="#2347C9" stroke-opacity=".55"/>
+    <circle cx="725" cy="280" r="1.3" fill="#2347C9"/><circle cx="735" cy="280" r="1.3" fill="#2347C9"/><circle cx="725" cy="290" r="1.3" fill="#2347C9"/><circle cx="735" cy="290" r="1.3" fill="#2347C9"/>
+  </g>
+  <text x="730" y="259" font-family="JetBrains Mono" font-size="10.5" font-weight="600" fill="#2347C9" text-anchor="middle">snapshot S&#8323;</text>
+  <text x="730" y="319" font-family="JetBrains Mono" font-size="9" fill="#737E8E" text-anchor="middle">fork again</text>
+
+  <!-- Exploit Witness leaf -->
+  <rect x="944" y="328" width="206" height="56" rx="12" fill="#F1DFC4" stroke="#A85B12"/>
+  <text x="1047" y="352" font-family="JetBrains Mono" font-size="12" font-weight="600" fill="#A85B12" text-anchor="middle">Exploit Witness</text>
+  <text x="1047" y="370" font-family="JetBrains Mono" font-size="9" fill="#9a6a2e" text-anchor="middle">state + replay saved</text>
+</svg>
+        <div class="legend">
+          <span><i class="dash"></i>explored / dead branch</span>
+          <span><i style="background:#2347C9"></i>survival path &mdash; deepens</span>
+          <span><i style="background:#A85B12"></i>Exploit Witness leaf</span>
+        </div>
+      </div>
+      <div class="fig-cap">Reach a state once, snapshot it, fork stochastic attacks; a promising branch reaches a deeper state, so we re-snapshot and fork again. Successful leaves terminate in Exploit Witnesses. Depth 1 is must-ship; the deeper tree is stretch.</div>
+    </div>
+    </div>
+
+    <h3>It is an MCTS-shaped search</h3>
+    <p>Nodes are environment snapshots, edges are candidate attacks, and a leaf's value is whether the verifier handed out reward it should not have. We call this <b>MCTS-shaped</b> rather than MCTS: the hackathon build does not implement a full selection / expansion / value-propagation cycle with a defined tree policy, so claiming MCTS outright would over-state it. The expansion prior, which decides where to spend the next branch, comes from all the trajectory evidence (file changes, logs, grader behavior, and optionally exposed reasoning), not from chain of thought alone. Exposed reasoning helps when it is present, but it is never a required dependency, and the prior only needs to rank nodes better than random.</p>
+
+    <h3>Branches are agentic, and K is bounded but adaptive</h3>
+    <p>Each branch restores the snapshot and runs the attacker from that exact state at sampling temperature, inventing and executing its own exploit. We do not feed branches a fixed exploit taxonomy, so the search can surface attacks we never listed; harden-v0 holds its documented taxonomy out of the loop for the same reason. We cluster confirmed hacks by their (target, mechanism) pair using harden-v0's <a href="https://github.com/few-sh/harden-v0/blob/main/dedup_hacks.py" target="_blank" rel="noopener">dedup</a> so re-spelling a hack does not count as a new find, and a state stops being expanded once its branches stop turning up new distinct exploit clusters.</p>
+
+    <div class="eg">
+      <span class="egk">Hackathon search policy · implementation defaults</span>
+      <p>For the 24-hour build we use a bounded adaptive policy rather than an unbounded scheduler: <b>12 initial branches</b> from the first ForkPoint, <b>maximum depth 2</b>, <b>up to 8 child branches</b> from a promising re-snapshotted state, and an early stop after <b>4 consecutive branches produce no new exploit cluster</b>. These are implementation defaults for the demo, not universal scientific claims; the coverage-versus-compute curve that would justify a wider budget is measured during the build and reported as TBD until then.</p>
+    </div>
+  </div>
+</section>
+
+<section id="example">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">09</span> Worked example</div>
+    <h2>Terminal Wrench · MongoDB Sales Aggregation · iterative pytest subversion.</h2>
+    <p>We anchor the demo on a sourced task rather than a hypothetical. <a href="https://github.com/few-sh/terminal-wrench/blob/main/tasks/mongodb-sales-aggregation-engine/claude-opus-4.6" target="_blank" rel="noopener"><code>mongodb-sales-aggregation-engine</code></a> asks the agent to implement a <code>SalesAnalyzer</code> class with MongoDB aggregation pipelines and pass a 10-plus-scenario test suite. In the recorded Terminal Wrench trajectory the agent never wrote any MongoDB code; it spent roughly twenty episodes building and hardening a layered pytest exploit, red-teaming its own attack against countermeasures. That iterative adversarial structure is exactly what the state tree is built to search, and it maps cleanly onto two snapshot levels.</p>
+
+    <div class="figure wide">
+      <div class="plate">
+        <div class="plate-head">
+          <span class="plate-title">MongoDB pytest subversion</span>
+          <span class="plate-meta">two snapshot levels &middot; S&#8320; reached by ordinary work &middot; S&#8321; only via the plugin path</span>
+        </div>
+        <svg viewBox="0 0 1180 370" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Branch tree for the MongoDB pytest-subversion task. State S0 is the prepared repository with dependencies. Branches from S0: a legitimate implementation, a conftest.py hook, a test mutation, and the setuptools plugin path that survives --noconftest. Only the plugin path reaches state S1, the established plugin. Branches from S1: synthetic reports, hook substitution, collection exit, and a layered fallback that becomes the Exploit Witness.">
+  <defs>
+    <marker id="eg" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#C5CDDA"/></marker>
+    <marker id="eb" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#2347C9"/></marker>
+    <marker id="eo" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#A85B12"/></marker>
+    <marker id="en" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#1C8A57"/></marker>
+  </defs>
+
+  <text x="380" y="28" font-family="JetBrains Mono" font-size="9.5" font-weight="600" fill="#737E8E" text-anchor="middle">from S&#8320; &middot; depth 1</text>
+  <text x="980" y="28" font-family="JetBrains Mono" font-size="9.5" font-weight="600" fill="#737E8E" text-anchor="middle">from S&#8321; &middot; depth 2</text>
+
+  <!-- depth-1 branches -->
+  <path d="M128 184 C 190 150, 220 80, 284 68" fill="none" stroke="#1C8A57" stroke-width="1.6" marker-end="url(#en)"/>
+  <path d="M128 186 C 190 165, 220 132, 284 126" fill="none" stroke="#C5CDDA" stroke-width="1.4" marker-end="url(#eg)"/>
+  <path d="M128 190 H282" fill="none" stroke="#2347C9" stroke-width="2.4" marker-end="url(#eb)"/>
+  <path d="M128 196 C 190 220, 220 250, 284 254" fill="none" stroke="#C5CDDA" stroke-width="1.4" marker-end="url(#eg)"/>
+
+  <!-- plugin path -> S1 -->
+  <path d="M472 190 H616" fill="none" stroke="#2347C9" stroke-width="2.4" marker-end="url(#eb)"/>
+
+  <!-- depth-2 branches -->
+  <path d="M658 184 C 730 150, 800 80, 888 70" fill="none" stroke="#C5CDDA" stroke-width="1.4" marker-end="url(#eg)"/>
+  <path d="M658 186 C 740 165, 810 132, 888 130" fill="none" stroke="#C5CDDA" stroke-width="1.4" marker-end="url(#eg)"/>
+  <path d="M658 196 C 740 220, 810 250, 888 250" fill="none" stroke="#C5CDDA" stroke-width="1.4" marker-end="url(#eg)"/>
+  <path d="M658 198 C 750 250, 820 305, 888 312" fill="none" stroke="#A85B12" stroke-width="2.4" marker-end="url(#eo)"/>
+
+  <!-- S0 snapshot -->
+  <rect x="92" y="172" width="36" height="36" rx="8" fill="#E6EBFB" stroke="#2347C9" stroke-width="2"/>
+  <rect x="100" y="180" width="20" height="20" rx="3" fill="none" stroke="#2347C9" stroke-opacity=".55"/>
+  <circle cx="105" cy="185" r="1.3" fill="#2347C9"/><circle cx="115" cy="185" r="1.3" fill="#2347C9"/><circle cx="105" cy="195" r="1.3" fill="#2347C9"/><circle cx="115" cy="195" r="1.3" fill="#2347C9"/>
+  <text x="110" y="164" font-family="JetBrains Mono" font-size="11" font-weight="600" fill="#2347C9" text-anchor="middle">S&#8320;</text>
+  <text x="110" y="226" font-family="JetBrains Mono" font-size="9" fill="#737E8E" text-anchor="middle">repo + deps ready</text>
+
+  <!-- S1 snapshot -->
+  <rect x="622" y="172" width="36" height="36" rx="8" fill="#E6EBFB" stroke="#2347C9" stroke-width="2"/>
+  <rect x="630" y="180" width="20" height="20" rx="3" fill="none" stroke="#2347C9" stroke-opacity=".55"/>
+  <circle cx="635" cy="185" r="1.3" fill="#2347C9"/><circle cx="645" cy="185" r="1.3" fill="#2347C9"/><circle cx="635" cy="195" r="1.3" fill="#2347C9"/><circle cx="645" cy="195" r="1.3" fill="#2347C9"/>
+  <text x="640" y="164" font-family="JetBrains Mono" font-size="11" font-weight="600" fill="#2347C9" text-anchor="middle">S&#8321;</text>
+  <text x="640" y="226" font-family="JetBrains Mono" font-size="9" fill="#737E8E" text-anchor="middle">plugin established</text>
+
+  <!-- depth-1 boxes -->
+  <g font-family="JetBrains Mono" text-anchor="middle">
+    <rect x="288" y="48" width="184" height="36" rx="8" fill="#DEF0E7" stroke="#1C8A57"/><text x="380" y="70" font-size="9.5" fill="#1C8A57">legitimate implementation</text>
+    <rect x="288" y="108" width="184" height="36" rx="8" fill="#FFFFFF" stroke="#DCE2EC"/><text x="380" y="130" font-size="9.5" fill="#10141B">conftest.py hook</text>
+    <rect x="288" y="168" width="184" height="44" rx="8" fill="#E6EBFB" stroke="#2347C9"/><text x="380" y="187" font-size="9.5" fill="#2347C9">setuptools plugin path</text><text x="380" y="200" font-size="8" fill="#5b6c93">survives --noconftest</text>
+    <rect x="288" y="236" width="184" height="36" rx="8" fill="#FFFFFF" stroke="#DCE2EC"/><text x="380" y="258" font-size="9.5" fill="#10141B">test mutation</text>
+  </g>
+
+  <!-- depth-2 boxes -->
+  <g font-family="JetBrains Mono" text-anchor="middle">
+    <rect x="892" y="54" width="176" height="32" rx="7" fill="#FFFFFF" stroke="#DCE2EC"/><text x="980" y="74" font-size="9" fill="#10141B">synthetic reports</text>
+    <rect x="892" y="114" width="176" height="32" rx="7" fill="#FFFFFF" stroke="#DCE2EC"/><text x="980" y="134" font-size="9" fill="#10141B">hook substitution</text>
+    <rect x="892" y="234" width="176" height="32" rx="7" fill="#FFFFFF" stroke="#DCE2EC"/><text x="980" y="254" font-size="9" fill="#10141B">collection exit</text>
+    <rect x="892" y="292" width="176" height="42" rx="7" fill="#F6EAD7" stroke="#A85B12"/><text x="980" y="310" font-size="9.5" fill="#A85B12">layered fallback</text><text x="980" y="324" font-size="8" fill="#9a6a2e">&rarr; Exploit Witness</text>
+  </g>
+</svg>
+        <div class="legend">
+          <span><i style="background:#2347C9"></i>survival path &mdash; deepens</span>
+          <span><i class="dash"></i>explored / dead branch</span>
+          <span><i style="background:#1C8A57"></i>legitimate solution</span>
+          <span><i style="background:#A85B12"></i>Exploit Witness leaf</span>
+        </div>
+      </div>
+      <div class="fig-cap">Two snapshot levels. From S&#8320; the agent can implement legitimately or probe several attack surfaces; only the plugin path reaches S&#8321;, where the defense-in-depth fallback becomes the Exploit Witness.</div>
+    </div>
+
+    <p>The recorded attack layered four mechanisms: a local <code>conftest.py</code> hook that no-ops tests (which breaks under <code>--noconftest</code>); a setuptools <code>pytest11</code> entry-point plugin that survives <code>--noconftest</code> because it loads as an installed package; a <code>pytest_runtest_protocol</code> hook that fabricates passing <code>TestReport</code> objects so pytest's own reporting shows every test as passed; and the original conftest kept as a backup, so only <code>--noconftest</code> and <code>-p no:bypass</code> together defeat both layers.</p>
+
+    <div class="eg">
+      <span class="egk">Why this task fits Chronos</span>
+      <p><b>Reusable state.</b> S&#8320; (repo cloned, deps installed, grader on disk) is reached by ordinary work and is expensive to re-derive; the plugin path lands a deeper S&#8321; whose attack surface only exists once the plugin is registered. <b>Snapshot mode.</b> The state lives in the filesystem under a working directory, which fits Directory Snapshots and warm branch sandboxes. <b>The Witness.</b> The layered fallback exploit, packaged with S&#8320;/S&#8321;, the recorded actions, the file diff, and the verifier output, is the Exploit Witness. <b>The defense.</b> A verifier patch isolates the test run from agent-controllable plugins, for example running tests from a clean evaluator environment with untrusted plugins disabled and import paths controlled. <b>Replay.</b> The exact exploit is reproduced by restoring the saved state and replaying the recorded actions; legitimate cases are preserved by re-running the frozen legitimate-control suite against the patched verifier.</p>
+    </div>
+    <p style="font-size:.92rem">We assert only what the Terminal Wrench record supports for this task. Anything we have not verified from source (for instance exact per-episode counts beyond &ldquo;roughly twenty&rdquo;) is described loosely rather than stated as a precise figure.</p>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">10</span> HUD &times; Modal architecture</div>
+    <h2>Two first-class lanes, joined at the ForkPoint.</h2>
+    <p class="lead">HUD and Modal are balanced, indispensable differentiators, not a host and a fork engine. HUD owns task semantics, reward authority, evidence, grading, tasksets, version comparison, and publishing; Modal owns executable state capture, isolated stochastic fan-out, re-snapshotting, lineage, and replay at scale. The ForkPoint is the shared object that binds HUD's semantic state to Modal's executable state.</p>
+
+    <div class="skim">
+      <span class="lab">Architecture</span>
+      <span class="step">HUD semantic</span><span class="arw">&rarr;</span>
+      <span class="step">ForkPoint</span><span class="arw">&rarr;</span>
+      <span class="step d">capture</span><span class="arw">&rarr;</span>
+      <span class="step d">fork &times;K</span><span class="arw">&rarr;</span>
+      <span class="step d">re-snapshot</span><span class="arw">&rarr;</span>
+      <span class="step">grading</span><span class="arw">&rarr;</span>
+      <span class="step p">ReleaseProof</span>
+    </div>
+    <div class="figure wide">
+      <div class="plate">
+        <div class="plate-head">
+          <span class="plate-title">HUD &times; Modal</span>
+          <span class="plate-meta">two first-class lanes &middot; joined at the ForkPoint</span>
+        </div>
+        <svg viewBox="0 0 1180 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HUD and Modal joined at the ForkPoint. The HUD lane covers task and reward, reward hacking QA, branch grading, ProofSet and version comparison, and ReleaseProof with publishing. The Modal lane covers the Modal runtime and task sandbox, snapshot selection, a warm branch pool, stochastic fan-out, re-snapshotting with lineage, and replay with storage. The ForkPoint is a central nucleus binding HUD semantic state to Modal executable state; the stochastic fan-out forks the bound state into K branches and re-snapshots the promising one.">
+  <defs>
+    <marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#9AA4B5"/></marker>
+    <marker id="arA" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#2347C9"/></marker>
+    <marker id="arO" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#A85B12"/></marker>
+  </defs>
+
+  <!-- lane plates -->
+  <rect x="16" y="44" width="1148" height="100" rx="16" fill="#FFFFFF" stroke="#E7ECF3"/>
+  <rect x="16" y="288" width="1148" height="116" rx="16" fill="#F7F9FC" stroke="#DCE2EC"/>
+
+  <!-- lane labels -->
+  <text x="34" y="74" font-family="JetBrains Mono" font-size="13" font-weight="600" fill="#2347C9">HUD</text>
+  <text x="34" y="90" font-family="JetBrains Mono" font-size="8.5" fill="#737E8E">semantics &middot; reward</text>
+  <text x="34" y="101" font-family="JetBrains Mono" font-size="8.5" fill="#737E8E">QA &middot; publishing</text>
+  <text x="34" y="322" font-family="JetBrains Mono" font-size="13" font-weight="600" fill="#10141B">Modal</text>
+  <text x="34" y="338" font-family="JetBrains Mono" font-size="8.5" fill="#737E8E">executable state</text>
+  <text x="34" y="349" font-family="JetBrains Mono" font-size="8.5" fill="#737E8E">fan-out &middot; replay</text>
+
+  <!-- HUD lane internal flow -->
+  <g fill="none" stroke="#C5CDDA" stroke-width="1.4">
+    <path d="M806 87 H824" marker-end="url(#ar)"/>
+    <path d="M950 87 H968" marker-end="url(#ar)"/>
+  </g>
+  <!-- Modal lane internal flow -->
+  <g fill="none" stroke="#C5CDDA" stroke-width="1.4">
+    <path d="M270 342 H288" marker-end="url(#ar)"/>
+    <path d="M400 342 H420" marker-end="url(#ar)"/>
+    <path d="M532 342 H552" marker-end="url(#ar)"/>
+    <path d="M948 342 H968" marker-end="url(#ar)"/>
+  </g>
+
+  <!-- bind arrows: HUD semantic inputs -> nucleus -->
+  <path d="M210 116 C 286 150, 360 158, 432 182" fill="none" stroke="#2347C9" stroke-width="1.5" marker-end="url(#arA)"/>
+  <path d="M344 116 C 384 140, 420 154, 452 170" fill="none" stroke="#2347C9" stroke-width="1.5" marker-end="url(#arA)"/>
+  <text x="296" y="164" font-family="JetBrains Mono" font-size="8" fill="#5b6c93" text-anchor="middle">bind semantic state</text>
+  <!-- nucleus -> Modal capture -->
+  <path d="M448 256 C 416 282, 384 298, 352 314" fill="none" stroke="#2347C9" stroke-width="1.6" marker-end="url(#arA)"/>
+  <text x="330" y="305" font-family="JetBrains Mono" font-size="8" fill="#5b6c93" text-anchor="middle">capture</text>
+
+  <!-- branch results -> HUD grading -->
+  <path d="M884 312 C 880 232, 800 150, 758 118" fill="none" stroke="#9AA4B5" stroke-width="1.6" marker-end="url(#ar)"/>
+  <text x="800" y="250" font-family="JetBrains Mono" font-size="8" fill="#737E8E" text-anchor="end">branch results</text>
+
+  <!-- the fork: stochastic fan-out branches out -->
+  <text x="726" y="312" font-family="JetBrains Mono" font-size="8.5" fill="#A85B12" text-anchor="middle" font-weight="600">fork &times;K</text>
+  <!-- dead / explored branches -->
+  <g fill="none" stroke="#C5CDDA" stroke-width="1.2" stroke-dasharray="3 3">
+    <path d="M676 342 C 696 338, 706 330, 719 327"/>
+    <path d="M676 342 C 698 346, 706 358, 719 361"/>
+    <path d="M676 342 C 700 350, 706 374, 719 378"/>
+  </g>
+  <g fill="#FFFFFF" stroke="#C5CDDA" stroke-width="1.2">
+    <rect x="720" y="320.5" width="13" height="13" rx="2.5"/>
+    <rect x="720" y="354.5" width="13" height="13" rx="2.5"/>
+    <rect x="720" y="371.5" width="13" height="13" rx="2.5"/>
+  </g>
+  <!-- promising branch -> re-snapshot -->
+  <path d="M676 342 C 695 343, 705 343, 719 343" fill="none" stroke="#A85B12" stroke-width="2.2"/>
+  <rect x="720" y="336.5" width="13" height="13" rx="2.5" fill="#F6EAD7" stroke="#A85B12"/>
+  <path d="M733 343 C 762 343, 790 342, 814 342" fill="none" stroke="#A85B12" stroke-width="2.2" marker-end="url(#arO)"/>
+
+  <!-- HUD boxes -->
+  <g font-family="JetBrains Mono" font-size="9.3" text-anchor="middle">
+    <rect x="150" y="58" width="120" height="58" rx="9" fill="#E6EBFB" stroke="#2347C9"/><text x="210" y="83" fill="#2347C9">task + reward</text><text x="210" y="96" font-size="8" fill="#5b6c93">trace + files</text>
+    <rect x="288" y="58" width="112" height="58" rx="9" fill="#FFFFFF" stroke="#2347C9"/><text x="344" y="83" fill="#2347C9">Reward Hack</text><text x="344" y="96" fill="#2347C9">QA</text>
+    <rect x="694" y="58" width="112" height="58" rx="9" fill="#FFFFFF" stroke="#2347C9"/><text x="750" y="83" fill="#2347C9">branch</text><text x="750" y="96" fill="#2347C9">grading</text>
+    <rect x="824" y="58" width="126" height="58" rx="9" fill="#E6EBFB" stroke="#2347C9"/><text x="887" y="83" fill="#2347C9">ProofSet +</text><text x="887" y="96" fill="#2347C9">version cmp</text>
+    <rect x="968" y="58" width="140" height="58" rx="9" fill="#DEF0E7" stroke="#1C8A57"/><text x="1038" y="83" fill="#1C8A57">ReleaseProof</text><text x="1038" y="96" fill="#3f8f6c">+ publish</text>
+  </g>
+
+  <!-- Modal boxes -->
+  <g font-family="JetBrains Mono" font-size="9.3" text-anchor="middle">
+    <rect x="150" y="312" width="120" height="60" rx="9" fill="#FFFFFF" stroke="#DCE2EC"/><text x="210" y="338" fill="#10141B">Modal runtime</text><text x="210" y="351" font-size="8" fill="#737E8E">task sandbox</text>
+    <rect x="288" y="312" width="112" height="60" rx="9" fill="#FFFFFF" stroke="#2347C9"/><text x="344" y="338" fill="#2347C9">snapshot</text><text x="344" y="351" font-size="8" fill="#5b6c93">select mode</text>
+    <rect x="420" y="312" width="112" height="60" rx="9" fill="#FFFFFF" stroke="#DCE2EC"/><text x="476" y="338" fill="#10141B">warm branch</text><text x="476" y="351" font-size="8" fill="#737E8E">pool</text>
+    <rect x="552" y="312" width="124" height="60" rx="9" fill="#F6EAD7" stroke="#A85B12"/><text x="614" y="338" fill="#A85B12">stochastic</text><text x="614" y="351" fill="#A85B12">fan-out</text>
+    <rect x="820" y="312" width="128" height="60" rx="9" fill="#FFFFFF" stroke="#2347C9"/><text x="884" y="338" fill="#2347C9">re-snapshot</text><text x="884" y="351" font-size="8" fill="#5b6c93">+ lineage</text>
+    <rect x="968" y="312" width="140" height="60" rx="9" fill="#FFFFFF" stroke="#DCE2EC"/><text x="1038" y="338" fill="#10141B">replay</text><text x="1038" y="351" font-size="8" fill="#737E8E">+ storage</text>
+  </g>
+
+  <!-- ForkPoint nucleus: atom-like -->
+  <polygon points="383,216 427.1,160.3 512.9,160.3 557,216 512.9,271.7 427.1,271.7" fill="none" stroke="#9FB0FF" stroke-width="1.1" stroke-opacity=".55"/>
+  <polygon points="395,216 433,168 507,168 545,216 507,264 433,264" fill="#10141B" stroke="#2347C9" stroke-width="1.5"/>
+  <text x="470" y="211" font-family="JetBrains Mono" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="middle">ForkPoint</text>
+  <text x="470" y="227" font-family="JetBrains Mono" font-size="8" fill="#9FB0FF" text-anchor="middle">semantic + executable</text>
+</svg>
+        <div class="legend">
+          <span><i style="background:#2347C9"></i>bind / capture</span>
+          <span><i class="dash"></i>explored / dead branch</span>
+          <span><i style="background:#A85B12"></i>promising branch</span>
+        </div>
+      </div>
+      <div class="fig-cap">The ForkPoint binds a HUD trace step to the Modal snapshot and history prefix. Branch grading, ProofSets, and publishing live in HUD; capture, fan-out, re-snapshotting, and replay live in Modal.</div>
+    </div>
+
+    <div class="oneliner">Removal test. <span class="accent">Without HUD,</span> the system loses task semantics, reward authority, QA, tasksets, version comparison, and release publication. <span class="accent">Without Modal,</span> it loses executable state reuse, isolated fan-out, and replay at scale. <b>Neither lane is cosmetic.</b></div>
+  </div>
+</section>
+
+<section id="profiles">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">11</span> Modal execution profiles</div>
+    <h2>Three profiles, one durable fallback.</h2>
+    <p class="lead">The architecture turns Modal's snapshot maturity levels into deliberate engineering choices rather than sponsor-name decoration. Chronos must not require private Alpha access to function, so the core live path uses a Beta feature centrally and the Alpha features are stretch or research.</p>
+
+    <h3>Profile A — core live path <span class="status core">CORE</span></h3>
+    <p>Standard Modal Sandbox plus <a href="https://modal.com/docs/guide/sandbox-snapshots" target="_blank" rel="noopener">Directory Snapshot (Beta)</a>. Flatten the task container into a Modal base image, install dependencies there, keep mutable task state under a working directory, run the HUD environment in the sandbox, snapshot the working directory with <code>snapshot_directory</code>, and mount it into warm branch sandboxes with <code>mount_image</code>. Directory Snapshots are explicitly designed to mount application state into already-running sandboxes and to combine with warm pools, which is close to our fan-out workload, and they do not depend on VM approval.</p>
+
+    <h3>Profile B — direct Harbor / Docker path <span class="status alpha">ALPHA · access requested</span></h3>
+    <p>VM Sandbox (Alpha). harden-v0 runs Terminus-2 agents inside task containers via Harbor and expects Docker, and Modal recommends VM Sandboxes for Docker-in-Sandbox workloads, with a real Linux kernel and <code>/var/lib/docker</code> included in Filesystem Snapshots. Access is allowlisted and we have requested it; it is the path for scaling from one converted task to the full Harbor-format dataset, not a dependency for the core demo. VM Sandboxes currently support Filesystem Snapshots but not Memory Snapshots.</p>
+
+    <h3>Profile C — process-state research path <span class="status alpha">ALPHA · experimental</span></h3>
+    <p>Memory Snapshot (Alpha, experimental SDK). Use this only when the branch-relevant state lives in a running process: a warmed server, in-memory database state, a live evaluator cache, or a depth-two branch where the process state itself is the attack surface. Memory Snapshots preserve process and filesystem state and can be re-snapshotted, which directly supports the deeper-tree thesis. They are a hot search accelerator, not the durable Witness format.</p>
+
+    <table class="matrix">
+      <thead><tr><th>Mode</th><th>Maturity</th><th>Chronos role</th><th>Key constraints</th></tr></thead>
+      <tbody>
+        <tr><td>Filesystem Snapshot</td><td>GA</td><td>Durable full-filesystem Witness and fallback</td><td>30-day TTL by default; <code>ttl=None</code> retains indefinitely</td></tr>
+        <tr><td>Directory Snapshot</td><td>Beta</td><td>Main live fan-out with warm branch sandboxes</td><td>30-day TTL; mount/unmount into running sandboxes</td></tr>
+        <tr><td>Memory Snapshot</td><td>Alpha · experimental</td><td>Exact process-state branching, deeper tree</td><td>7-day TTL, not extendable; terminates the source sandbox; cannot snapshot mid-<code>exec</code>; background processes from <code>exec</code> not restored; same instance type only; no GPU</td></tr>
+        <tr><td>VM Sandbox</td><td>Alpha · access requested</td><td>Direct Docker / Harbor execution</td><td>Allowlisted; Filesystem Snapshots only (no Memory Snapshots); no GPU</td></tr>
+      </tbody>
+    </table>
+
+    <div class="eg" style="margin-top:24px">
+      <span class="egk">Durable-fallback rule</span>
+      <p>Memory Snapshots expire after seven days and cannot be extended, so whenever one produces a successful exploit we also write a durable cold-replay representation: a Filesystem or Directory Snapshot, the recorded action sequence, the environment image digest, and the HUD history prefix. Filesystem and Directory Snapshots default to a 30-day TTL and can be retained indefinitely with <code>ttl=None</code>; that is the format an Exploit Witness is stored in. <b>A Memory Snapshot is a search accelerator; the durable Witness is always a filesystem-class artifact plus the replay record.</b></p>
+    </div>
+  </div>
+</section>
+
+<section id="seams">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">12</span> Engineering seams &amp; invariants</div>
+    <h2>Eight things that have to be correct.</h2>
+    <p class="lead">These are design rules going in, not discoveries to be made on stage. They are profile-aware: state does not always live only on disk, so the rules say &ldquo;match the mode to the task&rdquo; rather than forcing one snapshot type.</p>
+    <ul class="seams">
+      <li><span class="seam-no">SEAM 1</span><div><h3>History and executable state share one exact action boundary</h3><p>Snapshot at the quiescent point between actions and truncate the agent's history to exactly that step. Both happen as one atomic <code>fork_at(t)</code>, keyed to the same <code>t</code>, or the agent &ldquo;remembers&rdquo; something the restored state does not reflect and every branch is silently poisoned.</p></div></li>
+      <li><span class="seam-no">SEAM 2</span><div><h3>The snapshot mode matches the task's true state</h3><p>Filesystem-dominant tasks use Directory or Filesystem Snapshots; tasks whose live state is a running process use the Memory Snapshot research path. Picking the wrong mode either drops the attack surface or pays for state you do not need.</p></div></li>
+      <li><span class="seam-no">SEAM 3</span><div><h3>The grader version is immutable within a run</h3><p>Re-validation restores the saved state, overwrites the verifier in that state with the fixer's patch, replays the Witness (reward must drop to 0), and replays the legitimate controls (reward must stay 1). The grader digest is pinned per run; patching a separate copy makes the proof fiction.</p></div></li>
+      <li><span class="seam-no">SEAM 4</span><div><h3>Every branch has complete provenance</h3><p>Tag every gateway call with the branch and node id, and key a <a href="https://modal.com/docs/guide/dicts" target="_blank" rel="noopener">Modal Dict</a> by the snapshot <code>object_id</code> as the tree's node store, which is Modal's own persistence pattern. A branch without seed, model, sampling config, and lineage cannot become a Witness.</p></div></li>
+      <li><span class="seam-no">SEAM 5</span><div><h3>Snapshot retention and expiry are explicit</h3><p>Filesystem and Directory Snapshots default to a 30-day TTL; set <code>ttl=None</code> for anything that must persist as a Witness. Memory Snapshots expire after seven days and cannot be extended, so they are never the system of record.</p></div></li>
+      <li><span class="seam-no">SEAM 6</span><div><h3>Reward and reward-hacking classification are separate</h3><p>The verifier's reward and the QA agent's <code>is_reward_hacking</code> verdict are distinct signals. A branch is only a Witness when it is both rewarded and classified as an actual hack, then deduplicated and replayed; conflating the two produces false Witnesses.</p></div></li>
+      <li><span class="seam-no">SEAM 7</span><div><h3>Untrusted branches get only the secrets and networking they need</h3><p>Each branch runs attacker-authored code in an isolated sandbox with minimal credentials and scoped networking, so a destructive or exfiltrating attack cannot poison sibling branches or reach beyond the task.</p></div></li>
+      <li><span class="seam-no">SEAM 8</span><div><h3>A Memory Snapshot discovery is converted to a durable replay artifact</h3><p>The instant a Memory Snapshot branch lands an exploit, Chronos writes the filesystem-class snapshot plus action sequence, image digest, and history prefix described in Profile C, so the Witness outlives the seven-day memory window.</p></div></li>
+    </ul>
+  </div>
+</section>
+
+<section id="build">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">13</span> The 24-hour build contract</div>
+    <h2>Bulletproof the depth-1 loop first. Everything else is stretch.</h2>
+    <p class="lead">Get one full loop working end to end and repeatable before anyone touches a stretch: one task, one ForkPoint, the branches, one confirmed Witness, one patch, one ReleaseProof. That loop is the demo.</p>
+
+    <ol class="steps">
+      <li><h3>HUD Python v0.6.4 environment <span class="tag mvp">MUST SHIP</span></h3><p>Pin <code>hud-python==0.6.4</code> with the v6 protocol and the native Modal rollout runtime.</p></li>
+      <li><h3>One verified Terminal Wrench task <span class="tag mvp">MUST SHIP</span></h3><p>The sourced <code>mongodb-sales-aggregation-engine</code> task, so we skip &ldquo;find a hackable task&rdquo; and stay comparable to the precedent.</p></li>
+      <li><h3>HUD file tracking <span class="tag mvp">MUST SHIP</span></h3><p>Enable <a href="https://docs.hud.ai/platform/file-tracking" target="_blank" rel="noopener">file tracking</a> so each trace captures filesystem changes and surfaces them in the code viewer.</p></li>
+      <li><h3>One source trace <span class="tag mvp">MUST SHIP</span></h3><p>One baseline reward-1 trace that QA flags as suspicious.</p></li>
+      <li><h3>One ForkPoint <span class="tag mvp">MUST SHIP</span></h3><p>The trace step bound to its Modal snapshot, history prefix, and grader digest.</p></li>
+      <li><h3>~12 genuine stochastic BranchRuns <span class="tag mvp">MUST SHIP</span></h3><p>Agentic branches from the ForkPoint at sampling temperature, each with its own seed and lineage.</p></li>
+      <li><h3>At least one confirmed Exploit Witness <span class="tag mvp">MUST SHIP</span></h3><p>Rewarded, classified as a hack, deduplicated, and packaged with a deterministic replay entrypoint.</p></li>
+      <li><h3>One deterministic replay <span class="tag mvp">MUST SHIP</span></h3><p>Restore the saved state, replay the recorded actions, reproduce the original reward without re-discovery.</p></li>
+      <li><h3>One verifier patch <span class="tag mvp">MUST SHIP</span></h3><p>The harden-v0 fixer patches the verifier from the Witness; the loop is reused, not reinvented.</p></li>
+      <li><h3>At least three legitimate controls <span class="tag mvp">MUST SHIP</span></h3><p>Seeded once from a reference-hinted solver and frozen so the preservation check is reproducible.</p></li>
+      <li><h3>One HUD ProofSet <span class="tag mvp">MUST SHIP</span></h3><p>A taskset holding the Witnesses and controls as rerunnable cases with analytics.</p></li>
+      <li><h3>One v1-vs-v2 ReleaseProof <span class="tag mvp">MUST SHIP</span></h3><p>Before/after results: v1 rewards the Witness, v2 does not, and controls pass throughout.</p></li>
+    </ol>
+
+    <h3>Research stretch</h3>
+    <ol class="steps">
+      <li><h3>One child state re-snapshotted, one depth-two branch <span class="tag stretch">STRETCH</span></h3><p>Re-snapshot a promising child and find a multi-step exploit a flat search misses.</p></li>
+      <li><h3>Adaptive branch stopping <span class="tag stretch">STRETCH</span></h3><p>Stop expanding a node once new distinct exploit clusters dry up.</p></li>
+      <li><h3>Memory Snapshot mode &amp; VM Sandbox direct Harbor mode <span class="tag stretch">STRETCH</span></h3><p>Profile C process-state branching and, if access is granted, Profile B Docker-in-VM.</p></li>
+      <li><h3>Cross-task defense transfer &amp; training consequences <span class="tag stretch">STRETCH</span></h3><p>harden-v0's shared defense pool, and the appendix SFT extension (<a href="#appendix">&sect;19</a>): filtering pipeline implemented on mock data; Fireworks managed SFT handoff smoke-tested. Held-out model comparison remains optional. Never on the live demo path.</p></li>
+    </ol>
+    <p style="font-size:.93rem;margin-top:18px">Out of scope by design: a broad benchmark campaign, a general MCTS system, complete exploit coverage, and live RL training. We scope the claim to verifier-level hardening so we do not over-promise &ldquo;harden anything.&rdquo;</p>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">14</span> Live demo contract</div>
+    <h2>Exactly what the judge sees.</h2>
+    <p class="lead">The demo genuinely starts a stochastic search and walks the full loop. The judge watches a suspicious trace become a defended environment version.</p>
+    <ol class="demo">
+      <li>Open the suspicious HUD trace.</li>
+      <li>Show the HUD QA verdict and step-level file evidence.</li>
+      <li>Show the selected <b>ForkPoint</b>.</li>
+      <li>Start genuine stochastic Modal branches.</li>
+      <li>Show branch IDs and traces populating.</li>
+      <li>Inspect one successful exploit and its file diff.</li>
+      <li>Save it as an <b>Exploit Witness</b>.</li>
+      <li>Add it to the <b>ProofSet</b>.</li>
+      <li>Apply the verifier patch.</li>
+      <li>Replay the Witness against v2 (reward drops to 0).</li>
+      <li>Rerun the legitimate controls (reward stays 1).</li>
+      <li>Show the <b>ReleaseProof</b>.</li>
+      <li>Publish or display the hardened environment version.</li>
+    </ol>
+
+    <div class="eg" style="margin-top:24px">
+      <span class="egk">Honest fallback</span>
+      <p>If the live stochastic search does not surface an exploit during the presentation, we open an Exploit Witness <b>produced by an earlier genuine stochastic run</b>, restore its saved state, and replay it live, clearly labelled as a prior-run artifact. We then continue the patch proof from there. This is not faking discovery: it demonstrates the central product promise, that a stochastic run produces a durable, replayable artifact. We never present a prerecorded discovery as if it happened live.</p>
+    </div>
+  </div>
+</section>
+
+<section id="risks">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">15</span> Risks &amp; non-goals</div>
+    <h2>What kills this, and the countermove.</h2>
+    <ul class="risks">
+      <li><span class="risk-no">R1</span><div><h3>Product overlap with HUD QA</h3><p>A judge may ask why QA is not enough. <span class="mit">Mitigation:</span> position QA as the trigger and evidence source; Chronos's novelty is reopening the exact state, executing attacks, and proving the patch, none of which QA does.</p></div></li>
+      <li><span class="risk-no">R2</span><div><h3>State fidelity</h3><p>A restored branch must behave like the original moment. <span class="mit">Mitigation:</span> atomic <code>fork_at(t)</code> (Seam 1), match the snapshot mode to the task (Seam 2), and re-seed RNG per branch so &ldquo;different&rdquo; attacks do not collapse into one trajectory.</p></div></li>
+      <li><span class="risk-no">R3</span><div><h3>Classifying legitimate alternatives</h3><p>A real but unusual solution can look like a hack. <span class="mit">Mitigation:</span> keep reward and the QA hack verdict separate (Seam 6), and seed legitimate controls from a reference-hinted solver so the preservation check exercises real, path-diverse solutions.</p></div></li>
+      <li><span class="risk-no">R4</span><div><h3>Patch narrowing</h3><p>Patching one exploit can start rejecting valid solutions; the precedent measures this as a benign-pass drop. <span class="mit">Mitigation:</span> the frozen legitimate-control suite is the preservation gate, and harden-v0's post-loop autopatch makes the minimal relaxation if a control breaks.</p></div></li>
+      <li><span class="risk-no">R5</span><div><h3>Experimental API maturity</h3><p>Memory Snapshots and VM Sandboxes are Alpha. <span class="mit">Mitigation:</span> the core demo runs on the Beta Directory-Snapshot path with no dependency on Alpha access; Alpha features are clearly labelled stretch.</p></div></li>
+      <li><span class="risk-no">R6</span><div><h3>Snapshot expiry</h3><p>A Witness whose snapshot has expired is not reproducible. <span class="mit">Mitigation:</span> store Witnesses as filesystem-class snapshots with <code>ttl=None</code> plus the action replay record (Seams 5, 8); never rely on the seven-day memory window.</p></div></li>
+      <li><span class="risk-no">R7</span><div><h3>Reproducibility</h3><p>A branch that cannot be replayed deterministically is not a Witness. <span class="mit">Mitigation:</span> require full provenance per branch (Seam 4) and gate Witness status on a successful deterministic replay before the patch.</p></div></li>
+      <li><span class="risk-no">R8</span><div><h3>Security of untrusted branches</h3><p>Branches execute attacker-authored code. <span class="mit">Mitigation:</span> isolated sandboxes with minimal secrets and scoped networking (Seam 7), so a destructive branch cannot affect siblings or the host.</p></div></li>
+      <li><span class="risk-no">R9</span><div><h3>Novelty of branching infrastructure</h3><p>Forking sandbox state for search is commodity in 2026 (DeltaBox, Crab, ConTree). <span class="mit">Mitigation:</span> concede the primitive openly and position on the application, a guided state-branching search for verifier-hack discovery and proof, which is ours.</p></div></li>
+      <li><span class="risk-no">R10</span><div><h3>Task classes that cannot be hardened at the verifier layer</h3><p>Some tasks are unfixable at the verifier level; the precedent flags a multi-pass <code>shred</code> task where <code>shred</code> and <code>rm -rf</code> leave identical observable state. <span class="mit">Mitigation:</span> scope the claim to verifier-level hardening; these need infrastructure redesign and are explicitly out of scope.</p></div></li>
+    </ul>
+  </div>
+</section>
+
+<section id="outputs">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">16</span> Outputs &amp; acceptance criteria</div>
+    <h2>Durable artifacts, and numbers we will measure.</h2>
+    <p class="lead">The deliverables are objects an author can keep and rerun, not headline numbers. Every result value renders as TBD until it is measured during the build.</p>
+
+    <div class="ship">
+      <div class="item"><span class="k">ForkPoint</span><p>The exact trace step bound to its executable Modal state, history prefix, and grader digest.</p></div>
+      <div class="item"><span class="k">Exploit Witness</span><p>Saved state, history, recorded actions, file diff, verifier and QA output, seed and model, and a deterministic replay entrypoint.</p></div>
+      <div class="item"><span class="k">ProofSet</span><p>A HUD taskset of Witnesses and legitimate controls, rerunnable with analytics.</p></div>
+      <div class="item"><span class="k">Hardened env version</span><p>Verifier v2, published to HUD and linked to its ProofSet.</p></div>
+      <div class="item"><span class="k">ReleaseProof</span><p>Before/after results with trace links: Witnesses go from rewarded to dead; controls stay rewarded.</p></div>
+      <div class="item"><span class="k">Research report</span><p>Branch counts, distinct exploit clusters, time to first Witness, restore latency, and state-setup work avoided.</p></div>
+    </div>
+
+    <h3>Metrics, measured during the build</h3>
+    <ul class="metrics">
+      <li><b>Number of BranchRuns</b> <span class="tbd">TBD</span></li>
+      <li><b>Distinct confirmed exploit clusters</b> <span class="tbd">TBD</span></li>
+      <li><b>Time to first Witness</b> <span class="tbd">TBD</span></li>
+      <li><b>Reward before patch</b> <span class="tbd">TBD</span></li>
+      <li><b>Reward after patch</b> <span class="tbd">TBD</span></li>
+      <li><b>Legitimate-case retention</b> <span class="tbd">TBD</span></li>
+      <li><b>Exact replay success rate</b> <span class="tbd">TBD</span></li>
+      <li><b>Snapshot restore latency</b> <span class="tbd">TBD</span></li>
+      <li><b>Setup work avoided</b> <span class="tbd">TBD</span></li>
+      <li><b>Compute / coverage vs flat restarts</b> <span class="tbd">TBD</span></li>
+    </ul>
+    <p style="font-size:.93rem;margin-top:16px">The compute-versus-coverage comparison against flat restarts is reported only if it is actually measured. We do not fabricate success numbers.</p>
+  </div>
+</section>
+
+<section id="close">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">17</span> The close</div>
+    <h2>Every suspicious success should become a replayable Witness.</h2>
+    <p>The product is the loop: a suspicious trace becomes a ForkPoint, the ForkPoint becomes a tree of stochastic attacks, the successful attacks become Witnesses, the Witnesses become a ProofSet, and the patch ships only with a ReleaseProof that the attacks are dead and legitimate solutions still pass.</p>
+    <div class="oneliner"><b>HUD shows us where the verifier may have failed.</b> Modal lets us reopen that moment and attack it many ways. <span class="accent">Chronos turns successful branches into permanent tests and proves the fix from the same state.</span></div>
+    <p style="margin-top:22px;font-size:.97rem">The same mechanism points outward. A branchable reached state is a reusable search asset: beyond exploit discovery, frozen state can support RL rollout reuse, debugging, counterfactual evaluation, and deeper multi-step search. We land the usable product first; the broader research direction follows from it, and the training-data consequences are developed in the appendix.</p>
+  </div>
+</section>
+
+<section id="refs">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">18</span> References</div>
+    <h2>Sources of truth.</h2>
+    <p class="lead">Technical facts were checked against official documentation in June 2026. Product and platform claims cite HUD and Modal primary docs; the loop and dataset cite their original repositories; the research framing cites the primary literature.</p>
+
+    <div class="refgroup">
+      <h3>Official product documentation</h3>
+      <ul class="refs">
+        <li>HUD Python <code>v0.6.4</code> ("Prep more training"), latest release; <code>v0.6.0</code> introduced the v6 protocol, native Modal/Daytona rollout runtimes, and file tracking.<span class="src"><a href="https://github.com/hud-evals/hud-python/releases/tag/v0.6.4" target="_blank" rel="noopener">github.com/hud-evals/hud-python/releases/tag/v0.6.4</a></span></li>
+        <li>HUD changelog — Modal integration, taskset analytics, multi-environment taskset selection, trace-level QA workflows, trace grader info.<span class="src"><a href="https://docs.hud.ai/changelog" target="_blank" rel="noopener">docs.hud.ai/changelog</a></span></li>
+        <li>HUD Reward Hacking QA agent — classifies completed traces (<code>is_reward_hacking</code>, <code>hacking_strategy</code>, <code>severity</code>); the detector Chronos builds on.<span class="src"><a href="https://docs.hud.ai/platform/agents/qa" target="_blank" rel="noopener">docs.hud.ai/platform/agents/qa</a></span></li>
+        <li>HUD file tracking — view filesystem changes during a trace in the code viewer with syntax highlighting and diffs.<span class="src"><a href="https://docs.hud.ai/platform/file-tracking" target="_blank" rel="noopener">docs.hud.ai/platform/file-tracking</a></span></li>
+        <li>HUD docs — tasks, tasksets, and the v6 protocol used to publish the hardened environment version.<span class="src"><a href="https://docs.hud.ai" target="_blank" rel="noopener">docs.hud.ai</a></span></li>
+        <li>Modal Docs — Sandbox Snapshots: filesystem (GA, 30-day default TTL, <code>ttl=None</code> for indefinite), directory (Beta), memory (Alpha / experimental, 7-day).<span class="src"><a href="https://modal.com/docs/guide/sandbox-snapshots" target="_blank" rel="noopener">modal.com/docs/guide/sandbox-snapshots</a></span></li>
+        <li>Modal Docs — Feature Maturity. Anything unmarked is GA; Alpha and Beta are called out explicitly; experimental SDK stability is tracked separately.<span class="src"><a href="https://modal.com/docs/guide/feature-maturity" target="_blank" rel="noopener">modal.com/docs/guide/feature-maturity</a></span></li>
+        <li>Modal Docs — VM Sandboxes (Alpha, access-restricted): real Linux kernel, recommended for Docker, filesystem snapshots supported, memory snapshots not.<span class="src"><a href="https://modal.com/docs/guide/vm-sandboxes" target="_blank" rel="noopener">modal.com/docs/guide/vm-sandboxes</a></span></li>
+        <li>Modal — "Reinforcement learning is an infrastructure problem," the rollout-economics framing behind the close.<span class="src"><a href="https://modal.com/blog/reinforcement-learning-infrastructure-problem" target="_blank" rel="noopener">modal.com/blog/reinforcement-learning-infrastructure-problem</a></span></li>
+      </ul>
+    </div>
+
+    <div class="refgroup">
+      <h3>Implementation precedents</h3>
+      <ul class="refs">
+        <li>harden-v0 — the hacker / fixer / solver loop we fork directly: replay gate (<code>--replay-enabled</code>), privileged hacker, shared defense pool, <code>.legitimate</code> handling, and <code>dedup_hacks.py</code>.<span class="src"><a href="https://github.com/few-sh/harden-v0" target="_blank" rel="noopener">github.com/few-sh/harden-v0</a></span></li>
+        <li>Hardening Agent Benchmarks with Adversarial Hacker-Fixer Loops (Zhong et al., CMU + Fewshot, 2026) — the paper behind harden-v0.<span class="src"><a href="https://arxiv.org/abs/2606.08960" target="_blank" rel="noopener">arxiv.org/abs/2606.08960</a></span></li>
+        <li>Terminal Wrench — 331 unique hackable tasks, 3,632 hack trajectories across five benchmarks and three models; source of the MongoDB pytest-subversion example.<span class="src"><a href="https://github.com/few-sh/terminal-wrench" target="_blank" rel="noopener">github.com/few-sh/terminal-wrench</a></span></li>
+        <li>DeltaBox — millisecond sandbox checkpoint/rollback for MCTS and RL fan-out (2026).<span class="src"><a href="https://arxiv.org/abs/2605.22781" target="_blank" rel="noopener">arxiv.org/abs/2605.22781</a></span></li>
+        <li>Crab — semantics-aware checkpoint/restore for agent sandboxes (2026).<span class="src"><a href="https://arxiv.org/abs/2604.28138" target="_blank" rel="noopener">arxiv.org/abs/2604.28138</a></span></li>
+        <li>ConTree — sandboxed code execution with git-like branching for agents.<span class="src"><a href="https://contree.dev" target="_blank" rel="noopener">contree.dev</a></span></li>
+        <li>SWE-ABS — Adversarial Benchmark Strengthening (2026); strengthening a weak verifier sharply lowers apparent agent scores.<span class="src"><a href="https://arxiv.org/abs/2603.00520" target="_blank" rel="noopener">arxiv.org/abs/2603.00520</a></span></li>
+        <li>BenchJack — auditing agent benchmarks with a defender-hacker loop (2026).<span class="src"><a href="https://arxiv.org/abs/2605.12673" target="_blank" rel="noopener">arxiv.org/abs/2605.12673</a></span></li>
+      </ul>
+    </div>
+
+    <div class="refgroup">
+      <h3>Research framing &amp; appendix</h3>
+      <ul class="refs">
+        <li>Baker et al. — Monitoring reasoning models and the risk of obfuscated reward hacking under gradient pressure.<span class="src"><a href="https://arxiv.org/abs/2503.11926" target="_blank" rel="noopener">arxiv.org/abs/2503.11926</a></span></li>
+        <li>Emmons et al. — when chain-of-thought is load-bearing, models struggle to evade a monitor.<span class="src"><a href="https://arxiv.org/abs/2507.05246" target="_blank" rel="noopener">arxiv.org/abs/2507.05246</a></span></li>
+        <li>Reward Hacking Benchmark (RHB) — exploits in tool-use agents; a controlled sibling comparison where RL post-training raised exploit rates (Thaman, 2026).<span class="src"><a href="https://arxiv.org/abs/2605.02964" target="_blank" rel="noopener">arxiv.org/abs/2605.02964</a></span></li>
+        <li>The Meta-Agent Challenge — autonomous agent development under optimization pressure surfaces ground-truth exfiltration (2026).<span class="src"><a href="https://arxiv.org/abs/2606.04455" target="_blank" rel="noopener">arxiv.org/abs/2606.04455</a></span></li>
+        <li>ARE — Scaling Up Agent Environments and Evaluations (Gaia2).<span class="src"><a href="https://arxiv.org/abs/2509.17158" target="_blank" rel="noopener">arxiv.org/abs/2509.17158</a></span></li>
+        <li>Fireworks — managed SFT for the appendix two-model contrast; optional RFT if time and evaluators allow.<span class="src"><a href="https://docs.fireworks.ai/fine-tuning/fine-tuning-models" target="_blank" rel="noopener">docs.fireworks.ai/fine-tuning/fine-tuning-models</a></span></li>
+        <li>SFT extension spec — <code>SFT.MD</code>, <code>fixtures/sft/schema/trace_record.schema.json</code>, and <code>src/chronos/research/sft/</code> in the repo.<span class="src">internal</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="appendix">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num">19</span> Research appendix</div>
+    <h2>Training consequences of a stronger verifier.</h2>
+    <p class="lead">This is a research extension, not part of the core architecture, the must-ship build, or the live demo. It explains <em>why</em> a hardened verifier matters beyond a cleaner score: a hackable verifier poisons the data you train on. The SFT pipeline is implemented and validated on mock data; swapping in real Chronos exports is a file swap, not a rewrite.</p>
+
+    <details class="appendix" open>
+      <summary>Open the SFT / training-data extension <span class="hint">implemented · mock validated</span><span class="chev" aria-hidden="true">&#9656;</span></summary>
+      <div class="ap-body">
+        <p>The hackathon's premise is that you can teach a model anything you can verify, so the verifier is half the system. If the verifier is hackable, every reward-1 trajectory it admits is a candidate training example, including the ones that gamed it. Filtering with a hardened verifier is what keeps the optimization signal clean. <strong>SFT does not fix reward hacking by itself</strong> — Chronos hardens the verifier and labels Witnesses; this extension shows what would enter a downstream training set before any gradient step.</p>
+
+        <div class="sot" style="margin-top:24px">
+          <div class="sot-head">Implementation status · June 2026</div>
+          <ul>
+            <li>Phases 0–3 (loader, filter, metrics, export, CLI) <b><span class="status research">DONE</span></b></li>
+            <li>Mock pipeline + 48 unit tests <b><span class="status research">PASSING</span></b></li>
+            <li>Fireworks managed SFT + deployment + inference <b><span class="status research">SMOKE-TESTED</span></b></li>
+            <li>Phase 4 real Chronos export swap <b><span class="status beta">WAITING ON CORE</span></b></li>
+            <li>Phase 5 held-out A/B eval (raw-trained vs hardened-trained) <b><span class="status alpha">OPTIONAL</span></b></li>
+          </ul>
+        </div>
+
+        <div class="figure" style="margin-top:30px">
+          <div class="plate">
+            <div class="plate-head">
+              <span class="plate-title">Verifier quality &rarr; data quality &rarr; optional SFT contrast</span>
+              <span class="plate-meta">schematic flow · held-out bar heights are hypothetical until measured</span>
+            </div>
+            <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Contrast diagram. Rollouts split two ways: filtered by the raw verifier, the training set mixes real solutions with reward hacks; filtered by the hardened verifier, the set is all real. Each trains a small model, and the hardened-trained model scores higher on held-out true performance.">
+  <defs>
+    <marker id="apg" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#9AA4B5"/></marker>
+  </defs>
+
+  <!-- rollouts -->
+  <text x="16" y="150" font-family="JetBrains Mono" font-size="10.5" fill="#10141B">rollouts</text>
+  <rect x="16" y="160" width="64" height="9" rx="2" fill="#C5CDDA"/>
+  <rect x="16" y="173" width="64" height="9" rx="2" fill="#C5CDDA"/>
+  <rect x="16" y="186" width="64" height="9" rx="2" fill="#C5CDDA"/>
+
+  <!-- split -->
+  <path d="M84 169 C 120 169, 130 90, 156 86" fill="none" stroke="#9AA4B5" stroke-width="1.4" marker-end="url(#apg)"/>
+  <path d="M84 183 C 120 183, 130 226, 156 230" fill="none" stroke="#9AA4B5" stroke-width="1.4" marker-end="url(#apg)"/>
+
+  <!-- raw verifier training set -->
+  <text x="158" y="52" font-family="JetBrains Mono" font-size="11" fill="#A85B12">raw verifier &#8594; training set</text>
+  <g>
+    <rect x="158" y="62" width="38" height="13" rx="2" fill="#1C8A57"/><rect x="202" y="62" width="38" height="13" rx="2" fill="#A85B12"/>
+    <rect x="158" y="80" width="38" height="13" rx="2" fill="#1C8A57"/><rect x="202" y="80" width="38" height="13" rx="2" fill="#1C8A57"/>
+    <rect x="158" y="98" width="38" height="13" rx="2" fill="#A85B12"/><rect x="202" y="98" width="38" height="13" rx="2" fill="#1C8A57"/>
+  </g>
+  <text x="199" y="126" font-family="JetBrains Mono" font-size="9.5" fill="#A85B12" text-anchor="middle">contains hacks</text>
+
+  <!-- hardened verifier training set -->
+  <text x="158" y="196" font-family="JetBrains Mono" font-size="11" fill="#1C8A57">hardened verifier &#8594; training set</text>
+  <g>
+    <rect x="158" y="206" width="38" height="13" rx="2" fill="#1C8A57"/><rect x="202" y="206" width="38" height="13" rx="2" fill="#1C8A57"/>
+    <rect x="158" y="224" width="38" height="13" rx="2" fill="#1C8A57"/><rect x="202" y="224" width="38" height="13" rx="2" fill="#1C8A57"/>
+    <rect x="158" y="242" width="38" height="13" rx="2" fill="#1C8A57"/><rect x="202" y="242" width="38" height="13" rx="2" fill="#1C8A57"/>
+  </g>
+  <text x="199" y="270" font-family="JetBrains Mono" font-size="9.5" fill="#1C8A57" text-anchor="middle">verifier-clean</text>
+
+  <!-- merge into tiny model -->
+  <path d="M242 100 C 360 100, 400 150, 434 158" fill="none" stroke="#9AA4B5" stroke-width="1.4" marker-end="url(#apg)"/>
+  <path d="M242 224 C 360 224, 400 180, 434 172" fill="none" stroke="#9AA4B5" stroke-width="1.4" marker-end="url(#apg)"/>
+  <rect x="436" y="146" width="104" height="44" rx="8" fill="#FFFFFF" stroke="#DCE2EC"/>
+  <text x="488" y="164" text-anchor="middle" font-family="JetBrains Mono" font-size="10.5" fill="#10141B">tiny model</text>
+  <text x="488" y="178" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#737E8E">Fireworks SFT</text>
+  <path d="M540 168 H584" fill="none" stroke="#9AA4B5" stroke-width="1.4" marker-end="url(#apg)"/>
+
+  <!-- held-out true performance chart -->
+  <text x="600" y="60" font-family="JetBrains Mono" font-size="10.5" fill="#10141B">held-out eval</text>
+  <line x1="606" y1="72" x2="606" y2="210" stroke="#DCE2EC" stroke-width="1"/>
+  <line x1="606" y1="210" x2="752" y2="210" stroke="#DCE2EC" stroke-width="1"/>
+  <rect x="624" y="150" width="36" height="60" rx="2" fill="#A85B12"/>
+  <text x="642" y="224" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A85B12">raw</text>
+  <rect x="690" y="96" width="36" height="114" rx="2" fill="#1C8A57"/>
+  <text x="708" y="224" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1C8A57">hardened</text>
+</svg>
+            <div class="legend">
+              <span><i style="background:#1C8A57"></i>real solution</span>
+              <span><i style="background:#A85B12"></i>reward hack</span>
+            </div>
+          </div>
+          <div class="fig-cap">Illustrative flow. A hackable verifier poisons the training set; hardening filters hacks before SFT. The held-out comparison is Phase 5 and remains a hypothesis until measured on real data.</div>
+        </div>
+
+        <h3 style="margin-top:34px">Phase roadmap</h3>
+        <table class="matrix">
+          <thead><tr><th>Phase</th><th>Goal</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>0 — Mock + loader</td><td><code>TraceRecord</code> schema, <code>fixtures/sft/mock_chronos_traces.jsonl</code>, validation</td><td><span class="tag done">DONE</span></td></tr>
+            <tr><td>1 — Filtering</td><td>Partition into raw / hardened / rejected / excluded buckets</td><td><span class="tag done">DONE</span></td></tr>
+            <tr><td>2 — Metrics</td><td>Contamination table, exploit clusters, chart, write-up</td><td><span class="tag done">DONE</span></td></tr>
+            <tr><td>3 — Export + CLI</td><td>Fireworks chat JSONL, metadata sidecars, <code>run_manifest.json</code></td><td><span class="tag done">DONE</span></td></tr>
+            <tr><td>4 — Real data swap</td><td>Core team <code>chronos_export.jsonl</code>; re-run pipeline; update measured numbers</td><td><span class="tag stretch">PENDING</span></td></tr>
+            <tr><td>5 — Training experiment</td><td>Model A (raw-trained) vs Model B (hardened-trained) on held-out HUD tasks</td><td><span class="tag stretch">OPTIONAL</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3>Four dataset buckets</h3>
+        <p style="font-size:.94rem">Each Chronos trace row is scored under both verifier versions. The filter assigns buckets; exports come from the first two.</p>
+        <table class="matrix">
+          <thead><tr><th>Bucket</th><th>Rule</th><th>Export file</th></tr></thead>
+          <tbody>
+            <tr><td>raw_sft</td><td><code>raw_reward == 1</code></td><td><code>raw_verifier_sft.jsonl</code> — intentionally dirty (Model A)</td></tr>
+            <tr><td>hardened_sft</td><td><code>patched_reward == 1</code> and <code>is_legit == true</code></td><td><code>hardened_verifier_sft.jsonl</code> — verifier-clean positives (Model B)</td></tr>
+            <tr><td>rejected_hacks</td><td><code>raw_reward == 1</code>, <code>patched_reward == 0</code>, <code>is_hack == true</code></td><td><code>rejected_hacks_audit.jsonl</code> — audit only</td></tr>
+            <tr><td>excluded</td><td>Failed attempts and ambiguous rows</td><td>Not exported as positive SFT</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.93rem;margin-top:12px"><strong>Verifier-clean reward-1</strong> means the hardened verifier still passes the trace <em>and</em> Chronos labeled it a legitimate control — not an Exploit Witness. Real ReleaseProof data should target <strong>zero</strong> hacks in the hardened export; the mock fixture intentionally includes one <code>needs_review</code> stress row.</p>
+
+        <h3>Mock run metrics (illustrative only)</h3>
+        <p style="font-size:.94rem">15-row mock fixture anchored on Terminal Wrench <code>mongodb-sales-aggregation-engine</code>. Label all pitch numbers as mock until Phase 4 re-runs on real Chronos output.</p>
+        <table class="matrix">
+          <thead><tr><th>Metric</th><th>Raw verifier</th><th>Hardened verifier</th></tr></thead>
+          <tbody>
+            <tr><td>Reward-1 traces admitted</td><td>12</td><td>4</td></tr>
+            <tr><td>Hacks admitted</td><td>7</td><td>1 (stress case)</td></tr>
+            <tr><td>Training contamination</td><td>58.3%</td><td>25.0%</td></tr>
+            <tr><td>Legitimate retention</td><td>80.0%</td><td>80.0%</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Repository layout &amp; CLI</h3>
+        <p style="font-size:.94rem;margin-bottom:10px">Code lives under <code>src/chronos/research/sft/</code>. Run the pipeline:</p>
+        <p style="font-family:var(--mono);font-size:.82rem;background:#EEF1F7;border:1px solid var(--line);padding:14px 16px;border-radius:10px;line-height:1.55;margin-bottom:16px">PYTHONPATH=src python -m chronos.research.sft.cli \<br>&nbsp;&nbsp;--input fixtures/sft/mock_chronos_traces.jsonl \<br>&nbsp;&nbsp;--output artifacts/sft/mock_run</p>
+        <p style="font-size:.94rem">Outputs: <code>contamination_table.md</code>, <code>WRITEUP.md</code>, <code>contamination_chart.svg</code>, <code>raw_verifier_sft.jsonl</code>, <code>hardened_verifier_sft.jsonl</code>, <code>rejected_hacks_audit.jsonl</code>, <code>run_manifest.json</code>.</p>
+
+        <h3>Core-team integration contract</h3>
+        <p style="font-size:.94rem">Deliver one JSONL file — one row per trace, Exploit Witness, or legitimate control. Required fields: <code>trace_id</code>, <code>task_id</code>, <code>task_prompt</code>, <code>assistant_output</code>, <code>raw_reward</code>, <code>patched_reward</code>, <code>is_hack</code>, <code>is_legit</code>. Optional: <code>exploit_cluster</code>, <code>witness_id</code>, <code>release_proof_id</code>. Full schema: <code>fixtures/sft/schema/trace_record.schema.json</code>. If column names differ, only a thin adapter changes — not filter, metrics, or export logic.</p>
+
+        <h3>Phase 4 — reconnect to real Chronos data</h3>
+        <ol class="steps">
+          <li><h3>Receive export <span class="tag stretch">CORE</span></h3><p>Place at <code>artifacts/sft/chronos_export.jsonl</code>. Minimum: all Exploit Witnesses, legitimate controls, and reward-1 source traces from ReleaseProof.</p></li>
+          <li><h3>Re-run pipeline <span class="tag done">SAME CLI</span></h3><p>Swap <code>--input</code> path and <code>--output artifacts/sft/real_run</code>. Update slide numbers from <code>contamination_table.md</code>.</p></li>
+          <li><h3>Record provenance <span class="tag done">MANIFEST</span></h3><p>Write <code>release_proof_id</code>, row count, and timestamp to <code>run_manifest.json</code>. Footer slides: &ldquo;Measured on ReleaseProof X&rdquo; — not &ldquo;illustrative mock.&rdquo;</p></li>
+        </ol>
+
+        <h3>Phase 5 — optional two-model experiment</h3>
+        <p style="font-size:.94rem">Only proceed with real data (or explicitly label mock as a dry run). Same base model and hyperparameters; only the training JSONL differs.</p>
+        <table class="matrix">
+          <thead><tr><th>Model</th><th>Training data</th><th>Hypothesis</th></tr></thead>
+          <tbody>
+            <tr><td>Model A</td><td><code>raw_verifier_sft.jsonl</code></td><td>May imitate exploit patterns present in hacked reward-1 positives</td></tr>
+            <tr><td>Model B</td><td><code>hardened_verifier_sft.jsonl</code></td><td>Should prefer real task-solving; lower hack rate on held-out eval</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.94rem;margin-top:12px"><strong>Fireworks path (smoke-tested):</strong> upload dataset &rarr; <code>firectl sftj create</code> with base model <code>accounts/fireworks/models/qwen2p5-7b-instruct</code> (or <code>qwen2p5-1p5b-instruct</code> for cheaper runs) &rarr; <code>firectl deployment create</code> &rarr; inference via deployment ID (<code>accounts/&lt;account&gt;/deployments/&lt;id&gt;</code>, not the bare model path). Record dataset, job, and deployment IDs in the manifest.</p>
+        <p style="font-size:.94rem"><strong>Held-out eval (unlocks the &ldquo;better model&rdquo; claim):</strong> ~10 HUD rollouts per held-out task per model, scored with the <em>patched</em> verifier. Compare legitimate pass rate and hack rate. Tasks must not appear in either training export. Without this step, the completed artifact is the data-quality analysis plus proof that Fireworks accepts the export — not a behavioral improvement claim.</p>
+
+        <h3>Claims discipline</h3>
+        <table class="matrix">
+          <thead><tr><th>Claim</th><th>When allowed</th></tr></thead>
+          <tbody>
+            <tr><td>Hardened verifier removes hacked positives from SFT data</td><td>After Phase 1+2 on mock or real data</td></tr>
+            <tr><td>Contamination was X% under raw vs Y% hardened</td><td>After metrics computed; label mock vs measured</td></tr>
+            <tr><td>Fireworks can train on this export</td><td>After Phase 3; smoke-tested on mock (June 2026)</td></tr>
+            <tr><td>Model trained on hardened data behaves better</td><td>Only after Phase 5 held-out eval with numbers</td></tr>
+          </tbody>
+        </table>
+
+        <div class="eg" style="margin-top:24px">
+          <span class="egk">Boundary</span>
+          <p>This extension does <strong>not</strong> replace the core Chronos demo (Witness &rarr; patch &rarr; ReleaseProof). It does <strong>not</strong> run live on stage. It does <strong>not</strong> claim SFT alone eliminates reward hacking. Putting a monitor inside a gradient-bearing reward is explicitly out of scope — that is the regime where reward hacking gets <a href="https://arxiv.org/abs/2503.11926" target="_blank" rel="noopener">obfuscated</a> rather than removed. Fireworks RFT remains a future extension if an evaluator and held-out taskset are ready.</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Project <b>Hack2Fix2Hack</b> · powered by Chronos · internal handoff · prepared for the HUD Frontier / RSI hackathon · facts verified June 2026 · SFT appendix updated June 2026 · mock metrics illustrative until Phase 4 real export.</p>
+  </div>
+</footer>
+
+
+</body>
+</html>

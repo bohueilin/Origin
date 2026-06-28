@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "status": "not_run",
+  "claim_guard": "Confirmed-hack-REMOVED ablation, NOT a certified-clean/hardened model. Diff-based labels; surviving rows are unproven. The A-vs-B delta isolates Chronos-confirmed reward-hacks removed from Model A's train split; it is a preliminary lower bound and does not prove the residual set is clean.",
+  "eval_status": "not_run",
+  "legitimate_evaluation_dataset_id": "model-a-prelim-heldout",
+  "adversarial_probe_status": "not_run",
+  "base_model_result": "TBD",
+  "model_a_result": "TBD"
+}

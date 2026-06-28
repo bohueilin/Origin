@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    (function(){try{var k='thepursuits-theme',v=localStorage.getItem(k);
+      if(v)document.documentElement.setAttribute('data-theme',v);
+      else document.documentElement.setAttribute('data-theme',
+        matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    }catch(e){}})();
+  </script>
+  <title>FactoryCEO-TRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="../README.md">factoryceo<span>-trm</span></a>
+      <button class="theme-toggle" id="themeToggle" type="button">theme</button>
+    </nav>
+
+    <header class="hero">
+      <div class="kicker">A verifiable RL/RFT environment for autonomous factory operation</div>
+      <h1>The brain that runs the factory while the CEO is away.</h1>
+      <p class="thesis">
+        A humanoid robot can do the physical work. The hard part is the decision layer:
+        read messy plant context, propose actions, and never ship an infeasible plan.
+        FactoryCEO-TRM compiles chaos into structured state, then a recursive
+        verifier&rarr;repair loop drives hard-constraint violations to zero before
+        anything reaches the floor.
+      </p>
+      <div class="flow"><b>brain decides</b> &rarr; <b>verifier gates</b> &rarr; <b>humanoid executes</b></div>
+    </header>
+
+    <div class="stack">
+      <span>synthetic scenarios</span><i>&rarr;</i>
+      <span>teacher LLM <small>Claude / Gemma·vLLM</small></span><i>&rarr;</i>
+      <span>verifier + <b>TRM</b> repair</span><i>&rarr;</i>
+      <span>verified traces</span><i>&rarr;</i>
+      <span>distill small TRM <small>HUD env · GRPO</small></span><i>&rarr;</i>
+      <span>JEPA + Isaac <small>humanoid</small></span>
+    </div>
+
+    <div id="app">
+      <p class="err" id="loaderr" style="display:none"></p>
+
+      <div class="panels">
+        <div class="panel">
+          <span class="num">01</span>
+          <h2>Messy plant context</h2>
+          <pre class="messy" id="messy"></pre>
+        </div>
+        <div class="panel">
+          <span class="num">02</span>
+          <h2>Compiled factory state</h2>
+          <div id="state"></div>
+        </div>
+      </div>
+
+      <div class="stepper panel" style="grid-column:1/-1">
+        <span class="num">03</span>
+        <h2>Recursive verifier &rarr; repair loop</h2>
+        <div class="stepper-top">
+          <div class="metric">
+            <div class="v viol" id="violVal">&mdash;</div>
+            <div class="l">hard violations</div>
+          </div>
+          <div class="metric">
+            <div class="v reward" id="rewardVal">&mdash;</div>
+            <div class="l">verifier reward</div>
+          </div>
+          <div class="controls">
+            <button class="ghost" id="resetBtn" type="button">reset</button>
+            <button id="playBtn" type="button">&#9654; play repair</button>
+          </div>
+        </div>
+        <div class="bar"><span id="violBar"></span></div>
+        <input type="range" id="slider" min="0" max="0" value="0" />
+        <div class="steplabel" id="stepLabel"></div>
+        <div class="action" id="action"></div>
+      </div>
+
+      <div class="stepper panel" style="grid-column:1/-1">
+        <span class="num">04</span>
+        <h2>Humanoid execution &mdash; verified plan &rarr; Isaac Sim/Lab</h2>
+        <p class="steplabel" id="humanoidMeta"></p>
+        <div id="humanoid"></div>
+        <p class="note" style="margin-top:14px">
+          Only the verifier-approved plan reaches the floor. Each bar is one
+          manipulation task the humanoid (operator <b>R1</b>) runs at a machine;
+          the same queue (<code>results/isaac_tasks.json</code>) drives the Isaac
+          Lab task in <code>isaac/</code>. V-JEPA&nbsp;2 scores the rollout in
+          latent space for a verifier-free success signal.
+        </p>
+      </div>
+
+      <div class="stepper panel" style="grid-column:1/-1">
+        <span class="num">05</span>
+        <h2>Humanoid on the floor (3D) &mdash; driven by the verified plan</h2>
+        <div class="controls" style="margin:0 0 10px">
+          <span class="steplabel" id="floorClock"></span>
+          <button id="floor3dBtn" type="button">&#9654; run humanoid</button>
+        </div>
+        <div id="scene3d"></div>
+        <p class="note" style="margin-top:12px">
+          Browser 3D (three.js) &mdash; the humanoid (<b>R1</b>) walks the shop
+          floor executing its scheduled operations from
+          <code>isaac_tasks.json</code>. No GPU; runs on macOS in the browser and
+          embeds in the static Space. The same <code>Executor</code> interface
+          drives <b>MuJoCo</b> (Mac physics) or <b>Isaac Sim</b> (cloud GPU);
+          V-JEPA 2 scores whichever frames come back.
+        </p>
+      </div>
+
+      <div class="scoreboard">
+        <h2>Scoreboard &mdash; 30-day run, averaged over scenarios</h2>
+        <table>
+          <thead>
+            <tr><th>method</th><th>profit ($)</th><th>on-time</th>
+              <th>invalid actions</th><th>customer trust</th><th>unsafe</th></tr>
+          </thead>
+          <tbody id="scoreBody"></tbody>
+        </table>
+        <p class="note" id="scoreNote"></p>
+      </div>
+    </div>
+
+    <footer>
+      FactoryCEO-TRM &mdash; verifiable environment + recursive repair. No real robot
+      control, no real PLC/MES/ERP. The verifier gate is the autonomy story.
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

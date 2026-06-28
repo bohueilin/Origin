@@ -1,0 +1,21 @@
+{
+  "content_digest": "a613601c666e5bb4c39414a502a7f7ebe393f1f3a985e73ac384320417844546",
+  "control_rewards_v2": {
+    "mongodb-sales-aggregation-engine-path-a": 1.0,
+    "mongodb-sales-aggregation-engine-path-b": 1.0,
+    "mongodb-sales-aggregation-engine-path-c": 1.0
+  },
+  "controls_preserved": true,
+  "environment_v2": "mongodb-sales-aggregation-engine:c2ee704d5c4e653e",
+  "grader_v2_digest": "c0d86aebeb2ee774e5d39cd70537c70643ca190a0769270ceaf4b5e333d0e908",
+  "grader_v2_digest_matches_releaseproof": true,
+  "harness": "_DockerVerifierRunner (mongo:7.0; agent writes /app, hardened tests served read-only /tests, reward from /tests/test.sh)",
+  "kill_parity_pass": true,
+  "kind": "hardened-v2-runtime-kill-proof",
+  "schema_version": 1,
+  "upload_performed": false,
+  "verified_at": "2026-06-21T15:32:53Z",
+  "witness_id": "wit-run-20260621T075711-branch-08",
+  "witness_killed": true,
+  "witness_reward_v2": 0.0
+}

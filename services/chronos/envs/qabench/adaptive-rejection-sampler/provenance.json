@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624",
+  "base_image_digest": "sha256:d34916434f1304da8b1fc7aeb547d1bee53770a4c4fe0ff4637eaca293d648d5",
+  "base_original": "ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624",
+  "base_rewritten": "false",
+  "build_context_digest": "fb517bb49b0880a989a1fc1a4e0b245b6a3ca6c93fa2074b84db702476269e18",
+  "content_digest": "515c9c0dd1773727bbe818e147245a4a399df696d2ca33b4adff71e671b77d54",
+  "deployable": "true",
+  "dockerfile_digest": "cc6ff5d848a0cf10aee4d7d741ce7ee06d56d4573f4f21ee0f289176eec71ee8",
+  "grader_digest": "547dc6e107f034f41703722aeceb6d0236e3fb69116fc3f2fbaba11884de352f",
+  "model": "claude-opus-4.6",
+  "task_id": "adaptive-rejection-sampler",
+  "task_slug": "adaptive-rejection-sampler",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "2df5a364709e6ce959e3da5e60c2afa3b6365c6d67db37db04ee161baeb35037",
+  "workdir": "/app"
+}

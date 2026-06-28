@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-06-21T07:56:33Z",
+  "credential_presence": {
+    "ANTHROPIC_API_KEY": "present",
+    "HUD_API_KEY": "present",
+    "MODAL_TOKEN_ID": "present",
+    "MODAL_TOKEN_SECRET": "present"
+  },
+  "fork_point_id": "fp-826ba545cf30870e67d42ddb",
+  "grader_output_sha256": "09043217da4357f616b9acf5fafdc6b6323f107bebe6202e9b3214e3013e4fbd",
+  "grader_returncode": 0,
+  "grader_summary": "pass",
+  "hud_server_probe_stdout": "env-server-present",
+  "inventory": {
+    "/app": {
+      "exists": true,
+      "is_dir": true,
+      "is_file": false
+    },
+    "/app/env.py": {
+      "exists": true,
+      "is_dir": false,
+      "is_file": true
+    },
+    "/app/pyproject.toml": {
+      "exists": true,
+      "is_dir": false,
+      "is_file": true
+    },
+    "/app/query.py": {
+      "exists": true,
+      "is_dir": false,
+      "is_file": true
+    },
+    "/app/task_assets": {
+      "exists": true,
+      "is_dir": true,
+      "is_file": false
+    },
+    "/app/tasks.py": {
+      "exists": true,
+      "is_dir": false,
+      "is_file": true
+    },
+    "/data/db": {
+      "exists": true,
+      "is_dir": true,
+      "is_file": false
+    }
+  },
+  "network_policy": "block_network=True",
+  "observed_behavior": "Recorded Plan 002 snapshot restores as branch-ready Modal/HUD task state: HUD server files are present and the trusted grader passes from the restored state.",
+  "sandbox_id": "sb-HTJvJXpwaSr3zwEYVZdM9j",
+  "secret_policy": "secrets=[]",
+  "snapshot_id": "im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "status": "pass"
+}

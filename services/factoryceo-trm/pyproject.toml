@@ -1,0 +1,26 @@
+[project]
+name = "factoryceo-trm"
+version = "0.0.0"
+description = "Origin FactoryCEO-TRM — verifiable planner + repair brain (FastAPI). The planning/repair brain behind the readiness control plane."
+requires-python = ">=3.10"
+dependencies = [
+  "pydantic>=2.0",
+  "numpy>=1.24",
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27",
+  "anthropic>=0.40",
+]
+
+[dependency-groups]
+dev = ["pytest>=7.0"]
+
+# Optional heavy extras (TRM-native student training + V-JEPA 2). Install on demand:
+#   uv pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   uv pip install transformers
+[project.optional-dependencies]
+train = ["torch", "transformers"]
+
+# This is an app/service, not a published library — uv manages the venv + deps without
+# trying to build/install the project itself (src/ has no package metadata).
+[tool.uv]
+package = false

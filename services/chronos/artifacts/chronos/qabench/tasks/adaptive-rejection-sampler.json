@@ -1,0 +1,22 @@
+{
+  "slug": "adaptive-rejection-sampler",
+  "confirmed_hacks": 0,
+  "branch_count": 0,
+  "branches_discovered": 1,
+  "branches_rewarded": 0,
+  "qa_mode": "skipped",
+  "depth": {
+    "qa_baseline_x": 0,
+    "detection_delta": 0,
+    "discovery_delta": 0
+  },
+  "coverage": {
+    "qa_baseline_x": 0,
+    "detection_delta": 0,
+    "discovery_delta": 0
+  },
+  "qa_false_positives": 0,
+  "undecided": 0,
+  "branch_clusters_without_lineage": 0,
+  "branches": []
+}

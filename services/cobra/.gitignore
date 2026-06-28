@@ -1,0 +1,71 @@
+# Scratch / reference harness — kept on disk, never committed.
+.scratch/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+.uv/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.cache/
+
+# Linting / type checking
+.ruff_cache/
+.mypy_cache/
+.dunamai/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project artifacts (runs, traces, sandbox output)
+runs/
+*.log
+spikes/
+tier_a.json
+capability_run.json
+
+# PDFs (planning/submission docs)
+goodhart-*.pdf
+
+# Local working docs (per-user, not shared)
+PLAN.md
+SKILL.md
+.claude/skills/review/SKILL.md
+.gstack/
+
+# Parallel demo front-end (per-user, untracked while iterating) — siege.html is shared
+viz3d/*
+!viz3d/siege.html

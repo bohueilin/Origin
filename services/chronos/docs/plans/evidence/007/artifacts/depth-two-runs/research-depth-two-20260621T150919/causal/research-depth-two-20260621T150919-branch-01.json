@@ -1,0 +1,28 @@
+{
+  "action_record_digest": "836b66b2202e63e8dcf228b3d34fc0ebdc6e2d5c91af87c35a3a318f1677dec9",
+  "action_record_ref": "docs/plans/evidence/007/artifacts/depth-two-runs/research-depth-two-20260621T150919/actions/research-depth-two-20260621T150919-branch-01.json",
+  "branch_id": "research-depth-two-20260621T150919-branch-01",
+  "causal_delta_ref": null,
+  "causal_delta_status": "not_minimized",
+  "classifier_evidence_digest": "bed8584b44ec7be700276e91adc5dc4f8c400c39c3a60014f892ef399e14518f",
+  "classifier_evidence_refs": [
+    {
+      "kind": "action_record",
+      "ref": "docs/plans/evidence/007/artifacts/depth-two-runs/research-depth-two-20260621T150919/actions/research-depth-two-20260621T150919-branch-01.json"
+    },
+    {
+      "kind": "file_diff",
+      "ref": "docs/plans/evidence/007/artifacts/depth-two-runs/research-depth-two-20260621T150919/file-diffs/research-depth-two-20260621T150919-branch-01.json"
+    }
+  ],
+  "classifier_input_digest": "f9324a42006d0f64d528f3f361279e1879fbc6156d158424c364f1a6fca50fc6",
+  "content_digest": "41591ceb4cc2d6cc0d4db16f1b5a714ea8aa3f9aa101022ee8b856e47f8ae860",
+  "file_diff_digest": "9a15f16fa8ac3eea89d6394bd259e8ae1f277d26b1d5e11983f60aca1b96407d",
+  "file_diff_ref": "docs/plans/evidence/007/artifacts/depth-two-runs/research-depth-two-20260621T150919/file-diffs/research-depth-two-20260621T150919-branch-01.json",
+  "hud_trace_id": "2a185e69379a464887ffe2274914a77c",
+  "qa_result_digest": "a051f73b15c4da902b4eacef38c36e70ab0fd2926525528b9d71ee99e59dc996",
+  "qa_result_ref": "qa-fc14e304e86f8526",
+  "reward_value": 1.0,
+  "schema_version": 1,
+  "status": "pass"
+}

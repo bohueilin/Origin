@@ -1,0 +1,153 @@
+@import '@xyflow/react/dist/style.css';
+@import './styles/fonts.css';
+@import './styles/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-base text-ink-primary antialiased;
+  }
+
+  .font-display {
+    font-family: var(--ds-font-display);
+    font-weight: var(--ds-font-display-weight, 500);
+  }
+
+  ::selection {
+    background: var(--ds-green-200);
+    color: var(--ds-ink-primary);
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ds-neutral-300) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--ds-neutral-300);
+    border-radius: 9999px;
+  }
+}
+
+:root {
+  /* edge cluster colors — derived from design tokens + the local warn token */
+  --fp-edge-witness: var(--ds-green-500);
+  --fp-edge-promising: #b07d22;
+  --fp-edge-control: var(--ds-neutral-700);
+  --fp-edge-default: var(--ds-neutral-400);
+  --fp-dot-witness: var(--ds-green-500);
+  --fp-dot-promising: #b07d22;
+  --fp-dot-control: var(--ds-neutral-700);
+  --fp-snapshot-border: #b9d7f3;
+}
+
+/* React Flow surface alignment with design system */
+.react-flow {
+  background: var(--ds-white);
+}
+
+.react-flow__node {
+  font-family: inherit;
+}
+
+.fp-snapshot-card {
+  border-color: var(--fp-snapshot-border);
+  background: color-mix(in srgb, var(--ds-tint-blue) 70%, var(--ds-white));
+}
+
+.react-flow__node.fp-enter {
+  opacity: 0;
+  transition: opacity 0.96s cubic-bezier(0.23, 1, 0.32, 1);
+  transition-delay: var(--fp-enter-delay, 0ms);
+}
+
+.react-flow__node.fp-enter .fp-node-frame {
+  transform: translateY(1px);
+  transition: transform 0.96s cubic-bezier(0.23, 1, 0.32, 1);
+  transition-delay: var(--fp-enter-delay, 0ms);
+}
+
+.react-flow__node.fp-enter.fp-enter-revealed {
+  opacity: 1;
+}
+
+.react-flow__node.fp-enter.fp-enter-revealed .fp-node-frame {
+  transform: translateY(0);
+}
+
+.react-flow__edge .fp-cluster-edge.fp-enter {
+  opacity: 0;
+  transition: opacity 1.08s cubic-bezier(0.23, 1, 0.32, 1);
+  transition-delay: var(--fp-enter-delay, 90ms);
+}
+
+.react-flow__edge .fp-cluster-edge.fp-enter.fp-enter-revealed {
+  opacity: 1;
+}
+
+.react-flow__edge .fp-cluster-edge path,
+.react-flow__edge .fp-cluster-edge circle {
+  transition:
+    stroke 0.15s ease,
+    fill 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* Hover keeps the existing outline (so a selected node never loses its accent
+   * border) and tints the surface with the green wash instead of lifting. */
+  .fp-node-frame:hover {
+    background-color: var(--ds-tint-green);
+    box-shadow: var(--ds-shadow);
+  }
+
+  /* Snapshot cards are blue — deepen their own blue on hover rather than
+   * swapping to the green wash, so the hover reads as the blue darkening. */
+  .fp-node-frame.fp-snapshot-card:hover {
+    background-color: color-mix(in srgb, var(--fp-snapshot-border) 50%, var(--ds-tint-blue));
+  }
+}
+
+.react-flow__attribution {
+  display: none;
+}
+
+.react-flow__edge-path {
+  stroke-width: 1.5px;
+}
+
+.react-flow__handle {
+  opacity: 0;
+  border: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .react-flow__node.fp-enter,
+  .react-flow__edge .fp-cluster-edge.fp-enter {
+    opacity: 0;
+    transform: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .react-flow__node.fp-enter.fp-enter-revealed,
+  .react-flow__edge .fp-cluster-edge.fp-enter.fp-enter-revealed {
+    opacity: 1;
+  }
+
+  .animate-dropdown-show {
+    animation: none;
+  }
+}

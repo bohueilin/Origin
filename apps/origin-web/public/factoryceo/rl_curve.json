@@ -1,0 +1,518 @@
+{
+  "curve": [
+    {
+      "episode": 0,
+      "policy_profit": 51720.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 2,
+      "policy_profit": 61823.5,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 4,
+      "policy_profit": 66339.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 6,
+      "policy_profit": 66836.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 8,
+      "policy_profit": 67035.6,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 10,
+      "policy_profit": 67227.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 12,
+      "policy_profit": 67259.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 14,
+      "policy_profit": 67536.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 16,
+      "policy_profit": 67234.9,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 18,
+      "policy_profit": 67593.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 20,
+      "policy_profit": 67718.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 22,
+      "policy_profit": 67574.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 24,
+      "policy_profit": 67649.1,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 26,
+      "policy_profit": 67197.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 28,
+      "policy_profit": 67609.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 30,
+      "policy_profit": 67693.5,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 32,
+      "policy_profit": 67791.9,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 34,
+      "policy_profit": 67693.5,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 36,
+      "policy_profit": 67709.1,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 38,
+      "policy_profit": 67558.1,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 40,
+      "policy_profit": 67726.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 42,
+      "policy_profit": 67664.5,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 44,
+      "policy_profit": 67812.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 46,
+      "policy_profit": 67947.5,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 48,
+      "policy_profit": 67635.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 50,
+      "policy_profit": 67719.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 52,
+      "policy_profit": 67583.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 54,
+      "policy_profit": 67409.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 56,
+      "policy_profit": 67400.9,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 58,
+      "policy_profit": 67428.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 60,
+      "policy_profit": 67568.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 62,
+      "policy_profit": 67429.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 64,
+      "policy_profit": 67600.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 66,
+      "policy_profit": 67380.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 68,
+      "policy_profit": 67518.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 70,
+      "policy_profit": 67151.9,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 72,
+      "policy_profit": 67137.6,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 74,
+      "policy_profit": 67501.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 76,
+      "policy_profit": 67499.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 78,
+      "policy_profit": 67696.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 80,
+      "policy_profit": 67694.6,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 82,
+      "policy_profit": 67639.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 84,
+      "policy_profit": 67635.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 86,
+      "policy_profit": 67664.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 88,
+      "policy_profit": 67682.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 90,
+      "policy_profit": 67724.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 92,
+      "policy_profit": 67699.9,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 94,
+      "policy_profit": 67875.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 96,
+      "policy_profit": 67922.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 98,
+      "policy_profit": 68095.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 100,
+      "policy_profit": 67808.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 102,
+      "policy_profit": 67953.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 104,
+      "policy_profit": 68300.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 106,
+      "policy_profit": 68171.9,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 108,
+      "policy_profit": 68242.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 110,
+      "policy_profit": 68145.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 112,
+      "policy_profit": 68112.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 114,
+      "policy_profit": 68038.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 116,
+      "policy_profit": 67798.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 118,
+      "policy_profit": 67985.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 120,
+      "policy_profit": 68169.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 122,
+      "policy_profit": 68152.6,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 124,
+      "policy_profit": 68288.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 126,
+      "policy_profit": 68341.1,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 128,
+      "policy_profit": 68362.3,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 130,
+      "policy_profit": 68390.5,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 132,
+      "policy_profit": 68186.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 134,
+      "policy_profit": 68241.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 136,
+      "policy_profit": 68175.2,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 138,
+      "policy_profit": 67957.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 140,
+      "policy_profit": 68082.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 142,
+      "policy_profit": 68088.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 144,
+      "policy_profit": 67953.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 146,
+      "policy_profit": 68098.0,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 148,
+      "policy_profit": 68058.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 150,
+      "policy_profit": 68075.9,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 152,
+      "policy_profit": 68054.8,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 154,
+      "policy_profit": 68119.9,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 156,
+      "policy_profit": 68177.4,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 158,
+      "policy_profit": 68176.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    },
+    {
+      "episode": 160,
+      "policy_profit": 68303.7,
+      "greedy_profit": 51554.0,
+      "hard_viol_rate": 0.0
+    }
+  ],
+  "weights": {
+    "bias": 0.006,
+    "urgency": -0.014,
+    "priority": 0.041,
+    "revenue": 1.484,
+    "rev_per_hour": 1.176,
+    "work_hours": -1.125,
+    "material_cost": 0.702
+  },
+  "feature_names": [
+    "bias",
+    "urgency",
+    "priority",
+    "revenue",
+    "rev_per_hour",
+    "work_hours",
+    "material_cost"
+  ],
+  "horizon_days": 6,
+  "n_jobs": 50,
+  "episodes": 160,
+  "init_profit": 51720.2,
+  "final_profit": 68303.7,
+  "greedy_profit": 51554.0,
+  "lift_vs_greedy": 16749.7,
+  "lift_pct": 32.5,
+  "gain_over_init": 16583.5,
+  "final_hard_viol_rate": 0.0
+}

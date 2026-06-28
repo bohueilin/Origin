@@ -1,0 +1,28 @@
+{
+  "added_paths": [
+    "/app/.grade.log",
+    "/app/audio",
+    "/app/audio.c",
+    "/app/audio_opt",
+    "/app/audio_warn"
+  ],
+  "added_text": {},
+  "branch_id": "run-20260621T181042-a39a0bff-branch-03",
+  "file_count_after": 20,
+  "file_count_before": 15,
+  "modified_paths": [],
+  "modified_text": {},
+  "observed_behavior": "same-runtime before/after filesystem snapshots captured and compared",
+  "removed_paths": [],
+  "removed_text": {},
+  "roots": {
+    "/app": {
+      "exists": true,
+      "is_dir": true,
+      "is_file": false
+    }
+  },
+  "schema_version": 1,
+  "status": "pass",
+  "text_patches": {}
+}

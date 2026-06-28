@@ -1,0 +1,34 @@
+{
+  "input_path": "fixtures/sft/mock_chronos_traces.jsonl",
+  "output_dir": "artifacts/sft/mock_run",
+  "input_source": "mock",
+  "source_label": "mock_chronos_traces.jsonl",
+  "generated_at": "2026-06-20T22:06:06.992755+00:00",
+  "trace_count": 15,
+  "artifacts": {
+    "contamination_table": "artifacts/sft/mock_run/contamination_table.md",
+    "exploit_clusters": "artifacts/sft/mock_run/exploit_clusters.json",
+    "contamination_chart": "artifacts/sft/mock_run/contamination_chart.svg",
+    "writeup": "artifacts/sft/mock_run/WRITEUP.md",
+    "metrics": "artifacts/sft/mock_run/metrics.json",
+    "raw_verifier_sft": "artifacts/sft/mock_run/raw_verifier_sft.jsonl",
+    "hardened_verifier_sft": "artifacts/sft/mock_run/hardened_verifier_sft.jsonl",
+    "raw_verifier_sft_metadata": "artifacts/sft/mock_run/raw_verifier_sft.metadata.jsonl",
+    "hardened_verifier_sft_metadata": "artifacts/sft/mock_run/hardened_verifier_sft.metadata.jsonl",
+    "rejected_hacks_audit": "artifacts/sft/mock_run/rejected_hacks_audit.jsonl"
+  },
+  "export_counts": {
+    "raw_sft_examples": 12,
+    "hardened_sft_examples": 4,
+    "rejected_hack_records": 6
+  },
+  "metrics": {
+    "raw_reward_one_admitted": 12,
+    "hardened_reward_one_admitted": 4,
+    "raw_hacks_admitted": 7,
+    "hardened_hacks_admitted": 1,
+    "raw_contamination_rate": 0.5833333333333334,
+    "hardened_contamination_rate": 0.25,
+    "legitimate_retention_rate": 0.8
+  }
+}

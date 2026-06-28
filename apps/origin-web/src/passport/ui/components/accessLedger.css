@@ -1,0 +1,411 @@
+/* AccessLedger — instrument-grade broker lease table (P2). Scoped to .pp-led. */
+
+.pp-led {
+  /* Fall back to local tokens if rendered outside .pp-app. */
+  --led-accent: var(--accent, #2f6df6);
+  --led-good: var(--good, #12a567);
+  --led-warn: var(--warn, #d98613);
+  --led-bad: var(--bad, #e0483f);
+  --led-ink: var(--text, #14171e);
+  --led-soft: var(--text-soft, #515a67);
+  --led-muted: var(--muted, #8b94a2);
+  --led-line: var(--line, rgba(20, 23, 30, 0.1));
+  --led-line-2: var(--line-2, rgba(20, 23, 30, 0.12));
+  --led-panel: var(--panel, #ffffff);
+  --led-mono: var(--mono, ui-monospace, 'SF Mono', Menlo, Consolas, monospace);
+
+  position: relative;
+  background: var(--led-panel);
+  border: 1px solid var(--led-line);
+  border-radius: 16px;
+  padding: 18px 20px 16px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(20, 23, 30, 0.04), 0 1px 3px rgba(20, 23, 30, 0.06));
+  color: var(--led-ink);
+  font-family: var(--sans, 'Inter', system-ui, sans-serif);
+}
+
+/* ---------- header ---------- */
+.pp-led-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.pp-led-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent-ink, var(--led-accent));
+}
+.pp-led-title {
+  font-family: var(--display, 'Space Grotesk', sans-serif);
+  font-size: 19px;
+  font-weight: 600;
+  margin: 4px 0 0;
+  letter-spacing: -0.01em;
+}
+.pp-led-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 9px;
+  flex-shrink: 0;
+}
+.pp-led-count {
+  font-family: var(--led-mono);
+  font-size: 12px;
+  color: var(--led-muted);
+  white-space: nowrap;
+}
+
+/* ---------- kill switch ---------- */
+.pp-led-kill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--led-bad) 38%, transparent);
+  background: color-mix(in srgb, var(--led-bad) 9%, transparent);
+  color: var(--bad-ink, #c12a22);
+  font: 700 13px var(--sans, 'Inter', system-ui, sans-serif);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease,
+    box-shadow 0.18s ease;
+}
+.pp-led-kill svg {
+  color: var(--led-bad);
+  transition: transform 0.2s ease;
+}
+.pp-led-kill:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--led-bad) 16%, transparent);
+  border-color: var(--led-bad);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--led-bad) 14%, transparent);
+}
+.pp-led-kill:hover:not(:disabled) svg {
+  transform: rotate(-8deg) scale(1.05);
+}
+.pp-led-kill:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.pp-led-kill:disabled {
+  opacity: 0.5;
+  cursor: default;
+  filter: grayscale(0.4);
+}
+
+/* ---------- rows ---------- */
+.pp-led-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.pp-led-colhead,
+.pp-led-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.4fr) minmax(170px, 1.8fr) minmax(140px, 1.4fr) 96px 108px;
+  gap: 14px;
+  align-items: center;
+}
+.pp-led-colhead {
+  padding: 0 14px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--led-muted);
+}
+
+.pp-led-row {
+  padding: 11px 14px;
+  border: 1px solid var(--led-line);
+  border-radius: 12px;
+  background: var(--led-panel);
+  animation: pp-led-in 0.28s ease both;
+  transition: filter 0.5s ease, opacity 0.5s ease, border-color 0.3s ease,
+    background 0.3s ease;
+  min-width: 0;
+}
+.pp-led-row.is-active {
+  border-color: color-mix(in srgb, var(--led-good) 26%, var(--led-line));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--led-good) 4%, var(--led-panel)),
+    var(--led-panel) 38%
+  );
+}
+.pp-led-row.is-expired {
+  filter: grayscale(0.35);
+  opacity: 0.86;
+}
+.pp-led-row.is-revoked {
+  filter: grayscale(0.85);
+  opacity: 0.74;
+  border-color: color-mix(in srgb, var(--led-bad) 22%, var(--led-line));
+  background: color-mix(in srgb, var(--led-bad) 3.5%, var(--led-panel));
+}
+.pp-led-row.is-flashing {
+  animation: pp-led-snap 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* ---------- handle ---------- */
+.pp-led-handle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.pp-led-tag {
+  font-family: var(--led-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 5px;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+.pp-led-tag.is-grant {
+  background: color-mix(in srgb, var(--led-accent) 13%, transparent);
+  color: var(--accent-ink, var(--led-accent));
+}
+.pp-led-tag.is-broker {
+  background: color-mix(in srgb, var(--led-ink) 8%, transparent);
+  color: var(--led-soft);
+}
+.pp-led-handle code {
+  font-family: var(--led-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--led-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- bind / scope ---------- */
+.pp-led-bind {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.pp-led-agent {
+  font-family: var(--led-mono);
+  font-size: 11.5px;
+  color: var(--led-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pp-led-scope {
+  font-size: 11.5px;
+  color: var(--led-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- capability ---------- */
+.pp-led-cap {
+  min-width: 0;
+}
+.pp-led-cap code {
+  font-family: var(--led-mono);
+  font-size: 12px;
+  color: var(--led-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* ---------- ttl ---------- */
+.pp-led-ttl {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.pp-led-ttl code {
+  font-family: var(--led-mono);
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--led-ink);
+}
+.is-active .pp-led-ttl code {
+  color: var(--good-ink, var(--led-good));
+}
+.is-revoked .pp-led-ttl code {
+  color: var(--led-muted);
+}
+.pp-led-ttl-label {
+  font-size: 10px;
+  color: var(--led-muted);
+  white-space: nowrap;
+}
+
+/* ---------- status pill ---------- */
+.pp-led-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.pp-led-pill.is-active {
+  background: color-mix(in srgb, var(--led-good) 12%, transparent);
+  color: var(--good-ink, var(--led-good));
+}
+.pp-led-pill.is-expired {
+  background: color-mix(in srgb, var(--led-warn) 14%, transparent);
+  color: var(--warn-ink, var(--led-warn));
+}
+.pp-led-pill.is-revoked {
+  background: color-mix(in srgb, var(--led-bad) 12%, transparent);
+  color: var(--bad-ink, var(--led-bad));
+}
+.pp-led-pill svg {
+  color: var(--led-bad);
+}
+.pp-led-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: currentColor;
+}
+.pp-led-dot[data-live='true'] {
+  background: var(--led-good);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--led-good) 60%, transparent);
+  animation: pp-led-pulse 1.9s infinite;
+}
+
+/* ---------- empty ---------- */
+.pp-led-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 30px 16px 26px;
+  text-align: center;
+}
+.pp-led-empty svg {
+  color: var(--led-muted);
+}
+.pp-led-empty p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--led-soft);
+  max-width: 320px;
+}
+
+/* ---------- footer ---------- */
+.pp-led-foot {
+  margin: 13px 2px 0;
+  font-family: var(--led-mono);
+  font-size: 10.5px;
+  color: var(--led-muted);
+  letter-spacing: 0.01em;
+}
+
+/* ---------- motion ---------- */
+@keyframes pp-led-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pp-led-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--led-good) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--led-good) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--led-good) 0%, transparent);
+  }
+}
+@keyframes pp-led-snap {
+  0% {
+    filter: grayscale(0);
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--led-bad) 0%, transparent);
+  }
+  22% {
+    transform: translateX(-3px);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--led-bad) 30%, transparent);
+  }
+  44% {
+    transform: translateX(3px);
+  }
+  62% {
+    transform: translateX(0);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--led-bad) 16%, transparent);
+  }
+  100% {
+    filter: grayscale(0.85);
+    opacity: 0.74;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--led-bad) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-led-row,
+  .pp-led-row.is-flashing,
+  .pp-led-dot[data-live='true'] {
+    animation: none;
+  }
+}
+
+/* ---------- responsive: collapse the grid to a stacked card ≤ 900px ---------- */
+@media (max-width: 900px) {
+  .pp-led-colhead {
+    display: none;
+  }
+  .pp-led-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'handle status'
+      'bind   bind'
+      'cap    ttl';
+    gap: 8px 12px;
+    row-gap: 9px;
+  }
+  .pp-led-handle {
+    grid-area: handle;
+  }
+  .pp-led-pill {
+    grid-area: status;
+    justify-self: end;
+  }
+  .pp-led-bind {
+    grid-area: bind;
+  }
+  .pp-led-cap {
+    grid-area: cap;
+  }
+  .pp-led-ttl {
+    grid-area: ttl;
+    align-items: flex-end;
+    text-align: right;
+  }
+  .pp-led-aside {
+    align-items: stretch;
+  }
+}

@@ -1,0 +1,73 @@
+/* Factory-floor board styles — board-only, no :root/body rules, so CaseBoard can
+   render inside either app (home or console). Relies on the host's design tokens. */
+
+.fd-board { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; }
+.fd-grid-wrap { position: relative; flex: none; }
+.fd-grid { display: grid; }
+.fd-cell {
+  width: 40px; height: 40px; border-radius: 8px; background: var(--panel-2, #eef2f8);
+  border: 1px solid var(--line, #e3e8f1); display: flex; align-items: center; justify-content: center;
+}
+.fd-cell-trail { background: rgba(47, 109, 246, 0.1); border-color: rgba(47, 109, 246, 0.25); }
+.fd-cell-hazard { background: rgba(229, 72, 77, 0.1); border-color: rgba(229, 72, 77, 0.3); }
+.fd-cell-human { background: rgba(185, 116, 0, 0.1); border-color: rgba(185, 116, 0, 0.3); }
+.fd-cell-obstacle { background: #d7deea; border-color: #c4cdde; }
+.fd-cell-item { background: rgba(15, 157, 110, 0.1); border-color: rgba(15, 157, 110, 0.3); }
+.fd-cell-drop { background: rgba(47, 109, 246, 0.08); border-color: rgba(47, 109, 246, 0.3); }
+.fd-robot {
+  position: absolute; top: 0; left: 0; display: flex; align-items: center; justify-content: center;
+  will-change: transform; z-index: 2; pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.18));
+}
+
+.fd-board-side { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 12px; }
+.fd-board-status { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fd-act {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif); font-weight: 600; font-size: 15px;
+  color: var(--accent-ink, #1d4ed8); background: var(--panel-2, #eef2f8); padding: 5px 13px;
+  border-radius: 8px; text-transform: capitalize;
+}
+.fd-act-finish { color: #fff; background: var(--pos, #0f9d6e); }
+.fd-act-escalate { color: #fff; background: var(--warn, #b97400); }
+.fd-act-refuse { color: #fff; background: var(--neg, #e5484d); }
+.fd-flags { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.fd-flag { font-size: 13px; color: var(--muted, #64748b); }
+.fd-flag.on { color: var(--pos, #0f9d6e); font-weight: 600; }
+
+/* Animation transport: Play is the one obvious primary action (Anthropic restraint —
+   spend the boldness in one place); Step/Reset are quiet secondary controls. */
+.fd-board-ctrls { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.fd-ctrl {
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif); font-size: 14px; font-weight: 600;
+  padding: 9px 16px; border-radius: 10px; border: 1px solid var(--line, #e3e8f1);
+  background: var(--panel, #fff); color: var(--text, #0f172a); cursor: pointer;
+  transition: border-color .12s, background .12s, transform .08s, box-shadow .12s;
+}
+.fd-ctrl:hover:not(:disabled) { border-color: var(--accent, #2f6df6); background: var(--panel-2, #eef2f8); }
+.fd-ctrl:active:not(:disabled) { transform: translateY(1px); }
+.fd-ctrl:disabled { opacity: 0.45; cursor: default; }
+.fd-ctrl:focus-visible { outline: 2px solid var(--accent-ink, #1d4ed8); outline-offset: 2px; }
+.fd-ctrl-primary {
+  color: #fff; background: var(--accent, #2f6df6); border-color: var(--accent, #2f6df6);
+  box-shadow: 0 4px 14px rgba(47, 109, 246, 0.32); letter-spacing: 0.01em;
+}
+.fd-ctrl-primary:hover:not(:disabled) { background: var(--accent-ink, #1d4ed8); border-color: var(--accent-ink, #1d4ed8); }
+.fd-step-count { font-size: 13.5px; color: var(--muted, #64748b); font-family: var(--font-display, 'Space Grotesk', sans-serif); margin-left: 2px; }
+
+.fd-actions { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.fd-actions li {
+  font-size: 12.5px; padding: 4px 9px; border-radius: 6px; background: var(--panel-2, #eef2f8);
+  color: var(--muted, #64748b); border: 1px solid transparent; text-transform: capitalize;
+}
+.fd-actions li.done { color: var(--accent-ink, #1d4ed8); background: rgba(47, 109, 246, 0.1); }
+.fd-actions li.now { color: var(--accent-ink, #1d4ed8); border-color: var(--accent, #2f6df6); font-weight: 600; }
+
+.fd-board-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+.fd-board-legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted, #64748b); }
+.fd-lg { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+.fd-lg-robot { background: var(--accent, #2f6df6); }
+.fd-lg-item { background: rgba(15, 157, 110, 0.35); }
+.fd-lg-drop { background: rgba(47, 109, 246, 0.3); }
+.fd-lg-haz { background: rgba(229, 72, 77, 0.35); }
+.fd-lg-hum { background: rgba(185, 116, 0, 0.35); }
+.fd-board-hero-status { display: flex; align-items: center; gap: 12px; justify-content: center; }

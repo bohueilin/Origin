@@ -1,0 +1,197 @@
+/* DelegationChain — attenuated authority tree. Instrument-grade calm.
+   Scoped under .dc-root; reuses passport tokens (--accent/--good/--mono/etc.)
+   and defines fallbacks for any token not present in the parent scope. */
+.dc-root {
+  --dc-accent: var(--accent, #2f6df6);
+  --dc-good: var(--good, #12a567);
+  --dc-warn: var(--warn, #d98613);
+  --dc-bad: var(--bad, #e0483f);
+  --dc-ink: var(--text, #14171e);
+  --dc-soft: var(--text-soft, #515a67);
+  --dc-muted: var(--muted, #8b94a2);
+  --dc-line: var(--line, rgba(20, 23, 30, 0.10));
+  --dc-line-2: var(--line-2, rgba(20, 23, 30, 0.14));
+  --dc-panel: var(--panel, #ffffff);
+  --dc-panel-2: var(--panel-2, #f5f7f9);
+  --dc-bg-2: var(--bg-2, #f7f8fa);
+  --dc-mono: var(--mono, ui-monospace, 'SF Mono', Menlo, Consolas, monospace);
+  --dc-display: var(--display, 'Space Grotesk', system-ui, sans-serif);
+  --dc-good-bg: var(--good-bg, rgba(18, 165, 103, 0.10));
+  --dc-bad-bg: var(--bad-bg, rgba(224, 72, 63, 0.10));
+
+  position: relative;
+}
+
+/* ---- principle banner ---- */
+.dc-thesis {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 18px; padding: 11px 14px;
+  background: var(--dc-bg-2); border: 1px solid var(--dc-line);
+  border-radius: 12px;
+  font-size: 13px; color: var(--dc-soft); line-height: 1.5;
+}
+.dc-thesis b { color: var(--dc-ink); font-weight: 600; }
+.dc-thesis-mark {
+  flex-shrink: 0; width: 8px; height: 8px; border-radius: 2px;
+  background: var(--dc-accent);
+  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.14);
+}
+
+/* ---- the chain canvas: SVG attribution lines underneath, node rows on top ---- */
+.dc-canvas { position: relative; }
+.dc-wires {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0; overflow: visible;
+}
+.dc-wire {
+  fill: none; stroke: var(--dc-line-2);
+  stroke-width: 1.5; stroke-linecap: round;
+  transition: stroke 240ms ease, stroke-width 240ms ease, opacity 240ms ease;
+}
+.dc-wire-trace { stroke: var(--dc-accent); stroke-width: 2.25; opacity: 1; }
+.dc-wire-dim { opacity: 0.35; }
+
+/* depth columns laid out as a left-rail tree */
+.dc-levels { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 0; }
+
+/* a depth band */
+.dc-band { display: flex; flex-direction: column; gap: 12px; }
+.dc-band + .dc-band { margin-top: 26px; }
+.dc-band-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 700 10.5px var(--dc-display); letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--dc-muted); margin-bottom: 2px;
+}
+.dc-band-tag .dc-hop {
+  font-family: var(--dc-mono); font-weight: 700; font-size: 10px;
+  color: var(--dc-soft); background: var(--dc-panel-2);
+  border: 1px solid var(--dc-line); border-radius: 5px; padding: 1px 6px;
+}
+
+/* worker bands flow as a responsive grid */
+.dc-band-workers { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr)); gap: 12px; }
+
+/* ---- node card ---- */
+.dc-node {
+  position: relative; text-align: left; width: 100%;
+  background: var(--dc-panel); border: 1px solid var(--dc-line);
+  border-radius: 14px; padding: 14px 15px;
+  cursor: default; display: flex; flex-direction: column; gap: 10px;
+  transition: border-color 240ms ease, box-shadow 240ms ease, transform 200ms ease, opacity 240ms ease, filter 240ms ease;
+}
+button.dc-node { cursor: pointer; font: inherit; color: inherit; }
+.dc-node:focus-visible { outline: none; }
+.dc-node-root { background: linear-gradient(165deg, var(--dc-panel), var(--dc-bg-2)); border-color: var(--dc-line-2); }
+.dc-node-traced {
+  border-color: var(--dc-accent);
+  box-shadow: 0 0 0 1px var(--dc-accent), 0 14px 36px -18px rgba(47, 109, 246, 0.45);
+  transform: translateY(-1px);
+}
+.dc-node-dim { opacity: 0.5; filter: saturate(0.85); }
+
+.dc-node-head { display: flex; align-items: center; gap: 10px; }
+.dc-glyph {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 9px;
+  display: grid; place-items: center;
+  border: 1px solid var(--dc-line-2); background: var(--dc-panel-2);
+  color: var(--dc-soft); font: 800 11px var(--dc-display); letter-spacing: 0.02em;
+}
+.dc-node-root .dc-glyph {
+  background: linear-gradient(150deg, #7aa2ff, #2f6df6 65%);
+  border-color: transparent; color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(47, 109, 246, 0.6);
+}
+.dc-node-orch .dc-glyph { color: var(--dc-accent); border-color: rgba(47, 109, 246, 0.3); background: rgba(47, 109, 246, 0.08); }
+.dc-glyph-empty { color: var(--dc-muted); }
+
+.dc-node-id { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.dc-node-label { font: 700 14px var(--dc-display); color: var(--dc-ink); line-height: 1.2; }
+.dc-node-role { font-size: 11.5px; color: var(--dc-muted); line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ttl + count meta line */
+.dc-node-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dc-ttl {
+  font-family: var(--dc-mono); font-size: 11px; color: var(--dc-soft);
+  background: var(--dc-bg-2); border: 1px solid var(--dc-line);
+  border-radius: 6px; padding: 1px 7px;
+}
+.dc-capcount { font-family: var(--dc-mono); font-size: 10.5px; color: var(--dc-muted); }
+.dc-capcount b { color: var(--dc-soft); font-weight: 700; }
+.dc-attrib {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.02em;
+  color: var(--dc-good); background: var(--dc-good-bg);
+  border: 1px solid rgba(18, 165, 103, 0.28); border-radius: 999px; padding: 2px 8px;
+}
+.dc-attrib-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--dc-good); }
+
+/* ---- capability chips inside a node ---- */
+.dc-caps { display: flex; flex-wrap: wrap; gap: 5px; }
+.dc-cap {
+  font-family: var(--dc-mono); font-size: 10.5px; line-height: 1.4;
+  border-radius: 6px; padding: 2px 7px; border: 1px solid var(--dc-line);
+  transition: opacity 240ms ease, background 240ms ease, border-color 240ms ease;
+}
+/* held by this node + inherited from parent (the genuine subset) */
+.dc-cap-held { background: var(--dc-good-bg); border-color: rgba(18, 165, 103, 0.28); color: var(--good-ink, #0a7d52); }
+/* present in parent but dropped at this hop — shown faded to make narrowing visible */
+.dc-cap-dropped { background: transparent; border-color: var(--dc-line); color: var(--dc-muted); opacity: 0.6; text-decoration: line-through; text-decoration-thickness: 1px; }
+.dc-cap-none {
+  font-size: 11px; color: var(--dc-muted); font-style: italic;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.dc-cap-none-lock { font-size: 11px; }
+
+.dc-caps-foot { font-size: 10.5px; color: var(--dc-muted); margin-top: 1px; }
+.dc-caps-foot b { color: var(--dc-soft); font-weight: 700; }
+
+/* the empty-authority "contained" worker — injection pulled it in, attenuation gave it nothing */
+.dc-node-zero { border-style: dashed; }
+.dc-node-zero .dc-glyph { background: var(--dc-bad-bg); border-color: rgba(224, 72, 63, 0.3); color: var(--dc-bad); }
+
+/* ---- focus path callout ---- */
+.dc-callout {
+  margin-top: 16px; padding: 12px 15px;
+  background: rgba(47, 109, 246, 0.05); border: 1px solid rgba(47, 109, 246, 0.22);
+  border-radius: 12px; display: flex; align-items: center; gap: 11px;
+  animation: dc-rise 240ms ease both;
+}
+.dc-callout-path { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.dc-callout-hop {
+  font-family: var(--dc-mono); font-size: 11px; color: var(--dc-soft);
+  background: var(--dc-panel); border: 1px solid var(--dc-line-2); border-radius: 6px; padding: 2px 7px;
+}
+.dc-callout-hop-root { color: var(--dc-accent); border-color: rgba(47, 109, 246, 0.35); font-weight: 700; }
+.dc-callout-arrow { color: var(--dc-muted); font-size: 11px; }
+.dc-callout-text { font-size: 12.5px; color: var(--dc-soft); line-height: 1.45; }
+.dc-callout-text b { color: var(--dc-ink); font-weight: 600; }
+.dc-callout-text .dc-mono { font-family: var(--dc-mono); color: var(--dc-accent); font-weight: 700; }
+
+.dc-hint { margin-top: 12px; font-size: 11.5px; color: var(--dc-muted); }
+
+/* ---- empty state ---- */
+.dc-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 30px 16px; text-align: center; color: var(--dc-muted);
+}
+.dc-empty-mark {
+  width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+  border: 1px solid var(--dc-line-2); color: var(--dc-muted); font-size: 16px;
+}
+.dc-empty b { color: var(--dc-soft); font-weight: 600; font-size: 13.5px; }
+.dc-empty span { font-size: 12.5px; max-width: 320px; }
+
+@keyframes dc-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes dc-draw { from { stroke-dashoffset: var(--dc-len, 200); } to { stroke-dashoffset: 0; } }
+
+.dc-node { animation: dc-rise 240ms ease both; }
+
+@media (max-width: 900px) {
+  .dc-band-workers { grid-template-columns: 1fr; }
+  .dc-attrib { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dc-node, .dc-callout { animation: none; }
+  .dc-node-traced { transform: none; }
+}

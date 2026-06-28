@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "status": "accepted",
+  "bindings": {
+    ".agents/skills/**": {
+      "status": "accepted",
+      "actual": [".agents/skills/**"],
+      "evidence": "Plan 001 setup path: project agent skills (HUD + Modal); collision-free, owned by the grounding plan."
+    },
+    ".claude/skills/**": {
+      "status": "accepted",
+      "actual": [".claude/skills/**"],
+      "evidence": "Plan 001 setup path: Claude Code skill symlinks to .agents/skills; collision-free."
+    },
+    ".gitignore": {
+      "status": "accepted",
+      "actual": [".gitignore"],
+      "evidence": "Plan 001 setup path: repo ignore rules for venvs/caches/env files."
+    },
+    ".env.example": {
+      "status": "accepted",
+      "actual": [".env.example"],
+      "evidence": "Plan 001 setup path: committed env-var contract (no secrets)."
+    },
+    ".python-version": {
+      "status": "accepted",
+      "actual": [".python-version"],
+      "evidence": "Plan 001 setup path: pinned Python for uv."
+    },
+    "pyproject.toml": {
+      "status": "accepted",
+      "actual": ["pyproject.toml"],
+      "evidence": "Plan 001 setup path: uv project manifest for the planning/dev bootstrap."
+    },
+    "skills-lock.json": {
+      "status": "accepted",
+      "actual": ["skills-lock.json"],
+      "evidence": "Plan 001 setup path: skills lockfile."
+    },
+    "uv.lock": {
+      "status": "accepted",
+      "actual": ["uv.lock"],
+      "evidence": "Plan 001 setup path: resolved dependency lockfile."
+    },
+    "requirements/harden-v0.txt": {
+      "status": "accepted",
+      "actual": ["requirements/harden-v0.txt"],
+      "evidence": "Plan 001 setup path: harden-v0 support requirements mirror."
+    },
+    "scripts/bootstrap_external_deps.sh": {
+      "status": "accepted",
+      "actual": ["scripts/bootstrap_external_deps.sh"],
+      "evidence": "Plan 001 setup path: pinned external source checkout (harden-v0 + Terminal Wrench)."
+    },
+    "envs/mongodb-sales-aggregation-engine/**": {
+      "status": "accepted",
+      "actual": [
+        "envs/mongodb-sales-aggregation-engine/**"
+      ],
+      "evidence": "No later plan owns building the HUD task environment, yet a live env is required to produce a real reward-1 trace and grader identity. Scoped to Plan 001 as the single product-source exception; collision-free against all src/tests/fixtures/artifacts feature globs."
+    },
+    "artifacts/chronos/demo/**": {
+      "status": "accepted",
+      "actual": [
+        "artifacts/chronos/demo/**"
+      ],
+      "evidence": "No existing artifact convention is checked in; this proposed demo artifact folder is collision-free and scoped to Plan 006."
+    },
+    "artifacts/chronos/releases/**": {
+      "status": "accepted",
+      "actual": [
+        "artifacts/chronos/releases/**"
+      ],
+      "evidence": "No existing artifact convention is checked in; this proposed release artifact folder is collision-free and scoped to Plan 005."
+    },
+    "artifacts/chronos/research/**": {
+      "status": "accepted",
+      "actual": [
+        "artifacts/chronos/research/**"
+      ],
+      "evidence": "No existing artifact convention is checked in; this proposed research artifact folder is collision-free and scoped to Plan 007."
+    },
+    "fixtures/chronos/mongodb-sales-aggregation-engine/**": {
+      "status": "accepted",
+      "actual": [
+        "fixtures/chronos/mongodb-sales-aggregation-engine/**"
+      ],
+      "evidence": "No existing fixture convention is checked in; this path is reserved for the real MongoDB task fixture once provenance is available."
+    },
+    "fixtures/chronos/witnesses/**": {
+      "status": "accepted",
+      "actual": [
+        "fixtures/chronos/witnesses/**"
+      ],
+      "evidence": "No existing fixture convention is checked in; this proposed witness fixture folder is collision-free and scoped to Plan 003."
+    },
+    "scripts/chronos-demo*": {
+      "status": "accepted",
+      "actual": [
+        "scripts/chronos-demo*"
+      ],
+      "evidence": "No root scripts folder or demo command exists; this exact future script prefix is collision-free and scoped to Plan 006."
+    },
+    "src/chronos/controls/**": {
+      "status": "accepted",
+      "actual": [
+        "src/chronos/controls/**"
+      ],
+      "evidence": "No source package exists; the proposed feature folder is accepted as the future control-slice boundary for Plan 004."
+    },
+    "src/chronos/demo/**": {
+      "status": "accepted",
+      "actual": [
+        "src/chronos/demo/**"
+      ],
+      "evidence": "No source package exists; the proposed feature folder is accepted as the future demo-slice boundary for Plan 006."
+    },
+    "src/chronos/forkpoints/**": {
+      "status": "accepted",
+      "actual": [
+        "src/chronos/forkpoints/**"
+      ],
+      "evidence": "No source package exists; the proposed feature folder is accepted as the future ForkPoint-slice boundary for Plan 002."
+    },
+    "src/chronos/releases/**": {
+      "status": "accepted",
+      "actual": [
+        "src/chronos/releases/**"
+      ],
+      "evidence": "No source package exists; the proposed feature folder is accepted as the future release-slice boundary for Plan 005."
+    },
+    "src/chronos/research/**": {
+      "status": "accepted",
+      "actual": [
+        "src/chronos/research/**"
+      ],
+      "evidence": "No source package exists; the proposed feature folder is accepted as the future research-slice boundary for Plan 007."
+    },
+    "src/chronos/witnesses/**": {
+      "status": "accepted",
+      "actual": [
+        "src/chronos/witnesses/**"
+      ],
+      "evidence": "No source package exists; the proposed feature folder is accepted as the future Witness-slice boundary for Plan 003."
+    },
+    "tests/chronos/controls/**": {
+      "status": "accepted",
+      "actual": [
+        "tests/chronos/controls/**"
+      ],
+      "evidence": "No test tree exists; the proposed feature test folder is accepted for Plan 004."
+    },
+    "tests/chronos/demo/**": {
+      "status": "accepted",
+      "actual": [
+        "tests/chronos/demo/**"
+      ],
+      "evidence": "No test tree exists; the proposed feature test folder is accepted for Plan 006."
+    },
+    "tests/chronos/forkpoints/**": {
+      "status": "accepted",
+      "actual": [
+        "tests/chronos/forkpoints/**"
+      ],
+      "evidence": "No test tree exists; the proposed feature test folder is accepted for Plan 002."
+    },
+    "tests/chronos/releases/**": {
+      "status": "accepted",
+      "actual": [
+        "tests/chronos/releases/**"
+      ],
+      "evidence": "No test tree exists; the proposed feature test folder is accepted for Plan 005."
+    },
+    "tests/chronos/research/**": {
+      "status": "accepted",
+      "actual": [
+        "tests/chronos/research/**"
+      ],
+      "evidence": "No test tree exists; the proposed feature test folder is accepted for Plan 007."
+    },
+    "tests/chronos/witnesses/**": {
+      "status": "accepted",
+      "actual": [
+        "tests/chronos/witnesses/**"
+      ],
+      "evidence": "No test tree exists; the proposed feature test folder is accepted for Plan 003."
+    },
+    "src/chronos/qabench/**": {
+      "status": "accepted",
+      "actual": [
+        "src/chronos/qabench/**"
+      ],
+      "evidence": "No source package exists; the proposed feature folder is accepted as the future QA-classifier-benchmark slice boundary for Plan 008; collision-free against all other feature globs."
+    },
+    "tests/chronos/qabench/**": {
+      "status": "accepted",
+      "actual": [
+        "tests/chronos/qabench/**"
+      ],
+      "evidence": "No test tree exists; the proposed feature test folder is accepted for Plan 008."
+    },
+    "fixtures/chronos/qabench/**": {
+      "status": "accepted",
+      "actual": [
+        "fixtures/chronos/qabench/**"
+      ],
+      "evidence": "No existing fixture convention is checked in; this proposed folder holds the frozen 20-task selection and benchmark fixtures for Plan 008."
+    },
+    "artifacts/chronos/qabench/**": {
+      "status": "accepted",
+      "actual": [
+        "artifacts/chronos/qabench/**"
+      ],
+      "evidence": "No existing artifact convention is checked in; this proposed folder holds the sealed QA-vs-Chronos comparison report for Plan 008; collision-free against the demo/release/research artifact folders."
+    },
+    "envs/qabench/**": {
+      "status": "accepted",
+      "actual": [
+        "envs/qabench/**"
+      ],
+      "evidence": "The 20 freshly materialized Terminal Wrench task environments for Plan 008 live under a dedicated subtree, collision-free against the single Plan 001 envs/mongodb-sales-aggregation-engine/** env."
+    }
+  }
+}

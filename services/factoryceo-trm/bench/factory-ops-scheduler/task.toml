@@ -1,0 +1,42 @@
+schema_version = "1.1"
+artifacts = []
+
+[task]
+name = "pursuit/factory-ops-scheduler"
+description = "Given a high-mix manufacturing factory state (machines, operators, materials, jobs with routed operations, disruptions), produce a single executable ActionPlan that schedules every operation with zero hard constraint violations and reaches at least 60% of the oracle's verifier reward."
+keywords = ["scheduling", "operations-research", "planning", "constraint-satisfaction", "manufacturing", "agentic"]
+[[task.authors]]
+name = "Ajinkya Kiran Mulay"
+email = "ajinkyamulay123@gmail.com"
+
+[metadata]
+author_name = "Ajinkya Kiran Mulay"
+author_email = "ajinkyamulay123@gmail.com"
+difficulty = "hard"
+category = "operations-research"
+tags = ["scheduling", "constraint-satisfaction", "planning", "manufacturing", "verifiable"]
+estimated_duration_sec = 600.0
+expert_time_estimate_min = 30.0
+junior_time_estimate_min = 120.0
+
+[verifier]
+timeout_sec = 900.0
+
+[agent]
+timeout_sec = 1800.0
+
+[environment]
+build_timeout_sec = 600.0
+docker_image = "pursuit/factory-ops-scheduler:20260620"
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = false
+mcp_servers = []
+
+[verifier.env]
+
+[environment.env]
+
+[solution.env]

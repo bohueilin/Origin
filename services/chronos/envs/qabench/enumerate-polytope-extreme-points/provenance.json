@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+  "base_image_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+  "base_original": "skylensage-registry.cn-hangzhou.cr.aliyuncs.com/instances/1124:t-bench-python-3-13",
+  "base_rewritten": "true",
+  "build_context_digest": "c864b37c42cc9465e97991cdd2071e0c0e5ec93617fb7429415268fc0d3512c5",
+  "content_digest": "3f63d7541c441e3704ca23b59f5b9b8def292ad898faebc3a5fdaea75c5b5010",
+  "deployable": "true",
+  "dockerfile_digest": "0e3cb4fa3f7d901ca67dd4b9acc847b24b1b90c2df758033678508d84de3808c",
+  "grader_digest": "4fdcbb1ff5c1a4eb7b8480c9105534e337aa37e2c02c590018f4d2493c6234ff",
+  "model": "claude-opus-4.6",
+  "task_id": "enumerate-polytope-extreme-points",
+  "task_slug": "enumerate-polytope-extreme-points",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "f76cf46d4f8b42c7b456b3dee41df71370e1904a8ecbb1f383653172db2863e1",
+  "workdir": "/app"
+}

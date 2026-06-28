@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+space/site/
+distill/sft_pairs.jsonl
+
+.env
+distill/trm-student/
+results/episodes_train.jsonl
+results/episodes_eval.jsonl
+.venv-hud/
+results/episodes_qwen.jsonl
+
+# per-customer trained TRM checkpoints (runtime state)
+checkpoints/

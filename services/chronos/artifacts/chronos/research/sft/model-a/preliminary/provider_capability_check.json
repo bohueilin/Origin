@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "not_run",
+  "claim_guard": "Disposable private pipeline demonstration only. Labels are diff-based, lineage is incomplete, no adversarial held-out claim is possible, and this run cannot support Model A versus Model B or improvement claims.",
+  "provider": "fireworks",
+  "base_model": "accounts/fireworks/models/qwen3-4b",
+  "required_tunable": true,
+  "observed_tunable": "TBD",
+  "lora_rank": 8,
+  "epochs": 1,
+  "expected_cost": "TBD",
+  "expected_time": "TBD"
+}

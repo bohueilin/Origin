@@ -1,0 +1,23 @@
+{
+  "actionRange": [
+    1,
+    12
+  ],
+  "createdAt": "2026-06-21T01:57:47Z",
+  "cumulativeReward": 1.0,
+  "environmentVersion": "mongodb_sales_aggregation_engine_v1",
+  "forkPointId": "fp-826ba545cf30870e67d42ddb",
+  "forkReason": "accepted-live-reward1-source-trace",
+  "graderDigest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+  "historyHash": "431934b50d29acd8fe19e0c8b053bd099b6651524b957301814bf1744151b762",
+  "hudStepId": "completed-action:accepted-trace-rerun-before-scenario-evaluate",
+  "hudTraceId": "92b654c6-cdde-43cf-9096-3681df6df2e1",
+  "label": "QA ForkPoint · S0",
+  "schemaVersion": "1.0.0",
+  "snapshotDigest": "79fb6181adb209684af059999f7d886701338955048523632d10b10acd304156",
+  "snapshotId": "im-01KVKYBWZYVZSD79CX5P9SNPXR",
+  "snapshotMode": "filesystem",
+  "taskId": "implement_sales_analyzer",
+  "traceEvidence": "Accepted live reward-1 source trace; snapshot roundtrip verified (filesystem).",
+  "upToStep": 12
+}

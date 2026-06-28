@@ -1,0 +1,27 @@
+{
+  "blockers": [
+    {
+      "evidence_refs": [
+        "docs/plans/repo-map/INTERFACES.md",
+        "artifacts/chronos/demo/preflight-blockers/plan-006-publication-attempt.json"
+      ],
+      "reason": "Publication preflight failed closed with proof_mismatch.",
+      "type": "PUBLISH_TARGET"
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/006-demo-observability-and-publication.md",
+        "docs/plans/evidence/003/MANIFEST.json"
+      ],
+      "reason": "No Plan 006-owned noninteractive orchestration has launched a fresh full-budget Acceptance Demo Run on this branch.",
+      "type": "ACCEPTANCE_DEMO_ORCHESTRATION"
+    }
+  ],
+  "content_digest": "edc2924ee6fe242ff2bc63e7dfef37ab772d776ceac3b0ba71d605a987648dfa",
+  "observed_behavior": "Demo preflight consumed the merged Plan 005 evidence where available, then refused to claim an Acceptance Demo Run or publication without a fresh full-budget branch launch and a repository-bound publish target/binding.",
+  "publication_attempt_ref": "artifacts/chronos/demo/preflight-blockers/plan-006-publication-attempt.json",
+  "release_candidate_ref": "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json",
+  "release_proof_ref": "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+  "schema_version": 1,
+  "status": "blocked"
+}

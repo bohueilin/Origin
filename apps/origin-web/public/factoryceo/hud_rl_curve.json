@@ -1,0 +1,57 @@
+{
+  "model": "factoryceo-dispatch",
+  "steps": 5,
+  "tasks": 4,
+  "group": 4,
+  "lr": 1e-05,
+  "horizon_days": 5,
+  "n_jobs": 26,
+  "curve": [
+    {
+      "step": 0,
+      "reward": 0.9763,
+      "trained": false
+    },
+    {
+      "step": 1,
+      "reward": 0.9774,
+      "loss": null,
+      "n_runs": 16,
+      "trained": true
+    },
+    {
+      "step": 2,
+      "reward": 0.9789,
+      "loss": null,
+      "n_runs": 16,
+      "trained": true
+    },
+    {
+      "step": 3,
+      "reward": 0.9765,
+      "loss": null,
+      "n_runs": 16,
+      "trained": true
+    },
+    {
+      "step": 4,
+      "reward": 0.9789,
+      "loss": null,
+      "n_runs": 16,
+      "trained": true
+    },
+    {
+      "step": 5,
+      "reward": 0.9766,
+      "loss": null,
+      "n_runs": 16,
+      "trained": true
+    }
+  ],
+  "baseline_reward": 0.9763,
+  "final_reward": 0.9766,
+  "lift_vs_greedy_pct": -2.3,
+  "gain_over_baseline": 0.0003,
+  "reward_def": "banked profit of the agent's dispatch order / EDD-greedy profit (>1 beats greedy)",
+  "note": "feasibility guaranteed by the scheduler; reward is pure profit."
+}

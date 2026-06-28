@@ -1,0 +1,2446 @@
+{
+  "schema": "shiftbench-mapf-layouts-v1",
+  "source": "https://movingai.com/benchmarks/mapf",
+  "layouts": {
+    "mapf-warehouse-10-20-10-2-1": {
+      "id": "mapf-warehouse-10-20-10-2-1",
+      "map_file": "warehouse-10-20-10-2-1.map",
+      "title": "MAPF warehouse-10-20-10-2-1",
+      "source": "https://movingai.com/benchmarks/mapf/index.html",
+      "license": "MovingAI MAPF benchmark; verify upstream terms",
+      "plan_binding": "plan-0",
+      "file": "/factoryceo/floorplans/mapf-warehouse-10-20-10-2-1.png",
+      "layout": {
+        "docks": 2,
+        "aisles": 4,
+        "staging_lanes": 2,
+        "robots": 2,
+        "no_go_zones": 1
+      },
+      "geometry": {
+        "docks": 2,
+        "aisles": 4,
+        "staging_lanes": 2,
+        "robots": 2,
+        "no_go_zones": 1,
+        "walkable_tiles": 5699,
+        "rack_tiles": 4444,
+        "dimensions": {
+          "width": 161,
+          "height": 63
+        },
+        "rack_blocks": 2,
+        "corridor_rows": 21
+      },
+      "mapf_routes_sample": [
+        {
+          "n_agents": 23,
+          "start": {
+            "x": 69,
+            "y": 39
+          },
+          "goal": {
+            "x": 139,
+            "y": 11
+          },
+          "optimal_length": 95.65685425
+        },
+        {
+          "n_agents": 28,
+          "start": {
+            "x": 57,
+            "y": 7
+          },
+          "goal": {
+            "x": 147,
+            "y": 37
+          },
+          "optimal_length": 112.97056274
+        },
+        {
+          "n_agents": 17,
+          "start": {
+            "x": 120,
+            "y": 43
+          },
+          "goal": {
+            "x": 58,
+            "y": 36
+          },
+          "optimal_length": 69.0
+        },
+        {
+          "n_agents": 37,
+          "start": {
+            "x": 150,
+            "y": 39
+          },
+          "goal": {
+            "x": 9,
+            "y": 21
+          },
+          "optimal_length": 148.45584412
+        },
+        {
+          "n_agents": 2,
+          "start": {
+            "x": 143,
+            "y": 44
+          },
+          "goal": {
+            "x": 136,
+            "y": 41
+          },
+          "optimal_length": 8.24264069
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 34,
+            "y": 16
+          },
+          "goal": {
+            "x": 18,
+            "y": 27
+          },
+          "optimal_length": 22.89949493
+        },
+        {
+          "n_agents": 19,
+          "start": {
+            "x": 80,
+            "y": 54
+          },
+          "goal": {
+            "x": 153,
+            "y": 42
+          },
+          "optimal_length": 79.14213562
+        },
+        {
+          "n_agents": 42,
+          "start": {
+            "x": 24,
+            "y": 61
+          },
+          "goal": {
+            "x": 140,
+            "y": 3
+          },
+          "optimal_length": 170.48528137
+        },
+        {
+          "n_agents": 7,
+          "start": {
+            "x": 106,
+            "y": 49
+          },
+          "goal": {
+            "x": 80,
+            "y": 52
+          },
+          "optimal_length": 29.0
+        },
+        {
+          "n_agents": 24,
+          "start": {
+            "x": 81,
+            "y": 10
+          },
+          "goal": {
+            "x": 28,
+            "y": 55
+          },
+          "optimal_length": 98.0
+        },
+        {
+          "n_agents": 38,
+          "start": {
+            "x": 13,
+            "y": 49
+          },
+          "goal": {
+            "x": 143,
+            "y": 13
+          },
+          "optimal_length": 154.28427124
+        },
+        {
+          "n_agents": 39,
+          "start": {
+            "x": 5,
+            "y": 61
+          },
+          "goal": {
+            "x": 153,
+            "y": 38
+          },
+          "optimal_length": 157.52691193
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 141,
+            "y": 29
+          },
+          "goal": {
+            "x": 80,
+            "y": 19
+          },
+          "optimal_length": 67.48528137
+        },
+        {
+          "n_agents": 14,
+          "start": {
+            "x": 94,
+            "y": 4
+          },
+          "goal": {
+            "x": 81,
+            "y": 49
+          },
+          "optimal_length": 58.0
+        },
+        {
+          "n_agents": 39,
+          "start": {
+            "x": 14,
+            "y": 18
+          },
+          "goal": {
+            "x": 141,
+            "y": 59
+          },
+          "optimal_length": 158.04163055
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 79,
+            "y": 61
+          },
+          "goal": {
+            "x": 86,
+            "y": 1
+          },
+          "optimal_length": 67.0
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 141,
+            "y": 22
+          },
+          "goal": {
+            "x": 130,
+            "y": 37
+          },
+          "optimal_length": 22.48528137
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 16,
+            "y": 45
+          },
+          "goal": {
+            "x": 17,
+            "y": 24
+          },
+          "optimal_length": 21.41421356
+        },
+        {
+          "n_agents": 4,
+          "start": {
+            "x": 135,
+            "y": 15
+          },
+          "goal": {
+            "x": 150,
+            "y": 19
+          },
+          "optimal_length": 16.65685425
+        },
+        {
+          "n_agents": 15,
+          "start": {
+            "x": 42,
+            "y": 25
+          },
+          "goal": {
+            "x": 75,
+            "y": 52
+          },
+          "optimal_length": 60.0
+        },
+        {
+          "n_agents": 41,
+          "start": {
+            "x": 4,
+            "y": 45
+          },
+          "goal": {
+            "x": 143,
+            "y": 3
+          },
+          "optimal_length": 164.0121933
+        },
+        {
+          "n_agents": 17,
+          "start": {
+            "x": 107,
+            "y": 31
+          },
+          "goal": {
+            "x": 57,
+            "y": 10
+          },
+          "optimal_length": 71.0
+        },
+        {
+          "n_agents": 34,
+          "start": {
+            "x": 25,
+            "y": 39
+          },
+          "goal": {
+            "x": 159,
+            "y": 35
+          },
+          "optimal_length": 136.82842712
+        },
+        {
+          "n_agents": 21,
+          "start": {
+            "x": 84,
+            "y": 34
+          },
+          "goal": {
+            "x": 154,
+            "y": 60
+          },
+          "optimal_length": 84.87005768
+        },
+        {
+          "n_agents": 14,
+          "start": {
+            "x": 69,
+            "y": 15
+          },
+          "goal": {
+            "x": 117,
+            "y": 4
+          },
+          "optimal_length": 59.0
+        },
+        {
+          "n_agents": 20,
+          "start": {
+            "x": 25,
+            "y": 4
+          },
+          "goal": {
+            "x": 103,
+            "y": 1
+          },
+          "optimal_length": 81.0
+        },
+        {
+          "n_agents": 15,
+          "start": {
+            "x": 106,
+            "y": 19
+          },
+          "goal": {
+            "x": 58,
+            "y": 5
+          },
+          "optimal_length": 62.0
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 140,
+            "y": 48
+          },
+          "goal": {
+            "x": 119,
+            "y": 52
+          },
+          "optimal_length": 22.65685425
+        },
+        {
+          "n_agents": 26,
+          "start": {
+            "x": 132,
+            "y": 13
+          },
+          "goal": {
+            "x": 62,
+            "y": 49
+          },
+          "optimal_length": 106.0
+        },
+        {
+          "n_agents": 34,
+          "start": {
+            "x": 148,
+            "y": 14
+          },
+          "goal": {
+            "x": 11,
+            "y": 15
+          },
+          "optimal_length": 138.24264069
+        },
+        {
+          "n_agents": 15,
+          "start": {
+            "x": 70,
+            "y": 13
+          },
+          "goal": {
+            "x": 20,
+            "y": 29
+          },
+          "optimal_length": 63.07106781
+        },
+        {
+          "n_agents": 26,
+          "start": {
+            "x": 57,
+            "y": 16
+          },
+          "goal": {
+            "x": 158,
+            "y": 27
+          },
+          "optimal_length": 105.55634918
+        },
+        {
+          "n_agents": 38,
+          "start": {
+            "x": 130,
+            "y": 16
+          },
+          "goal": {
+            "x": 2,
+            "y": 56
+          },
+          "optimal_length": 154.52691193
+        },
+        {
+          "n_agents": 41,
+          "start": {
+            "x": 159,
+            "y": 29
+          },
+          "goal": {
+            "x": 4,
+            "y": 53
+          },
+          "optimal_length": 164.94112549
+        },
+        {
+          "n_agents": 38,
+          "start": {
+            "x": 145,
+            "y": 57
+          },
+          "goal": {
+            "x": 4,
+            "y": 30
+          },
+          "optimal_length": 152.18376617
+        },
+        {
+          "n_agents": 18,
+          "start": {
+            "x": 51,
+            "y": 34
+          },
+          "goal": {
+            "x": 106,
+            "y": 16
+          },
+          "optimal_length": 73.0
+        },
+        {
+          "n_agents": 12,
+          "start": {
+            "x": 157,
+            "y": 34
+          },
+          "goal": {
+            "x": 110,
+            "y": 40
+          },
+          "optimal_length": 49.48528137
+        },
+        {
+          "n_agents": 34,
+          "start": {
+            "x": 151,
+            "y": 18
+          },
+          "goal": {
+            "x": 36,
+            "y": 49
+          },
+          "optimal_length": 136.62741699
+        },
+        {
+          "n_agents": 2,
+          "start": {
+            "x": 23,
+            "y": 36
+          },
+          "goal": {
+            "x": 14,
+            "y": 43
+          },
+          "optimal_length": 11.89949493
+        },
+        {
+          "n_agents": 43,
+          "start": {
+            "x": 158,
+            "y": 41
+          },
+          "goal": {
+            "x": 1,
+            "y": 4
+          },
+          "optimal_length": 172.32590179
+        },
+        {
+          "n_agents": 27,
+          "start": {
+            "x": 39,
+            "y": 7
+          },
+          "goal": {
+            "x": 140,
+            "y": 20
+          },
+          "optimal_length": 111.07106781
+        },
+        {
+          "n_agents": 22,
+          "start": {
+            "x": 157,
+            "y": 41
+          },
+          "goal": {
+            "x": 72,
+            "y": 28
+          },
+          "optimal_length": 90.38477631
+        },
+        {
+          "n_agents": 37,
+          "start": {
+            "x": 146,
+            "y": 44
+          },
+          "goal": {
+            "x": 21,
+            "y": 10
+          },
+          "optimal_length": 150.21320343
+        },
+        {
+          "n_agents": 40,
+          "start": {
+            "x": 2,
+            "y": 1
+          },
+          "goal": {
+            "x": 155,
+            "y": 25
+          },
+          "optimal_length": 162.94112549
+        },
+        {
+          "n_agents": 29,
+          "start": {
+            "x": 124,
+            "y": 46
+          },
+          "goal": {
+            "x": 16,
+            "y": 31
+          },
+          "optimal_length": 117.72792206
+        },
+        {
+          "n_agents": 32,
+          "start": {
+            "x": 132,
+            "y": 25
+          },
+          "goal": {
+            "x": 24,
+            "y": 48
+          },
+          "optimal_length": 130.41421356
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 105,
+            "y": 25
+          },
+          "goal": {
+            "x": 59,
+            "y": 43
+          },
+          "optimal_length": 64.0
+        },
+        {
+          "n_agents": 13,
+          "start": {
+            "x": 21,
+            "y": 2
+          },
+          "goal": {
+            "x": 55,
+            "y": 25
+          },
+          "optimal_length": 54.65685425
+        }
+      ],
+      "n_routes_sample": 48
+    },
+    "mapf-warehouse-10-20-10-2-2": {
+      "id": "mapf-warehouse-10-20-10-2-2",
+      "map_file": "warehouse-10-20-10-2-2.map",
+      "title": "MAPF warehouse-10-20-10-2-2",
+      "source": "https://movingai.com/benchmarks/mapf/index.html",
+      "license": "MovingAI MAPF benchmark; verify upstream terms",
+      "plan_binding": "plan-1",
+      "file": "/factoryceo/floorplans/mapf-warehouse-10-20-10-2-2.png",
+      "layout": {
+        "docks": 2,
+        "aisles": 4,
+        "staging_lanes": 2,
+        "robots": 2,
+        "no_go_zones": 1
+      },
+      "geometry": {
+        "docks": 2,
+        "aisles": 4,
+        "staging_lanes": 2,
+        "robots": 2,
+        "no_go_zones": 1,
+        "walkable_tiles": 9776,
+        "rack_tiles": 4504,
+        "dimensions": {
+          "width": 170,
+          "height": 84
+        },
+        "rack_blocks": 2,
+        "corridor_rows": 42
+      },
+      "mapf_routes_sample": [
+        {
+          "n_agents": 48,
+          "start": {
+            "x": 4,
+            "y": 3
+          },
+          "goal": {
+            "x": 165,
+            "y": 66
+          },
+          "optimal_length": 193.53910522
+        },
+        {
+          "n_agents": 23,
+          "start": {
+            "x": 168,
+            "y": 6
+          },
+          "goal": {
+            "x": 120,
+            "y": 68
+          },
+          "optimal_length": 93.59797974
+        },
+        {
+          "n_agents": 28,
+          "start": {
+            "x": 106,
+            "y": 69
+          },
+          "goal": {
+            "x": 13,
+            "y": 35
+          },
+          "optimal_length": 114.11269836
+        },
+        {
+          "n_agents": 17,
+          "start": {
+            "x": 25,
+            "y": 34
+          },
+          "goal": {
+            "x": 72,
+            "y": 61
+          },
+          "optimal_length": 69.89949493
+        },
+        {
+          "n_agents": 37,
+          "start": {
+            "x": 150,
+            "y": 21
+          },
+          "goal": {
+            "x": 6,
+            "y": 10
+          },
+          "optimal_length": 148.55634918
+        },
+        {
+          "n_agents": 48,
+          "start": {
+            "x": 5,
+            "y": 12
+          },
+          "goal": {
+            "x": 160,
+            "y": 82
+          },
+          "optimal_length": 193.95331879
+        },
+        {
+          "n_agents": 46,
+          "start": {
+            "x": 29,
+            "y": 1
+          },
+          "goal": {
+            "x": 161,
+            "y": 76
+          },
+          "optimal_length": 185.91168823
+        },
+        {
+          "n_agents": 45,
+          "start": {
+            "x": 162,
+            "y": 75
+          },
+          "goal": {
+            "x": 15,
+            "y": 16
+          },
+          "optimal_length": 180.81118317
+        },
+        {
+          "n_agents": 2,
+          "start": {
+            "x": 13,
+            "y": 5
+          },
+          "goal": {
+            "x": 5,
+            "y": 13
+          },
+          "optimal_length": 11.3137085
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 112,
+            "y": 26
+          },
+          "goal": {
+            "x": 99,
+            "y": 38
+          },
+          "optimal_length": 23.82842712
+        },
+        {
+          "n_agents": 47,
+          "start": {
+            "x": 168,
+            "y": 10
+          },
+          "goal": {
+            "x": 7,
+            "y": 69
+          },
+          "optimal_length": 190.7106781
+        },
+        {
+          "n_agents": 19,
+          "start": {
+            "x": 63,
+            "y": 34
+          },
+          "goal": {
+            "x": 137,
+            "y": 41
+          },
+          "optimal_length": 79.24264069
+        },
+        {
+          "n_agents": 42,
+          "start": {
+            "x": 19,
+            "y": 76
+          },
+          "goal": {
+            "x": 139,
+            "y": 13
+          },
+          "optimal_length": 168.35533905
+        },
+        {
+          "n_agents": 7,
+          "start": {
+            "x": 61,
+            "y": 11
+          },
+          "goal": {
+            "x": 34,
+            "y": 17
+          },
+          "optimal_length": 31.24264069
+        },
+        {
+          "n_agents": 24,
+          "start": {
+            "x": 120,
+            "y": 8
+          },
+          "goal": {
+            "x": 23,
+            "y": 7
+          },
+          "optimal_length": 98.82842712
+        },
+        {
+          "n_agents": 38,
+          "start": {
+            "x": 6,
+            "y": 1
+          },
+          "goal": {
+            "x": 139,
+            "y": 37
+          },
+          "optimal_length": 153.18376617
+        },
+        {
+          "n_agents": 39,
+          "start": {
+            "x": 162,
+            "y": 9
+          },
+          "goal": {
+            "x": 22,
+            "y": 40
+          },
+          "optimal_length": 156.35533905
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 11,
+            "y": 74
+          },
+          "goal": {
+            "x": 55,
+            "y": 42
+          },
+          "optimal_length": 65.45584412
+        },
+        {
+          "n_agents": 14,
+          "start": {
+            "x": 145,
+            "y": 19
+          },
+          "goal": {
+            "x": 97,
+            "y": 7
+          },
+          "optimal_length": 56.48528137
+        },
+        {
+          "n_agents": 39,
+          "start": {
+            "x": 3,
+            "y": 62
+          },
+          "goal": {
+            "x": 157,
+            "y": 57
+          },
+          "optimal_length": 156.07106781
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 96,
+            "y": 16
+          },
+          "goal": {
+            "x": 119,
+            "y": 61
+          },
+          "optimal_length": 66.24264069
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 71,
+            "y": 74
+          },
+          "goal": {
+            "x": 56,
+            "y": 81
+          },
+          "optimal_length": 21.41421356
+        },
+        {
+          "n_agents": 47,
+          "start": {
+            "x": 10,
+            "y": 69
+          },
+          "goal": {
+            "x": 165,
+            "y": 6
+          },
+          "optimal_length": 189.29646454
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 20,
+            "y": 64
+          },
+          "goal": {
+            "x": 7,
+            "y": 48
+          },
+          "optimal_length": 21.38477631
+        },
+        {
+          "n_agents": 4,
+          "start": {
+            "x": 16,
+            "y": 14
+          },
+          "goal": {
+            "x": 1,
+            "y": 3
+          },
+          "optimal_length": 19.55634918
+        },
+        {
+          "n_agents": 15,
+          "start": {
+            "x": 16,
+            "y": 47
+          },
+          "goal": {
+            "x": 53,
+            "y": 13
+          },
+          "optimal_length": 62.79898987
+        },
+        {
+          "n_agents": 41,
+          "start": {
+            "x": 26,
+            "y": 34
+          },
+          "goal": {
+            "x": 167,
+            "y": 77
+          },
+          "optimal_length": 164.66904755
+        },
+        {
+          "n_agents": 17,
+          "start": {
+            "x": 59,
+            "y": 34
+          },
+          "goal": {
+            "x": 7,
+            "y": 2
+          },
+          "optimal_length": 70.52691193
+        },
+        {
+          "n_agents": 34,
+          "start": {
+            "x": 156,
+            "y": 34
+          },
+          "goal": {
+            "x": 26,
+            "y": 17
+          },
+          "optimal_length": 138.21320343
+        },
+        {
+          "n_agents": 21,
+          "start": {
+            "x": 33,
+            "y": 77
+          },
+          "goal": {
+            "x": 77,
+            "y": 29
+          },
+          "optimal_length": 87.3137085
+        },
+        {
+          "n_agents": 14,
+          "start": {
+            "x": 31,
+            "y": 50
+          },
+          "goal": {
+            "x": 74,
+            "y": 29
+          },
+          "optimal_length": 58.72792206
+        },
+        {
+          "n_agents": 20,
+          "start": {
+            "x": 52,
+            "y": 50
+          },
+          "goal": {
+            "x": 129,
+            "y": 42
+          },
+          "optimal_length": 82.65685425
+        },
+        {
+          "n_agents": 15,
+          "start": {
+            "x": 23,
+            "y": 45
+          },
+          "goal": {
+            "x": 57,
+            "y": 14
+          },
+          "optimal_length": 61.48528137
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 81,
+            "y": 57
+          },
+          "goal": {
+            "x": 73,
+            "y": 70
+          },
+          "optimal_length": 20.41421356
+        },
+        {
+          "n_agents": 26,
+          "start": {
+            "x": 16,
+            "y": 71
+          },
+          "goal": {
+            "x": 81,
+            "y": 21
+          },
+          "optimal_length": 104.45584412
+        },
+        {
+          "n_agents": 34,
+          "start": {
+            "x": 167,
+            "y": 23
+          },
+          "goal": {
+            "x": 60,
+            "y": 74
+          },
+          "optimal_length": 136.91168823
+        },
+        {
+          "n_agents": 15,
+          "start": {
+            "x": 152,
+            "y": 28
+          },
+          "goal": {
+            "x": 109,
+            "y": 54
+          },
+          "optimal_length": 61.38477631
+        },
+        {
+          "n_agents": 26,
+          "start": {
+            "x": 84,
+            "y": 48
+          },
+          "goal": {
+            "x": 2,
+            "y": 5
+          },
+          "optimal_length": 106.25483398
+        },
+        {
+          "n_agents": 38,
+          "start": {
+            "x": 1,
+            "y": 21
+          },
+          "goal": {
+            "x": 137,
+            "y": 58
+          },
+          "optimal_length": 154.84062042
+        },
+        {
+          "n_agents": 41,
+          "start": {
+            "x": 3,
+            "y": 9
+          },
+          "goal": {
+            "x": 165,
+            "y": 20
+          },
+          "optimal_length": 166.55634918
+        },
+        {
+          "n_agents": 38,
+          "start": {
+            "x": 13,
+            "y": 18
+          },
+          "goal": {
+            "x": 149,
+            "y": 52
+          },
+          "optimal_length": 155.35533905
+        },
+        {
+          "n_agents": 18,
+          "start": {
+            "x": 110,
+            "y": 34
+          },
+          "goal": {
+            "x": 40,
+            "y": 41
+          },
+          "optimal_length": 75.24264069
+        },
+        {
+          "n_agents": 12,
+          "start": {
+            "x": 14,
+            "y": 59
+          },
+          "goal": {
+            "x": 58,
+            "y": 70
+          },
+          "optimal_length": 48.55634918
+        },
+        {
+          "n_agents": 34,
+          "start": {
+            "x": 20,
+            "y": 34
+          },
+          "goal": {
+            "x": 140,
+            "y": 5
+          },
+          "optimal_length": 139.04163055
+        },
+        {
+          "n_agents": 2,
+          "start": {
+            "x": 13,
+            "y": 45
+          },
+          "goal": {
+            "x": 22,
+            "y": 43
+          },
+          "optimal_length": 9.82842712
+        },
+        {
+          "n_agents": 43,
+          "start": {
+            "x": 166,
+            "y": 3
+          },
+          "goal": {
+            "x": 25,
+            "y": 57
+          },
+          "optimal_length": 172.74011536
+        },
+        {
+          "n_agents": 27,
+          "start": {
+            "x": 64,
+            "y": 10
+          },
+          "goal": {
+            "x": 122,
+            "y": 66
+          },
+          "optimal_length": 108.14213562
+        },
+        {
+          "n_agents": 22,
+          "start": {
+            "x": 120,
+            "y": 40
+          },
+          "goal": {
+            "x": 60,
+            "y": 4
+          },
+          "optimal_length": 90.14213562
+        }
+      ],
+      "n_routes_sample": 48
+    },
+    "mapf-warehouse-20-40-10-2-1": {
+      "id": "mapf-warehouse-20-40-10-2-1",
+      "map_file": "warehouse-20-40-10-2-1.map",
+      "title": "MAPF warehouse-20-40-10-2-1",
+      "source": "https://movingai.com/benchmarks/mapf/index.html",
+      "license": "MovingAI MAPF benchmark; verify upstream terms",
+      "plan_binding": "plan-2",
+      "file": "/factoryceo/floorplans/mapf-warehouse-20-40-10-2-1.png",
+      "layout": {
+        "docks": 2,
+        "aisles": 4,
+        "staging_lanes": 2,
+        "robots": 2,
+        "no_go_zones": 1
+      },
+      "geometry": {
+        "docks": 2,
+        "aisles": 4,
+        "staging_lanes": 2,
+        "robots": 2,
+        "no_go_zones": 1,
+        "walkable_tiles": 22599,
+        "rack_tiles": 16884,
+        "dimensions": {
+          "width": 321,
+          "height": 123
+        },
+        "rack_blocks": 2,
+        "corridor_rows": 41
+      },
+      "mapf_routes_sample": [
+        {
+          "n_agents": 48,
+          "start": {
+            "x": 164,
+            "y": 94
+          },
+          "goal": {
+            "x": 283,
+            "y": 12
+          },
+          "optimal_length": 193.38477631
+        },
+        {
+          "n_agents": 23,
+          "start": {
+            "x": 280,
+            "y": 49
+          },
+          "goal": {
+            "x": 198,
+            "y": 31
+          },
+          "optimal_length": 94.14213562
+        },
+        {
+          "n_agents": 28,
+          "start": {
+            "x": 316,
+            "y": 115
+          },
+          "goal": {
+            "x": 217,
+            "y": 82
+          },
+          "optimal_length": 112.66904755
+        },
+        {
+          "n_agents": 17,
+          "start": {
+            "x": 216,
+            "y": 4
+          },
+          "goal": {
+            "x": 233,
+            "y": 58
+          },
+          "optimal_length": 71.0
+        },
+        {
+          "n_agents": 77,
+          "start": {
+            "x": 3,
+            "y": 95
+          },
+          "goal": {
+            "x": 312,
+            "y": 91
+          },
+          "optimal_length": 310.65685425
+        },
+        {
+          "n_agents": 37,
+          "start": {
+            "x": 235,
+            "y": 67
+          },
+          "goal": {
+            "x": 143,
+            "y": 10
+          },
+          "optimal_length": 149.0
+        },
+        {
+          "n_agents": 84,
+          "start": {
+            "x": 287,
+            "y": 108
+          },
+          "goal": {
+            "x": 43,
+            "y": 1
+          },
+          "optimal_length": 336.94112549
+        },
+        {
+          "n_agents": 48,
+          "start": {
+            "x": 150,
+            "y": 121
+          },
+          "goal": {
+            "x": 39,
+            "y": 32
+          },
+          "optimal_length": 193.55634918
+        },
+        {
+          "n_agents": 46,
+          "start": {
+            "x": 217,
+            "y": 91
+          },
+          "goal": {
+            "x": 54,
+            "y": 115
+          },
+          "optimal_length": 187.0
+        },
+        {
+          "n_agents": 79,
+          "start": {
+            "x": 275,
+            "y": 98
+          },
+          "goal": {
+            "x": 10,
+            "y": 20
+          },
+          "optimal_length": 316.63961029
+        },
+        {
+          "n_agents": 62,
+          "start": {
+            "x": 71,
+            "y": 88
+          },
+          "goal": {
+            "x": 252,
+            "y": 19
+          },
+          "optimal_length": 250.0
+        },
+        {
+          "n_agents": 66,
+          "start": {
+            "x": 1,
+            "y": 75
+          },
+          "goal": {
+            "x": 263,
+            "y": 70
+          },
+          "optimal_length": 264.07106781
+        },
+        {
+          "n_agents": 45,
+          "start": {
+            "x": 19,
+            "y": 119
+          },
+          "goal": {
+            "x": 116,
+            "y": 15
+          },
+          "optimal_length": 182.84062042
+        },
+        {
+          "n_agents": 75,
+          "start": {
+            "x": 19,
+            "y": 65
+          },
+          "goal": {
+            "x": 310,
+            "y": 87
+          },
+          "optimal_length": 300.11269836
+        },
+        {
+          "n_agents": 2,
+          "start": {
+            "x": 284,
+            "y": 61
+          },
+          "goal": {
+            "x": 293,
+            "y": 54
+          },
+          "optimal_length": 11.89949493
+        },
+        {
+          "n_agents": 73,
+          "start": {
+            "x": 297,
+            "y": 121
+          },
+          "goal": {
+            "x": 38,
+            "y": 64
+          },
+          "optimal_length": 293.15432892
+        },
+        {
+          "n_agents": 56,
+          "start": {
+            "x": 86,
+            "y": 103
+          },
+          "goal": {
+            "x": 220,
+            "y": 10
+          },
+          "optimal_length": 227.0
+        },
+        {
+          "n_agents": 62,
+          "start": {
+            "x": 290,
+            "y": 109
+          },
+          "goal": {
+            "x": 45,
+            "y": 119
+          },
+          "optimal_length": 249.14213562
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 12,
+            "y": 90
+          },
+          "goal": {
+            "x": 28,
+            "y": 103
+          },
+          "optimal_length": 21.38477631
+        },
+        {
+          "n_agents": 77,
+          "start": {
+            "x": 295,
+            "y": 69
+          },
+          "goal": {
+            "x": 9,
+            "y": 10
+          },
+          "optimal_length": 310.43860016
+        },
+        {
+          "n_agents": 88,
+          "start": {
+            "x": 314,
+            "y": 1
+          },
+          "goal": {
+            "x": 36,
+            "y": 109
+          },
+          "optimal_length": 352.0243866
+        },
+        {
+          "n_agents": 47,
+          "start": {
+            "x": 182,
+            "y": 18
+          },
+          "goal": {
+            "x": 300,
+            "y": 108
+          },
+          "optimal_length": 190.42640686
+        },
+        {
+          "n_agents": 54,
+          "start": {
+            "x": 285,
+            "y": 22
+          },
+          "goal": {
+            "x": 78,
+            "y": 4
+          },
+          "optimal_length": 216.21320343
+        },
+        {
+          "n_agents": 68,
+          "start": {
+            "x": 317,
+            "y": 115
+          },
+          "goal": {
+            "x": 45,
+            "y": 107
+          },
+          "optimal_length": 275.3137085
+        },
+        {
+          "n_agents": 19,
+          "start": {
+            "x": 65,
+            "y": 115
+          },
+          "goal": {
+            "x": 83,
+            "y": 54
+          },
+          "optimal_length": 79.0
+        },
+        {
+          "n_agents": 68,
+          "start": {
+            "x": 36,
+            "y": 91
+          },
+          "goal": {
+            "x": 306,
+            "y": 77
+          },
+          "optimal_length": 275.79898987
+        },
+        {
+          "n_agents": 42,
+          "start": {
+            "x": 190,
+            "y": 4
+          },
+          "goal": {
+            "x": 29,
+            "y": 25
+          },
+          "optimal_length": 169.6984848
+        },
+        {
+          "n_agents": 83,
+          "start": {
+            "x": 31,
+            "y": 94
+          },
+          "goal": {
+            "x": 319,
+            "y": 9
+          },
+          "optimal_length": 333.16652222
+        },
+        {
+          "n_agents": 7,
+          "start": {
+            "x": 299,
+            "y": 101
+          },
+          "goal": {
+            "x": 270,
+            "y": 95
+          },
+          "optimal_length": 31.48528137
+        },
+        {
+          "n_agents": 24,
+          "start": {
+            "x": 83,
+            "y": 57
+          },
+          "goal": {
+            "x": 30,
+            "y": 112
+          },
+          "optimal_length": 96.28427124
+        },
+        {
+          "n_agents": 78,
+          "start": {
+            "x": 319,
+            "y": 81
+          },
+          "goal": {
+            "x": 50,
+            "y": 8
+          },
+          "optimal_length": 313.29646454
+        },
+        {
+          "n_agents": 77,
+          "start": {
+            "x": 37,
+            "y": 88
+          },
+          "goal": {
+            "x": 282,
+            "y": 10
+          },
+          "optimal_length": 308.35533905
+        },
+        {
+          "n_agents": 85,
+          "start": {
+            "x": 21,
+            "y": 9
+          },
+          "goal": {
+            "x": 304,
+            "y": 104
+          },
+          "optimal_length": 341.09545441
+        },
+        {
+          "n_agents": 55,
+          "start": {
+            "x": 176,
+            "y": 109
+          },
+          "goal": {
+            "x": 64,
+            "y": 1
+          },
+          "optimal_length": 220.0
+        },
+        {
+          "n_agents": 38,
+          "start": {
+            "x": 138,
+            "y": 13
+          },
+          "goal": {
+            "x": 24,
+            "y": 67
+          },
+          "optimal_length": 152.76955261
+        },
+        {
+          "n_agents": 69,
+          "start": {
+            "x": 292,
+            "y": 67
+          },
+          "goal": {
+            "x": 31,
+            "y": 107
+          },
+          "optimal_length": 277.56854248
+        },
+        {
+          "n_agents": 39,
+          "start": {
+            "x": 23,
+            "y": 42
+          },
+          "goal": {
+            "x": 177,
+            "y": 34
+          },
+          "optimal_length": 157.3137085
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 25,
+            "y": 18
+          },
+          "goal": {
+            "x": 20,
+            "y": 81
+          },
+          "optimal_length": 65.07106781
+        },
+        {
+          "n_agents": 14,
+          "start": {
+            "x": 18,
+            "y": 25
+          },
+          "goal": {
+            "x": 36,
+            "y": 75
+          },
+          "optimal_length": 57.45584412
+        },
+        {
+          "n_agents": 39,
+          "start": {
+            "x": 211,
+            "y": 43
+          },
+          "goal": {
+            "x": 86,
+            "y": 76
+          },
+          "optimal_length": 158.0
+        },
+        {
+          "n_agents": 70,
+          "start": {
+            "x": 94,
+            "y": 1
+          },
+          "goal": {
+            "x": 307,
+            "y": 92
+          },
+          "optimal_length": 282.32590179
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 67,
+            "y": 13
+          },
+          "goal": {
+            "x": 6,
+            "y": 23
+          },
+          "optimal_length": 65.14213562
+        },
+        {
+          "n_agents": 71,
+          "start": {
+            "x": 310,
+            "y": 87
+          },
+          "goal": {
+            "x": 46,
+            "y": 40
+          },
+          "optimal_length": 285.22539673
+        },
+        {
+          "n_agents": 71,
+          "start": {
+            "x": 299,
+            "y": 7
+          },
+          "goal": {
+            "x": 27,
+            "y": 41
+          },
+          "optimal_length": 286.08326111
+        },
+        {
+          "n_agents": 57,
+          "start": {
+            "x": 156,
+            "y": 4
+          },
+          "goal": {
+            "x": 295,
+            "y": 110
+          },
+          "optimal_length": 230.35533905
+        },
+        {
+          "n_agents": 62,
+          "start": {
+            "x": 277,
+            "y": 110
+          },
+          "goal": {
+            "x": 126,
+            "y": 7
+          },
+          "optimal_length": 249.89949493
+        },
+        {
+          "n_agents": 85,
+          "start": {
+            "x": 293,
+            "y": 10
+          },
+          "goal": {
+            "x": 27,
+            "y": 111
+          },
+          "optimal_length": 340.05382385
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 297,
+            "y": 60
+          },
+          "goal": {
+            "x": 293,
+            "y": 40
+          },
+          "optimal_length": 21.65685425
+        }
+      ],
+      "n_routes_sample": 48
+    },
+    "mapf-warehouse-20-40-10-2-2": {
+      "id": "mapf-warehouse-20-40-10-2-2",
+      "map_file": "warehouse-20-40-10-2-2.map",
+      "title": "MAPF warehouse-20-40-10-2-2",
+      "source": "https://movingai.com/benchmarks/mapf/index.html",
+      "license": "MovingAI MAPF benchmark; verify upstream terms",
+      "plan_binding": "plan-3",
+      "file": "/factoryceo/floorplans/mapf-warehouse-20-40-10-2-2.png",
+      "layout": {
+        "docks": 2,
+        "aisles": 4,
+        "staging_lanes": 2,
+        "robots": 2,
+        "no_go_zones": 1
+      },
+      "geometry": {
+        "docks": 2,
+        "aisles": 4,
+        "staging_lanes": 2,
+        "robots": 2,
+        "no_go_zones": 1,
+        "walkable_tiles": 38756,
+        "rack_tiles": 17004,
+        "dimensions": {
+          "width": 340,
+          "height": 164
+        },
+        "rack_blocks": 2,
+        "corridor_rows": 82
+      },
+      "mapf_routes_sample": [
+        {
+          "n_agents": 48,
+          "start": {
+            "x": 323,
+            "y": 114
+          },
+          "goal": {
+            "x": 184,
+            "y": 29
+          },
+          "optimal_length": 194.12489166
+        },
+        {
+          "n_agents": 97,
+          "start": {
+            "x": 321,
+            "y": 4
+          },
+          "goal": {
+            "x": 23,
+            "y": 152
+          },
+          "optimal_length": 388.59292908
+        },
+        {
+          "n_agents": 23,
+          "start": {
+            "x": 35,
+            "y": 46
+          },
+          "goal": {
+            "x": 126,
+            "y": 41
+          },
+          "optimal_length": 93.07106781
+        },
+        {
+          "n_agents": 28,
+          "start": {
+            "x": 74,
+            "y": 105
+          },
+          "goal": {
+            "x": 134,
+            "y": 44
+          },
+          "optimal_length": 115.14213562
+        },
+        {
+          "n_agents": 17,
+          "start": {
+            "x": 242,
+            "y": 8
+          },
+          "goal": {
+            "x": 272,
+            "y": 50
+          },
+          "optimal_length": 69.07106781
+        },
+        {
+          "n_agents": 77,
+          "start": {
+            "x": 3,
+            "y": 155
+          },
+          "goal": {
+            "x": 241,
+            "y": 39
+          },
+          "optimal_length": 308.30865784
+        },
+        {
+          "n_agents": 37,
+          "start": {
+            "x": 75,
+            "y": 129
+          },
+          "goal": {
+            "x": 158,
+            "y": 53
+          },
+          "optimal_length": 151.38477631
+        },
+        {
+          "n_agents": 84,
+          "start": {
+            "x": 18,
+            "y": 108
+          },
+          "goal": {
+            "x": 333,
+            "y": 54
+          },
+          "optimal_length": 337.36753235
+        },
+        {
+          "n_agents": 48,
+          "start": {
+            "x": 104,
+            "y": 29
+          },
+          "goal": {
+            "x": 291,
+            "y": 39
+          },
+          "optimal_length": 193.48528137
+        },
+        {
+          "n_agents": 46,
+          "start": {
+            "x": 160,
+            "y": 146
+          },
+          "goal": {
+            "x": 322,
+            "y": 96
+          },
+          "optimal_length": 187.3969696
+        },
+        {
+          "n_agents": 79,
+          "start": {
+            "x": 217,
+            "y": 9
+          },
+          "goal": {
+            "x": 5,
+            "y": 159
+          },
+          "optimal_length": 319.82337646
+        },
+        {
+          "n_agents": 62,
+          "start": {
+            "x": 301,
+            "y": 15
+          },
+          "goal": {
+            "x": 68,
+            "y": 41
+          },
+          "optimal_length": 248.45584412
+        },
+        {
+          "n_agents": 66,
+          "start": {
+            "x": 42,
+            "y": 99
+          },
+          "goal": {
+            "x": 302,
+            "y": 88
+          },
+          "optimal_length": 264.55634918
+        },
+        {
+          "n_agents": 45,
+          "start": {
+            "x": 328,
+            "y": 149
+          },
+          "goal": {
+            "x": 215,
+            "y": 50
+          },
+          "optimal_length": 182.12489166
+        },
+        {
+          "n_agents": 75,
+          "start": {
+            "x": 52,
+            "y": 86
+          },
+          "goal": {
+            "x": 322,
+            "y": 30
+          },
+          "optimal_length": 300.22539673
+        },
+        {
+          "n_agents": 2,
+          "start": {
+            "x": 313,
+            "y": 132
+          },
+          "goal": {
+            "x": 322,
+            "y": 126
+          },
+          "optimal_length": 11.48528137
+        },
+        {
+          "n_agents": 73,
+          "start": {
+            "x": 311,
+            "y": 108
+          },
+          "goal": {
+            "x": 20,
+            "y": 112
+          },
+          "optimal_length": 292.65685425
+        },
+        {
+          "n_agents": 56,
+          "start": {
+            "x": 64,
+            "y": 78
+          },
+          "goal": {
+            "x": 248,
+            "y": 137
+          },
+          "optimal_length": 226.0121933
+        },
+        {
+          "n_agents": 62,
+          "start": {
+            "x": 36,
+            "y": 107
+          },
+          "goal": {
+            "x": 282,
+            "y": 114
+          },
+          "optimal_length": 248.89949493
+        },
+        {
+          "n_agents": 5,
+          "start": {
+            "x": 157,
+            "y": 123
+          },
+          "goal": {
+            "x": 176,
+            "y": 117
+          },
+          "optimal_length": 22.65685425
+        },
+        {
+          "n_agents": 77,
+          "start": {
+            "x": 284,
+            "y": 82
+          },
+          "goal": {
+            "x": 7,
+            "y": 19
+          },
+          "optimal_length": 308.95331879
+        },
+        {
+          "n_agents": 92,
+          "start": {
+            "x": 6,
+            "y": 1
+          },
+          "goal": {
+            "x": 338,
+            "y": 89
+          },
+          "optimal_length": 368.45079346
+        },
+        {
+          "n_agents": 88,
+          "start": {
+            "x": 81,
+            "y": 5
+          },
+          "goal": {
+            "x": 311,
+            "y": 162
+          },
+          "optimal_length": 353.61017303
+        },
+        {
+          "n_agents": 47,
+          "start": {
+            "x": 186,
+            "y": 46
+          },
+          "goal": {
+            "x": 1,
+            "y": 38
+          },
+          "optimal_length": 188.3137085
+        },
+        {
+          "n_agents": 54,
+          "start": {
+            "x": 230,
+            "y": 150
+          },
+          "goal": {
+            "x": 14,
+            "y": 149
+          },
+          "optimal_length": 216.41421356
+        },
+        {
+          "n_agents": 68,
+          "start": {
+            "x": 51,
+            "y": 78
+          },
+          "goal": {
+            "x": 260,
+            "y": 162
+          },
+          "optimal_length": 273.08326111
+        },
+        {
+          "n_agents": 19,
+          "start": {
+            "x": 145,
+            "y": 153
+          },
+          "goal": {
+            "x": 102,
+            "y": 114
+          },
+          "optimal_length": 78.48528137
+        },
+        {
+          "n_agents": 68,
+          "start": {
+            "x": 44,
+            "y": 18
+          },
+          "goal": {
+            "x": 317,
+            "y": 18
+          },
+          "optimal_length": 273.0
+        },
+        {
+          "n_agents": 42,
+          "start": {
+            "x": 110,
+            "y": 159
+          },
+          "goal": {
+            "x": 242,
+            "y": 109
+          },
+          "optimal_length": 169.11269836
+        },
+        {
+          "n_agents": 83,
+          "start": {
+            "x": 293,
+            "y": 35
+          },
+          "goal": {
+            "x": 27,
+            "y": 143
+          },
+          "optimal_length": 335.33809509
+        },
+        {
+          "n_agents": 7,
+          "start": {
+            "x": 274,
+            "y": 82
+          },
+          "goal": {
+            "x": 287,
+            "y": 62
+          },
+          "optimal_length": 31.82842712
+        },
+        {
+          "n_agents": 24,
+          "start": {
+            "x": 78,
+            "y": 62
+          },
+          "goal": {
+            "x": 152,
+            "y": 93
+          },
+          "optimal_length": 98.55634918
+        },
+        {
+          "n_agents": 78,
+          "start": {
+            "x": 17,
+            "y": 142
+          },
+          "goal": {
+            "x": 312,
+            "y": 92
+          },
+          "optimal_length": 315.7106781
+        },
+        {
+          "n_agents": 77,
+          "start": {
+            "x": 307,
+            "y": 133
+          },
+          "goal": {
+            "x": 1,
+            "y": 127
+          },
+          "optimal_length": 308.48528137
+        },
+        {
+          "n_agents": 97,
+          "start": {
+            "x": 330,
+            "y": 5
+          },
+          "goal": {
+            "x": 5,
+            "y": 130
+          },
+          "optimal_length": 388.49242401
+        },
+        {
+          "n_agents": 85,
+          "start": {
+            "x": 74,
+            "y": 13
+          },
+          "goal": {
+            "x": 317,
+            "y": 150
+          },
+          "optimal_length": 343.09545441
+        },
+        {
+          "n_agents": 55,
+          "start": {
+            "x": 230,
+            "y": 26
+          },
+          "goal": {
+            "x": 133,
+            "y": 160
+          },
+          "optimal_length": 221.04163055
+        },
+        {
+          "n_agents": 38,
+          "start": {
+            "x": 61,
+            "y": 61
+          },
+          "goal": {
+            "x": 182,
+            "y": 108
+          },
+          "optimal_length": 155.6984848
+        },
+        {
+          "n_agents": 69,
+          "start": {
+            "x": 271,
+            "y": 150
+          },
+          "goal": {
+            "x": 112,
+            "y": 17
+          },
+          "optimal_length": 276.18376617
+        },
+        {
+          "n_agents": 39,
+          "start": {
+            "x": 151,
+            "y": 73
+          },
+          "goal": {
+            "x": 48,
+            "y": 140
+          },
+          "optimal_length": 158.87005768
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 113,
+            "y": 22
+          },
+          "goal": {
+            "x": 101,
+            "y": 77
+          },
+          "optimal_length": 66.41421356
+        },
+        {
+          "n_agents": 14,
+          "start": {
+            "x": 291,
+            "y": 55
+          },
+          "goal": {
+            "x": 337,
+            "y": 83
+          },
+          "optimal_length": 57.59797974
+        },
+        {
+          "n_agents": 39,
+          "start": {
+            "x": 292,
+            "y": 112
+          },
+          "goal": {
+            "x": 221,
+            "y": 18
+          },
+          "optimal_length": 157.38477631
+        },
+        {
+          "n_agents": 70,
+          "start": {
+            "x": 287,
+            "y": 122
+          },
+          "goal": {
+            "x": 12,
+            "y": 106
+          },
+          "optimal_length": 281.62741699
+        },
+        {
+          "n_agents": 16,
+          "start": {
+            "x": 202,
+            "y": 70
+          },
+          "goal": {
+            "x": 139,
+            "y": 66
+          },
+          "optimal_length": 65.82842712
+        },
+        {
+          "n_agents": 71,
+          "start": {
+            "x": 294,
+            "y": 156
+          },
+          "goal": {
+            "x": 25,
+            "y": 118
+          },
+          "optimal_length": 287.66904755
+        },
+        {
+          "n_agents": 71,
+          "start": {
+            "x": 328,
+            "y": 72
+          },
+          "goal": {
+            "x": 85,
+            "y": 151
+          },
+          "optimal_length": 287.43860016
+        },
+        {
+          "n_agents": 57,
+          "start": {
+            "x": 51,
+            "y": 49
+          },
+          "goal": {
+            "x": 191,
+            "y": 153
+          },
+          "optimal_length": 231.11269836
+        }
+      ],
+      "n_routes_sample": 48
+    }
+  }
+}

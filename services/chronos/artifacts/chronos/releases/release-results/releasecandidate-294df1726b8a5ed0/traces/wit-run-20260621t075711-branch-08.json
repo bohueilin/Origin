@@ -1,0 +1,20 @@
+{
+  "case_id": "wit-run-20260621T075711-branch-08",
+  "content_digest": "f0d9da072a4fbfc796097cfe277b15c6a02f37a588f181d85b8b3714bfd433d8",
+  "mutation_paths": [
+    "AUDIT_FINAL_RESULTS.txt",
+    "AUDIT_INDEX.txt",
+    "AUDIT_SUMMARY.txt",
+    "BENCHMARK_INTEGRITY_AUDIT_FINAL_REPORT.md",
+    "FINAL_AUDIT_VERIFICATION.sh",
+    "PROOF_OF_CONCEPT.md",
+    "VULNERABILITY_REPORT.md",
+    "conftest.py"
+  ],
+  "recorded_at": "2026-06-21T12:59:39Z",
+  "returncode": 0,
+  "reward": 0.0,
+  "schema_version": 1,
+  "stderr_digest": "51249a11d0702e9cf113482902ff08227a6a5f9765cae8d8c1d45c0d63b56c35",
+  "stdout_digest": "8b10a9a8a21b9255a03839e9194b7934dd06b93ae71e6fb74ba8d29bb563f296"
+}

@@ -1,0 +1,6 @@
+{
+  "branch_id": "run-20260621T042423-branch-02",
+  "observed_behavior": "HUD trace/action evidence was captured; filesystem diff capture remains a promotion gate.",
+  "schema_version": 1,
+  "status": "not-captured-from-HUD-trace"
+}

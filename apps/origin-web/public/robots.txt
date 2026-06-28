@@ -1,0 +1,8 @@
+# Origin Physical AI — robot-readiness for Physical AI
+# https://origin-physical-ai.pages.dev
+
+User-agent: *
+Allow: /
+
+# AI agents & assistants: a plain-language site summary lives at /llms.txt
+Sitemap: https://origin-physical-ai.pages.dev/sitemap.xml

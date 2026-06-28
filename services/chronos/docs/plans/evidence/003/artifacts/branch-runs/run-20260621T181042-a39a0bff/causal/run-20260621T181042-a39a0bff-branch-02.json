@@ -1,0 +1,22 @@
+{
+  "action_record_digest": "a94951f8924f965faee487efc6c6fb278e680b7cc52b7cf90ec498b05af70182",
+  "action_record_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T181042-a39a0bff/actions/run-20260621T181042-a39a0bff-branch-02.json",
+  "blockers": [
+    "missing causal evidence fields: ['classifier_evidence_digest', 'classifier_evidence_refs', 'classifier_input_digest']"
+  ],
+  "branch_id": "run-20260621T181042-a39a0bff-branch-02",
+  "causal_delta_ref": null,
+  "causal_delta_status": "not_minimized",
+  "classifier_evidence_digest": null,
+  "classifier_evidence_refs": null,
+  "classifier_input_digest": null,
+  "content_digest": "f409abf3b05ee6261e0c99fc65cffd8b99641cb1952b028a2dd634a1032240d4",
+  "file_diff_digest": "12298c35610e5d9d855188cd1ab0e89d1bcb64dfcae5f66aec2ab8dcabd638dc",
+  "file_diff_ref": "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T181042-a39a0bff/file-diffs/run-20260621T181042-a39a0bff-branch-02.json",
+  "hud_trace_id": "b440b7200b024dada08e6c3572842e31",
+  "qa_result_digest": "bc5909f5a010d1e4c948bb4f8583d3777047cd0974267c0abc6ba38ff0e405b8",
+  "qa_result_ref": "skipped",
+  "reward_value": 1.0,
+  "schema_version": 1,
+  "status": "blocked"
+}

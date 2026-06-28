@@ -1,0 +1,5 @@
+{
+  "path-a": "Path A uses a single date $match, $addFields revenue computation, composite group keys, and Python round() instead of server-side $round.",
+  "path-b": "Path B adds a second $match to filter orphaned orders, uses inline $multiply inside $group with scalar product_id keys, and MongoDB $round in $push.",
+  "path-c": "Path C replaces the simple $lookup with a correlated pipeline $lookup, aggregating join conditions server-side rather than relying on $unwind filtering alone."
+}

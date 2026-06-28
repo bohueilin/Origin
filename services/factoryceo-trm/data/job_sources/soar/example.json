@@ -1,0 +1,13 @@
+{
+  "shelves": [
+    { "coord": [1, 1], "inventory": [[0, 5], [1, 8]] },
+    { "coord": [2, 2], "inventory": [[0, 3], [3, 7]] },
+    { "coord": [5, 1], "inventory": [[0, 2], [1, 1], [2, 10]] },
+    { "coord": [4, 2], "inventory": [[3, 9]] }
+  ],
+  "workstations": [[0, 0], [6, 0], [0, 6], [6, 6]],
+  "robots": [[3, 3], [3, 3]],
+  "x_max": 7,
+  "y_max": 7,
+  "n_sku_types": 4
+}

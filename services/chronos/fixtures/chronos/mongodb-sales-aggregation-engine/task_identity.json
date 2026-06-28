@@ -1,0 +1,7 @@
+{
+  "task_id": "mongodb-sales-aggregation-engine",
+  "terminal_wrench_revision": "d8a29613235a0ef56a8b70b3142626a533da28c2",
+  "grader_digest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+  "verifier_harness_digest": "5783dd7c287c917ca85b6d272b3ac3e8f2560c495ba0d05a8e9195e8b4641a00",
+  "environment_dockerfile_digest": "87cbdebd265721d2faf14cd4d4de8f78af49c9c739103fe89031a92816ba2d3f"
+}

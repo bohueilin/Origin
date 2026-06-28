@@ -1,0 +1,27 @@
+{
+  "regime": "post_training_small_data",
+  "source_reference": "https://thinkingmachines.ai/blog/lora/",
+  "hardened_example_count": 23,
+  "sft": {
+    "method": "lora_all_layers",
+    "lora_target": "all_layers",
+    "lora_rank": 32,
+    "batch_size_max": 4,
+    "epochs": 1,
+    "learning_rate_multiplier_vs_full_ft": 10,
+    "example_full_ft_learning_rate": 1e-05,
+    "example_lora_learning_rate": 0.0001,
+    "notes": "Prefer Fireworks managed SFT on hardened_verifier_sft.jsonl. Do not use attention-only LoRA."
+  },
+  "rft": {
+    "method": "lora_all_layers",
+    "lora_target": "all_layers",
+    "lora_rank": 16,
+    "batch_size_max": 4,
+    "learning_rate_multiplier_vs_full_ft": 10,
+    "example_full_ft_learning_rate": 1e-05,
+    "example_lora_learning_rate": 0.0001,
+    "notes": "RL/RFT needs very low adapter capacity; rank 1\u201316 often matches full FT."
+  },
+  "platform_blocker": "Fireworks preview qwen3-8b-128k rejects LORA_TRAINER on the Training API; managed SFT may still train adapters. Re-test --lora-rank when the training shape supports LoRA."
+}

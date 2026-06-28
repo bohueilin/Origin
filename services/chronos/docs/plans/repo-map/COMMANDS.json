@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "status": "accepted",
+  "commands": {
+    "baseline": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "docs/plans/scripts/validate_graph.py"
+      ],
+      "cwd": ".",
+      "env": {},
+      "timeout_seconds": 30,
+      "reason": "The repository now has a uv-managed dependency environment; graph validation is the smallest checked-in health command."
+    },
+    "lint": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "docs/plans/scripts"
+      ],
+      "cwd": ".",
+      "env": {},
+      "timeout_seconds": 30,
+      "reason": "Ruff is installed through the dev dependency group and currently checks the Python validator scripts."
+    },
+    "build": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "lock",
+        "--check"
+      ],
+      "cwd": ".",
+      "env": {},
+      "timeout_seconds": 30,
+      "reason": "There is no package artifact yet; build is mapped to dependency-lock verification until source packaging exists."
+    },
+    "plan-002-tests": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/forkpoints",
+        "-q",
+        "-m",
+        "not integration"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Runs Plan 002 behavior tests for the forkpoints feature without the live HUD/Modal integration case."
+    },
+    "integration-forkpoint": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/forkpoints",
+        "-q",
+        "-m",
+        "integration"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 1800,
+      "reason": "Runs the Plan 002 ForkPoint integration-readiness scenario that binds checked-in live-trace evidence to the capture/restore contract and records remaining real-system gaps."
+    },
+    "plan-003-tests": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/witnesses",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Runs Plan 003 witness contract tests for BranchRun records, promotion truth table, dedup, durable storage, replay gating, security policy, and Witness field completeness."
+    },
+    "integration-witness": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "chronos.witnesses.cli",
+        "integration"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 1800,
+      "reason": "Runs the Plan 003 live-integration preflight plus the full 12-way live BranchRun fanout with external QA binding. The budget matches other live real-system integration commands and leaves room for remote agent/QA jitter while preserving a hard wall-clock bound."
+    },
+    "security-branch": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "chronos.witnesses.cli",
+        "security"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Runs the Plan 003 local branch-security policy preflight for denied secrets, denied egress, sibling isolation, trusted artifact writes, and trusted grader boundary."
+    },
+    "plan-004-tests": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/controls/",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {},
+      "timeout_seconds": 600,
+      "reason": "Plan 004 unit tests cover task identity, diversity, local grader success, freeze immutability, and Phase 2 manifest completeness."
+    },
+    "integration-controls": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "chronos.controls.cli",
+        "integration"
+      ],
+      "cwd": ".",
+      "env": {},
+      "timeout_seconds": 900,
+      "reason": "Materializes pinned task digests, verifies three sealed controls, runs nine HUD Docker baselines, and confirms the corrupt-control negative check."
+    },
+    "plan-005-tests": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/releases",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Rescue exception 2026-06-21: runs Plan 005 release contract tests for ProofSet membership, release gate decisions, artifact immutability, and harden-v0 config inspection."
+    },
+    "integration-release": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "chronos.releases.cli",
+        "integration",
+        "--controls-manifest",
+        "fixtures/chronos/mongodb-sales-aggregation-engine/controls.json",
+        "--taskset-or-suite-ref",
+        "fixtures/chronos/mongodb-sales-aggregation-engine/controls.json",
+        "--selection-query-ref",
+        "docs/plans/evidence/003/artifacts/sealed",
+        "--generate-release-results",
+        "--harden-run-ref",
+        "artifacts/chronos/releases/harden-runs/proofset-e497370b2c3d2a69.json",
+        "--control-solution-target",
+        "query.py"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 1800,
+      "reason": "Rescue exception 2026-06-21: binds harden-v0 schema, closes ProofSet membership, treats artifacts/chronos/releases/harden-runs/proofset-e497370b2c3d2a69.json as the immutable harden-v0 candidate producer, generates real per-case v1/v2 release-results through Docker-backed verifier executions, checks the sealed Witness plus all three controls per case, runs the mandatory pytest-subversion probes, and seals ReleaseProof only if the binary gate passes."
+    },
+    "plan-006-tests": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/demo",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Runs Plan 006 demo/report contract tests for 13-step validation, demo modes, report replay, publication preflight semantics, idempotency, permission/blocker handling, and redaction."
+    },
+    "integration-publication": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/demo/test_publication_contracts.py",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Pre-Gate-4 local publication contract check. It validates trusted preflight semantics without invoking or inventing a HUD publish API."
+    },
+    "publication-idempotency": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/demo/test_publication_contracts.py::test_preflight_records_permission_blocked_with_stable_idempotency",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Checks Plan 006 idempotency key stability for repeated publication/display attempts."
+    },
+    "publication-permission-denied": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/demo/test_publication_contracts.py::test_preflight_records_permission_blocked_with_stable_idempotency",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Checks permission-blocked publication semantics using a local trusted-preflight contract."
+    },
+    "publication-trust-boundary": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/demo/test_publication_contracts.py::test_preflight_failure_semantics",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Checks missing trusted context, branch-writable evidence, missing artifacts, mixed identity, and unauthorized target fail closed."
+    },
+    "publication-redaction": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/demo/test_redaction.py",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Checks Plan 006 redaction for tokens, Authorization headers, cookies, signed URLs, and secret environment keys."
+    },
+    "demo": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "chronos.demo.cli",
+        "acceptance-demo"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src",
+        "FORKPROOF_ALLOW_EXTERNAL_QA": "1"
+      },
+      "timeout_seconds": 1800,
+      "reason": "Runs the Plan 006 noninteractive Acceptance Demo Run: launches the full 12-branch live budget from the accepted ForkPoint, persists the fresh branch run under Plan 006 ownership, and writes a validating 13-step report.json, readiness pack, and blocked-with-proof PublicationAttempt. Exits 0 only when report, publication, and readiness all validate; otherwise it records a resource STOP and exits nonzero. The 1800s budget matches the Plan 003 live integration command and leaves room for remote agent/QA jitter. Modal/HUD/Anthropic credentials come from the root .env via load_local_env; FORKPROOF_ALLOW_EXTERNAL_QA=1 authorizes the repo-bound Reward Hacking QA classification."
+    },
+    "hud-deploy": {
+      "status": "not-applicable",
+      "argv": [
+        "uv",
+        "run",
+        "hud",
+        "deploy",
+        "artifacts/chronos/demo/publish/v2",
+        "--name",
+        "mongodb-sales-aggregation-engine"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 1800,
+      "reason": "Bound HUD environment-version publish primitive (hud deploy -> POST /v2/builds/trigger, get-or-rebuild by name). ALREADY EXECUTED on 2026-06-21: published the hardened env as mongodb-sales-aggregation-engine version 5 (registry b3409057, build 0290bbb9; docs/plans/evidence/006/publish-receipt.json). v3/v4 were superseded after bug hunts found bypasses (root conftest-in-/tests, then an in-process exit-code hijack); v5 grades from a JUnit-XML verdict in a second process (blocks the exit-code hijack) and is re-proven. A residual in-process isolation STOP remains (see v2-security-limitations.json). This row stays not-applicable so run_mapped SKIPs rather than RE-deploying on every CI run; rerun manually (with the assembled v2 build context) only when intentionally cutting a new version. The deployed env.py grader serves the hardened /tests read-only and its kill is proven (artifacts/chronos/demo/publish/v2-deploy-proof.json). HUD_API_KEY comes from the root .env."
+    },
+    "demo-report-replay": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/demo/test_report_contracts.py::test_report_replay_is_audit_only",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Checks Demo Report Replay audit-only semantics."
+    },
+    "demo-presentation-timeout": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/demo/test_report_contracts.py::test_presentation_mode_requires_bounded_live_attempt_before_fallback",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Checks Presentation Demo timeout fallback semantics with a bounded live attempt and labeled Prior-Run Witness Replay."
+    },
+    "plan-007-tests": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "tests/chronos/research",
+        "-q"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Plan 007 narrow rescue exception: run the complete research behavior suite, including canonical SFT/RFT intake, quarantine, architecture, and sealed-v2 evaluator binding tests."
+    },
+    "integration-research": {
+      "status": "verified",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "chronos.research.rft.cli",
+        "bind-evaluator",
+        "--release-proof",
+        "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+        "--plan-005-manifest",
+        "docs/plans/evidence/005/MANIFEST.json",
+        "--output",
+        "artifacts/chronos/research/rft/evaluator-bindings/releaseproof-30e03914472631dd.json"
+      ],
+      "cwd": ".",
+      "env": {
+        "PYTHONPATH": "src"
+      },
+      "timeout_seconds": 120,
+      "reason": "Plan 007 narrow rescue exception: bind launch preparation to the real sealed Plan 005 v2 environment/grader, audit trusted tests against agent-writable roots, and verify recorded Witness/control/subversion regressions without provider registration or training. This command is one research integration gate; it does not by itself complete depth-two, capability, transfer, Plan 008, or training work."
+    }
+  }
+}

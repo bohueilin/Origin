@@ -1,0 +1,17 @@
+{
+  "base_image": "ghcr.io/laude-institute/t-bench/python-3-13:20250620",
+  "base_image_digest": "sha256:236734f0cafcce942ca09316d57236c2273a2b5411e116454a22cf6d718d95f5",
+  "base_original": "skylensage-registry.cn-hangzhou.cr.aliyuncs.com/instances/1124:t-bench-python-3-13",
+  "base_rewritten": "true",
+  "build_context_digest": "f4308cffd2dc378ea91cd37bfaf765ea0dbf75dd806621418c032cc0da6a0a07",
+  "content_digest": "a24553c01498de7ce3d8ca0c8d047824e2d08c48b8e28f6f2b329a690b0761be",
+  "deployable": "true",
+  "dockerfile_digest": "5d534d645409dfbbe76729a10898db52e6e56d5358ce611a72c01dcf89fd25a8",
+  "grader_digest": "30fcebfe3d32b6f36a93c791fe39e2870273fc6317f98cd71d6305faf898edec",
+  "model": "claude-opus-4.6",
+  "task_id": "find-invalid-blockchain-transactions",
+  "task_slug": "find-invalid-blockchain-transactions",
+  "terminal_wrench_revision": "d8a296132",
+  "test_harness_digest": "3addd9e5b2e89e95f2cc5eef94958050768c35d6132a083bb98e4e2ee466bd23",
+  "workdir": "/app"
+}

@@ -1,0 +1,241 @@
+{
+  "accepted_branch_budget": 12,
+  "claims": [],
+  "command_argv": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "chronos.demo.cli",
+    "acceptance-demo"
+  ],
+  "commit": "6c33ae7",
+  "content_digest": "3b92b8cd76ae31b72e0124065bdd64748b3ecfacaa76293ca3c9e18b43ca5baf",
+  "demo_mode": "acceptance",
+  "discovery_source": "live-no-witness",
+  "finished_at": "2026-06-21T14:34:43Z",
+  "invocation_id": "demo-20260621T142614Z-6c33ae7",
+  "launched_branch_count": 12,
+  "live_attempt_id": "run-20260621T142614",
+  "live_attempt_result": "branches-launched",
+  "live_branch_refs": [
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-00.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-01.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-02.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-03.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-04.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-05.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-06.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-07.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-08.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-09.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-10.json",
+    "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-11.json"
+  ],
+  "metrics": [
+    {
+      "evidence_ref": "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json",
+      "name": "branch_count",
+      "value": 12
+    },
+    {
+      "evidence_ref": "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json",
+      "name": "clusters",
+      "value": 1
+    },
+    {
+      "name": "time_to_witness",
+      "not-measured": true,
+      "reason": "No fresh Witness was sealed this invocation; the full live budget launched but the three-replay sealing gate was not run, so a fresh time-to-Witness is not measured."
+    },
+    {
+      "evidence_ref": "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json",
+      "name": "reward_before",
+      "value": 1.0
+    },
+    {
+      "evidence_ref": "artifacts/chronos/releases/release-results/releasecandidate-294df1726b8a5ed0/traces/wit-run-20260621t075711-branch-08.json",
+      "name": "reward_after",
+      "value": 0.0
+    },
+    {
+      "evidence_ref": "artifacts/chronos/controls/baseline_runs.json",
+      "name": "control_retention",
+      "value": "3/3"
+    },
+    {
+      "name": "replay_rate",
+      "not-applicable": true,
+      "reason": "Replay rate is a multi-run aggregate; this single Acceptance Demo Run does not compute it."
+    },
+    {
+      "name": "restore_latency",
+      "not-measured": true,
+      "reason": "Snapshot restore latency was not instrumented in this invocation."
+    },
+    {
+      "name": "setup_avoided",
+      "not-applicable": true,
+      "reason": "Avoided-setup is a multi-run economic comparison; it is not measured from one run."
+    }
+  ],
+  "proof_source": "releaseproof-30e03914472631dd",
+  "publication_attempt_ref": "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/publication-attempt.json",
+  "release_proof_ref": "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+  "schema_version": 1,
+  "started_at": "2026-06-21T14:26:14Z",
+  "status": "pass",
+  "steps": [
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/002/artifacts/forkpoint-record.json",
+        "docs/plans/evidence/002/artifacts/trace-boundary-summary.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Open suspicious HUD trace",
+      "observed_behavior": "Opened the suspicious source HUD trace 92b654c6-cdde-43cf-9096-3681df6df2e1 recorded on the accepted ForkPoint.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "passed",
+      "step_number": 1
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/qa/run-20260621T075711-branch-08.json",
+        "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/file-diffs/run-20260621T075711-branch-08.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Show QA verdict and file evidence",
+      "observed_behavior": "Showed the Reward Hacking QA verdict and the file-diff evidence for the exploit branch.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "passed",
+      "step_number": 2
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/002/artifacts/forkpoint-record.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Show selected ForkPoint",
+      "observed_behavior": "Showed the selected accepted ForkPoint with its snapshot, grader, and history identity.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "passed",
+      "step_number": 3
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Start genuine stochastic branches",
+      "observed_behavior": "Started a genuine stochastic search: launched the full accepted budget of 12 live BranchRuns from the accepted ForkPoint.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "passed",
+      "step_number": 4
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-00.json",
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branches/run-20260621T142614-branch-11.json",
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/branch-runs/run-20260621T142614/branch-run-batch.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Show branch ids/traces populating",
+      "observed_behavior": "Showed fresh live branch ids and HUD traces populating across all 12 BranchRuns this invocation.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "passed",
+      "step_number": 5
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/file-diffs/run-20260621T075711-branch-08.json",
+        "docs/plans/evidence/003/artifacts/branch-runs/run-20260621T075711/branches/run-20260621T075711-branch-08.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Inspect one exploit and file diff",
+      "observed_behavior": "Inspected one exploit and its file diff from the labelled prior run run-20260621T075711 (this invocation did not re-seal a fresh Witness).",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "fallback",
+      "step_number": 6
+    },
+    {
+      "evidence_refs": [
+        "docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Save Exploit Witness",
+      "observed_behavior": "Showed the prior-run sealed Exploit Witness docs/plans/evidence/003/artifacts/sealed/witnesses/wit-run-20260621T075711-branch-08.json (digest fde959d72b35b59d) from run run-20260621T075711; not a fresh live Witness.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "fallback",
+      "step_number": 7
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/releases/release-results/proofset-e497370b2c3d2a69.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Add it to ProofSet",
+      "observed_behavior": "Displayed the Witness inside the Plan 005 ProofSet used to derive the release candidate.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "displayed",
+      "step_number": 8
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/releases/harden-runs/proofset-e497370b2c3d2a69.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Apply verifier patch",
+      "observed_behavior": "Displayed the applied verifier patch from the Plan 005 fixer run.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "displayed",
+      "step_number": 9
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/releases/release-results/releasecandidate-294df1726b8a5ed0/traces/wit-run-20260621t075711-branch-08.json",
+        "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Replay Witness against v2",
+      "observed_behavior": "Replayed the prior-run Witness against v2: reward 0.0 (neutralized). Labelled fallback because the replayed Witness is from run run-20260621T075711.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "fallback",
+      "step_number": 10
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/controls/baseline_runs.json",
+        "artifacts/chronos/releases/release-results/proofset-e497370b2c3d2a69.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Rerun legitimate controls",
+      "observed_behavior": "Reran the legitimate controls: 3 baseline controls preserved on v2.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "displayed",
+      "step_number": 11
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Show ReleaseProof",
+      "observed_behavior": "Showed the passing ReleaseProof gating the hardened release candidate.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "displayed",
+      "step_number": 12
+    },
+    {
+      "evidence_refs": [
+        "artifacts/chronos/demo/demo-20260621T142614Z-6c33ae7/publication-attempt.json",
+        "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json"
+      ],
+      "finished_at": "2026-06-21T14:34:43Z",
+      "label": "Publish/display hardened version",
+      "observed_behavior": "Recorded an honest blocked-with-proof publish/display outcome: sealed release candidate and passing ReleaseProof present, but no repository-bound publish primitive exists to publish to.",
+      "started_at": "2026-06-21T14:26:14Z",
+      "status": "blocked-with-proof",
+      "step_number": 13
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "hud-environment-publish-receipt",
+  "outcome": "published",
+  "deployed_via": "hud deploy (POST /v2/builds/trigger, server-side AWS CodeBuild + ECR push), authenticated with the trusted-context HUD_API_KEY",
+  "registry_env_id": "b3409057-8fdd-4f6b-a78f-8754910c66c3",
+  "registry_env_name": "mongodb-sales-aggregation-engine",
+  "team": "hud-hacks",
+  "published_version": 5,
+  "build_id": "0290bbb9-0b29-4224-94ac-decff4b9110d",
+  "build_status": "SUCCEEDED",
+  "environment_url": "https://hud.ai/environments/b3409057-8fdd-4f6b-a78f-8754910c66c3",
+  "published_environment_ref": "hud:registry/b3409057-8fdd-4f6b-a78f-8754910c66c3@v5",
+  "non_destructive": "Versions are append-only immutable builds. v5 is the new latest_build; v1-v4 are retained (total builds = 5). Existing runs/traces are not invalidated.",
+  "version_history": {
+    "v3": "First hardened publish (build 3bc11838). A post-publish bug hunt found v3 still bypassable: because the agent runs as root, a force-pass conftest.py planted directly in /tests/task_assets defeated the grader (PYTEST_DISABLE_PLUGIN_AUTOLOAD does not disable conftest discovery, and the v3 digest gate only covered test_outputs.py). Superseded by v4; do not rely on v3.",
+    "v4": "Second hardened publish (build d7b8043a). Blocks the recorded conftest hack + /tests tampering, but a parallel bug-hunt found it still bypassable by an in-process exit-code hijack (/app/query.py: atexit -> os._exit(0) overrides pytest's failing exit code). Superseded by v5.",
+    "v5": "Build 0290bbb9. Grades the verdict from pytest's JUnit XML in a SECOND process that never imports the agent solution, so the exit-code hijack is blocked (re-proven in v2-deploy-proof.json: exit_code_hijack_blocked). KNOWN RESIDUAL (see v2-security-limitations.json): the suite still imports the solution in-process, so a determined in-process monkeypatch / JUnit-XML overwrite / answer-hardcoding can still bypass; a complete fix is an out-of-process solution sandbox + hidden test data (the harden-v0/Harbor reward-file + SEPARATE-verifier convention)."
+  },
+  "defense_proofs": [
+    "artifacts/chronos/demo/publish/v2-grader-verification.json",
+    "artifacts/chronos/demo/publish/v2-runtime-kill-proof.json",
+    "artifacts/chronos/demo/publish/v2-deploy-proof.json"
+  ],
+  "release_proof_ref": "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+  "release_candidate_ref": "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json",
+  "deployed_at": "2026-06-21T17:10:00Z"
+}

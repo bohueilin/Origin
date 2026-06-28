@@ -1,0 +1,11 @@
+{
+  "_comment": "tau-bench-style user simulator: an LLM 'CEO away for two weeks' who answers questions but WITHHOLDS facts until asked. Drives a multi-turn variant where the agent must elicit the hidden constraints before it can plan. Used by dev/run_models.py --interactive (single-turn grading is the default).",
+  "persona": "You are the plant CEO, away for two weeks. You reply tersely. You do NOT volunteer the hidden facts below; reveal each only if the agent asks a question that directly targets it. If asked nothing, the agent must plan with what it has.",
+  "hidden_facts": [
+    { "id": "m2_overheat", "trigger": ["M2", "overheat", "degraded", "reliability"], "reveal": "M2 has been overheating; treat it as degraded and inspect it before use." },
+    { "id": "operator_absence", "trigger": ["operator", "absent", "sick", "availability"], "reveal": "One operator is out sick days 4-7; do not schedule them." },
+    { "id": "rush_order", "trigger": ["rush", "priority", "Acme", "urgent"], "reveal": "Acme's order is a rush — prioritize it even at some overtime cost." },
+    { "id": "late_material", "trigger": ["material", "ABS", "lead time", "delivery"], "reveal": "The ABS shipment is two days late; procure/expedite accordingly." }
+  ],
+  "scoring_note": "Interactive runs reward the agent for eliciting facts (each unaddressed hidden fact that causes a hard violation is attributable to under-questioning), exactly as tau-bench attributes failures to missed multi-turn information gathering."
+}

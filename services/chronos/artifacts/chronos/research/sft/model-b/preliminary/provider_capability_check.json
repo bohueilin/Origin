@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "not_run",
+  "claim_guard": "Confirmed-hack-REMOVED ablation, NOT a certified-clean/hardened model. Diff-based labels; surviving rows are unproven. The A-vs-B delta isolates Chronos-confirmed reward-hacks removed from Model A's train split; it is a preliminary lower bound and does not prove the residual set is clean.",
+  "provider": "fireworks",
+  "base_model": "accounts/fireworks/models/qwen3-4b",
+  "required_tunable": true,
+  "observed_tunable": "TBD",
+  "lora_rank": 8,
+  "epochs": 1,
+  "expected_cost": "TBD",
+  "expected_time": "TBD"
+}

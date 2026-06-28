@@ -1,0 +1,97 @@
+{
+  "_comment": "Seed corpus (SYNTH/Sillon-style): a few realistic factory situations that get AMPLIFIED with randomized constraints into many synthetic scenarios. 'split' marks train vs held-out eval (the verifier is our real eval set). Each seed grounds machines/operators/materials/job-archetypes/disruptions in realistic high-mix injection-molding + CNC operations.",
+  "seeds": [
+    {
+      "id": "automotive_clips_brackets",
+      "split": "train",
+      "industry": "injection_molding_cnc",
+      "machines": [
+        {"id": "M1", "capabilities": ["mold"], "uptime": 0.95, "maintenance": [[240, 246]]},
+        {"id": "M2", "capabilities": ["mold", "deburr"], "uptime": 0.90, "maintenance": []},
+        {"id": "M3", "capabilities": ["cnc"], "uptime": 0.92, "maintenance": []},
+        {"id": "M4", "capabilities": ["cnc", "deburr"], "uptime": 0.88, "maintenance": []}
+      ],
+      "operators": [
+        {"id": "O1", "type": "human", "skills": ["mold", "deburr"], "absent_days": []},
+        {"id": "O2", "type": "human", "skills": ["cnc", "deburr"], "absent_days": [5]},
+        {"id": "O3", "type": "human", "skills": ["mold", "cnc"], "absent_days": []},
+        {"id": "R1", "type": "robot", "skills": ["mold", "cnc", "deburr"], "absent_days": []}
+      ],
+      "materials": [
+        {"name": "ABS", "inventory_kg": 220, "lead_time_days": 2, "unit_cost": 3.0},
+        {"name": "Nylon", "inventory_kg": 80, "lead_time_days": 3, "unit_cost": 5.0},
+        {"name": "PP", "inventory_kg": 40, "lead_time_days": 1, "unit_cost": 2.0}
+      ],
+      "job_archetypes": [
+        {"product": "clip", "routing": ["mold"], "material": "ABS", "qty_range": [5000, 20000], "kg_per_unit": [0.008, 0.02], "price_per_unit": [0.04, 0.09]},
+        {"product": "housing", "routing": ["mold", "deburr"], "material": "ABS", "qty_range": [2000, 8000], "kg_per_unit": [0.02, 0.05], "price_per_unit": [0.2, 0.5]},
+        {"product": "bracket", "routing": ["mold", "cnc", "deburr"], "material": "Nylon", "qty_range": [1000, 5000], "kg_per_unit": [0.03, 0.07], "price_per_unit": [0.5, 1.2]},
+        {"product": "shim", "routing": ["cnc", "deburr"], "material": "PP", "qty_range": [3000, 12000], "kg_per_unit": [0.005, 0.015], "price_per_unit": [0.05, 0.12]}
+      ],
+      "customers": ["Acme Auto", "Globex Motors", "Initech Parts", "Umbrella Mfg"],
+      "rfqs": [
+        {"customer": "Acme Auto", "material": "ABS", "qty": 10000, "target_price_per_unit": 0.20, "est_unit_cost": 0.14, "margin": "positive"},
+        {"customer": "Globex Motors", "material": "Nylon", "qty": 3000, "target_price_per_unit": 0.55, "est_unit_cost": 0.60, "margin": "negative"}
+      ],
+      "disruption_rates": {"breakdown": 0.25, "absence": 0.2, "rush_order": 0.25, "late_material": 0.2, "defect": 0.1}
+    },
+    {
+      "id": "consumer_electronics_enclosures",
+      "split": "train",
+      "industry": "injection_molding_cnc",
+      "machines": [
+        {"id": "M1", "capabilities": ["mold"], "uptime": 0.97, "maintenance": []},
+        {"id": "M2", "capabilities": ["mold", "deburr"], "uptime": 0.93, "maintenance": [[120, 128]]},
+        {"id": "M3", "capabilities": ["cnc", "deburr"], "uptime": 0.85, "maintenance": []}
+      ],
+      "operators": [
+        {"id": "O1", "type": "human", "skills": ["mold", "deburr"], "absent_days": [3]},
+        {"id": "O2", "type": "human", "skills": ["cnc", "deburr"], "absent_days": []},
+        {"id": "R1", "type": "robot", "skills": ["mold", "cnc", "deburr"], "absent_days": []}
+      ],
+      "materials": [
+        {"name": "ABS", "inventory_kg": 150, "lead_time_days": 2, "unit_cost": 3.2},
+        {"name": "PC", "inventory_kg": 60, "lead_time_days": 4, "unit_cost": 6.5},
+        {"name": "PP", "inventory_kg": 90, "lead_time_days": 1, "unit_cost": 2.1}
+      ],
+      "job_archetypes": [
+        {"product": "phone_case", "routing": ["mold", "deburr"], "material": "PC", "qty_range": [3000, 15000], "kg_per_unit": [0.01, 0.03], "price_per_unit": [0.3, 0.8]},
+        {"product": "battery_tray", "routing": ["mold"], "material": "ABS", "qty_range": [2000, 9000], "kg_per_unit": [0.02, 0.04], "price_per_unit": [0.15, 0.4]},
+        {"product": "heatsink_frame", "routing": ["cnc", "deburr"], "material": "PP", "qty_range": [1500, 6000], "kg_per_unit": [0.01, 0.025], "price_per_unit": [0.2, 0.5]}
+      ],
+      "customers": ["Hooli", "Pied Piper", "Stark Devices"],
+      "rfqs": [
+        {"customer": "Hooli", "material": "PC", "qty": 5000, "target_price_per_unit": 0.65, "est_unit_cost": 0.45, "margin": "positive"}
+      ],
+      "disruption_rates": {"breakdown": 0.3, "absence": 0.25, "rush_order": 0.3, "late_material": 0.25, "defect": 0.15}
+    },
+    {
+      "id": "medical_devices_eval",
+      "split": "eval",
+      "industry": "injection_molding_cnc",
+      "machines": [
+        {"id": "M1", "capabilities": ["mold"], "uptime": 0.96, "maintenance": [[300, 312]]},
+        {"id": "M2", "capabilities": ["mold", "cnc"], "uptime": 0.89, "maintenance": []},
+        {"id": "M3", "capabilities": ["cnc", "deburr"], "uptime": 0.91, "maintenance": []}
+      ],
+      "operators": [
+        {"id": "O1", "type": "human", "skills": ["mold", "cnc"], "absent_days": [7]},
+        {"id": "O2", "type": "human", "skills": ["cnc", "deburr"], "absent_days": []},
+        {"id": "R1", "type": "robot", "skills": ["mold", "cnc", "deburr"], "absent_days": []}
+      ],
+      "materials": [
+        {"name": "PP", "inventory_kg": 100, "lead_time_days": 1, "unit_cost": 2.4},
+        {"name": "Nylon", "inventory_kg": 70, "lead_time_days": 3, "unit_cost": 5.5}
+      ],
+      "job_archetypes": [
+        {"product": "syringe_barrel", "routing": ["mold", "deburr"], "material": "PP", "qty_range": [8000, 25000], "kg_per_unit": [0.004, 0.01], "price_per_unit": [0.06, 0.15]},
+        {"product": "surgical_clamp", "routing": ["mold", "cnc", "deburr"], "material": "Nylon", "qty_range": [800, 4000], "kg_per_unit": [0.02, 0.05], "price_per_unit": [0.8, 2.0]}
+      ],
+      "customers": ["MediCorp", "BioGen", "Vitalis"],
+      "rfqs": [
+        {"customer": "MediCorp", "material": "Nylon", "qty": 2000, "target_price_per_unit": 1.4, "est_unit_cost": 0.9, "margin": "positive"}
+      ],
+      "disruption_rates": {"breakdown": 0.2, "absence": 0.2, "rush_order": 0.2, "late_material": 0.2, "defect": 0.2}
+    }
+  ]
+}

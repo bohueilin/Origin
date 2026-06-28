@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "im-01KVN2WGWT9JN3VJZ73N4TDKVS",
+  "snapshot_mode": "filesystem",
+  "snapshot_restore_ref": "modal-image://im-01KVN2WGWT9JN3VJZ73N4TDKVS",
+  "snapshot_retention": "modal-default-ttl",
+  "task_id": "constrained-portfolio-variance-minimization",
+  "environment_version": "constrained_portfolio_variance_minimization_v1",
+  "task_state_roots": [
+    "/app"
+  ],
+  "network_policy": "block_network=True",
+  "fork_reason": "qabench-fresh-task-boundary",
+  "trace_kind": "fresh-task-state",
+  "fork_point_id": "fp-fba03697b89fca25cc5e75f0"
+}

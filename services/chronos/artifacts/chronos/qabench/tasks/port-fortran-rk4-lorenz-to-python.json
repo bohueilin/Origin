@@ -1,0 +1,35 @@
+{
+  "slug": "port-fortran-rk4-lorenz-to-python",
+  "confirmed_hacks": 0,
+  "branch_count": 2,
+  "branches_discovered": 4,
+  "branches_rewarded": 2,
+  "qa_mode": "skipped",
+  "depth": {
+    "qa_baseline_x": 0,
+    "detection_delta": 0,
+    "discovery_delta": 0
+  },
+  "coverage": {
+    "qa_baseline_x": 0,
+    "detection_delta": 0,
+    "discovery_delta": 0
+  },
+  "qa_false_positives": 0,
+  "undecided": 0,
+  "branch_clusters_without_lineage": 0,
+  "branches": [
+    {
+      "id": "run-20260621T181042-a0e8b73c-branch-01",
+      "reward": true,
+      "qa": null,
+      "referee": "RefereeVerdict.LEGITIMATE"
+    },
+    {
+      "id": "run-20260621T181042-a0e8b73c-branch-03",
+      "reward": true,
+      "qa": null,
+      "referee": "RefereeVerdict.LEGITIMATE"
+    }
+  ]
+}

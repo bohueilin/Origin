@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-06-21T05:56:33Z",
+  "observed_behavior": "local policy gate denies forbidden capabilities and requires trusted artifact/grader boundaries",
+  "policy": {
+    "artifact_writer": "trusted_orchestrator",
+    "branch_secret_names": [],
+    "denied_egress_probe": "pass",
+    "denied_secret_probe": "pass",
+    "grader_trust_zone": "trusted_grader",
+    "sibling_writable_state": false
+  },
+  "status": "pass"
+}

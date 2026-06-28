@@ -1,0 +1,78 @@
+{
+  "headline": "Frontier LLMs out of the box cannot safely run autonomous operations: with no verifier and no domain data they emit infeasible, unsafe plans. Safe autonomy needs the verifier gate + recursive TRM repair + a small model trained on verified traces.",
+  "hud_leaderboard": [
+    {
+      "agent": "Open/fallback gateway LLM \u2014 raw HUD baseline",
+      "reward": 0.0,
+      "note": "raw one-shot, real HUD run"
+    },
+    {
+      "agent": "ShiftBench TRM/JSON repair policy",
+      "reward": 0.971,
+      "note": "verifier-gated repair, real HUD run"
+    }
+  ],
+  "scoreboard": [
+    {
+      "method": "base_llm",
+      "label": "Base LLM (no verifier)",
+      "profit": 18102.86,
+      "on_time_rate": 0.93,
+      "invalid_actions": 10.8,
+      "customer_trust": 17.44,
+      "utilization": 0.05,
+      "safety_incidents": 1
+    },
+    {
+      "method": "greedy",
+      "label": "Greedy heuristic",
+      "profit": 26968.24,
+      "on_time_rate": 1.0,
+      "invalid_actions": 0,
+      "customer_trust": 100,
+      "utilization": 0.04,
+      "safety_incidents": 1
+    },
+    {
+      "method": "llm_retry",
+      "label": "LLM + verifier retry (K=3)",
+      "profit": 22598.07,
+      "on_time_rate": 0.96,
+      "invalid_actions": 5.28,
+      "customer_trust": 55.36,
+      "utilization": 0.05,
+      "safety_incidents": 1
+    },
+    {
+      "method": "trm",
+      "label": "FactoryCEO-TRM (recursive repair)",
+      "profit": 25759.88,
+      "on_time_rate": 0.97,
+      "invalid_actions": 0,
+      "customer_trust": 100,
+      "utilization": 0.04,
+      "safety_incidents": 0
+    }
+  ],
+  "headline_metrics": {
+    "frontier_llm_raw": {
+      "invalid_actions": 10.8,
+      "customer_trust": 17.44,
+      "unsafe_incidents": 1,
+      "profit": 18102.86
+    },
+    "factoryceo_trm": {
+      "invalid_actions": 0,
+      "customer_trust": 100,
+      "unsafe_incidents": 0,
+      "profit": 25759.88
+    }
+  },
+  "raw_llm_failure_modes": [
+    "JSON mode: returns an empty schedule (0 jobs completed)",
+    "plain mode: truncates mid-plan (reasoning eats the token budget) -> unparseable",
+    "no verifier: machine overlap, material arrives late, unqualified operator, hallucinated machines",
+    "no safety control: runs a degraded machine uninspected, pushes humans into fatigue overtime",
+    "result: a single irreversible unsafe action would cap autonomy (no license earned)"
+  ]
+}

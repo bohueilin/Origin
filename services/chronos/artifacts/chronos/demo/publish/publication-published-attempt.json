@@ -1,0 +1,27 @@
+{
+  "command_argv_ref": "docs/plans/repo-map/COMMANDS.json:integration-publication",
+  "command_key": "integration-publication",
+  "content_digest": "966522ef5371d4dde269af3d459ae1dd5b40616389b6eea7c5cec5d99336a3cd",
+  "created_at": "2026-06-23T08:09:00Z",
+  "evidence_refs": [
+    "docs/plans/evidence/005/MANIFEST.json",
+    "artifacts/chronos/releases/release-proofs/releaseproof-30e03914472631dd.json",
+    "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json",
+    "docs/plans/evidence/006/publish-receipt.json",
+    "artifacts/chronos/demo/publish/v2-deploy-proof.json"
+  ],
+  "idempotency_key": "bb3c8ce70604f4a5dd6cf4d191c3d482ab8da4aaf6ff1128f69e98e03c60a347",
+  "outcome": "published",
+  "publication_attempt_id": "pubattempt-bb3c8ce70604f4a5",
+  "published_environment_ref": "hud:registry/b3409057-8fdd-4f6b-a78f-8754910c66c3@v5",
+  "publisher_capability_label": "hud-environment-deploy",
+  "redaction_status": "redacted",
+  "release_candidate_ref": "artifacts/chronos/releases/candidates/releasecandidate-294df1726b8a5ed0.json",
+  "release_proof_digest": "b1e44142d86cdd73136b92a3876aa11ebdd55dd053c25decedac38b6712102d7",
+  "release_proof_gate_status": "pass",
+  "release_proof_id": "releaseproof-30e03914472631dd",
+  "schema_version": 1,
+  "target_id": "mongodb-sales-aggregation-engine:c2ee704d5c4e653e",
+  "trusted_context_ref": "docs/plans/repo-map/COMMANDS.json:integration-publication",
+  "trusted_publication_evidence_ref": "docs/plans/evidence/006/publish-receipt.json"
+}

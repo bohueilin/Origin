@@ -1,0 +1,214 @@
+{
+  "adaptive-rejection-sampler": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN5XSAC1M4T8NWRYBP5V0GV",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN5XSAC1M4T8NWRYBP5V0GV",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN5XSAC1M4T8NWRYBP5V0GV",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "adaptive-rejection-sampler",
+      "environment_version": "adaptive_rejection_sampler_v1",
+      "task_state_roots": [
+        "/app"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-f8d4d903c9ee1490b682aa80"
+    },
+    "seconds": 44.1
+  },
+  "constrained-portfolio-variance-minimization": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN44XBEYDPT9DC97YHF13JW",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN44XBEYDPT9DC97YHF13JW",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN44XBEYDPT9DC97YHF13JW",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "constrained-portfolio-variance-minimization",
+      "environment_version": "constrained_portfolio_variance_minimization_v1",
+      "task_state_roots": [
+        "/app"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-0a5664630389c30fed736d2f"
+    },
+    "seconds": 8.0
+  },
+  "enumerate-polytope-extreme-points": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN467RJV3VEZF5QGDZ1DN1B",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN467RJV3VEZF5QGDZ1DN1B",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN467RJV3VEZF5QGDZ1DN1B",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "enumerate-polytope-extreme-points",
+      "environment_version": "enumerate_polytope_extreme_points_v1",
+      "task_state_roots": [
+        "/app"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-9ed77f960ad5217129618141"
+    },
+    "seconds": 43.4
+  },
+  "implement-2d-convolution": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN485BHFNG53PWFEV1R6XH3",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN485BHFNG53PWFEV1R6XH3",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN485BHFNG53PWFEV1R6XH3",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "implement-2d-convolution",
+      "environment_version": "implement_2d_convolution_v1",
+      "task_state_roots": [
+        "/app"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-8275a76e588abe6b573b0da6"
+    },
+    "seconds": 63.0
+  },
+  "port-fortran-rk4-lorenz-to-python": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN4AXKKJFVYN9EVXVPB09QG",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN4AXKKJFVYN9EVXVPB09QG",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN4AXKKJFVYN9EVXVPB09QG",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "port-fortran-rk4-lorenz-to-python",
+      "environment_version": "port_fortran_rk4_lorenz_to_python_v1",
+      "task_state_roots": [
+        "/app"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-5dfbaeb6c5cb217d88c580e5"
+    },
+    "seconds": 90.4
+  },
+  "solve-ode-with-sympy": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN4D86W8AZA9CMNS013X3WS",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN4D86W8AZA9CMNS013X3WS",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN4D86W8AZA9CMNS013X3WS",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "solve-ode-with-sympy",
+      "environment_version": "solve_ode_with_sympy_v1",
+      "task_state_roots": [
+        "/app"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-3bc211b18dace20d77eeb719"
+    },
+    "seconds": 76.4
+  },
+  "fmri-encoding-r": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN5ZEWMF9TW9FN913HF4BPK",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN5ZEWMF9TW9FN913HF4BPK",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN5ZEWMF9TW9FN913HF4BPK",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "fmri-encoding-r",
+      "environment_version": "fmri_encoding_r_v1",
+      "task_state_roots": [
+        "/app"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-35ae9822165dbe25b1516ab1"
+    },
+    "seconds": 55.1
+  },
+  "synthesize-harmonic-wav-in-c": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN61C4QCGPNTPW1PDR941EG",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN61C4QCGPNTPW1PDR941EG",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN61C4QCGPNTPW1PDR941EG",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "synthesize-harmonic-wav-in-c",
+      "environment_version": "synthesize_harmonic_wav_in_c_v1",
+      "task_state_roots": [
+        "/app"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-fac76cc4c4e852d92b3cca39"
+    },
+    "seconds": 62.6
+  },
+  "recover-corrupted-sqlite-data": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN4GCPFF8866VBFGFA9BE2B",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN4GCPFF8866VBFGFA9BE2B",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN4GCPFF8866VBFGFA9BE2B",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "recover-corrupted-sqlite-data",
+      "environment_version": "recover_corrupted_sqlite_data_v1",
+      "task_state_roots": [
+        "/app",
+        "/data"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-41da210f8e1cd5eadbd5e729"
+    },
+    "seconds": 60.2
+  },
+  "find-invalid-blockchain-transactions": {
+    "status": "ok",
+    "snapshot_id": "im-01KVN4JKJTWVNNJG1ACGVXK15D",
+    "forkpoint": {
+      "schema_version": 1,
+      "snapshot_id": "im-01KVN4JKJTWVNNJG1ACGVXK15D",
+      "snapshot_mode": "filesystem",
+      "snapshot_restore_ref": "modal-image://im-01KVN4JKJTWVNNJG1ACGVXK15D",
+      "snapshot_retention": "modal-default-ttl",
+      "task_id": "find-invalid-blockchain-transactions",
+      "environment_version": "find_invalid_blockchain_transactions_v1",
+      "task_state_roots": [
+        "/app",
+        "/data"
+      ],
+      "network_policy": "block_network=True",
+      "fork_reason": "qabench-fresh-task-boundary",
+      "trace_kind": "fresh-task-state",
+      "fork_point_id": "fp-9600ca31d63b8ad41b0ff7b4"
+    },
+    "seconds": 72.7
+  }
+}

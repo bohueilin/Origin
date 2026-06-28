@@ -1,0 +1,20 @@
+{
+  "contentDigest": "ps-001-digest",
+  "createdAt": "2026-06-21T01:57:47Z",
+  "environmentV1": "mongodb_sales_aggregation_engine_v1",
+  "exploitFamilyVariantIds": [
+    "variant-reseed-a",
+    "variant-reseed-b"
+  ],
+  "exploitWitnessIds": [
+    "whitespace"
+  ],
+  "graderV1Digest": "ecaf12227976729261555ba1c5c229ad89487fc1beb945b4b8ae52509b56f61f",
+  "legitimateControlIds": [
+    "mongodb-sales-aggregation-engine-path-a",
+    "mongodb-sales-aggregation-engine-path-b",
+    "mongodb-sales-aggregation-engine-path-c"
+  ],
+  "proofSetId": "proofset-e497370b2c3d2a69",
+  "schemaVersion": "1.0.0"
+}

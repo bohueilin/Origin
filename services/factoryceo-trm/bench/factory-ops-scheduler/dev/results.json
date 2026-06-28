@@ -1,0 +1,24 @@
+{
+  "provider": "fireworks",
+  "k": 2,
+  "oracle_reward": 34902.79,
+  "oracle_pass": true,
+  "models": {
+    "accounts/fireworks/models/qwen3p7-plus": {
+      "pass_at_k": false,
+      "pass_rate": 0.0,
+      "attempts": [
+        {
+          "passed": false,
+          "feasible": false,
+          "error": "ValidationError: 7 validation errors for ActionPlan\nquote_decisions.0.accept\n  Field required [type=missing, input_value={'rfq_id': 'R17', 'decision': 'accept'}"
+        },
+        {
+          "passed": false,
+          "feasible": false,
+          "error": "ValueError: no JSON object in response"
+        }
+      ]
+    }
+  }
+}

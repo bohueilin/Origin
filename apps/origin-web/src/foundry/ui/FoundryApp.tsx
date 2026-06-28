@@ -99,10 +99,13 @@ function TrainingPanel() {
   const [shown, setShown] = useState(0)
   useEffect(() => {
     if (!run) return
-    setShown(0)
     const t = setInterval(() => setShown((s) => (s >= MOCK_CURVE.length ? s : s + 1)), 420)
     return () => clearInterval(t)
   }, [run])
+  const start = () => {
+    setShown(0)
+    setRun(true)
+  }
 
   const pts = MOCK_CURVE.slice(0, shown)
   const W = 320
@@ -120,7 +123,7 @@ function TrainingPanel() {
           (Fireworks RFT, rollouts on Modal). Watch reward climb and false-accepts fall.
         </p>
       </div>
-      <button className="fdy-btn fdy-btn--primary" onClick={() => setRun(true)}>
+      <button className="fdy-btn fdy-btn--primary" onClick={start}>
         {run ? 'Training…' : 'Kick off training'}
       </button>
       <span className="fdy-flag">armed · reusing services/foundry-train (Fireworks + Modal)</span>

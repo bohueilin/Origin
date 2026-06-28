@@ -46,3 +46,10 @@
   .soc-board__row { grid-template-columns: 22px 1fr auto; }
   .soc-board__track { grid-column: 1 / -1; }
 }
+
+/* ---- the safety-tax shootout ---- */
+.soc-shoot__meta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; font: 500 14px/1.4 ui-monospace, monospace; color: #cfc8b9; }
+.soc-shoot__safe { color: var(--fast); font-weight: 600; }
+.soc-shoot__risk { color: #f0a93b; font-weight: 600; }
+.soc-shoot__tax { margin-top: 6px; font: 500 15px/1.5 Inter, sans-serif; color: var(--fast); }
+.soc-shoot__tax strong { color: #fff; }

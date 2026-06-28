@@ -38,7 +38,7 @@ import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
 import { handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
-import { handleSocRun, handleSocRace } from './socHandler.ts'
+import { handleSocRun, handleSocRace, handleSocShootout } from './socHandler.ts'
 import { handleLeaderboard } from './leaderboardHandler.ts'
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
@@ -418,6 +418,8 @@ export function createApp(config: AppConfig): Hono {
   app.post('/api/foundry/soc-race', async (c) => c.json(await handleSocRace(await jsonBody(c), config.cerebras, config.gemini)))
   // Speed leaderboard: gemma-4-31b on Cerebras vs every available frontier GPU model, live tok/s.
   app.post('/api/foundry/leaderboard', async (c) => c.json(await handleLeaderboard(await jsonBody(c), config.cerebras, config.gemini)))
+  // The "safety tax": GPU one-shot (fast, unguarded → breaches) vs Cerebras verified (safe AND faster).
+  app.post('/api/foundry/soc-shootout', async (c) => c.json(await handleSocShootout(await jsonBody(c), config.cerebras, config.gemini)))
 
   return app
 }

@@ -38,6 +38,7 @@ import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
 import { handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
+import { handleSocRun, handleSocRace } from './socHandler.ts'
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
   switch (code) {
@@ -407,6 +408,13 @@ export function createApp(config: AppConfig): Hono {
   app.post('/api/foundry/parse-floor', async (c) => c.json(await handleParseFloor(await jsonBody(c), config.cerebras)))
   app.post('/api/foundry/quorum-run', async (c) => c.json(await handleQuorumRun(await jsonBody(c), config.cerebras)))
   app.post('/api/foundry/speed-race', async (c) => c.json(await handleSpeedRace(await jsonBody(c), config.cerebras, config.gemini)))
+
+  // ---- Origin Autonomy-Control (AI-SOC): same engine, digital buyer ----
+  // A software agent's destructive/injection-driven tool-calls are vetoed by the Guardian and
+  // a fail-closed policy floor; the deterministic policy is the only judge. The loop-race proves
+  // per-step verification is free at Cerebras speed.
+  app.post('/api/foundry/soc-run', async (c) => c.json(await handleSocRun(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/soc-race', async (c) => c.json(await handleSocRace(await jsonBody(c), config.cerebras, config.gemini)))
 
   return app
 }

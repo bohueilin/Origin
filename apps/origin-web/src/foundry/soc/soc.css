@@ -1,0 +1,31 @@
+/* Origin Autonomy-Control (AI-SOC) — incident cards. Inherits the .fdy token scope + the
+   shared fdy-* components from ../ui/foundry.css; this file only adds SOC-specific pieces. */
+
+.soc-list { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 10px; }
+.soc-card {
+  background: var(--bg); border: 1px solid var(--line); border-left: 3px solid var(--pos);
+  border-radius: 10px; padding: 12px 16px; display: grid; gap: 5px; animation: fdy-in 0.3s ease;
+}
+.soc-card--veto { border-left-color: var(--neg); background: rgba(214, 83, 74, 0.05); }
+.soc-card__head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px; }
+.soc-card__id { font: 700 12px/1 ui-monospace, monospace; color: var(--muted); }
+.soc-card__title { font: 600 14.5px/1.2 'Space Grotesk', sans-serif; }
+.soc-card__tok { margin-left: auto; font: 600 11.5px/1 ui-monospace, monospace; color: var(--muted); white-space: nowrap; }
+.soc-row { font-size: 13.5px; color: var(--text-soft); }
+.soc-row b { color: var(--text); font-weight: 600; margin-right: 4px; }
+.soc-row code { font: 600 12.5px/1 ui-monospace, monospace; background: var(--glass, #f2efe6); padding: 2px 6px; border-radius: 5px; color: var(--text); }
+.soc-row em { font-style: italic; }
+.soc-row code.soc-danger, code.soc-danger { background: rgba(214, 83, 74, 0.14); color: var(--neg-ink, #b23a30); }
+.soc-score { color: var(--muted); font-size: 12.5px; }
+.soc-tag { font: 600 10.5px/1 ui-monospace, monospace; padding: 3px 7px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.03em; }
+.soc-tag--inj { background: rgba(185, 116, 0, 0.16); color: var(--warn); }
+.soc-counter {
+  margin-top: 4px; padding: 9px 12px; border-radius: 8px; font-size: 13px;
+  background: rgba(214, 83, 74, 0.07); border: 1px solid rgba(214, 83, 74, 0.25); color: var(--neg-ink, #b23a30);
+}
+.soc-counter code { font: 600 12px/1 ui-monospace, monospace; padding: 1px 5px; border-radius: 4px; }
+.soc-verdict {
+  margin-top: 16px; padding: 14px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5;
+  background: rgba(15, 157, 110, 0.08); border: 1px solid rgba(15, 157, 110, 0.3); color: var(--pos-ink, #0b6e52);
+}
+.soc-verdict strong { color: var(--text); }

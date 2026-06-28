@@ -8,9 +8,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import '../ui/foundry.css'
 import './soc.css'
-import { socRun, socRace } from './socClient'
+import { socRun, socRace, leaderboard } from './socClient'
 import { SOC_ACTIONS, isDestructive } from './socEnv'
-import type { SocRunResponse, SocRaceResponse, SocDecision } from './socTypes'
+import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse } from './socTypes'
 import type { FoundrySource } from '../types'
 
 const LABEL = new Map(SOC_ACTIONS.map((a) => [a.id, a.label]))
@@ -19,6 +19,56 @@ const actLabel = (id: string) => LABEL.get(id) ?? id
 function SourceBadge({ source, model }: { source: FoundrySource; model?: string }) {
   const label = source === 'cerebras' ? 'gemma-4-31b · Cerebras' : source === 'gemini' ? model || 'GPU baseline' : 'deterministic mock'
   return <span className={`fdy-badge fdy-badge--${source}`}>{label}</span>
+}
+
+// ---- the speed leaderboard (raw-speed proof) --------------------------------
+
+function Leaderboard() {
+  const [data, setData] = useState<LeaderboardResponse | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const run = useCallback(async () => {
+    setBusy(true)
+    setErr(null)
+    try {
+      setData(await leaderboard())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Leaderboard failed.')
+    } finally {
+      setBusy(false)
+    }
+  }, [])
+  const max = Math.max(...(data?.lanes.map((l) => l.tokS ?? 0) ?? [1]), 1)
+
+  return (
+    <section className="fdy-card fdy-race">
+      <div className="fdy-card__head">
+        <h2>Raw speed: one prompt, every model</h2>
+        <p>gemma-4-31b on Cerebras vs every frontier model we can reach, live — real tok/s measured this run. The gap is the whole reason per-step verification is free.</p>
+      </div>
+      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+        {busy ? 'Racing the field…' : data ? 'Run again' : 'Run the leaderboard'}
+      </button>
+      {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
+      {data && (
+        <div className="soc-board">
+          {data.lanes.map((l) => (
+            <div key={l.label} className={`soc-board__row${l.provider === 'cerebras' ? ' soc-board__row--cb' : ''}`}>
+              <span className="soc-board__rank">#{l.rank}</span>
+              <span className="soc-board__name">{l.label}</span>
+              <div className="soc-board__track">
+                <div className="soc-board__fill" style={{ width: `${l.ok ? Math.max(2, Math.round(((l.tokS ?? 0) / max) * 100)) : 0}%` }} />
+              </div>
+              <span className="soc-board__tok">{l.ok ? `${l.tokS} tok/s` : l.note || '—'}</span>
+            </div>
+          ))}
+          {data.speedupVsBestGpu && (
+            <div className="fdy-race__verdict">gemma-4-31b on Cerebras is {data.speedupVsBestGpu}× the fastest GPU model here — and far more vs the rest.</div>
+          )}
+        </div>
+      )}
+    </section>
+  )
 }
 
 // ---- the loop-race (signature) ----------------------------------------------
@@ -153,6 +203,8 @@ export default function SocConsole() {
           free because Cerebras runs gemma-4-31b at ~1,500 tok/s.
         </p>
       </header>
+
+      <Leaderboard />
 
       <LoopRace />
 

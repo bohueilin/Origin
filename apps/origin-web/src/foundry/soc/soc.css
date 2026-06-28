@@ -29,3 +29,20 @@
   background: rgba(15, 157, 110, 0.08); border: 1px solid rgba(15, 157, 110, 0.3); color: var(--pos-ink, #0b6e52);
 }
 .soc-verdict strong { color: var(--text); }
+
+/* ---- speed leaderboard (inside the dark .fdy-race panel) ---- */
+.soc-board { margin-top: 16px; display: grid; gap: 9px; }
+.soc-board__row { display: grid; grid-template-columns: 28px 130px 1fr auto; align-items: center; gap: 10px; }
+.soc-board__rank { font: 700 13px/1 ui-monospace, monospace; color: #8b8474; }
+.soc-board__name { font: 600 15px/1.1 'Space Grotesk', sans-serif; color: #efe9dc; }
+.soc-board__track { height: 18px; background: #2c271d; border-radius: 5px; overflow: hidden; }
+.soc-board__fill { height: 100%; border-radius: 5px; background: #6b6555; transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1); }
+.soc-board__tok { font: 600 14px/1 ui-monospace, monospace; color: #cfc8b9; white-space: nowrap; min-width: 96px; text-align: right; }
+.soc-board__row--cb .soc-board__name { color: #fff; font-size: 16px; }
+.soc-board__row--cb .soc-board__fill { background: linear-gradient(90deg, #1d9d6e, var(--fast)); }
+.soc-board__row--cb .soc-board__tok { color: var(--fast); font-size: 15px; }
+.soc-board__row--cb .soc-board__rank { color: var(--fast); }
+@media (max-width: 640px) {
+  .soc-board__row { grid-template-columns: 22px 1fr auto; }
+  .soc-board__track { grid-column: 1 / -1; }
+}

@@ -75,3 +75,24 @@ export interface SocRaceResponse {
   /** incidentsCleared(cerebras) ÷ incidentsCleared(baseline). */
   throughputRatio: number | null
 }
+
+// ---- speed leaderboard: gemma-4-31b on Cerebras vs every frontier GPU model ----
+
+export interface LeaderLane {
+  rank: number
+  label: string
+  provider: 'cerebras' | 'fireworks'
+  model: string
+  ok: boolean
+  tokS: number | null
+  totalMs: number | null
+  note?: string
+}
+
+export interface LeaderboardResponse {
+  ok: boolean
+  prompt: string
+  lanes: LeaderLane[]
+  cerebrasTokS: number | null
+  speedupVsBestGpu: number | null
+}

@@ -22,7 +22,6 @@ import { repairSiteMap } from '../src/foundry/floorValidator.ts'
 import {
   bfsOracle,
   verifyWarehouseRollout,
-  oraclePolicy,
   recklessFinishPolicy,
   initialWarehouseState,
   applyWarehouseAction,
@@ -182,6 +181,12 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
     const why = !cfg.apiKey ? 'CEREBRAS_API_KEY not set' : 'no image provided'
     return finish(sampleFloor(), 'mock', null, [`Mock floor (${why}) — deterministic sample, set the key + upload to parse a real floor.`], cfg.model)
   }
+  // Cerebras caps images at ~10MB/request; a base64 data URI is ~33% larger than the bytes.
+  // Reject oversize uploads BEFORE spending a request (cost + latency guard).
+  const MAX_DATA_URI = 10_000_000
+  if (body.imageDataUri.length > MAX_DATA_URI) {
+    return finish(sampleFloor(), 'mock', null, ['Image too large (>~7MB) — Cerebras caps images at 10MB. Using the deterministic sample; re-upload a smaller image.'], cfg.model)
+  }
 
   const messages: ChatMessage[] = [
     { role: 'system', content: PARSE_SYSTEM },
@@ -317,7 +322,12 @@ interface AgentCall<T> {
   value: T
   source: FoundrySource
   tokS: number | null
+  /** For honest aggregate throughput = Σtokens / Σtime (averaging per-call rates is wrong). */
+  completionTokens?: number | null
+  totalMs?: number | null
 }
+
+const LOOP_TIMEOUT_MS = 4000 // fail over to the deterministic fallback fast if wifi dies mid-demo
 
 async function planNext(
   task: WarehouseTask,
@@ -345,15 +355,16 @@ async function planNext(
   const res = await cerebrasChat(
     [{ role: 'system', content: sys }, { role: 'user', content: user }],
     cfg,
-    { jsonSchema: { name: 'plan', schema: PLANNER_SCHEMA }, reasoningEffort: 'none', maxTokens: 160, temperature: 0.2 },
+    { jsonSchema: { name: 'plan', schema: PLANNER_SCHEMA }, reasoningEffort: 'none', maxTokens: 160, temperature: 0.2, timeoutMs: LOOP_TIMEOUT_MS },
   )
   if (!res.ok) return { value: { action: fallback, rationale: '(planner fell back to the deterministic path)' }, source: 'mock', tokS: null }
+  const tk = { tokS: res.timing?.tokS ?? null, completionTokens: res.timing?.completionTokens ?? null, totalMs: res.timing?.totalMs ?? null }
   try {
     const j = JSON.parse(extractJsonObject(res.content)) as { action?: string; rationale?: string }
     const action = (WAREHOUSE_ACTIONS as readonly string[]).includes(j.action ?? '') ? (j.action as WarehouseAction) : fallback
-    return { value: { action, rationale: String(j.rationale ?? '').slice(0, 200) }, source: 'cerebras', tokS: res.timing?.tokS ?? null }
+    return { value: { action, rationale: String(j.rationale ?? '').slice(0, 200) }, source: 'cerebras', ...tk }
   } catch {
-    return { value: { action: fallback, rationale: '(planner output unparseable; using safe fallback)' }, source: 'cerebras', tokS: res.timing?.tokS ?? null }
+    return { value: { action: fallback, rationale: '(planner output unparseable; using safe fallback)' }, source: 'cerebras', ...tk }
   }
 }
 
@@ -387,18 +398,19 @@ async function guard(
   const res = await cerebrasChat(
     [{ role: 'system', content: sys }, { role: 'user', content: user }],
     cfg,
-    { jsonSchema: { name: 'verdict', schema: GUARDIAN_SCHEMA }, reasoningEffort: 'none', maxTokens: 120, temperature: 0 },
+    { jsonSchema: { name: 'verdict', schema: GUARDIAN_SCHEMA }, reasoningEffort: 'none', maxTokens: 120, temperature: 0, timeoutMs: LOOP_TIMEOUT_MS },
   )
   if (!res.ok) {
     // Fail SAFE: if the verifier is unreachable, veto anything the deterministic check flags.
     return { value: { verdict: shouldVeto ? 'veto' : 'ratify', reason: '(guardian fell back to the deterministic safety check)' }, source: 'mock', tokS: null }
   }
+  const tk = { tokS: res.timing?.tokS ?? null, completionTokens: res.timing?.completionTokens ?? null, totalMs: res.timing?.totalMs ?? null }
   try {
     const j = JSON.parse(extractJsonObject(res.content)) as { verdict?: string; reason?: string }
     const verdict: GuardianVerdict = j.verdict === 'veto' ? 'veto' : 'ratify'
-    return { value: { verdict, reason: String(j.reason ?? '').slice(0, 200) }, source: 'cerebras', tokS: res.timing?.tokS ?? null }
+    return { value: { verdict, reason: String(j.reason ?? '').slice(0, 200) }, source: 'cerebras', ...tk }
   } catch {
-    return { value: { verdict: shouldVeto ? 'veto' : 'ratify', reason: '(guardian output unparseable; deterministic safety check)' }, source: 'cerebras', tokS: res.timing?.tokS ?? null }
+    return { value: { verdict: shouldVeto ? 'veto' : 'ratify', reason: '(guardian output unparseable; deterministic safety check)' }, source: 'cerebras', ...tk }
   }
 }
 
@@ -424,9 +436,24 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
   let state = initialWarehouseState(task)
   let totalCalls = 0
   let guardianVetoes = 0
-  const tokSamples: number[] = []
+  let sumTokens = 0
+  let sumTimeMs = 0
+  let illustrativeTokS: number | null = null // a real sample to label mock steps with
   let sawReal = false
   let sawMock = false
+
+  // Aggregate tok/s = Σtokens / Σtime (averaging per-call RATES is mathematically wrong).
+  const accrue = (c: AgentCall<unknown>): void => {
+    if (typeof c.completionTokens === 'number' && typeof c.totalMs === 'number' && c.totalMs > 0) {
+      sumTokens += c.completionTokens
+      sumTimeMs += c.totalMs
+    }
+    if (typeof c.tokS === 'number') illustrativeTokS = c.tokS
+  }
+  const stepTokSOf = (a: AgentCall<unknown>, b: AgentCall<unknown>): number | null => {
+    const xs = [a.tokS, b.tokS].filter((t): t is number => typeof t === 'number')
+    return xs.length ? Math.round(xs.reduce((s, v) => s + v, 0) / xs.length) : null
+  }
 
   for (let loop = 1; loop <= maxLoops; loop += 1) {
     if (state.terminalAction || state.unsafeEntered) break
@@ -436,23 +463,25 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
 
     // The heading hint the Planner navigates by (it still chooses; the Guardian still verifies).
     const target = state.holding ? task.drop : task.item
+    const safeHeading = safeNextMove(task, state.position, target, unsafe)
     let recommended: WarehouseAction
     if (!state.picked && state.position.x === task.item.x && state.position.y === task.item.y) recommended = 'pick'
     else if (state.holding && state.position.x === task.drop.x && state.position.y === task.drop.y) recommended = 'drop'
     else if (state.dropped) recommended = 'finish'
     else {
-      const nm = mode === 'reckless' ? greedyMove(task, state.position, target) : safeNextMove(task, state.position, target, unsafe)
+      const nm = mode === 'reckless' ? greedyMove(task, state.position, target) : safeHeading
       recommended = nm ?? (mode === 'verified' && !state.holding ? 'refuse' : 'escalate')
     }
 
     const plan = await planNext(task, obs, moves, recommended, mode, recommended, cfg)
     const verdict = await guard(task, state, plan.value.action, unsafe, cfg)
     totalCalls += 2
-    for (const t of [plan.tokS, verdict.tokS]) if (typeof t === 'number') tokSamples.push(t)
+    accrue(plan)
+    accrue(verdict)
     const stepSource: FoundrySource = plan.source === 'cerebras' || verdict.source === 'cerebras' ? 'cerebras' : 'mock'
     if (stepSource === 'cerebras') sawReal = true
     else sawMock = true
-    const stepTokS = [plan.tokS, verdict.tokS].filter((t): t is number => typeof t === 'number')
+    const stepTokS = stepTokSOf(plan, verdict)
 
     if (verdict.value.verdict === 'veto') {
       guardianVetoes += 1
@@ -466,10 +495,28 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
         guardianReason: verdict.value.reason,
         applied: null,
         source: stepSource,
-        tokS: stepTokS.length ? Math.round(stepTokS.reduce((a, b) => a + b, 0) / stepTokS.length) : null,
+        tokS: stepTokS,
       })
-      // The Guardian stopped an unsafe/invalid act — end the rollout WITHOUT performing it.
-      break
+      // The Guardian caught a bad move. It doesn't just STOP — it keeps the robot safe AND
+      // productive: take the deterministic SAFE detour instead and continue. (This is the
+      // headline: many ratifies + the caught veto + a safe completion.) If no safe move
+      // exists, the correct terminal is refuse (not holding) / escalate.
+      const recover: WarehouseAction = safeHeading ?? (state.holding ? 'escalate' : 'refuse')
+      actions.push(recover)
+      state = applyWarehouseAction(task, state, recover)
+      steps.push({
+        loop,
+        position: { ...state.position },
+        observation: `recover after veto → ${recover}`,
+        proposed: recover,
+        rationale: 'Guardian veto → take the safe detour instead.',
+        verdict: 'ratify',
+        guardianReason: 'Safe alternative — clear of every hazard.',
+        applied: recover,
+        source: stepSource,
+        tokS: stepTokS,
+      })
+      continue
     }
 
     actions.push(plan.value.action)
@@ -484,17 +531,17 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
       guardianReason: verdict.value.reason,
       applied: plan.value.action,
       source: stepSource,
-      tokS: stepTokS.length ? Math.round(stepTokS.reduce((a, b) => a + b, 0) / stepTokS.length) : null,
+      tokS: stepTokS,
     })
   }
 
   // The ONLY judge: the deterministic oracle scores the actions the loop actually ran.
   const rollout = verifyWarehouseRollout(task, actions, `quorum:${mode}`)
-  // Counterfactual: the same reckless intent WITHOUT a Guardian gate (proves what verification prevented).
+  // Counterfactual: the same intent WITHOUT a Guardian gate (proves what verification prevented).
   const noGuard = verifyWarehouseRollout(task, recklessFinishPolicy(task), 'no-guardian')
 
   const source: FoundrySource = sawReal ? 'cerebras' : sawMock ? 'mock' : 'mock'
-  const avgTokS = tokSamples.length ? Math.round(tokSamples.reduce((a, b) => a + b, 0) / tokSamples.length) : null
+  const avgTokS = sumTimeMs > 0 ? Math.round(sumTokens / (sumTimeMs / 1000)) : illustrativeTokS
 
   return {
     ok: true,
@@ -549,7 +596,7 @@ export async function handleSpeedRace(body: SpeedBody, cerebras: CerebrasConfig,
     : { provider: 'cerebras', model: cerebras.model, ok: false, tokS: 1500, ttftMs: 10, totalMs: 180, completionTokens: 200, preview: 'Scan first, then route south around the hazard row, east to column 7, north to the item, pick, and continue to the drop — finishing safely.', note: cRes ? `Cerebras error (${cRes.code}); illustrative figures shown.` : 'CEREBRAS_API_KEY not set — illustrative figures (set the key for the live race).' }
 
   const baselineLane: SpeedRaceLane = gRes && gRes.ok
-    ? { provider: 'gemini', model: gemini.model, ok: true, tokS: gRes.totalMs && cerebrasLane.completionTokens ? Math.round((cerebrasLane.completionTokens ?? 200) / (gRes.totalMs / 1000)) : null, ttftMs: null, totalMs: gRes.totalMs, completionTokens: null, preview: gRes.content.slice(0, 280) }
+    ? { provider: 'gemini', model: gemini.model, ok: true, tokS: gRes.tokS, ttftMs: null, totalMs: gRes.totalMs, completionTokens: gRes.completionTokens, preview: gRes.content.slice(0, 280) }
     : { provider: 'gemini', model: gemini.model, ok: false, tokS: 95, ttftMs: 480, totalMs: 2400, completionTokens: 200, preview: '(GPU baseline still streaming…)', note: gRes ? `Gemini baseline unavailable (${gRes.code}); illustrative GPU-class figures shown.` : 'GEMINI_API_KEY not set — illustrative GPU-class baseline.' }
 
   const cTok = cerebrasLane.tokS

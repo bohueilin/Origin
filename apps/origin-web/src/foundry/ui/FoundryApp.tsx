@@ -124,9 +124,9 @@ function TrainingPanel() {
         </p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={start}>
-        {run ? 'Training…' : 'Kick off training'}
+        {run ? 'Showing the trend…' : 'Show the training trend'}
       </button>
-      <span className="fdy-flag">armed · reusing services/foundry-train (Fireworks + Modal)</span>
+      <span className="fdy-flag">armed · pipeline in services/foundry-train (Fireworks + Modal)</span>
       <svg viewBox={`0 0 ${W} ${H}`} className="fdy-curve" role="img" aria-label="Reward and false-accept-rate over training steps">
         <line x1={0} y1={H} x2={W} y2={H} stroke="var(--fg-grid)" />
         <path d={line((p) => p.reward)} fill="none" stroke="var(--fg-pos)" strokeWidth={2.5} />
@@ -136,6 +136,7 @@ function TrainingPanel() {
         <span><i style={{ background: 'var(--fg-pos)' }} /> reward ↑</span>
         <span><i style={{ background: 'var(--fg-neg)' }} /> false-accept rate ↓</span>
       </div>
+      <p className="fdy-train__caption">Illustrative trend — not a live run. The wired RFT pipeline (reward = the deterministic oracle) lives in <code>services/foundry-train</code>.</p>
     </section>
   )
 }
@@ -144,7 +145,7 @@ function TrainingPanel() {
 
 function QuorumTrace({ result, revealed }: { result: QuorumRunResponse; revealed: number }) {
   return (
-    <ol className="fdy-trace">
+    <ol className="fdy-trace" aria-live="polite">
       {result.steps.slice(0, revealed).map((s, i) => (
         <li key={i} className={`fdy-step fdy-step--${s.verdict}`}>
           <div className="fdy-step__loop">#{s.loop}</div>
@@ -156,7 +157,7 @@ function QuorumTrace({ result, revealed }: { result: QuorumRunResponse; revealed
               <strong>Guardian</strong> → <span className={`fdy-verdict fdy-verdict--${s.verdict}`}>{s.verdict === 'ratify' ? 'RATIFY' : 'VETO'}</span> {s.guardianReason}
             </div>
           </div>
-          <div className="fdy-step__tok">{s.tokS ? `${s.tokS} tok/s` : ''}</div>
+          <div className="fdy-step__tok">{s.tokS ? `${s.tokS} tok/s` : s.source === 'mock' ? '~1,284 tok/s · sim' : ''}</div>
         </li>
       ))}
     </ol>
@@ -172,6 +173,7 @@ export default function FoundryApp() {
   const [quorum, setQuorum] = useState<QuorumRunResponse | null>(null)
   const [running, setRunning] = useState(false)
   const [revealed, setRevealed] = useState(0)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const doParse = useCallback(async (imageDataUri?: string, hint?: string) => {
@@ -187,8 +189,13 @@ export default function FoundryApp() {
 
   const onUpload = useCallback(
     async (file: File) => {
-      const uri = await fileToDataUri(file)
-      await doParse(uri, file.name)
+      setUploadError(null)
+      try {
+        const uri = await fileToDataUri(file)
+        await doParse(uri, file.name)
+      } catch (e) {
+        setUploadError(e instanceof Error ? e.message : 'Could not read that image.')
+      }
     },
     [doParse],
   )
@@ -259,13 +266,14 @@ export default function FoundryApp() {
               if (f) void onUpload(f)
             }}
           />
-          <button className="fdy-btn fdy-btn--primary" onClick={() => fileRef.current?.click()} disabled={parsing}>
+          <button className="fdy-btn fdy-btn--primary" onClick={() => fileRef.current?.click()} disabled={parsing} aria-label="Upload a floor image (PNG or JPEG, under 7MB)">
             {parsing ? 'Reading…' : 'Upload a floor image'}
           </button>
           <button className="fdy-btn" onClick={() => void doParse(undefined, 'sample')} disabled={parsing}>
             Use the sample floor
           </button>
         </div>
+        {uploadError && <p className="fdy-upload-error" role="alert">{uploadError}</p>}
 
         {parse?.siteMap && (
           <div className="fdy-parse">
@@ -273,6 +281,7 @@ export default function FoundryApp() {
             <div className="fdy-parse__side">
               <div className="fdy-parse__row">
                 <SourceBadge source={parse.source} />
+                <span className="fdy-chip">vision</span>
                 {parse.timing?.tokS && <span className="fdy-chip">{parse.timing.tokS} tok/s</span>}
               </div>
               {parse.oracle && (
@@ -313,10 +322,10 @@ export default function FoundryApp() {
             <p>The Planner and Guardian are both gemma-4-31b. Run the verified policy, or the reckless one to watch the Guardian veto an unsafe move.</p>
           </div>
           <div className="fdy-modes">
-            <button className={`fdy-pill${mode === 'verified' ? ' is-on' : ''}`} onClick={() => setMode('verified')}>
+            <button className={`fdy-pill${mode === 'verified' ? ' is-on' : ''}`} aria-pressed={mode === 'verified'} onClick={() => setMode('verified')}>
               Verified policy
             </button>
-            <button className={`fdy-pill${mode === 'reckless' ? ' is-on' : ''}`} onClick={() => setMode('reckless')}>
+            <button className={`fdy-pill${mode === 'reckless' ? ' is-on' : ''}`} aria-pressed={mode === 'reckless'} onClick={() => setMode('reckless')}>
               Reckless (reward-hacker)
             </button>
             <button className="fdy-btn fdy-btn--primary" onClick={runLoop} disabled={running}>
@@ -345,11 +354,13 @@ export default function FoundryApp() {
                       <li key={i}>{c}</li>
                     ))}
                   </ul>
-                  <div className="fdy-counter">
-                    <strong>Without the Guardian</strong>, the same intent → <code>{quorum.counterfactual.category}</code>, reward{' '}
-                    {quorum.counterfactual.reward.toFixed(2)}
-                    {quorum.counterfactual.unsafeEntered && ' — it drove into a hazard.'} That's what verifying every step prevents.
-                  </div>
+                  {quorum.mode === 'reckless' && (
+                    <div className="fdy-counter">
+                      <strong>Without the Guardian</strong>, this same reward-hacker → <code>{quorum.counterfactual.category}</code>, reward{' '}
+                      {quorum.counterfactual.reward.toFixed(2)}
+                      {quorum.counterfactual.unsafeEntered && ' — it drove straight into a hazard.'} That's exactly what verifying every step prevented above.
+                    </div>
+                  )}
                 </div>
               )}
             </>
@@ -358,6 +369,12 @@ export default function FoundryApp() {
       )}
 
       <TrainingPanel />
+
+      <p className="fdy-brainline">
+        This is the robot's <strong>brain</strong>, not a maze toy: swap the floor photo for a camera feed and <code>move:east</code> for a motor
+        command — the gemma-4-31b perception, the Quorum gate, and the deterministic oracle don't change. We built the robot-ready brain; GPU latency
+        is what would break the verify-every-step loop.
+      </p>
 
       <footer className="fdy-foot">
         <span>Origin Physical AI · the oracle is the only judge</span>

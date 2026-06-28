@@ -1,6 +1,14 @@
 /* Origin Foundry — warm-paper chrome (matching the live Origin product) with a dark
    "engine console" signature for the speed/telemetry surfaces, where the tok/s lives. */
 
+:root { color-scheme: light; }
+html,
+body {
+  margin: 0;
+  background: #faf9f5;
+  color: #1a1813;
+}
+
 .fdy {
   --bg: #faf9f5;
   --panel: #fffefb;
@@ -181,8 +189,19 @@
 .fdy-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
 .fdy-foot a { color: var(--accent-ink); text-decoration: none; font-weight: 600; }
 
+.fdy-upload-error { color: var(--neg-ink, #b23a30); font-size: 13px; margin: 8px 0 0; }
+.fdy-brainline {
+  margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--glass, #f2efe6);
+  border: 1px solid var(--line); font-size: 13.5px; color: var(--text-soft);
+}
+.fdy-brainline code { font: 600 12.5px/1 ui-monospace, monospace; background: #fff; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); }
+.fdy-train__caption { font-size: 12.5px; color: var(--muted); font-style: italic; margin: 4px 0 0; }
+
 @media (max-width: 720px) {
   .fdy-parse { grid-template-columns: 1fr; }
+  .fdy-step { grid-template-columns: 30px 1fr; }
+  .fdy-step__tok { grid-column: 2; padding-top: 0; }
+  .fdy-stat { min-width: 0; flex: 1 1 40%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .fdy-step { animation: none; }

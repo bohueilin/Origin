@@ -25,9 +25,16 @@ export const quorumRun = (input: { siteMap: DescriptiveSiteMap; embodiment?: str
 export const speedRace = (input: { prompt?: string } = {}) =>
   postJson<SpeedRaceResponse>('/api/foundry/speed-race', input)
 
+/** Cerebras caps images at ~10MB/request; reject oversize uploads client-side too. */
+export const MAX_IMAGE_BYTES = 7_000_000
+
 /** Read a File (the uploaded floor image) into a base64 data URI — Cerebras requires data URIs, not hosted URLs. */
 export function fileToDataUri(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (file.size > MAX_IMAGE_BYTES) {
+      reject(new Error(`Image is ${(file.size / 1e6).toFixed(1)}MB — please use one under ${MAX_IMAGE_BYTES / 1e6}MB.`))
+      return
+    }
     const reader = new FileReader()
     reader.onload = () => resolve(String(reader.result))
     reader.onerror = () => reject(reader.error)

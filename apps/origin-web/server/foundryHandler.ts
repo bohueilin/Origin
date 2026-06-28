@@ -595,9 +595,10 @@ export async function handleSpeedRace(body: SpeedBody, cerebras: CerebrasConfig,
     ? { provider: 'cerebras', model: cerebras.model, ok: true, tokS: cRes.timing?.tokS ?? null, ttftMs: cRes.timing?.ttftMs ?? null, totalMs: cRes.timing?.totalMs ?? null, completionTokens: cRes.timing?.completionTokens ?? null, preview: cRes.content.slice(0, 280) }
     : { provider: 'cerebras', model: cerebras.model, ok: false, tokS: 1500, ttftMs: 10, totalMs: 180, completionTokens: 200, preview: 'Scan first, then route south around the hazard row, east to column 7, north to the item, pick, and continue to the drop — finishing safely.', note: cRes ? `Cerebras error (${cRes.code}); illustrative figures shown.` : 'CEREBRAS_API_KEY not set — illustrative figures (set the key for the live race).' }
 
+  const baselineName = gemini.label ?? gemini.model
   const baselineLane: SpeedRaceLane = gRes && gRes.ok
-    ? { provider: 'gemini', model: gemini.model, ok: true, tokS: gRes.tokS, ttftMs: null, totalMs: gRes.totalMs, completionTokens: gRes.completionTokens, preview: gRes.content.slice(0, 280) }
-    : { provider: 'gemini', model: gemini.model, ok: false, tokS: 95, ttftMs: 480, totalMs: 2400, completionTokens: 200, preview: '(GPU baseline still streaming…)', note: gRes ? `Gemini baseline unavailable (${gRes.code}); illustrative GPU-class figures shown.` : 'GEMINI_API_KEY not set — illustrative GPU-class baseline.' }
+    ? { provider: 'gemini', model: baselineName, ok: true, tokS: gRes.tokS, ttftMs: null, totalMs: gRes.totalMs, completionTokens: gRes.completionTokens, preview: gRes.content.slice(0, 280) }
+    : { provider: 'gemini', model: baselineName, ok: false, tokS: 95, ttftMs: 480, totalMs: 2400, completionTokens: 200, preview: '(GPU baseline still streaming…)', note: gRes ? `${baselineName} baseline unavailable (${gRes.code}); illustrative GPU-class figures shown.` : 'No baseline key set — illustrative GPU-class figures (set FIREWORKS_API_KEY for a live race).' }
 
   const cTok = cerebrasLane.tokS
   const bTok = baselineLane.tokS

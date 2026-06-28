@@ -11,8 +11,8 @@ import { parseFloor, quorumRun, speedRace, fileToDataUri } from '../foundryClien
 import type { ParseFloorResponse, QuorumRunResponse, SpeedRaceResponse, FoundrySource, QuorumMode } from '../types'
 import type { GridPos } from '../../warehouse'
 
-function SourceBadge({ source }: { source: FoundrySource }) {
-  const label = source === 'cerebras' ? 'gemma-4-31b · Cerebras' : source === 'gemini' ? 'Gemini · baseline' : 'deterministic mock'
+function SourceBadge({ source, model }: { source: FoundrySource; model?: string }) {
+  const label = source === 'cerebras' ? 'gemma-4-31b · Cerebras' : source === 'gemini' ? model || 'GPU baseline' : 'deterministic mock'
   return <span className={`fdy-badge fdy-badge--${source}`}>{label}</span>
 }
 
@@ -65,7 +65,7 @@ function SpeedRacePanel() {
           {[data.cerebras, data.baseline].map((lane) => (
             <div key={lane.provider} className={`fdy-lane fdy-lane--${lane.provider}`}>
               <div className="fdy-lane__top">
-                <SourceBadge source={lane.provider} />
+                <SourceBadge source={lane.provider} model={lane.model} />
                 <div className="fdy-lane__tok">
                   {lane.tokS ?? '—'} <span>tok/s</span>
                 </div>

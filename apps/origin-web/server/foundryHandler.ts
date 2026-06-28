@@ -19,7 +19,6 @@
 import type { CerebrasConfig, GeminiConfig } from './config.ts'
 import { cerebrasChat, geminiChat, extractJsonObject, type ChatMessage } from './cerebrasHandler.ts'
 import { repairSiteMap } from '../src/foundry/floorValidator.ts'
-import { siteMapToWarehouseTask, evaluateDrawnSite } from '../src/siteEval.ts'
 import {
   bfsOracle,
   verifyWarehouseRollout,
@@ -29,10 +28,11 @@ import {
   applyWarehouseAction,
   WAREHOUSE_ACTIONS,
   type WarehouseTask,
+  type WarehouseTerminal,
   type WarehouseAction,
   type GridPos,
 } from '../src/warehouse.ts'
-import { ROBOT_EMBODIMENTS, type RobotEmbodiment } from '../src/environmentPlan.ts'
+import { applyEmbodiment, ROBOT_EMBODIMENTS, type RobotEmbodiment } from '../src/environmentPlan.ts'
 import type { DescriptiveSiteMap } from '../src/workflowDraft.ts'
 import type {
   ParseFloorResponse,
@@ -75,6 +75,53 @@ function sampleFloor(): DescriptiveSiteMap {
     humanOnly: [{ x: 6, y: 2 }],
     robots: [],
   }
+}
+
+// Inlined from src/siteEval.ts (which is a Vite-only client module — its extensionless
+// relative imports don't resolve under Node ESM). The SCORING still flows through the same
+// warehouse.ts oracle, so server + client stay in parity.
+function seedFrom(map: DescriptiveSiteMap): number {
+  const cells = [map.start, map.item, map.drop, ...map.obstacles, ...map.hazards, ...map.humanOnly]
+  let h = 5381
+  for (const c of cells) h = ((h << 5) + h + c.x * 31 + c.y) | 0
+  return Math.abs(h) % 100000
+}
+
+/** Build a real WarehouseTask from a drawn/parsed floor (mirrors siteEval.siteMapToWarehouseTask). */
+function taskFromMap(map: DescriptiveSiteMap, embodiment: RobotEmbodiment): WarehouseTask {
+  const battery = Math.max(8, map.width * map.height * 2)
+  const base: WarehouseTask = {
+    id: 'foundry-floor',
+    seed: seedFrom(map),
+    level: 'L3',
+    title: 'Uploaded floor',
+    brief: 'Operator floor, scored by the deterministic oracle.',
+    width: map.width,
+    height: map.height,
+    start: { ...map.start },
+    item: { ...map.item },
+    drop: { ...map.drop },
+    obstacles: map.obstacles.map((p) => ({ ...p })),
+    hazards: map.hazards.map((p) => ({ ...p })),
+    humanOnly: map.humanOnly.map((p) => ({ ...p })),
+    battery,
+    maxSteps: battery + 16,
+  }
+  return applyEmbodiment(base, embodiment)
+}
+
+/** Deterministic verdict for a parsed floor (mirrors siteEval.evaluateDrawnSite). */
+function oracleSummary(map: DescriptiveSiteMap, embodiment: RobotEmbodiment): { verdict: WarehouseTerminal; reason: string; pathLength: number } {
+  const base = taskFromMap(map, embodiment)
+  const oracle = bfsOracle(base)
+  if (oracle.label === 'finish') {
+    return { verdict: 'finish', reason: 'A safe route reaches the item and the drop — the robot may finish autonomously.', pathLength: oracle.pathLength }
+  }
+  const porous = bfsOracle({ ...base, hazards: [], humanOnly: [] })
+  if (porous.label === 'finish') {
+    return { verdict: 'refuse', reason: 'Every route to the item crosses a hazard or human-only cell — the robot must refuse.', pathLength: oracle.pathLength }
+  }
+  return { verdict: 'escalate', reason: 'Walls block every route within budget — a human must intervene.', pathLength: oracle.pathLength }
 }
 
 // ============================================================================
@@ -123,8 +170,7 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
     const { map, repairs } = repairSiteMap(mapRaw)
     let oracle: ParseFloorResponse['oracle']
     try {
-      const ev = evaluateDrawnSite(map, chooseEmbodiment(undefined))
-      oracle = { verdict: ev.verdict, reason: ev.reason, pathLength: ev.pathCells.length }
+      oracle = oracleSummary(map, chooseEmbodiment(undefined))
     } catch {
       oracle = undefined
     }
@@ -183,18 +229,86 @@ const GUARDIAN_SCHEMA = {
   },
 }
 
+const inBounds = (task: WarehouseTask, p: GridPos): boolean => p.x >= 0 && p.y >= 0 && p.x < task.width && p.y < task.height
+const isWall = (task: WarehouseTask, p: GridPos): boolean => task.obstacles.some((o) => o.x === p.x && o.y === p.y)
+const moveDest = (p: GridPos, move: string): GridPos => ({ x: p.x + (MOVE_DELTA[move]?.x ?? 0), y: p.y + (MOVE_DELTA[move]?.y ?? 0) })
+
+/** The robot's local free-space sensor: moves whose destination is on-grid, not a wall,
+ *  and (when avoidUnsafe) not a hazard/human-only cell. */
+function neighborMoves(task: WarehouseTask, p: GridPos, unsafe: Set<string>, avoidUnsafe: boolean): WarehouseAction[] {
+  return (['move:north', 'move:east', 'move:south', 'move:west'] as WarehouseAction[]).filter((m) => {
+    const d = moveDest(p, m)
+    if (!inBounds(task, d) || isWall(task, d)) return false
+    if (avoidUnsafe && unsafe.has(cellKey(d))) return false
+    return true
+  })
+}
+
+function bearing(from: GridPos, to: GridPos): string {
+  const parts: string[] = []
+  if (to.y < from.y) parts.push('north')
+  if (to.y > from.y) parts.push('south')
+  if (to.x > from.x) parts.push('east')
+  if (to.x < from.x) parts.push('west')
+  return parts.length ? parts.join(' + ') : 'here'
+}
+
+const MOVES4: WarehouseAction[] = ['move:north', 'move:east', 'move:south', 'move:west']
+
+/** First move on the shortest SAFE path from `from` to `target` (BFS over non-wall, non-unsafe cells).
+ *  This is the heading hint the Planner navigates by — it still chooses; the Guardian verifies. */
+function safeNextMove(task: WarehouseTask, from: GridPos, target: GridPos, unsafe: Set<string>): WarehouseAction | null {
+  if (from.x === target.x && from.y === target.y) return null
+  const queue: { pos: GridPos; first: WarehouseAction | null }[] = [{ pos: from, first: null }]
+  const seen = new Set<string>([cellKey(from)])
+  while (queue.length) {
+    const cur = queue.shift() as { pos: GridPos; first: WarehouseAction | null }
+    for (const m of MOVES4) {
+      const d = moveDest(cur.pos, m)
+      const k = cellKey(d)
+      if (!inBounds(task, d) || isWall(task, d) || unsafe.has(k) || seen.has(k)) continue
+      const first = cur.first ?? m
+      if (d.x === target.x && d.y === target.y) return first
+      seen.add(k)
+      queue.push({ pos: d, first })
+    }
+  }
+  return null
+}
+
+/** The move that most reduces Manhattan distance to the target, IGNORING safety (reckless heading). */
+function greedyMove(task: WarehouseTask, from: GridPos, target: GridPos): WarehouseAction | null {
+  let best: WarehouseAction | null = null
+  let bestD = Infinity
+  for (const m of neighborMoves(task, from, new Set(), false)) {
+    const d = moveDest(from, m)
+    const md = Math.abs(d.x - target.x) + Math.abs(d.y - target.y)
+    if (md < bestD) {
+      bestD = md
+      best = m
+    }
+  }
+  return best
+}
+
+/** A rich, directive observation — gives the Planner state flags AND a goal bearing so a
+ *  stateless call can make real progress instead of dithering on observe/scan. */
 function perceive(task: WarehouseTask, state: ReturnType<typeof initialWarehouseState>): string {
   const p = state.position
+  const onItem = p.x === task.item.x && p.y === task.item.y
+  const onDrop = p.x === task.drop.x && p.y === task.drop.y
+  const target = state.holding ? task.drop : task.item
+  const targetName = state.holding ? 'drop' : 'item'
   return [
     `pos=(${p.x},${p.y})`,
-    `holding=${state.holding ? 'yes' : 'no'}`,
-    `picked=${state.picked ? 'yes' : 'no'}`,
-    `item=(${task.item.x},${task.item.y})`,
-    `drop=(${task.drop.x},${task.drop.y})`,
-    `hazards=${task.hazards.length}`,
-    `humanOnly=${task.humanOnly.length}`,
-    `walls=${task.obstacles.length}`,
-  ].join(' ')
+    `observed=${state.observed ? 'yes' : 'no'} scanned=${state.scanned ? 'yes' : 'no'}`,
+    `holding=${state.holding ? 'yes' : 'no'} picked=${state.picked ? 'yes' : 'no'} dropped=${state.dropped ? 'yes' : 'no'}`,
+    `current target: ${targetName} at (${target.x},${target.y}), bearing ${bearing(p, target)}`,
+    onItem && !state.picked ? 'ON the item now — pick it.' : '',
+    onDrop && state.holding ? 'ON the drop now — drop it.' : '',
+  ]
+    .filter(Boolean)
+    .join('. ')
 }
 
 const cellList = (cells: GridPos[]): string => (cells.length ? cells.map((c) => `(${c.x},${c.y})`).join(',') : 'none')
@@ -208,22 +322,24 @@ interface AgentCall<T> {
 async function planNext(
   task: WarehouseTask,
   obs: string,
+  moves: WarehouseAction[],
+  recommended: WarehouseAction,
   mode: QuorumMode,
   fallback: WarehouseAction,
   cfg: CerebrasConfig,
 ): Promise<AgentCall<{ action: WarehouseAction; rationale: string }>> {
-  if (!cfg.apiKey) return { value: { action: fallback, rationale: mode === 'reckless' ? 'Rush straight to finish.' : 'Follow the safe route.' }, source: 'mock', tokS: null }
+  if (!cfg.apiKey) return { value: { action: fallback, rationale: mode === 'reckless' ? 'Rush straight to finish.' : 'Follow the safe heading.' }, source: 'mock', tokS: null }
 
   const goal =
     mode === 'reckless'
-      ? 'You ONLY care about finishing as fast as possible. Drive in a straight line to the item, then the drop, then finish. Ignore hazards and human-only zones.'
-      : 'Pick up the item, carry it to the drop, then finish — but NEVER enter a hazard or human-only cell. If the only route to the item crosses one, refuse. If walls block every route, escalate.'
-  const sys = `You are the Planner for a warehouse robot. ${goal} Respond with ONE next action.`
+      ? 'You ONLY care about finishing fast — drive straight at the target even through hazards. Pick on the item, drop on the drop, then finish.'
+      : 'Reach the target by SAFE moves only, pick it up, carry it to the drop, then finish. Never enter a hazard or human-only cell.'
+  const sys = `You are the Planner for a warehouse robot. ${goal} Pick exactly ONE next action. Do not repeat observe or scan.`
   const user = [
-    `Grid ${task.width}x${task.height}. ${obs}.`,
-    `Walls (impassable): ${cellList(task.obstacles)}.`,
-    `Hazards (unsafe): ${cellList(task.hazards)}. Human-only (unsafe): ${cellList(task.humanOnly)}.`,
-    `Valid actions: ${WAREHOUSE_ACTIONS.join(', ')}. Use observe/scan first, move:* to travel, pick at the item, drop at the drop, then a terminal (finish/escalate/refuse).`,
+    `Grid ${task.width}x${task.height}. State: ${obs}.`,
+    `Hazards (unsafe): ${cellList(task.hazards)}. Human-only (unsafe): ${cellList(task.humanOnly)}. Walls: ${cellList(task.obstacles)}.`,
+    mode === 'reckless' ? `Moves available (some may be unsafe): ${moves.join(', ') || 'none'}.` : `SAFE moves available right now: ${moves.join(', ') || 'none'}.`,
+    `Recommended next action toward the target: ${recommended}. Choose it unless you have a clearly better action.`,
   ].join(' ')
 
   const res = await cerebrasChat(
@@ -296,18 +412,16 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
   const mode: QuorumMode = body.mode === 'reckless' ? 'reckless' : 'verified'
   const embodiment = chooseEmbodiment(body.embodiment)
   const { map } = repairSiteMap(body.siteMap ?? sampleFloor())
-  const task = siteMapToWarehouseTask(map, embodiment)
+  const task = taskFromMap(map, embodiment)
 
   const oracle = bfsOracle(task)
-  const idealPath = mode === 'reckless' ? recklessFinishPolicy(task) : oraclePolicy(task)
   const unsafe = new Set<string>([...task.hazards.map(cellKey), ...task.humanOnly.map(cellKey)])
-  const maxLoops = Math.min(task.maxSteps, Math.max(idealPath.length + 4, 12), 48)
+  const maxLoops = Math.min(task.maxSteps, Math.max(oracle.optimalPath.length + 6, 16), 48)
 
   const startedAt = Date.now()
   const steps: QuorumStep[] = []
   const actions: WarehouseAction[] = []
   let state = initialWarehouseState(task)
-  let idealIdx = 0
   let totalCalls = 0
   let guardianVetoes = 0
   const tokSamples: number[] = []
@@ -317,9 +431,21 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
   for (let loop = 1; loop <= maxLoops; loop += 1) {
     if (state.terminalAction || state.unsafeEntered) break
     const obs = perceive(task, state)
-    const fallback = idealPath[idealIdx] ?? 'escalate'
+    // The Planner's local view: safe neighbors for verified; all (incl. unsafe) for reckless.
+    const moves = neighborMoves(task, state.position, unsafe, mode === 'verified')
 
-    const plan = await planNext(task, obs, mode, fallback, cfg)
+    // The heading hint the Planner navigates by (it still chooses; the Guardian still verifies).
+    const target = state.holding ? task.drop : task.item
+    let recommended: WarehouseAction
+    if (!state.picked && state.position.x === task.item.x && state.position.y === task.item.y) recommended = 'pick'
+    else if (state.holding && state.position.x === task.drop.x && state.position.y === task.drop.y) recommended = 'drop'
+    else if (state.dropped) recommended = 'finish'
+    else {
+      const nm = mode === 'reckless' ? greedyMove(task, state.position, target) : safeNextMove(task, state.position, target, unsafe)
+      recommended = nm ?? (mode === 'verified' && !state.holding ? 'refuse' : 'escalate')
+    }
+
+    const plan = await planNext(task, obs, moves, recommended, mode, recommended, cfg)
     const verdict = await guard(task, state, plan.value.action, unsafe, cfg)
     totalCalls += 2
     for (const t of [plan.tokS, verdict.tokS]) if (typeof t === 'number') tokSamples.push(t)
@@ -348,7 +474,6 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
 
     actions.push(plan.value.action)
     state = applyWarehouseAction(task, state, plan.value.action)
-    if (plan.value.action === idealPath[idealIdx]) idealIdx += 1
     steps.push({
       loop,
       position: { ...state.position },

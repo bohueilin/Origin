@@ -27,6 +27,24 @@ export interface MinimaxConfig {
   baseUrl?: string
 }
 
+/**
+ * Cerebras Inference (gemma-4-31b) — the FAST model that powers Origin Foundry's Quorum loop
+ * (Perceiver / Planner / Guardian) and the floor-image → environment parse. OpenAI-compatible
+ * Chat Completions; ~1,500 tok/s makes per-step verification free. Server-side key only.
+ */
+export interface CerebrasConfig {
+  apiKey?: string
+  model: string
+  baseUrl: string
+}
+
+/** Gemini — used ONLY as the GPU-baseline "slow lane" in the side-by-side speed race. */
+export interface GeminiConfig {
+  apiKey?: string
+  model: string
+  baseUrl: string
+}
+
 export interface AppConfig {
   port: number
   isProd: boolean
@@ -34,6 +52,10 @@ export interface AppConfig {
   insforge: InsforgeConfig
   /** MiniMax voice-intake structuring (server-side key only). */
   minimax: MinimaxConfig
+  /** Cerebras gemma-4-31b — Foundry's fast agent/verifier model. */
+  cerebras: CerebrasConfig
+  /** Gemini — GPU baseline for the speed race only. */
+  gemini: GeminiConfig
   /** HMAC secret for signing stateless episode tokens. */
   episodeSecret: string
   /** Non-fatal configuration warnings to log at startup. */
@@ -79,9 +101,20 @@ export function loadConfig(cwd: string = process.cwd()): AppConfig {
     model: get('MINIMAX_MODEL'),
     baseUrl: get('MINIMAX_BASE_URL'),
   }
+  const cerebras: CerebrasConfig = {
+    apiKey: get('CEREBRAS_API_KEY'),
+    model: get('CEREBRAS_MODEL') || 'gemma-4-31b',
+    baseUrl: (get('CEREBRAS_BASE_URL') || 'https://api.cerebras.ai/v1').replace(/\/+$/, ''),
+  }
+  const gemini: GeminiConfig = {
+    apiKey: get('GEMINI_API_KEY'),
+    model: get('GEMINI_MODEL') || 'gemini-2.0-flash',
+    baseUrl: (get('GEMINI_BASE_URL') || 'https://generativelanguage.googleapis.com/v1beta/openai').replace(/\/+$/, ''),
+  }
 
   if (!nebius.apiKey) warnings.push('NEBIUS_API_KEY not set — the Nebius reference agent will be unavailable.')
   if (!minimax.apiKey) warnings.push('MINIMAX_API_KEY not set — voice intake falls back to the raw transcript.')
+  if (!cerebras.apiKey) warnings.push('CEREBRAS_API_KEY not set — Foundry runs gemma-4-31b in MOCK mode (set the key for real, fast inference).')
   if (!insforge.baseUrl || !insforge.apiKey) {
     warnings.push('INSFORGE_* not set — per-run license history falls back to in-memory (single instance).')
   }
@@ -100,5 +133,5 @@ export function loadConfig(cwd: string = process.cwd()): AppConfig {
     throw new Error(`Invalid PORT: ${get('PORT')}`)
   }
 
-  return { port, isProd, nebius, insforge, minimax, episodeSecret, warnings }
+  return { port, isProd, nebius, insforge, minimax, cerebras, gemini, episodeSecret, warnings }
 }

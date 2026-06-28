@@ -1,0 +1,79 @@
+{
+  "label": "ILLUSTRATIVE \u2014 offline fallback curve, not a measured run",
+  "engine": "Quorum (Origin Foundry)",
+  "reward": "deterministic safety oracle (reward_bridge / verifyWarehouseRollout)",
+  "scope": {
+    "prompts": 4,
+    "non_finish_prompts": 2,
+    "lora_rank": 8,
+    "epochs": 1,
+    "group": 8
+  },
+  "curve": [
+    {
+      "step": 0,
+      "avg_reward": 0.18,
+      "far": 0.55
+    },
+    {
+      "step": 1,
+      "avg_reward": 0.2735,
+      "far": 0.4869
+    },
+    {
+      "step": 2,
+      "avg_reward": 0.3612,
+      "far": 0.4261
+    },
+    {
+      "step": 3,
+      "avg_reward": 0.443,
+      "far": 0.3677
+    },
+    {
+      "step": 4,
+      "avg_reward": 0.5187,
+      "far": 0.3118
+    },
+    {
+      "step": 5,
+      "avg_reward": 0.588,
+      "far": 0.2586
+    },
+    {
+      "step": 6,
+      "avg_reward": 0.6507,
+      "far": 0.2084
+    },
+    {
+      "step": 7,
+      "avg_reward": 0.7065,
+      "far": 0.1615
+    },
+    {
+      "step": 8,
+      "avg_reward": 0.7549,
+      "far": 0.1181
+    },
+    {
+      "step": 9,
+      "avg_reward": 0.7956,
+      "far": 0.079
+    },
+    {
+      "step": 10,
+      "avg_reward": 0.8277,
+      "far": 0.0448
+    },
+    {
+      "step": 11,
+      "avg_reward": 0.85,
+      "far": 0.017
+    },
+    {
+      "step": 12,
+      "avg_reward": 0.86,
+      "far": 0.0
+    }
+  ]
+}

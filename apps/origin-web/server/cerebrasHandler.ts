@@ -132,12 +132,16 @@ export interface BaselineResult {
   source: 'gemini'
   /** Wall-clock ms (Gemini has no time_info). */
   totalMs: number | null
+  /** Gemini's OWN completion-token count (from usage), so tok/s is honest, not borrowed. */
+  completionTokens: number | null
+  /** completionTokens / wall-seconds — Gemini's real throughput when usage is present. */
+  tokS: number | null
   code?: ChatErrorCode
   error?: string
 }
 
 export async function geminiChat(messages: ChatMessage[], cfg: GeminiConfig, opts: ChatOpts = {}): Promise<BaselineResult> {
-  const base: BaselineResult = { ok: false, content: '', model: cfg.model, source: 'gemini', totalMs: null }
+  const base: BaselineResult = { ok: false, content: '', model: cfg.model, source: 'gemini', totalMs: null, completionTokens: null, tokS: null }
   if (!cfg.apiKey) return { ...base, code: 'no_key', error: 'GEMINI_API_KEY not configured.' }
   const started = Date.now()
   try {
@@ -150,12 +154,15 @@ export async function geminiChat(messages: ChatMessage[], cfg: GeminiConfig, opt
       },
       opts.timeoutMs ?? DEFAULT_TIMEOUT,
     )
-    const data = (await resp.json()) as { choices?: { message?: { content?: string } }[]; error?: unknown }
+    const data = (await resp.json()) as { choices?: { message?: { content?: string } }[]; usage?: { completion_tokens?: number }; error?: unknown }
     const totalMs = Date.now() - started
     if (!resp.ok || !data.choices) {
       return { ...base, totalMs, code: 'upstream', error: 'Gemini baseline unavailable (e.g. quota).' }
     }
-    return { ok: true, content: data.choices?.[0]?.message?.content ?? '', model: cfg.model, source: 'gemini', totalMs }
+    // Gemini's OWN token count / its OWN wall time — never borrow Cerebras's numbers.
+    const ct = typeof data.usage?.completion_tokens === 'number' ? data.usage.completion_tokens : null
+    const tokS = ct && totalMs > 0 ? Math.round(ct / (totalMs / 1000)) : null
+    return { ok: true, content: data.choices?.[0]?.message?.content ?? '', model: cfg.model, source: 'gemini', totalMs, completionTokens: ct, tokS }
   } catch (err) {
     const aborted = (err as { name?: string } | undefined)?.name === 'AbortError'
     return { ...base, totalMs: Date.now() - started, code: aborted ? 'timeout' : 'unknown', error: 'Gemini baseline failed.' }

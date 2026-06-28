@@ -55,8 +55,8 @@ body {
 /* ---- hero ---- */
 .fdy-hero { padding: 28px 0 8px; }
 .fdy-hero__eyebrow {
-  font: 600 12.5px/1 'Space Grotesk', sans-serif;
-  letter-spacing: 0.08em; text-transform: uppercase;
+  font: 600 22.5px/1.3 'Space Grotesk', sans-serif;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--accent-ink); margin-bottom: 18px;
 }
 .fdy-hero h1 {
@@ -121,8 +121,16 @@ body {
 .fdy-lane__fill { height: 100%; border-radius: 6px; transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1); }
 .fdy-lane--cerebras .fdy-lane__fill { background: linear-gradient(90deg, #1d9d6e, var(--fast)); }
 .fdy-lane--gemini .fdy-lane__fill { background: #6b6555; }
-.fdy-lane__meta { display: flex; flex-wrap: wrap; gap: 12px; font: 500 11.5px/1.4 ui-monospace, monospace; color: #9b9384; }
+.fdy-lane__meta { display: flex; flex-wrap: wrap; gap: 12px; font: 500 16.5px/1.4 ui-monospace, monospace; color: #cfc8b9; }
 .fdy-lane__note { color: var(--warn); }
+
+/* The model-name badge + stats inside the DARK loop-race panel: bigger + high-contrast on dark
+   (the light-theme badge colors were unreadable here). Applies to every lane (Cerebras + baseline). */
+.fdy-race .fdy-badge { font-size: 16px; padding: 5px 11px; }
+.fdy-race .fdy-badge--cerebras { background: rgba(52, 224, 161, 0.22); color: var(--fast); }
+.fdy-race .fdy-badge--gemini { background: rgba(255, 255, 255, 0.14); color: #dfe5ef; }
+.fdy-race .fdy-badge--mock { background: rgba(240, 169, 59, 0.2); color: #f3bf78; }
+.fdy-race .fdy-lane__note { color: #f3bf78; }
 .fdy-lane__preview { margin: 10px 0 0; font-size: 13px; color: #cfc8b9; }
 .fdy-race__verdict { margin-top: 4px; font: 700 16px/1.3 'Space Grotesk', sans-serif; color: var(--fast); }
 

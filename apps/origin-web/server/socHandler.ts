@@ -250,9 +250,9 @@ export async function handleSocRace(_body: unknown, cfg: CerebrasConfig, gemini:
     note: cReal ? undefined : 'CEREBRAS_API_KEY not set — illustrative figures.',
   }
   const baselineLane: SocRaceLane = {
-    provider: 'gemini', model: gemini.model, ok: baselineReal, incidentsCleared: 1,
-    tokS: baselineReal ? 95 : 95, totalMs: Math.round(baselineMs),
-    note: baselineReal ? undefined : 'GPU baseline unavailable (quota) — illustrative GPU-class figures.',
+    provider: 'gemini', model: gemini.label ?? gemini.model, ok: baselineReal, incidentsCleared: 1,
+    tokS: 95, totalMs: Math.round(baselineMs),
+    note: baselineReal ? undefined : 'No live baseline key — illustrative GPU-class figures (set FIREWORKS_API_KEY for a live race).',
   }
 
   return {

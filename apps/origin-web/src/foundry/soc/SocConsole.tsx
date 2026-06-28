@@ -16,8 +16,8 @@ import type { FoundrySource } from '../types'
 const LABEL = new Map(SOC_ACTIONS.map((a) => [a.id, a.label]))
 const actLabel = (id: string) => LABEL.get(id) ?? id
 
-function SourceBadge({ source }: { source: FoundrySource }) {
-  const label = source === 'cerebras' ? 'gemma-4-31b · Cerebras' : source === 'gemini' ? 'GPU baseline' : 'deterministic mock'
+function SourceBadge({ source, model }: { source: FoundrySource; model?: string }) {
+  const label = source === 'cerebras' ? 'gemma-4-31b · Cerebras' : source === 'gemini' ? model || 'GPU baseline' : 'deterministic mock'
   return <span className={`fdy-badge fdy-badge--${source}`}>{label}</span>
 }
 
@@ -58,7 +58,7 @@ function LoopRace() {
           {[data.cerebras, data.baseline].map((lane) => (
             <div key={lane.provider} className={`fdy-lane fdy-lane--${lane.provider}`}>
               <div className="fdy-lane__top">
-                <SourceBadge source={lane.provider} />
+                <SourceBadge source={lane.provider} model={lane.model} />
                 <div className="fdy-lane__tok">
                   {lane.incidentsCleared} <span>{lane.incidentsCleared === 1 ? 'alert' : 'alerts'} cleared</span>
                 </div>

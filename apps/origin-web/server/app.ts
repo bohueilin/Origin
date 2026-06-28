@@ -37,6 +37,7 @@ import { handleVoiceStructure, type VoiceResult } from './minimaxHandler.ts'
 import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
+import { handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
   switch (code) {
@@ -399,6 +400,13 @@ export function createApp(config: AppConfig): Hono {
     return c.json(r, voiceStatus(r))
   })
   app.post('/api/vapi/tools', async (c) => c.json(await handleVapiTools(await jsonBody(c), runCfg)))
+
+  // ---- Origin Foundry: floor → environment → verified, reward-hardened policy ----
+  // Cerebras gemma-4-31b is the primary for every gemma-4 call; a deterministic mock
+  // (labeled source:'mock') keeps the demo alive offline. The oracle alone scores.
+  app.post('/api/foundry/parse-floor', async (c) => c.json(await handleParseFloor(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/quorum-run', async (c) => c.json(await handleQuorumRun(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/speed-race', async (c) => c.json(await handleSpeedRace(await jsonBody(c), config.cerebras, config.gemini)))
 
   return app
 }

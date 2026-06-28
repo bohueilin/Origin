@@ -207,7 +207,6 @@ interface AgentCall<T> {
 
 async function planNext(
   task: WarehouseTask,
-  state: ReturnType<typeof initialWarehouseState>,
   obs: string,
   mode: QuorumMode,
   fallback: WarehouseAction,
@@ -320,7 +319,7 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
     const obs = perceive(task, state)
     const fallback = idealPath[idealIdx] ?? 'escalate'
 
-    const plan = await planNext(task, state, obs, mode, fallback, cfg)
+    const plan = await planNext(task, obs, mode, fallback, cfg)
     const verdict = await guard(task, state, plan.value.action, unsafe, cfg)
     totalCalls += 2
     for (const t of [plan.tokS, verdict.tokS]) if (typeof t === 'number') tokSamples.push(t)

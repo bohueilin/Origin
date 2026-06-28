@@ -8,12 +8,24 @@ import type { DescriptiveSiteMap } from '../workflowDraft'
 const BASE = (import.meta.env.VITE_FOUNDRY_API_BASE as string | undefined)?.replace(/\/+$/, '') ?? ''
 
 async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(body),
-  })
-  return (await res.json()) as T
+  let res: Response
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  } catch {
+    throw new Error('Foundry backend unreachable — start it with `npm run server` (port 8787), then retry.')
+  }
+  if (!res.ok) {
+    throw new Error(`Foundry backend returned ${res.status}. Is the Hono server running (npm run server)?`)
+  }
+  try {
+    return (await res.json()) as T
+  } catch {
+    throw new Error('Foundry backend sent a non-JSON response — check the server logs.')
+  }
 }
 
 export const parseFloor = (input: { imageDataUri?: string; hint?: string }) =>

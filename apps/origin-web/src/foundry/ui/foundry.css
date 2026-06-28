@@ -190,6 +190,10 @@ body {
 .fdy-foot a { color: var(--accent-ink); text-decoration: none; font-weight: 600; }
 
 .fdy-upload-error { color: var(--neg-ink, #b23a30); font-size: 13px; margin: 8px 0 0; }
+.fdy-apierror {
+  margin-top: 18px; padding: 12px 16px; border-radius: 10px; font-size: 13.5px;
+  background: rgba(214, 83, 74, 0.08); border: 1px solid rgba(214, 83, 74, 0.3); color: var(--neg-ink, #b23a30);
+}
 .fdy-brainline {
   margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--glass, #f2efe6);
   border: 1px solid var(--line); font-size: 13.5px; color: var(--text-soft);

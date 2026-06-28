@@ -157,7 +157,9 @@ def write_mock_curve(path: Path, prompts: List[Dict[str, object]]) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Launch the oracle-rewarded RFT loop (or dry-run).")
     ap.add_argument("--floor", default="demo", help="prompt set to build (default: demo)")
-    ap.add_argument("--base-model", default="accounts/fireworks/models/qwen2p5-7b-instruct")
+    # Same model family as the Cerebras inference side — one model, two roles (gemma-4-31b on
+    # Cerebras for the fast loop; the Fireworks Gemma-4 IT as the fine-tune target).
+    ap.add_argument("--base-model", default="accounts/fireworks/models/gemma-4-31b-it")
     ap.add_argument("--output-model", default="origin-foundry-quorum-rft")
     ap.add_argument("--job-id", default="origin-foundry-quorum-rft")
     ap.add_argument("--epochs", type=int, default=1)

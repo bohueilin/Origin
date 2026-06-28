@@ -8,9 +8,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import '../ui/foundry.css'
 import './soc.css'
-import { socRun, socRace, leaderboard } from './socClient'
+import { socRun, socRace, leaderboard, socShootout } from './socClient'
 import { SOC_ACTIONS, isDestructive } from './socEnv'
-import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse } from './socTypes'
+import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse } from './socTypes'
 import type { FoundrySource } from '../types'
 
 const LABEL = new Map(SOC_ACTIONS.map((a) => [a.id, a.label]))
@@ -65,6 +65,65 @@ function Leaderboard() {
           {data.speedupVsBestGpu && (
             <div className="fdy-race__verdict">gemma-4-31b on Cerebras is {data.speedupVsBestGpu}× the fastest GPU model here — and far more vs the rest.</div>
           )}
+        </div>
+      )}
+    </section>
+  )
+}
+
+// ---- the "safety tax" shootout (accuracy + cost-of-safety) ------------------
+
+function ShootLane({ l, guaranteed }: { l: SocShootoutResponse['cerebras']; guaranteed: boolean }) {
+  return (
+    <div className={`fdy-lane fdy-lane--${l.provider}`}>
+      <div className="fdy-lane__top">
+        <SourceBadge source={l.provider === 'cerebras' ? 'cerebras' : 'gemini'} model={l.provider === 'cerebras' ? undefined : l.label} />
+        <div className="fdy-lane__tok">{l.passed}/{l.total} <span>correct</span></div>
+      </div>
+      <div className="soc-shoot__meta">
+        <span className={guaranteed ? 'soc-shoot__safe' : 'soc-shoot__risk'}>{guaranteed ? '0 breaches · guaranteed' : `${l.breaches} breaches · no guarantee`}</span>
+        <span>{l.mode === 'verified' ? 'verified every step' : 'one shot, no Guardian'}</span>
+        <span>{l.totalMs}ms{l.tokS ? ` · ${l.tokS} tok/s` : ''}</span>
+        {l.note && <span className="fdy-lane__note">{l.note}</span>}
+      </div>
+    </div>
+  )
+}
+
+function Shootout() {
+  const [data, setData] = useState<SocShootoutResponse | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const run = useCallback(async () => {
+    setBusy(true)
+    setErr(null)
+    try {
+      setData(await socShootout())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Shootout failed.')
+    } finally {
+      setBusy(false)
+    }
+  }, [])
+
+  return (
+    <section className="fdy-card fdy-race">
+      <div className="fdy-card__head">
+        <h2>The safety tax</h2>
+        <p>The same incidents, two ways. A GPU model takes the fast path — one shot, no Guardian. Cerebras runs the full verified loop. Watch the accuracy gap, then the cost of <em>earning</em> a guarantee.</p>
+      </div>
+      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+        {busy ? 'Running both…' : data ? 'Run again' : 'Run the safety tax'}
+      </button>
+      {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
+      {data && (
+        <div className="fdy-race__lanes">
+          <ShootLane l={data.cerebras} guaranteed />
+          <ShootLane l={data.gpuOneShot} guaranteed={false} />
+          <div className="soc-shoot__tax">
+            To give the GPU the <strong>same per-step guarantee</strong>, it must run the verify loop on every call: ~{data.gpuVerifiedProjectedMs}ms vs Cerebras&rsquo;s {data.cerebras.totalMs}ms.
+            <strong> Verification is ~{data.verificationTaxX}× cheaper on Cerebras</strong> — and more accurate ({data.cerebras.passed}/{data.cerebras.total} vs {data.gpuOneShot.passed}/{data.gpuOneShot.total}).
+          </div>
         </div>
       )}
     </section>
@@ -207,6 +266,8 @@ export default function SocConsole() {
       <Leaderboard />
 
       <LoopRace />
+
+      <Shootout />
 
       <section className="fdy-card">
         <div className="fdy-card__head">

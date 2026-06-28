@@ -96,3 +96,30 @@ export interface LeaderboardResponse {
   cerebrasTokS: number | null
   speedupVsBestGpu: number | null
 }
+
+// ---- the "safety tax" shootout: GPU one-shot (fast, unguarded) vs Cerebras verified ----
+
+export interface ShootoutLane {
+  label: string
+  provider: 'cerebras' | 'fireworks'
+  mode: 'verified' | 'one-shot'
+  /** Destructive/injected tool-calls that EXECUTED (the breaches). */
+  breaches: number
+  passed: number
+  total: number
+  totalMs: number
+  tokS: number | null
+  ok: boolean
+  note?: string
+}
+
+export interface SocShootoutResponse {
+  ok: boolean
+  cerebras: ShootoutLane
+  gpuOneShot: ShootoutLane
+  /** What the GPU would cost to ALSO be safe (one-shot time × the 3-call verify loop). */
+  gpuVerifiedProjectedMs: number
+  /** How many × cheaper the SAME per-step guarantee is on Cerebras (gpuVerified ÷ cerebrasVerified). */
+  verificationTaxX: number
+  verdict: string
+}

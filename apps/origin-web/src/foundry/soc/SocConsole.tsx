@@ -8,9 +8,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import '../ui/foundry.css'
 import './soc.css'
-import { socRun, socRace, leaderboard, socShootout } from './socClient'
+import { socRun, socRace, leaderboard, socShootout, economics, ensemble } from './socClient'
 import { SOC_ACTIONS, isDestructive } from './socEnv'
-import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse } from './socTypes'
+import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse } from './socTypes'
 import type { FoundrySource } from '../types'
 
 const LABEL = new Map(SOC_ACTIONS.map((a) => [a.id, a.label]))
@@ -65,6 +65,111 @@ function Leaderboard() {
           {data.speedupVsBestGpu && (
             <div className="fdy-race__verdict">gemma-4-31b on Cerebras is {data.speedupVsBestGpu}× the fastest GPU model here — and far more vs the rest.</div>
           )}
+        </div>
+      )}
+    </section>
+  )
+}
+
+// ---- $ economics (throughput → a business outcome) --------------------------
+
+function EconomicsPanel() {
+  const [data, setData] = useState<EconomicsResponse | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const [alerts, setAlerts] = useState(5000)
+  const run = useCallback(async () => {
+    setBusy(true)
+    setErr(null)
+    try {
+      setData(await economics())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Economics failed.')
+    } finally {
+      setBusy(false)
+    }
+  }, [])
+  const mins = (perMin: number) => Math.max(1, Math.round(alerts / perMin))
+  const tokRatio = data && data.gpu.tokS && data.cerebras.tokS ? Math.round((data.cerebras.tokS / data.gpu.tokS) * 10) / 10 : null
+
+  return (
+    <section className="fdy-card fdy-race">
+      <div className="fdy-card__head">
+        <h2>The economics</h2>
+        <p>Same single-call triage on each platform. Speed isn&rsquo;t vanity — it&rsquo;s incidents-per-minute and compute-per-incident, the only numbers a SOC buyer cares about.</p>
+      </div>
+      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+        {busy ? 'Measuring…' : data ? 'Measure again' : 'Run the economics'}
+      </button>
+      {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
+      {data && (
+        <div className="soc-board">
+          {[data.cerebras, data.gpu].map((l) => (
+            <div key={l.label} className={`soc-board__row${l.provider === 'cerebras' ? ' soc-board__row--cb' : ''}`}>
+              <span className="soc-board__rank" />
+              <span className="soc-board__name">{l.provider === 'cerebras' ? 'Gemma-4-31B · Cerebras' : l.label}</span>
+              <div className="soc-board__track">
+                <div className="soc-board__fill" style={{ width: `${Math.round((l.clearedPerMin / Math.max(data.cerebras.clearedPerMin, data.gpu.clearedPerMin)) * 100)}%` }} />
+              </div>
+              <span className="soc-board__tok">{l.clearedPerMin}/min</span>
+            </div>
+          ))}
+          <div className="soc-econ__calc">
+            <label>
+              Alert volume / day:
+              <input type="number" min={100} step={500} value={alerts} onChange={(e) => setAlerts(Math.max(100, Number(e.target.value) || 0))} />
+            </label>
+            <div className="soc-shoot__tax">
+              Clear today&rsquo;s <strong>{alerts.toLocaleString()}</strong> alerts: <strong>Cerebras ~{mins(data.cerebras.clearedPerMin)} min</strong> vs the GPU&rsquo;s ~{mins(data.gpu.clearedPerMin)} min.
+              {tokRatio && <> At <strong>{data.cerebras.tokS} tok/s vs {data.gpu.tokS}</strong> ({tokRatio}×), the compute cost per incident is far lower on Cerebras.</>}
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  )
+}
+
+// ---- ensemble-of-N Guardians ------------------------------------------------
+
+function EnsemblePanel() {
+  const [data, setData] = useState<EnsembleResponse | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const run = useCallback(async () => {
+    setBusy(true)
+    setErr(null)
+    try {
+      setData(await ensemble())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Ensemble failed.')
+    } finally {
+      setBusy(false)
+    }
+  }, [])
+  const gpu7Ms = data ? data.oneGpuGuardianMs * data.total : 0
+
+  return (
+    <section className="fdy-card fdy-race">
+      <div className="fdy-card__head">
+        <h2>A committee, for the price of one</h2>
+        <p>On a GPU you get one nervous reviewer. On Cerebras you run an independent committee in parallel — for roughly the same latency. The deterministic floor still sits underneath.</p>
+      </div>
+      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+        {busy ? 'Convening the committee…' : data ? 'Run again' : 'Run N Guardians'}
+      </button>
+      {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
+      {data && (
+        <div className="fdy-race__lanes">
+          <div className="soc-shoot__meta" style={{ marginTop: 4 }}>
+            <span className="soc-shoot__safe">{data.vetoes}/{data.total} Guardians vetoed{data.vetoes === data.total ? ' — unanimous' : ''}</span>
+            <span>attack: &ldquo;{data.incidentTitle}&rdquo;</span>
+            <span>single-reviewer miss {data.singleMissPct}%</span>
+          </div>
+          <div className="fdy-race__verdict">
+            {data.total} independent Guardians ran in <strong>{data.cerebrasAllMs}ms</strong> on Cerebras (parallel). The same {data.total} on the GPU: ~{gpu7Ms}ms.
+            A {data.total}-vote committee cuts a single reviewer&rsquo;s miss rate to ~{data.points[data.points.length - 1].missRatePct}% — free, because verification is free at Cerebras speed.
+          </div>
         </div>
       )}
     </section>
@@ -268,6 +373,10 @@ export default function SocConsole() {
       <LoopRace />
 
       <Shootout />
+
+      <EconomicsPanel />
+
+      <EnsemblePanel />
 
       <section className="fdy-card">
         <div className="fdy-card__head">

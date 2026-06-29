@@ -53,3 +53,6 @@
 .soc-shoot__risk { color: #f0a93b; font-weight: 600; }
 .soc-shoot__tax { margin-top: 6px; font: 500 15px/1.5 Inter, sans-serif; color: var(--fast); }
 .soc-shoot__tax strong { color: #fff; }
+.soc-econ__calc { margin-top: 12px; display: grid; gap: 8px; }
+.soc-econ__calc label { font: 600 13px/1 Inter, sans-serif; color: #cfc8b9; display: flex; align-items: center; gap: 10px; }
+.soc-econ__calc input { width: 120px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--ink-line, #3a3327); background: #211d16; color: #fff; font: 600 14px/1 ui-monospace, monospace; }

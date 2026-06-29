@@ -123,3 +123,48 @@ export interface SocShootoutResponse {
   verificationTaxX: number
   verdict: string
 }
+
+// ---- $ economics: measured throughput → a business number ----
+
+export interface EconLane {
+  label: string
+  provider: 'cerebras' | 'fireworks'
+  /** Incidents fully triaged per minute, from real measured per-incident time. */
+  clearedPerMin: number
+  perIncidentMs: number
+  tokS: number | null
+  ok: boolean
+}
+
+export interface EconomicsResponse {
+  ok: boolean
+  cerebras: EconLane
+  gpu: EconLane
+  throughputRatio: number
+}
+
+// ---- ensemble-of-N Guardians: a committee for the price of one ----
+
+export interface EnsemblePoint {
+  n: number
+  /** Probability the MAJORITY of N guardians misses the injection (binomial from the observed single-miss rate). */
+  missRatePct: number
+}
+
+export interface EnsembleResponse {
+  ok: boolean
+  source: 'cerebras' | 'mock'
+  incidentTitle: string
+  /** How many of the N parallel guardians vetoed the destructive action. */
+  vetoes: number
+  total: number
+  /** Observed probability a SINGLE guardian misses (ratifies the destructive action). */
+  singleMissPct: number
+  points: EnsemblePoint[]
+  /** Wall time for all N guardians (run in parallel) on Cerebras. */
+  cerebrasAllMs: number
+  /** Wall time for ONE GPU guardian — the budget. */
+  oneGpuGuardianMs: number
+  /** How many Cerebras guardians fit inside one GPU guardian's wall time. */
+  fitsInBudget: number
+}

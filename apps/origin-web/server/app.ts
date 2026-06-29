@@ -38,7 +38,7 @@ import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
 import { handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
-import { handleSocRun, handleSocRace, handleSocShootout } from './socHandler.ts'
+import { handleSocRun, handleSocRace, handleSocShootout, handleEconomics, handleEnsemble } from './socHandler.ts'
 import { handleLeaderboard } from './leaderboardHandler.ts'
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
@@ -420,6 +420,10 @@ export function createApp(config: AppConfig): Hono {
   app.post('/api/foundry/leaderboard', async (c) => c.json(await handleLeaderboard(await jsonBody(c), config.cerebras, config.gemini)))
   // The "safety tax": GPU one-shot (fast, unguarded → breaches) vs Cerebras verified (safe AND faster).
   app.post('/api/foundry/soc-shootout', async (c) => c.json(await handleSocShootout(await jsonBody(c), config.cerebras, config.gemini)))
+  // Economics: measured throughput → incidents/min (the input to the $ scorecard).
+  app.post('/api/foundry/economics', async (c) => c.json(await handleEconomics(await jsonBody(c), config.cerebras, config.gemini)))
+  // Ensemble-of-N Guardians: a committee for the price of one (miss-rate ↓ as N ↑).
+  app.post('/api/foundry/ensemble', async (c) => c.json(await handleEnsemble(await jsonBody(c), config.cerebras, config.gemini)))
 
   return app
 }

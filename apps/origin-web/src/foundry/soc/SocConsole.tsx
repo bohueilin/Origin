@@ -55,7 +55,10 @@ export function Leaderboard() {
           {data.lanes.map((l) => (
             <div key={l.label} className={`soc-board__row${l.provider === 'cerebras' ? ' soc-board__row--cb' : ''}`}>
               <span className="soc-board__rank">#{l.rank}</span>
-              <span className="soc-board__name">{l.label}</span>
+              <span className="soc-board__name">
+                {l.label}
+                {l.provider === 'cerebras' && <span style={{ opacity: 0.7, fontWeight: 400 }}> · Cerebras</span>}
+              </span>
               <div className="soc-board__track">
                 <div className="soc-board__fill" style={{ width: `${l.ok ? Math.max(2, Math.round(((l.tokS ?? 0) / max) * 100)) : 0}%` }} />
               </div>

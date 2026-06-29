@@ -1490,9 +1490,9 @@ body {
   padding: 0;
 }
 .appbrand-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 60px;
+  height: 60px;
+  border-radius: 15px;
   object-fit: cover;
   display: block;
 }

@@ -6,11 +6,11 @@
 import { PRODUCT_NAME } from '../brand'
 
 const STORY: { n: number; t: string; d: string }[] = [
-  { n: 1, t: 'Grant', d: 'Scoped and time-boxed. The agent gets exactly the authority it needs — nothing more, and only for a while.' },
-  { n: 2, t: 'Execute', d: 'Bounded. Discovery and drafting only — it can look and propose, it cannot reach out and act.' },
-  { n: 3, t: 'Approve', d: 'You decide before anything sensitive. Even an approved action runs in simulation — nothing real moves.' },
-  { n: 4, t: 'Deny', d: 'Some things never. Spend, send, and unrestricted credentials are off the table, full stop.' },
-  { n: 5, t: 'Audit & revoke', d: 'Every decision lands in an append-only SHA-256 hash-chain. One tap is an instant kill-switch over all of it.' },
+  { n: 1, t: 'Grant', d: 'The agent gets exactly the authority it needs — scoped, time-boxed, nothing more.' },
+  { n: 2, t: 'Execute', d: 'It can look and propose, not act. Discovery and drafting only.' },
+  { n: 3, t: 'Approve', d: 'You sign off before anything sensitive — and approved actions run in simulation first.' },
+  { n: 4, t: 'Deny', d: 'Spend, send, and raw credentials are never on the table. Full stop.' },
+  { n: 5, t: 'Audit & revoke', d: 'Every decision is logged in a tamper-evident chain. One tap kills all of it.' },
 ]
 
 export function PassportLayer() {

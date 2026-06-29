@@ -22,6 +22,10 @@ export function modelLabel(id: string): string {
 /** The exact model evaluated, shown small under the friendly label for precision. */
 export function modelSubLabel(id: string): string {
   const k = id.toLowerCase()
+  // Cerebras-served lineup — flagged so the speed/cost wedge reads at a glance.
+  if (k.includes('gemma-4-31b')) return 'Gemma 4 31B · Cerebras'
+  if (k.includes('gpt-oss')) return 'GPT-OSS 120B · Cerebras'
+  if (k.includes('glm-4')) return 'GLM 4.7 · Cerebras'
   if (k.includes('gpt-5.5')) return 'GPT-5.5'
   if (k.includes('gpt-4o')) return 'GPT-4o'
   if (k.includes('gemini-2.5')) return 'Gemini 2.5 Flash'

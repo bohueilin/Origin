@@ -55,10 +55,10 @@
 }
 .pp-top-brand { display: flex; align-items: center; gap: 11px; cursor: pointer; }
 .pp-top-mark {
-  width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+  width: 54px; height: 54px; border-radius: 14px; flex-shrink: 0;
   object-fit: cover; display: block;
 }
-.pp-top-name { font-family: var(--display); font-weight: 700; font-size: 19px; }
+.pp-top-name { font-family: var(--display); font-weight: 700; font-size: 27px; }
 .pp-top-sub { color: var(--muted); font-size: 13px; border-left: 1px solid var(--line-2); padding-left: 11px; }
 .pp-top-nav { display: flex; align-items: center; gap: 12px; }
 .pp-top-back {

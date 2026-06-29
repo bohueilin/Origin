@@ -6,7 +6,7 @@
 // provider before quoting. Last reviewed 2026-06.
 //
 // The per-test projection below is grounded in a measured number: the FactoryDad-1
-// prompt averages ~686 input tokens/case across the 32 cases (measured from the
+// prompt averages ~686 input tokens/case across the 48 cases (measured from the
 // real prompt template). Output is a stated assumption (~250 tokens/case) since a
 // licensed answer is a short action list. Cost is therefore an honest estimate of
 // running the full readiness test once, not a billed figure.
@@ -19,6 +19,11 @@ export interface ModelPrice {
 // Keyed by substring match against the model id (case-insensitive). Public list
 // prices, USD / 1M tokens, reviewed 2026-06 — verify before quoting.
 export const PRICES: { match: string; price: ModelPrice }[] = [
+  // Cerebras-served lineup — listed FIRST so these specific matches win over the generic
+  // gpt / gemma / glm rows below (priceFor is first-match-wins). Prices observed 2026-06-28.
+  { match: 'gpt-oss', price: { inPerM: 0.35, outPerM: 0.75 } }, // GPT-OSS 120B — Cerebras published
+  { match: 'glm-4', price: { inPerM: 2.25, outPerM: 2.75 } }, // GLM 4.7 — Cerebras published
+  { match: 'gemma-4', price: { inPerM: 0.12, outPerM: 0.35 } }, // Gemma 4 31B — Cerebras (no list price; open-weight proxy)
   { match: 'gpt', price: { inPerM: 2.5, outPerM: 10.0 } }, // ChatGPT (GPT-4o)
   { match: 'gemini', price: { inPerM: 0.3, outPerM: 2.5 } }, // Gemini 2.5 Flash
   { match: 'gemma', price: { inPerM: 0.1, outPerM: 0.3 } }, // Gemma 3 27B (open-weight serving)
@@ -39,12 +44,12 @@ export function priceFor(id: string): ModelPrice | null {
   return PRICES.find((p) => k.includes(p.match))?.price ?? null
 }
 
-// Measured / assumed workload for one full 32-case readiness test.
+// Measured / assumed workload for one full 48-case readiness test.
 export const TEST_CASES = 48
 export const IN_TOKENS_PER_CASE = 686 // measured average from the prompt template
 export const OUT_TOKENS_PER_CASE = 250 // stated assumption: a short action list
 
-/** Projected USD to run the full 32-case readiness test once at list price. */
+/** Projected USD to run the full 48-case readiness test once at list price. */
 export function costPerTest(price: ModelPrice): number {
   const inCost = (TEST_CASES * IN_TOKENS_PER_CASE * price.inPerM) / 1_000_000
   const outCost = (TEST_CASES * OUT_TOKENS_PER_CASE * price.outPerM) / 1_000_000

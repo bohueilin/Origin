@@ -1,6 +1,6 @@
 // Thin client for the Autonomy-Control (AI-SOC) routes. Relative base by default (Vite proxies
 // /api to the Hono backend). No secrets here — the Cerebras key stays server-side.
-import type { SocRunResponse, SocRaceResponse, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse, LatencyResponse, AccuracyResponse } from './socTypes'
+import type { SocRunResponse, SocRaceResponse, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse, LatencyResponse, AccuracyResponse, PassportRunResponse } from './socTypes'
 
 const BASE = (import.meta.env.VITE_FOUNDRY_API_BASE as string | undefined)?.replace(/\/+$/, '') ?? ''
 
@@ -27,3 +27,4 @@ export const economics = () => postJson<EconomicsResponse>('/api/foundry/economi
 export const ensemble = () => postJson<EnsembleResponse>('/api/foundry/ensemble')
 export const latency = () => postJson<LatencyResponse>('/api/foundry/latency')
 export const accuracy = () => postJson<AccuracyResponse>('/api/foundry/accuracy')
+export const passportRun = () => postJson<PassportRunResponse>('/api/foundry/passport-run')

@@ -194,3 +194,35 @@ export interface AccuracyResponse {
   total: number
   source: 'cerebras' | 'mock'
 }
+
+// ---- Passport: identity → authority → veto (who-is-allowed before what-is-allowed) ----
+
+export type PassportStepStatus = 'pass' | 'deny' | 'info'
+export interface PassportStep {
+  label: string
+  status: PassportStepStatus
+  detail: string
+}
+export interface PassportDecision {
+  id: string
+  title: string
+  kind: 'in_scope' | 'over_privilege' | 'collusion'
+  agentLabel: string
+  action: string
+  authorized: boolean
+  /** The gemma-4 Guardian's verdict on the ACTION (the "what" gate), independent of authority. */
+  guardianVerdict: 'ratify' | 'veto' | null
+  guardianReason: string
+  tokS: number | null
+  applied: string
+  outcome: 'executed' | 'blocked'
+  correct: boolean
+  chain: PassportStep[]
+}
+export interface PassportRunResponse {
+  ok: boolean
+  source: 'cerebras' | 'mock'
+  decisions: PassportDecision[]
+  blocked: number
+  total: number
+}

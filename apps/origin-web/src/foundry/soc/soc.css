@@ -64,6 +64,27 @@
   .soc-board__track { grid-column: 1 / -1; }
 }
 
+/* ---- Passport: identity → authority → veto ---- */
+.pp-list { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 12px; }
+.pp-card { background: var(--bg); border: 1px solid var(--line); border-left: 3px solid var(--pos); border-radius: 10px; padding: 12px 16px; }
+.pp-card--blocked { border-left-color: var(--neg); background: rgba(214, 83, 74, 0.05); }
+.pp-card__head { display: flex; align-items: center; gap: 8px; }
+.pp-card__id { font: 700 12px/1 ui-monospace, monospace; color: var(--muted); }
+.pp-card__title { font: 600 14.5px/1.2 'Space Grotesk', sans-serif; }
+.pp-outcome { margin-left: auto; font: 700 11px/1 ui-monospace, monospace; padding: 4px 8px; border-radius: 6px; }
+.pp-outcome--executed { background: rgba(15, 157, 110, 0.16); color: var(--pos); }
+.pp-outcome--blocked { background: rgba(214, 83, 74, 0.16); color: var(--neg); }
+.pp-sub { font-size: 13px; color: var(--text-soft); margin: 4px 0 8px; }
+.pp-sub code { font: 600 12px/1 ui-monospace, monospace; background: var(--glass, #f2efe6); padding: 2px 6px; border-radius: 5px; }
+.pp-tok { color: var(--muted); }
+.pp-chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.pp-step { display: grid; grid-template-columns: 130px 1fr; gap: 10px; font-size: 12.5px; padding: 5px 0; border-top: 1px dashed var(--line); }
+.pp-step__label { font: 600 11.5px/1.4 ui-monospace, monospace; color: var(--muted); }
+.pp-step--pass .pp-step__label { color: var(--pos-ink, #0b6e52); }
+.pp-step--deny .pp-step__label { color: var(--neg-ink, #b23a30); }
+.pp-step__detail { color: var(--text-soft); line-height: 1.45; }
+@media (max-width: 640px) { .pp-step { grid-template-columns: 1fr; gap: 2px; } }
+
 /* ---- the safety-tax shootout ---- */
 .soc-shoot__meta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; font: 500 14px/1.4 ui-monospace, monospace; color: #cfc8b9; }
 .soc-shoot__safe { color: var(--fast); font-weight: 600; }

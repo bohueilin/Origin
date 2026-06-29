@@ -8,9 +8,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import '../ui/foundry.css'
 import './soc.css'
-import { socRun, socRace, leaderboard, socShootout, economics, ensemble, latency, accuracy } from './socClient'
+import { socRun, socRace, leaderboard, socShootout, economics, ensemble, latency, accuracy, passportRun } from './socClient'
 import { SOC_ACTIONS, isDestructive } from './socEnv'
-import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse, LatencyResponse, AccuracyResponse } from './socTypes'
+import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse, LatencyResponse, AccuracyResponse, PassportRunResponse } from './socTypes'
 import type { FoundrySource } from '../types'
 
 const LABEL = new Map(SOC_ACTIONS.map((a) => [a.id, a.label]))
@@ -329,6 +329,69 @@ export function EnsemblePanel() {
   )
 }
 
+// ---- Passport: identity → authority → veto (multi-agent safety) -------------
+
+export function PassportPanel() {
+  const [data, setData] = useState<PassportRunResponse | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const run = useCallback(async () => {
+    setBusy(true)
+    setErr(null)
+    try {
+      setData(await passportRun())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Passport run failed.')
+    } finally {
+      setBusy(false)
+    }
+  }, [])
+
+  return (
+    <section className="fdy-card">
+      <div className="fdy-card__head">
+        <h2>Who is allowed, before what is allowed</h2>
+        <p>
+          DeepMind&rsquo;s multi-agent frontier: identity, <strong>attenuated delegation</strong>, oversight. Passport is a deterministic authority gate
+          <em> in front of</em> the Guardian. An agent can&rsquo;t act beyond its grant — and a hijacked agent can&rsquo;t manufacture authority it never held.
+        </p>
+      </div>
+      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+        {busy ? 'Checking authority…' : data ? 'Run again' : 'Run the authority scenarios'}
+      </button>
+      {err && <p className="fdy-apierror" role="alert">{err}</p>}
+      {data && (
+        <>
+          <ol className="pp-list">
+            {data.decisions.map((d) => (
+              <li key={d.id} className={`pp-card pp-card--${d.outcome}`}>
+                <div className="pp-card__head">
+                  <span className="pp-card__id">{d.id}</span>
+                  <span className="pp-card__title">{d.title}</span>
+                  <span className={`pp-outcome pp-outcome--${d.outcome}`}>{d.outcome === 'executed' ? 'EXECUTED' : 'BLOCKED'}</span>
+                </div>
+                <div className="pp-sub">{d.agentLabel} → <code>{actLabel(d.action)}</code>{d.tokS ? <span className="pp-tok"> · {d.tokS} tok/s</span> : null}</div>
+                <ol className="pp-chain">
+                  {d.chain.map((s, i) => (
+                    <li key={i} className={`pp-step pp-step--${s.status}`}>
+                      <span className="pp-step__label">{s.label}</span>
+                      <span className="pp-step__detail">{s.detail}</span>
+                    </li>
+                  ))}
+                </ol>
+              </li>
+            ))}
+          </ol>
+          <div className="soc-verdict">
+            <strong>{data.blocked} of {data.total} blocked.</strong> A <em>safe</em> action by an unauthorized agent is still denied — capability is not permission —
+            and a hijacked agent can&rsquo;t delegate a power it never held. The authority decision is deterministic; an agent can&rsquo;t reason its way past it.
+          </div>
+        </>
+      )}
+    </section>
+  )
+}
+
 // ---- the "safety tax" shootout (accuracy + cost-of-safety) ------------------
 
 function ShootLane({ l, guaranteed }: { l: SocShootoutResponse['cerebras']; guaranteed: boolean }) {
@@ -551,6 +614,8 @@ export default function SocConsole() {
       <EconomicsPanel />
 
       <EnsemblePanel />
+
+      <PassportPanel />
 
       <section className="fdy-card">
         <div className="fdy-card__head">

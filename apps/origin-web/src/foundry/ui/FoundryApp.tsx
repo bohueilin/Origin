@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './foundry.css'
 import { FloorGrid } from './FloorGrid'
 import { parseFloor, quorumRun, speedRace, fileToDataUri } from '../foundryClient'
+import { SpeedProofs } from '../soc/SocConsole'
 import type { ParseFloorResponse, QuorumRunResponse, SpeedRaceResponse, FoundrySource, QuorumMode } from '../types'
 import type { GridPos } from '../../warehouse'
 
@@ -387,6 +388,16 @@ export default function FoundryApp() {
       )}
 
       <TrainingPanel />
+
+      <header className="fdy-hero" style={{ paddingBottom: 0 }}>
+        <div className="fdy-hero__eyebrow">Why a robot brain only works at Cerebras speed</div>
+        <p className="fdy-hero__sub">
+          A robot brain is a perceive → plan → <strong>verify</strong> loop too — and a Guardian on every motor command is only affordable
+          if inference is nearly free. These are Origin&rsquo;s live Cerebras-vs-GPU proofs, measured on the same autonomy engine that scores your floor.
+        </p>
+      </header>
+
+      <SpeedProofs />
 
       <p className="fdy-brainline">
         This is the robot's <strong>brain</strong>, not a maze toy: swap the floor photo for a camera feed and <code>move:east</code> for a motor

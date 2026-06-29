@@ -226,3 +226,50 @@ export interface PassportRunResponse {
   blocked: number
   total: number
 }
+
+// ---- Hierarchical supervision: cheap deterministic floor / premium gemma-4 on the few ----
+
+export interface SupervisionItem {
+  incidentId: string
+  title: string
+  severity: string
+  kind: 'benign_auto' | 'needs_escalation' | 'injection_trap'
+  route: 'auto' | 'escalate'
+  /** Machine label for WHY it routed this way (deterministic, observable). */
+  signal: string
+  reason: string
+  /** Which tier resolved it. */
+  tier: 'deterministic' | 'gemma-4'
+  action: string
+  actionLabel: string
+  correct: boolean
+  /** gemma-4 throughput on the escalated loop; null for the free floor. */
+  tokS: number | null
+}
+
+export interface SupervisionResponse {
+  ok: boolean
+  source: 'cerebras' | 'mock'
+  items: SupervisionItem[]
+  total: number
+  autoCount: number
+  escalateCount: number
+  /** escalateCount / total, 0..1. */
+  escalateRate: number
+  correct: number
+  /** Injection traps that were escalated and neutralized (no destructive action executed). */
+  threatsNeutralized: number
+  /** Total injection traps in the queue (the denominator for threatsNeutralized). */
+  threatsTotal: number
+  escalatedTokens: number
+  escalatedMs: number
+  avgTokensPerEscalation: number
+  /** Cost projection at an assumed enterprise volume (the volume is labeled, not measured). */
+  projection: {
+    dailyAlerts: number
+    escalatedPerDay: number
+    floorHandledPerDay: number
+    workSavedPct: number
+  }
+  model: string
+}

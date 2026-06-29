@@ -23,7 +23,7 @@ function SourceBadge({ source, model }: { source: FoundrySource; model?: string 
 
 // ---- the speed leaderboard (raw-speed proof) --------------------------------
 
-function Leaderboard() {
+export function Leaderboard() {
   const [data, setData] = useState<LeaderboardResponse | null>(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -73,7 +73,7 @@ function Leaderboard() {
 
 // ---- reacts-before-I-finish (latency) ---------------------------------------
 
-function LatencyPanel() {
+export function LatencyPanel() {
   const [data, setData] = useState<LatencyResponse | null>(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -136,7 +136,7 @@ function LatencyPanel() {
 
 // ---- accuracy vs latency ----------------------------------------------------
 
-function AccuracyPanel() {
+export function AccuracyPanel() {
   const [data, setData] = useState<AccuracyResponse | null>(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -183,7 +183,7 @@ function AccuracyPanel() {
 
 // ---- $ economics (throughput → a business outcome) --------------------------
 
-function EconomicsPanel() {
+export function EconomicsPanel() {
   const [data, setData] = useState<EconomicsResponse | null>(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -242,7 +242,7 @@ function EconomicsPanel() {
 
 // ---- ensemble-of-N Guardians ------------------------------------------------
 
-function EnsemblePanel() {
+export function EnsemblePanel() {
   const [data, setData] = useState<EnsembleResponse | null>(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -434,6 +434,21 @@ function DecisionCard({ d }: { d: SocDecision }) {
 }
 
 // ---- the page ---------------------------------------------------------------
+
+/** The reusable inference-advantage battery — the live Cerebras-vs-GPU proofs that hold for ANY
+ *  Origin agent (software or robot). Embedded on /soc and /foundry. */
+export function SpeedProofs({ intro }: { intro?: string }) {
+  return (
+    <>
+      {intro && <p className="fdy-brainline">{intro}</p>}
+      <Leaderboard />
+      <LatencyPanel />
+      <AccuracyPanel />
+      <EconomicsPanel />
+      <EnsemblePanel />
+    </>
+  )
+}
 
 export default function SocConsole() {
   const [run, setRun] = useState<SocRunResponse | null>(null)

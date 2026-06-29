@@ -8,7 +8,7 @@ import react from '@vitejs/plugin-react'
 // `${origin}/app` 404s locally and the `insforge_code` is never exchanged — i.e. "Continue
 // with Google" appears to do nothing in local dev.
 function devCleanUrls(): Plugin {
-  const map: Record<string, string> = { '/app': '/app.html', '/auth': '/auth.html', '/passport': '/passport.html', '/foundry': '/foundry.html', '/soc': '/soc.html' }
+  const map: Record<string, string> = { '/app': '/app.html', '/auth': '/auth.html', '/passport': '/passport.html', '/foundry': '/foundry.html', '/soc': '/soc.html', '/clip': '/clip.html' }
   return {
     name: 'dev-clean-urls',
     configureServer(server) {
@@ -46,6 +46,7 @@ export default defineConfig(() => {
           passport: resolve(__dirname, 'passport.html'),
           foundry: resolve(__dirname, 'foundry.html'),
           soc: resolve(__dirname, 'soc.html'),
+          clip: resolve(__dirname, 'clip.html'),
         },
       },
     },

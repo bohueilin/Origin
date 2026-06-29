@@ -15,7 +15,7 @@ export function ScorecardPanel({ bundle }: { bundle: Bundle }) {
       <p className="fd-section-sub">
         Same bar, every model. The tier is computed from FAR/FRR by the deterministic oracle —
         a model maxes at L3; L4 is the oracle ceiling. All <strong>{ids.length} models below are
-        measured</strong> — real runs of the full 32-case benchmark, not projections.
+        measured</strong> — real runs of the full 48-case benchmark, not projections.
       </p>
 
       <div className="fd-model-tabs" role="tablist">

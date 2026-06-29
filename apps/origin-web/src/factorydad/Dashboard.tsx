@@ -3,16 +3,14 @@ import type { Bundle } from './types'
 import { PRODUCT_NAME } from './brand'
 import { AccountMenu } from '../auth/AccountMenu'
 import { Hero } from './components/Hero'
-import { RobotBrain } from './components/RobotBrain'
 import { HowItWorks } from './components/HowItWorks'
-import { VisionFilm } from './components/VisionFilm'
 import { CasesSection } from './components/CasesSection'
 import { RslCurve } from './components/RslCurve'
 import { RsiClimb } from './components/RsiClimb'
+import { ModelLearning } from './components/ModelLearning'
 import { ScorecardPanel } from './components/ScorecardPanel'
 import { CostReadiness } from './components/CostReadiness'
 import { FailureRows } from './components/FailureRows'
-import { TrustScope } from './components/TrustScope'
 import { TrustPlane } from './components/TrustPlane'
 import { PassportLayer } from './components/PassportLayer'
 import { SiteFooter } from './components/SiteFooter'
@@ -66,8 +64,8 @@ export function Dashboard() {
         <Hero bundle={bundle} />
 
         <div className="fd-truststrip fd-shell" role="note">
-          AI/model proposes actions. <strong>A deterministic oracle scores.</strong> No model sets
-          its own reward, label, or license.
+          The model proposes actions. <strong>A deterministic oracle scores.</strong> No model sets
+          its own reward, label, or license — because a model that grades itself can be gamed.
         </div>
 
         <TrustPlane />
@@ -92,25 +90,22 @@ export function Dashboard() {
           </div>
         </section>
 
-        <RobotBrain />
         <HowItWorks />
 
         <div className="fd-proof fd-shell" aria-label="At a glance">
           <span><b>{bundle.cases.length}</b> safety scenarios · {dc.core} core / {dc.hard} hard</span>
           <span><b>{tc.finish}/{tc.escalate}/{tc.refuse}</b> finish / escalate / refuse</span>
           <span><b>{Object.keys(bundle.scorecards).length}</b> models on one bar</span>
-          <span><b>0</b> LLM judges · deterministic oracle</span>
+          <span><b>1</b> deterministic judge · no LLM grades another LLM</span>
         </div>
-
-        <VisionFilm />
 
         <CasesSection bundle={bundle} />
         <RslCurve bundle={bundle} />
         <RsiClimb bundle={bundle} />
+        <ModelLearning />
         <ScorecardPanel bundle={bundle} />
         <CostReadiness bundle={bundle} />
         <FailureRows bundle={bundle} />
-        <TrustScope bundle={bundle} />
         <PassportLayer />
 
         <section className="fd-close fd-shell">

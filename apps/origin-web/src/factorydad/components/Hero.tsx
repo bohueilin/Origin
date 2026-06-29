@@ -25,7 +25,14 @@ export function Hero({ bundle }: { bundle: Bundle }) {
 
         <div className="fd-cta">
           <a className="fd-btn fd-btn-primary" href="/passport">Try the Passport demo →</a>
-          <a className="fd-btn fd-btn-ghost" href="#how">See how Origin scores a robot ▸</a>
+          <a className="fd-btn fd-btn-ghost" href="#cost">See the model scoreboard ▸</a>
+        </div>
+
+        <div className="fd-hero-proof" aria-label="Benchmark at a glance">
+          <span><b>{Object.keys(bundle.scorecards).length}</b> models scored</span>
+          <span><b>{bundle.cases.length}</b> safety cases</span>
+          <span><b>1</b> deterministic judge · no LLM grades another LLM</span>
+          <span className="fd-hero-proof-cere">⚡ open models earn <b>site-ready L3</b> on Cerebras</span>
         </div>
 
         <div className="fd-hero-stage">

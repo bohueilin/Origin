@@ -593,6 +593,66 @@ export async function handleAccuracy(_body: unknown, cerebras: CerebrasConfig, g
   }
 }
 
+// ---- The Explainer: gemma-4 NARRATES the already-final verdict (it never decides it) ----------
+
+/** Facts about a decision the oracle has ALREADY made. The Explainer only turns these into one
+ *  plain-English sentence; it cannot change the outcome. */
+interface ExplainFacts {
+  action: string
+  authorized: boolean
+  guardianVerdict: 'ratify' | 'veto' | null
+  guardianReason: string
+  destructive: boolean
+  outcome: 'executed' | 'blocked'
+}
+
+/** A deterministic, always-available one-liner — the fail-closed default if the key is absent or the
+ *  narration call fails. The narration never gates the verdict; this template is the floor. */
+function templateExplanation(f: ExplainFacts): string {
+  if (f.outcome === 'executed') {
+    return `Executed "${f.action}": the agent was authorized for it and the Guardian ratified a non-destructive action.`
+  }
+  if (!f.authorized) {
+    return `Blocked "${f.action}": the agent had no authority for it — capability is not permission — so the deterministic gate denied it before the Guardian even ran.`
+  }
+  if (f.destructive) {
+    return `Blocked "${f.action}": it is a destructive tool-call, so the fail-closed floor refused to execute it regardless of what any model believed.`
+  }
+  return `Blocked "${f.action}": the Guardian vetoed it${f.guardianReason ? ` (${f.guardianReason})` : ''}, so the deterministic floor swapped in the safe recovery.`
+}
+
+/**
+ * Narrate WHY a verdict landed in one plain-English sentence. The oracle has ALREADY decided; this
+ * only describes the decision in words — gemma-4 narrates, it does not judge. ALWAYS fail-closed to
+ * the deterministic template (no key, call error, or unusable output never blocks the flow).
+ */
+async function explainVerdict(f: ExplainFacts, cfg: CerebrasConfig): Promise<string> {
+  const fallback = templateExplanation(f)
+  if (!cfg.apiKey) return fallback
+  try {
+    const res = await cerebrasChat(
+      [
+        {
+          role: 'system',
+          content:
+            'You are the Explainer. A deterministic oracle has ALREADY made the final decision — you do NOT change it, you only NARRATE it. Given the structured facts, write ONE short, plain-English sentence explaining WHY the action was executed or blocked. State the decisive reason (authority denied, destructive floor, Guardian veto, or all gates passed). No preamble, no markdown, no quotes around the whole sentence.',
+        },
+        {
+          role: 'user',
+          content: `Action: ${f.action}\nAuthorized: ${f.authorized}\nGuardian verdict: ${f.guardianVerdict ?? 'n/a'} (${f.guardianReason || 'no reason given'})\nDestructive: ${f.destructive}\nFinal outcome: ${f.outcome}.\nNarrate the decision in one sentence.`,
+        },
+      ],
+      cfg,
+      { reasoningEffort: 'none', maxTokens: 60, timeoutMs: 2500 },
+    )
+    if (!res.ok) return fallback
+    const text = res.content.trim().replace(/^["']|["']$/g, '').slice(0, 220)
+    return text || fallback
+  } catch {
+    return fallback
+  }
+}
+
 // ---- route: passport-run (identity → authority → veto; multi-agent safety) -----------------
 
 export async function handlePassportRun(_body: unknown, cerebras: CerebrasConfig): Promise<PassportRunResponse> {
@@ -652,10 +712,18 @@ export async function handlePassportRun(_body: unknown, cerebras: CerebrasConfig
     chain.push({ label: 'Outcome', status: executed ? 'pass' : 'deny', detail: executed ? `Executed "${sc.action}".` : `Blocked → ${SAFE_RECOVERY}. ${!authorized ? 'Authority gate stopped it' : destructive ? 'Destructive — floor blocked it' : 'Guardian vetoed'}.` })
 
     const outcome: 'executed' | 'blocked' = executed ? 'executed' : 'blocked'
+
+    // The Explainer: gemma-4 narrates the verdict the oracle already finalized (never changes it).
+    // It fails closed to a deterministic template, so it never blocks and never alters `source`.
+    const explanation = await explainVerdict(
+      { action: sc.action, authorized, guardianVerdict, guardianReason, destructive, outcome },
+      cerebras,
+    )
+
     decisions.push({
       id: sc.id, title: sc.title, kind: sc.kind, agentLabel: agent.label, action: sc.action,
       authorized, guardianVerdict, guardianReason, tokS, applied, outcome,
-      correct: (outcome === 'executed') === (sc.correctOutcome === 'execute'), chain,
+      correct: (outcome === 'executed') === (sc.correctOutcome === 'execute'), chain, explanation,
     })
   }
 

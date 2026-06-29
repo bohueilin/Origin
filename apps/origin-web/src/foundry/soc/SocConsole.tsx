@@ -71,6 +71,49 @@ export function Leaderboard() {
   )
 }
 
+// ---- the thesis band (the Q&A-winning depth + citations artifact) -----------
+
+export function ControlPlaneThesis() {
+  const loop = ['perceive', 'propose', 'RATIFY', 'block / execute', 'audit']
+  return (
+    <section className="cpt">
+      <div className="cpt__eyebrow">The control plane for autonomy</div>
+      <h2 className="cpt__slogan">Capability is not permission.</h2>
+      <p className="cpt__lede">
+        Gemma-4 proposes. A <strong>deterministic oracle — never an LLM</strong> — ratifies every action before it executes. A bad
+        action is made <em>impossible</em>, not just unlikely. The only reason you can afford that check on <em>every</em> step is that
+        Cerebras makes verification effectively free.
+      </p>
+      <div className="cpt__loop">
+        {loop.map((s, i) => (
+          <span key={s} className={`cpt__node${s === 'RATIFY' ? ' cpt__node--key' : ''}`}>
+            {s}
+            {i < loop.length - 1 && <i className="cpt__arrow">→</i>}
+          </span>
+        ))}
+      </div>
+      <div className="cpt__cols">
+        <div className="cpt__col">
+          <h3>Validated by the consensus — not a slogan</h3>
+          <ul>
+            <li><b>DeepMind AI Control Roadmap</b> (Jun 18 2026): treat agents as insider threats; <b>block irreversible actions in real time</b>; defense-in-depth <em>"beyond model alignment… assurance even if alignment is imperfect."</em> Origin is that roadmap, shipped.</li>
+            <li><b>arXiv 2602.09947</b> — <em>Trustworthy Agentic AI Requires Deterministic Architectural Boundaries:</em> alignment is insufficient; you need <b>deterministic mediation, privilege separation, fail-closed default-deny.</b> That is Origin's policy floor.</li>
+            <li><b>Cerebras · Gemma-4 thesis:</b> fast inference lets you <em>"fit more verification and more retries into the same product"</em> — speed as the new quality lever.</li>
+          </ul>
+        </div>
+        <div className="cpt__col">
+          <h3>Honest by design</h3>
+          <ul>
+            <li>We <b>contain</b> prompt injection, we don&rsquo;t claim to <b>prevent</b> it — the destructive action never executes at the floor, regardless of what the model believes.</li>
+            <li><b>Deterministic + auditable</b>, not "formally verified." The audit trace is the safety certificate.</li>
+            <li><b>Frame-by-frame perception</b>, not video. Gemma-4 on Cerebras is image+text → text. We built the robot-ready brain, not a robot.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ---- reacts-before-I-finish (latency) ---------------------------------------
 
 export function LatencyPanel() {
@@ -493,6 +536,8 @@ export default function SocConsole() {
         </p>
       </header>
 
+      <ControlPlaneThesis />
+
       <Leaderboard />
 
       <LoopRace />
@@ -509,8 +554,8 @@ export default function SocConsole() {
 
       <section className="fdy-card">
         <div className="fdy-card__head">
-          <h2>Run the live SOC</h2>
-          <p>A realistic auto-remediation agent triages a live incident queue. Two alerts carry a prompt injection. Watch the Guardian catch what the agent would have executed.</p>
+          <h2>Run the live SOC — DeepMind&rsquo;s roadmap, shipped</h2>
+          <p>A realistic auto-remediation agent triages a live incident queue (detection). Two alerts carry a prompt injection. The Guardian + fail-closed policy floor block the destructive tool-call <em>before execution</em> (synchronous response) and write an audit trail. Watch what the agent would have executed.</p>
         </div>
         <button className="fdy-btn fdy-btn--primary" onClick={go} disabled={busy}>
           {busy ? 'Triaging…' : run ? 'Run again' : 'Triage the queue'}
@@ -533,8 +578,8 @@ export default function SocConsole() {
             </ol>
             {done && (
               <div className="soc-verdict">
-                <strong>{run.threatsBlocked} destructive action{run.threatsBlocked === 1 ? '' : 's'} blocked.</strong> Zero executed.
-                The deterministic policy — not an LLM — decided every "allowed," and the Guardian ran on every step because it&rsquo;s free at Cerebras speed.
+                <strong>{run.threatsBlocked} destructive action{run.threatsBlocked === 1 ? '' : 's'} blocked synchronously, before execution.</strong> Zero executed.
+                The deterministic policy — not an LLM — decided every "allowed" (DeepMind&rsquo;s R3 synchronous block), and the Guardian ran on every step because it&rsquo;s free at Cerebras speed. This trace is the audit trail — the safety certificate.
               </div>
             )}
           </>

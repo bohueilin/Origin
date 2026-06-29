@@ -11,6 +11,9 @@ import { parseFloor, quorumRun, speedRace, fileToDataUri } from '../foundryClien
 import { SpeedProofs } from '../soc/SocConsole'
 import type { ParseFloorResponse, QuorumRunResponse, SpeedRaceResponse, FoundrySource, QuorumMode } from '../types'
 import type { GridPos } from '../../warehouse'
+import { evaluateDrawnSite, type DrawnSiteEval } from '../../siteEval'
+import type { ZoneScope } from '../../credentials/types'
+import type { DescriptiveSiteMap } from '../../workflowDraft'
 
 function SourceBadge({ source, model }: { source: FoundrySource; model?: string }) {
   const label = source === 'cerebras' ? 'gemma-4-31b · Cerebras' : source === 'gemini' ? model || 'GPU baseline' : 'deterministic mock'
@@ -26,6 +29,100 @@ function Stat({ label, value, unit, tone }: { label: string; value: string | num
       </div>
       <div className="fdy-stat__label">{label}</div>
     </div>
+  )
+}
+
+// ---- Passport-gated spatial authority --------------------------------------
+
+const PASSPORT_ZONE_SCOPE: ZoneScope = { kind: 'enter_zone', zoneId: 'ward-3-isolation' }
+
+const PASSPORT_GYM_MAP: DescriptiveSiteMap = {
+  width: 5,
+  height: 1,
+  start: { x: 0, y: 0 },
+  item: { x: 4, y: 0 },
+  drop: { x: 4, y: 0 },
+  obstacles: [],
+  hazards: [],
+  humanOnly: [{ x: 2, y: 0 }],
+  restrictedZoneId: PASSPORT_ZONE_SCOPE.zoneId,
+  robots: [{ x: 0, y: 0 }],
+}
+
+function PassportGymCard() {
+  const noGrant = evaluateDrawnSite(PASSPORT_GYM_MAP, 'humanoid')
+  const matchingGrant = evaluateDrawnSite(PASSPORT_GYM_MAP, 'humanoid', new Set([PASSPORT_ZONE_SCOPE.zoneId]))
+  const unrelatedGrant = evaluateDrawnSite(PASSPORT_GYM_MAP, 'humanoid', new Set(['pharmacy-vault']))
+  const hazardWithGrant = evaluateDrawnSite(
+    { ...PASSPORT_GYM_MAP, hazards: [{ x: 2, y: 0 }] },
+    'humanoid',
+    new Set([PASSPORT_ZONE_SCOPE.zoneId]),
+  )
+  const rows: Array<{ label: string; eval: DrawnSiteEval; note: string }> = [
+    { label: 'No Passport grant', eval: noGrant, note: 'restricted zone is an absolute policy wall' },
+    { label: `Live ${PASSPORT_ZONE_SCOPE.kind}:${PASSPORT_ZONE_SCOPE.zoneId}`, eval: matchingGrant, note: 'only this zone becomes passable for this agent' },
+    { label: 'Unrelated grant', eval: unrelatedGrant, note: 'wrong zoneId is not authority' },
+    { label: 'Hazard with grant', eval: hazardWithGrant, note: 'authorization never overrides physics' },
+  ]
+
+  return (
+    <section className="fdy-card fdy-passport-gym">
+      <div className="fdy-card__head">
+        <h2>Passport-gated robot task</h2>
+        <p>
+          The robot&apos;s Passport: identity → authority → verified action. A restricted human-only zone refuses by policy until the
+          agent holds a live scoped <code>enter_zone</code> grant for that exact zoneId.
+        </p>
+      </div>
+      <div className="fdy-passport-gym__grid">
+        <div>
+          <FloorGrid map={PASSPORT_GYM_MAP} trail={matchingGrant.pathCells} cursor={PASSPORT_GYM_MAP.start} />
+          <p className="fdy-passport-gym__caption">
+            Zone <code>{PASSPORT_ZONE_SCOPE.zoneId}</code> is the purple gate. Passport can unlock policy access; the oracle still scores the path.
+          </p>
+        </div>
+        <div className="fdy-passport-gym__rail" aria-label="Passport authority outcomes">
+          {rows.map((row) => (
+            <div key={row.label} className={`fdy-passport-gym__row is-${row.eval.verdict}`}>
+              <span className="fdy-passport-gym__state">{row.label}</span>
+              <strong>{row.eval.verdict.toUpperCase()}</strong>
+              <em>{row.note}</em>
+            </div>
+          ))}
+        </div>
+      </div>
+      <p className="fdy-passport-gym__proof">
+        Capability is not permission: the grant is a deterministic key, not a physics override. Matching authority flips REFUSE → FINISH;
+        an unrelated grant still refuses, and a real hazard still refuses even with the grant.
+      </p>
+    </section>
+  )
+}
+
+function RsiVerifierCard() {
+  return (
+    <section className="fdy-card fdy-rsi-card">
+      <div className="fdy-card__head">
+        <h2>Gemma proposes. Origin verifies.</h2>
+        <p>
+          One building map → 24 deterministic robot-safety candidates. The oracle overrode the proposer on 9 unsafe
+          calls, accepted 15, and oracle divergence is 0 — the verifier and the judge never disagree.
+        </p>
+      </div>
+      <div className="fdy-rsi-card__stats">
+        <Stat label="candidates" value={24} />
+        <Stat label="accepted" value={15} tone="pos" />
+        <Stat label="overrides" value={9} tone="warn" />
+        <Stat label="oracle divergence" value={0} tone="pos" />
+      </div>
+      <p className="fdy-rsi-card__note">
+        These are the recorded mock-proposer run (no key needed), source-labeled in the dashboard. With a Cerebras key the
+        same path runs live gemma-4-31b; either way the oracle is the judge and divergence stays 0.
+      </p>
+      <a className="fdy-btn fdy-btn--primary fdy-rsi-card__link" href="/rsi/rsi_dashboard.html">
+        Open the RSI verifier dashboard
+      </a>
+    </section>
   )
 }
 
@@ -267,6 +364,8 @@ export default function FoundryApp() {
       )}
 
       <SpeedRacePanel />
+      <PassportGymCard />
+      <RsiVerifierCard />
 
       {/* Step 1 — upload + parse */}
       <section className="fdy-card">

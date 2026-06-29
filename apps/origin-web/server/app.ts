@@ -20,6 +20,7 @@
 
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { bodyLimit } from 'hono/body-limit'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import type { AppConfig } from './config.ts'
 import { resetEpisode, stepEpisode, type GymConfig } from './env/gym.ts'
@@ -37,7 +38,7 @@ import { handleVoiceStructure, type VoiceResult } from './minimaxHandler.ts'
 import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
-import { handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
+import { handleGymRollout, handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
 import { handleSocRun, handleSocRace, handleSocShootout, handleEconomics, handleEnsemble, handleLatency, handleAccuracy, handlePassportRun, handleSupervisionRun } from './socHandler.ts'
 import { handleLeaderboard } from './leaderboardHandler.ts'
 
@@ -119,6 +120,16 @@ const DOMAIN_SET = new Set<string>(PHYSICAL_DOMAINS)
 
 const stepStatus = (r: { ok: boolean; code?: string }): ContentfulStatusCode =>
   r.ok ? 200 : r.code === 'bad_request' ? 400 : 502
+
+const foundrySmallBodyLimit = bodyLimit({
+  maxSize: 96 * 1024,
+  onError: (c) => c.json({ ok: false, code: 'payload_too_large', error: 'Foundry request body too large.' }, 413),
+})
+
+const foundryImageBodyLimit = bodyLimit({
+  maxSize: 10_500_000,
+  onError: (c) => c.json({ ok: false, code: 'payload_too_large', error: 'Foundry image request body too large.' }, 413),
+})
 
 export function createApp(config: AppConfig): Hono {
   const runCfg = { nebius: config.nebius, insforge: config.insforge }
@@ -406,31 +417,35 @@ export function createApp(config: AppConfig): Hono {
   // ---- Origin Foundry: floor → environment → verified, reward-hardened policy ----
   // Cerebras gemma-4-31b is the primary for every gemma-4 call; a deterministic mock
   // (labeled source:'mock') keeps the demo alive offline. The oracle alone scores.
-  app.post('/api/foundry/parse-floor', async (c) => c.json(await handleParseFloor(await jsonBody(c), config.cerebras)))
-  app.post('/api/foundry/quorum-run', async (c) => c.json(await handleQuorumRun(await jsonBody(c), config.cerebras)))
-  app.post('/api/foundry/speed-race', async (c) => c.json(await handleSpeedRace(await jsonBody(c), config.cerebras, config.gemini)))
+  app.post('/api/foundry/parse-floor', foundryImageBodyLimit, async (c) => c.json(await handleParseFloor(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/quorum-run', foundrySmallBodyLimit, async (c) => c.json(await handleQuorumRun(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/gym-rollout', foundrySmallBodyLimit, async (c) => {
+    const r = await handleGymRollout(await jsonBody(c))
+    return c.json(r, r.ok ? 200 : 400)
+  })
+  app.post('/api/foundry/speed-race', foundrySmallBodyLimit, async (c) => c.json(await handleSpeedRace(await jsonBody(c), config.cerebras, config.gemini)))
 
   // ---- Origin Autonomy-Control (AI-SOC): same engine, digital buyer ----
   // A software agent's destructive/injection-driven tool-calls are vetoed by the Guardian and
   // a fail-closed policy floor; the deterministic policy is the only judge. The loop-race proves
   // per-step verification is free at Cerebras speed.
-  app.post('/api/foundry/soc-run', async (c) => c.json(await handleSocRun(await jsonBody(c), config.cerebras)))
-  app.post('/api/foundry/soc-race', async (c) => c.json(await handleSocRace(await jsonBody(c), config.cerebras, config.gemini)))
+  app.post('/api/foundry/soc-run', foundrySmallBodyLimit, async (c) => c.json(await handleSocRun(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/soc-race', foundrySmallBodyLimit, async (c) => c.json(await handleSocRace(await jsonBody(c), config.cerebras, config.gemini)))
   // Speed leaderboard: gemma-4-31b on Cerebras vs every available frontier GPU model, live tok/s.
-  app.post('/api/foundry/leaderboard', async (c) => c.json(await handleLeaderboard(await jsonBody(c), config.cerebras, config.gemini)))
+  app.post('/api/foundry/leaderboard', foundrySmallBodyLimit, async (c) => c.json(await handleLeaderboard(await jsonBody(c), config.cerebras, config.gemini)))
   // The "safety tax": GPU one-shot (fast, unguarded → breaches) vs Cerebras verified (safe AND faster).
-  app.post('/api/foundry/soc-shootout', async (c) => c.json(await handleSocShootout(await jsonBody(c), config.cerebras, config.gemini)))
+  app.post('/api/foundry/soc-shootout', foundrySmallBodyLimit, async (c) => c.json(await handleSocShootout(await jsonBody(c), config.cerebras, config.gemini)))
   // Economics: measured throughput → incidents/min (the input to the $ scorecard).
-  app.post('/api/foundry/economics', async (c) => c.json(await handleEconomics(await jsonBody(c), config.cerebras, config.gemini)))
+  app.post('/api/foundry/economics', foundrySmallBodyLimit, async (c) => c.json(await handleEconomics(await jsonBody(c), config.cerebras, config.gemini)))
   // Ensemble-of-N Guardians: a committee for the price of one (miss-rate ↓ as N ↑).
-  app.post('/api/foundry/ensemble', async (c) => c.json(await handleEnsemble(await jsonBody(c), config.cerebras, config.gemini)))
+  app.post('/api/foundry/ensemble', foundrySmallBodyLimit, async (c) => c.json(await handleEnsemble(await jsonBody(c), config.cerebras, config.gemini)))
   // Latency: detect+veto an injected attack before a GPU returns its first token.
-  app.post('/api/foundry/latency', async (c) => c.json(await handleLatency(await jsonBody(c), config.cerebras, config.gemini)))
+  app.post('/api/foundry/latency', foundrySmallBodyLimit, async (c) => c.json(await handleLatency(await jsonBody(c), config.cerebras, config.gemini)))
   // Accuracy vs latency: speed converts time into correctness (one-shot → verified).
-  app.post('/api/foundry/accuracy', async (c) => c.json(await handleAccuracy(await jsonBody(c), config.cerebras, config.gemini)))
+  app.post('/api/foundry/accuracy', foundrySmallBodyLimit, async (c) => c.json(await handleAccuracy(await jsonBody(c), config.cerebras, config.gemini)))
   // Passport: identity→authority→veto — the "who is allowed" gate before the Guardian's "what".
-  app.post('/api/foundry/passport-run', async (c) => c.json(await handlePassportRun(await jsonBody(c), config.cerebras)))
-  app.post('/api/foundry/supervision-run', async (c) => c.json(await handleSupervisionRun(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/passport-run', foundrySmallBodyLimit, async (c) => c.json(await handlePassportRun(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/supervision-run', foundrySmallBodyLimit, async (c) => c.json(await handleSupervisionRun(await jsonBody(c), config.cerebras)))
 
   return app
 }

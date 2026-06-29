@@ -168,3 +168,29 @@ export interface EnsembleResponse {
   /** How many Cerebras guardians fit inside one GPU guardian's wall time. */
   fitsInBudget: number
 }
+
+// ---- reacts-before-I-finish: latency to detect+veto an attack ----
+
+export interface LatencyResponse {
+  ok: boolean
+  attackText: string
+  cerebras: { ttftMs: number | null; totalMs: number | null; verdict: 'veto' | 'ratify'; reason: string; ok: boolean }
+  gpu: { label: string; totalMs: number | null; ok: boolean }
+}
+
+// ---- accuracy vs latency: speed converts time into correctness ----
+
+export interface AccPoint {
+  label: string
+  provider: 'cerebras' | 'fireworks'
+  /** Per-incident wall time for this config. */
+  budgetMs: number
+  accuracyPct: number
+}
+
+export interface AccuracyResponse {
+  ok: boolean
+  points: AccPoint[]
+  total: number
+  source: 'cerebras' | 'mock'
+}

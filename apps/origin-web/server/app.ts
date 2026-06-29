@@ -38,7 +38,7 @@ import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
 import { handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
-import { handleSocRun, handleSocRace, handleSocShootout, handleEconomics, handleEnsemble } from './socHandler.ts'
+import { handleSocRun, handleSocRace, handleSocShootout, handleEconomics, handleEnsemble, handleLatency, handleAccuracy } from './socHandler.ts'
 import { handleLeaderboard } from './leaderboardHandler.ts'
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
@@ -424,6 +424,10 @@ export function createApp(config: AppConfig): Hono {
   app.post('/api/foundry/economics', async (c) => c.json(await handleEconomics(await jsonBody(c), config.cerebras, config.gemini)))
   // Ensemble-of-N Guardians: a committee for the price of one (miss-rate ↓ as N ↑).
   app.post('/api/foundry/ensemble', async (c) => c.json(await handleEnsemble(await jsonBody(c), config.cerebras, config.gemini)))
+  // Latency: detect+veto an injected attack before a GPU returns its first token.
+  app.post('/api/foundry/latency', async (c) => c.json(await handleLatency(await jsonBody(c), config.cerebras, config.gemini)))
+  // Accuracy vs latency: speed converts time into correctness (one-shot → verified).
+  app.post('/api/foundry/accuracy', async (c) => c.json(await handleAccuracy(await jsonBody(c), config.cerebras, config.gemini)))
 
   return app
 }

@@ -30,6 +30,23 @@
 }
 .soc-verdict strong { color: var(--text); }
 
+/* ---- the control-plane thesis band (citations + honesty) ---- */
+.cpt { margin-top: 22px; padding: 26px 24px; border-radius: 16px; background: var(--ink); border: 1px solid var(--ink-line, #3a3327); color: var(--ink-text, #efe9dc); }
+.cpt__eyebrow { font: 600 12.5px/1 'Space Grotesk', sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fast); }
+.cpt__slogan { font: 700 clamp(28px, 5vw, 44px)/1.05 'Space Grotesk', sans-serif; margin: 10px 0 12px; color: #fff; letter-spacing: -0.02em; }
+.cpt__lede { max-width: 720px; font-size: 16px; line-height: 1.55; color: #cfc8b9; margin: 0 0 18px; }
+.cpt__lede strong { color: #fff; }
+.cpt__loop { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 22px; }
+.cpt__node { font: 600 13.5px/1 ui-monospace, monospace; padding: 8px 12px; border-radius: 8px; background: #211d16; border: 1px solid var(--ink-line, #3a3327); color: #cfc8b9; display: inline-flex; align-items: center; }
+.cpt__node--key { background: rgba(52, 224, 161, 0.16); border-color: rgba(52, 224, 161, 0.45); color: var(--fast); }
+.cpt__arrow { margin: 0 -4px 0 12px; color: #6b6555; }
+.cpt__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.cpt__col h3 { font: 700 14px/1.2 'Space Grotesk', sans-serif; color: #fff; margin: 0 0 10px; }
+.cpt__col ul { margin: 0; padding-left: 18px; display: grid; gap: 9px; }
+.cpt__col li { font-size: 13.5px; line-height: 1.5; color: #b8b0a0; }
+.cpt__col li b { color: #efe9dc; }
+@media (max-width: 720px) { .cpt__cols { grid-template-columns: 1fr; } }
+
 /* ---- speed leaderboard (inside the dark .fdy-race panel) ---- */
 .soc-board { margin-top: 16px; display: grid; gap: 9px; }
 .soc-board__row { display: grid; grid-template-columns: 28px 130px 1fr auto; align-items: center; gap: 10px; }

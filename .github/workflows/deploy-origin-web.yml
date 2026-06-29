@@ -1,0 +1,61 @@
+name: Deploy origin-web → Cloudflare Pages
+
+# Every push to main that touches the web app (or this workflow) rebuilds and ships
+# origin-web to the live site, https://origin-physical-ai.pages.dev.
+# This is the wiring that keeps the public site in sync with this (private) repo.
+#
+# One-time setup: add a Cloudflare API token (scope: Account › Cloudflare Pages › Edit)
+# as the repo secret CLOUDFLARE_API_TOKEN. Until it's set, the build still runs and the
+# deploy step skips gracefully (the run stays green).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/origin-web/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy-origin-web.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-origin-web
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install workspace deps
+        run: npm ci
+
+      - name: Build origin-web
+        run: npm run build:web
+
+      - name: Check for Cloudflare token
+        id: gate
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Deploy skipped::Set repo secret CLOUDFLARE_API_TOKEN (Account › Cloudflare Pages › Edit) to enable auto-deploy."
+          fi
+
+      - name: Deploy to Cloudflare Pages (production)
+        if: steps.gate.outputs.ready == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ecf2451e81261e8de3295b4a3b4e439c
+          command: pages deploy apps/origin-web/dist --project-name=origin-physical-ai --branch=hud-factorydad-1

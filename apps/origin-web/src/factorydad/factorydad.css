@@ -584,10 +584,10 @@ a.fd-foot-support-val:hover { color: var(--accent); }
   width: 48px; height: 48px;
   object-fit: contain; display: block;
 }
-.fd-hero h1 { font-size: 66px; line-height: 1.04; font-weight: 700; letter-spacing: -0.03em; margin: 28px 0 0; max-width: 15ch; }
-.fd-hero .fd-lede { font-size: 19px; color: var(--text-soft); max-width: 60ch; margin: 22px 0 0; line-height: 1.6; }
+.fd-hero h1 { font-size: 60px; line-height: 1.05; font-weight: 700; letter-spacing: -0.03em; margin: 20px 0 0; max-width: 15ch; }
+.fd-hero .fd-lede { font-size: 18.5px; color: var(--text-soft); max-width: 58ch; margin: 18px 0 0; line-height: 1.6; }
 .fd-hero .fd-lede strong { color: var(--text); font-weight: 600; }
-.fd-cta { display: flex; gap: 12px; margin-top: 32px; justify-content: center; flex-wrap: wrap; }
+.fd-cta { display: flex; gap: 12px; margin-top: 26px; justify-content: center; flex-wrap: wrap; }
 .fd-btn { font-family: var(--font-sans); font-size: 15px; font-weight: 600; text-decoration: none; padding: 12px 22px; border-radius: 11px; transition: all .15s; }
 .fd-hero .fd-btn { border-radius: 999px; padding: 13px 26px; }
 .fd-btn-primary { background: var(--accent); color: #fff; box-shadow: 0 8px 18px rgba(47,109,246,0.28); }
@@ -595,22 +595,32 @@ a.fd-foot-support-val:hover { color: var(--accent); }
 .fd-btn-ghost { background: var(--panel); color: var(--text); border: 1px solid var(--line); }
 .fd-btn-ghost:hover { border-color: var(--accent); }
 
-.fd-hero-stage { width: 100%; margin-top: 52px; display: flex; justify-content: center; }
-.fd-hero-proof { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; margin-top: 26px; font-size: 15.5px; color: var(--muted); }
+.fd-hero-stage { width: 100%; margin-top: 32px; display: flex; justify-content: center; }
+.fd-hero-proof { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; margin-top: 22px; font-size: 15px; color: var(--muted); }
 .fd-hero-proof > span { display: inline-flex; align-items: center; gap: 6px; }
 .fd-hero-proof b { font-family: var(--font-display); color: var(--text); font-weight: 700; }
 .fd-hero-proof > span + span { padding-left: 22px; border-left: 1px solid var(--line); }
 .fd-hero-proof-cere { color: var(--accent-ink); }
 .fd-hero-proof-cere b { color: var(--accent-ink); }
 .fd-hero-submit {
-  margin: 34px auto 0; max-width: 620px; padding: 30px 28px; border-radius: 22px; text-align: center;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, var(--panel)), var(--panel));
-  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--line)); box-shadow: var(--shadow-lg);
+  margin: 24px auto 0; max-width: 760px; width: 100%; padding: 30px 34px; border-radius: 22px;
+  display: flex; align-items: center; justify-content: space-between; gap: 28px; text-align: left;
+  background: linear-gradient(118deg, #2f6df6 0%, #2657d6 58%, #1d4ed8 100%);
+  box-shadow: 0 22px 48px -20px rgba(47, 109, 246, 0.6);
 }
-.fd-hero-submit h2 { font-family: var(--font-display); font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 8px; color: var(--text); }
-.fd-hero-submit p { margin: 0 0 20px; font-size: 16.5px; color: var(--text-soft); line-height: 1.5; }
-.fd-hero-submit-btn { font-size: 17px; padding: 15px 34px; }
-@media (max-width: 720px) { .fd-hero-submit { padding: 24px 18px; } .fd-hero-submit h2 { font-size: 25px; } }
+.fd-hero-submit-copy { min-width: 0; }
+.fd-hero-submit h2 { font-family: var(--font-display); font-size: 27px; line-height: 1.12; letter-spacing: -0.02em; margin: 0 0 6px; color: #fff; }
+.fd-hero-submit p { margin: 0; font-size: 15.5px; color: rgba(255, 255, 255, 0.86); line-height: 1.5; }
+.fd-hero-submit-btn {
+  flex: 0 0 auto; font-family: var(--font-sans); font-weight: 700; font-size: 16px; text-decoration: none; white-space: nowrap;
+  background: #fff; color: var(--accent-ink); padding: 15px 28px; border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16); transition: transform .15s, box-shadow .15s;
+}
+.fd-hero-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22); }
+@media (max-width: 640px) {
+  .fd-hero-submit { flex-direction: column; align-items: stretch; text-align: center; padding: 26px 22px; gap: 18px; }
+  .fd-hero-submit h2 { font-size: 23px; }
+}
 .fd-hero-note { font-size: 14.5px; color: var(--muted); margin-top: 18px; max-width: 60ch; }
 .fd-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pos); box-shadow: 0 0 0 3px rgba(15,157,110,0.18); display: inline-block; }
 .fd-stage-card {

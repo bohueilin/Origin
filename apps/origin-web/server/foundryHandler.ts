@@ -32,6 +32,7 @@ import {
   type GridPos,
 } from '../src/warehouse.ts'
 import { applyEmbodiment, ROBOT_EMBODIMENTS, type RobotEmbodiment } from '../src/environmentPlan.ts'
+import { sealLicense } from '../src/foundry/licenseSeal.ts'
 import type { DescriptiveSiteMap } from '../src/workflowDraft.ts'
 import type {
   ParseFloorResponse,
@@ -674,6 +675,32 @@ export async function handleGymRollout(body: GymRolloutBody): Promise<GymRollout
     const policy = typeof body.policy === 'string' ? body.policy.slice(0, 80) : 'external-trainer'
     const oracle = bfsOracle(task)
     const rollout = verifyWarehouseRollout(task, actions, policy)
+
+    // Seal the now-computed verdict into a tamper-evident license artifact.
+    // `floor` is a stable, key-ordered description of WHAT was evaluated (grid + key
+    // cells) so the license's floorHash fingerprints the exact task. issuedAt comes
+    // from Date.now() here at the call site — sealLicense() itself stays deterministic.
+    const floor = JSON.stringify({
+      id: task.id,
+      width: task.width,
+      height: task.height,
+      start: task.start,
+      item: task.item,
+      drop: task.drop,
+      obstacles: task.obstacles,
+      hazards: task.hazards,
+      humanOnly: task.humanOnly,
+    })
+    const license = sealLicense({
+      verdict: rollout.category,
+      oracleVersion: 'bfs-oracle/warehouse-v1',
+      embodiment: chooseEmbodiment(body.embodiment),
+      floor,
+      pathLength: oracle.pathLength,
+      reward: rollout.reward,
+      issuedAt: Date.now(),
+    })
+
     return {
       ok: true,
       task,
@@ -683,6 +710,7 @@ export async function handleGymRollout(body: GymRolloutBody): Promise<GymRollout
       reward: rollout.reward,
       passed: rollout.passed,
       category: rollout.category,
+      license,
     }
   } catch (error) {
     if (error instanceof GymInputError) {

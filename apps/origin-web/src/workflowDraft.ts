@@ -38,6 +38,15 @@ export interface DescriptiveSiteMap {
    */
   robots: GridPos[]
   /**
+   * OPTIONAL spatial-authorization tag. When set, every `humanOnly` cell on this
+   * map belongs to this single named restricted zone, so an agent that holds a
+   * matching `enter_zone` grant (see ZoneScope) may treat those cells as passable.
+   * Absent (the default) → cells carry no zone id and the oracle treats every
+   * humanOnly cell as an absolute wall, exactly as before. Descriptive + additive:
+   * it never changes a verdict unless a grant for THIS id is explicitly supplied.
+   */
+  restrictedZoneId?: string
+  /**
    * Per-robot type, keyed by its placement cell ("x,y" → embodiment). Lets one
    * deployment mix robot types (a humanoid + a dog + a drone…) at the same robot
    * count. Resolution at render: this map → the robot's fleet type → the workflow

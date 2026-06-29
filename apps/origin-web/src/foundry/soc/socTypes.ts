@@ -218,6 +218,9 @@ export interface PassportDecision {
   outcome: 'executed' | 'blocked'
   correct: boolean
   chain: PassportStep[]
+  /** Plain-English narration of WHY this verdict landed. The deterministic oracle decided; gemma-4
+   *  only NARRATES the already-final decision — it never changes the outcome. */
+  explanation?: string
 }
 export interface PassportRunResponse {
   ok: boolean

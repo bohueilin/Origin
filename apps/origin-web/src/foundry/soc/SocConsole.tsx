@@ -92,6 +92,11 @@ export function ControlPlaneThesis() {
           </span>
         ))}
       </div>
+      <p className="cpt__honest">
+        <strong>3 gemma-4 agents per decision · 1 judge no model can bribe.</strong>{' '}
+        The Perceiver, Planner, and Guardian all run on gemma-4-31b — they perceive, propose, and guard. The verdict itself is a
+        deterministic oracle (the fail-closed policy floor): the only judge, and the one component no prompt, model, or injection can move.
+      </p>
       <div className="cpt__cols">
         <div className="cpt__col">
           <h3>Validated by the consensus — not a slogan</h3>
@@ -355,6 +360,9 @@ export function PassportPanel() {
           DeepMind&rsquo;s multi-agent frontier: identity, <strong>attenuated delegation</strong>, oversight. Passport is a deterministic authority gate
           <em> in front of</em> the Guardian. An agent can&rsquo;t act beyond its grant — and a hijacked agent can&rsquo;t manufacture authority it never held.
         </p>
+        <p className="pp-narrate-note">
+          gemma-4 <strong>narrates</strong> each verdict in plain English — it does <em>not</em> decide it. The deterministic oracle already ruled; the model only puts the reason into words.
+        </p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Checking authority…' : data ? 'Run again' : 'Run the authority scenarios'}
@@ -379,6 +387,9 @@ export function PassportPanel() {
                     </li>
                   ))}
                 </ol>
+                {d.explanation && (
+                  <p className="pp-explain"><span className="pp-explain__tag">why</span>{d.explanation}</p>
+                )}
               </li>
             ))}
           </ol>

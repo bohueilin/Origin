@@ -31,12 +31,38 @@ function seedFrom(map: DescriptiveSiteMap): number {
   return Math.abs(h) % 100000
 }
 
+/**
+ * The set of restricted zones an embodied agent is currently authorized to enter.
+ * Each entry is a `zoneId` matching a `DescriptiveSiteMap.restrictedZoneId` and is
+ * backed by a live, scoped `ZoneScope` credential (see credentials/types.ts). This
+ * is the ONLY lever that can flip a restricted cell to passable; it is itself a
+ * deterministic set-membership check and never touches a physical hazard.
+ */
+export type GrantedZones = ReadonlySet<string>
+
+/** Which of the map's humanOnly cells are made passable by the granted zones.
+ *  A humanOnly cell is authorized ONLY when the map declares a `restrictedZoneId`
+ *  and that exact id is in the grant set. No id / no grant → empty (current
+ *  behavior). Hazards are intentionally never considered here. */
+function authorizedHumanOnly(map: DescriptiveSiteMap, grantedZones?: GrantedZones): GridPos[] {
+  const zoneId = map.restrictedZoneId
+  if (!zoneId || !grantedZones || !grantedZones.has(zoneId)) return []
+  return map.humanOnly.map((p) => ({ ...p }))
+}
+
 /** Build a real WarehouseTask from the drawn map. Budgets are generous so the
  *  legible levers are what the operator drew: walls (reachability) and
- *  hazard / human-only placement (safety) — not a hidden battery number. */
+ *  hazard / human-only placement (safety) — not a hidden battery number.
+ *
+ *  `grantedZones` is OPTIONAL and additive: when the map tags its humanOnly cells
+ *  with a `restrictedZoneId` and that id is granted, those cells are dropped from
+ *  the task's `humanOnly` (treated as passable for THIS agent) so the oracle scores
+ *  POLICY, not just hazard. Hazards are NEVER dropped. With no grants (the default)
+ *  the produced task is byte-identical to before. */
 export function siteMapToWarehouseTask(
   map: DescriptiveSiteMap,
   embodiment: RobotEmbodiment,
+  grantedZones?: GrantedZones,
 ): WarehouseTask {
   const battery = Math.max(8, map.width * map.height * 2)
   // The licensed lane ALWAYS starts from the map's fixed start anchor. Robot
@@ -44,6 +70,10 @@ export function siteMapToWarehouseTask(
   // never change the scored verdict — see the invariant in workflowDraft.ts and the
   // "robots are descriptive" trust copy. The oracle alone computes the verdict.
   const start = { ...map.start }
+  // A live, scoped grant makes a restricted (humanOnly) zone passable for this
+  // agent — a deterministic set-membership check, not an override of physics.
+  const passable = new Set(authorizedHumanOnly(map, grantedZones).map((p) => `${p.x},${p.y}`))
+  const humanOnly = map.humanOnly.filter((p) => !passable.has(`${p.x},${p.y}`)).map((p) => ({ ...p }))
   const base: WarehouseTask = {
     id: 'drawn-floor',
     seed: seedFrom(map),
@@ -57,7 +87,7 @@ export function siteMapToWarehouseTask(
     drop: { ...map.drop },
     obstacles: map.obstacles.map((p) => ({ ...p })),
     hazards: map.hazards.map((p) => ({ ...p })),
-    humanOnly: map.humanOnly.map((p) => ({ ...p })),
+    humanOnly,
     battery,
     maxSteps: battery + 16,
   }
@@ -97,8 +127,13 @@ export interface DrawnSiteEval {
 export function evaluateDrawnSite(
   map: DescriptiveSiteMap,
   embodiment: RobotEmbodiment,
+  grantedZones?: GrantedZones,
 ): DrawnSiteEval {
-  const base = siteMapToWarehouseTask(map, embodiment)
+  // `grantedZones` is OPTIONAL: when supplied and matching the map's
+  // `restrictedZoneId`, the humanOnly cells of that zone are passable for this
+  // agent, so a route that was POLICY-blocked can now finish. Hazards still block.
+  // No grants (the default) → identical to prior behavior.
+  const base = siteMapToWarehouseTask(map, embodiment, grantedZones)
   const baseOracle = bfsOracle(base)
 
   let task = base

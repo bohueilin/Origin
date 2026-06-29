@@ -90,6 +90,38 @@ export interface QuorumRunResponse {
 
 // ---- gym-rollout ------------------------------------------------------------
 
+/**
+ * A signed Autonomy License artifact: the gym verdict turned into a structured,
+ * re-verifiable object instead of an ephemeral number.
+ *
+ * `seal` is a TAMPER-EVIDENT INTEGRITY SEAL — a SHA-256 hash over the canonical
+ * JSON of every other field. It is NOT a PKI/asymmetric signature (there is no
+ * private key or signer identity) and NOT a blockchain anchor; it seals the LOCAL
+ * verdict only. Recompute it with verifyLicense() to detect post-issuance tampering.
+ */
+export interface ReadinessLicense {
+  /** Content-derived stable id (rl_…), not random. */
+  licenseId: string
+  /** The rollout category / pass result being licensed (e.g. 'pass', 'unsafe_zone'). */
+  verdict: string
+  /** Which deterministic oracle ruleset produced the verdict. */
+  oracleVersion: string
+  /** Robot embodiment the rollout was graded for. */
+  embodiment: string
+  /** SHA-256 fingerprint of the task/site that was evaluated. */
+  floorHash: string
+  /** Safe-path length the oracle found. */
+  pathLength: number
+  /** Reward the oracle assigned the rollout. */
+  reward: number
+  /** Issue timestamp (epoch ms), supplied at seal time. */
+  issuedAt: number
+  /** Deterministic nonce derived from floorHash + verdict (NOT random). */
+  nonce: string
+  /** SHA-256 integrity seal over the canonical JSON of all the above fields. */
+  seal: string
+}
+
 export type GymRolloutResponse = {
   ok: true
   task: WarehouseTask
@@ -99,6 +131,8 @@ export type GymRolloutResponse = {
   reward: number
   passed: boolean
   category: string
+  /** Tamper-evident license artifact sealing this verdict (see ReadinessLicense). */
+  license: ReadinessLicense
 } | {
   ok: false
   code: 'bad_request'

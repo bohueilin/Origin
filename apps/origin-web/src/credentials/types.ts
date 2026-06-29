@@ -11,6 +11,35 @@ export type CredentialScope =
   | 'wallet_prepare'  // prepare a transaction draft (no signing)
   | 'wallet_sign'     // sign — HUMAN-ONLY in MVP; the broker never auto-resolves this
 
+/**
+ * SPATIAL authorization scope — the physical-world analogue of the digital
+ * scopes above. A `ZoneScope` lets a credential authorize an embodied agent to
+ * ENTER a single named restricted zone (e.g. a hospital ward, a human-only cage).
+ *
+ * Thesis: authorization is deterministic and the oracle still decides. Holding a
+ * matching `enter_zone` grant only flips whether a RESTRICTED cell is treated as
+ * passable for THIS agent — a deterministic set-membership check on `zoneId`. It
+ * NEVER overrides a true physical hazard, and absent any grant the oracle behaves
+ * byte-identically to today. This is a separate, additive concept and deliberately
+ * does NOT widen `CredentialScope` (which stays a flat string union used by the
+ * digital broker, UI selects, and equality checks).
+ */
+export interface ZoneScope {
+  kind: 'enter_zone'
+  /** Stable id of the restricted zone this credential authorizes entry to. */
+  zoneId: string
+}
+
+/** Type guard: is this a spatial enter-zone authorization (vs. a digital scope)? */
+export function isZoneScope(scope: unknown): scope is ZoneScope {
+  return (
+    typeof scope === 'object' &&
+    scope !== null &&
+    (scope as { kind?: unknown }).kind === 'enter_zone' &&
+    typeof (scope as { zoneId?: unknown }).zoneId === 'string'
+  )
+}
+
 export type ApprovalPolicy = 'auto_low_risk' | 'approval_required'
 export type GrantStatus = 'active' | 'revoked' | 'expired'
 export type BrokerDecision = 'allowed' | 'denied' | 'approval_required'

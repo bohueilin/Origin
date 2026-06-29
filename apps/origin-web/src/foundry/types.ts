@@ -10,7 +10,7 @@
 // ----------------------------------------------------------------------------
 
 import type { DescriptiveSiteMap } from '../workflowDraft'
-import type { WarehouseAction, WarehouseTerminal, GridPos } from '../warehouse'
+import type { WarehouseAction, WarehouseTerminal, GridPos, WarehouseOracle, WarehouseRollout, WarehouseTask } from '../warehouse'
 
 /** Where a result came from. 'mock' is the deterministic offline fallback (always labeled in the UI). */
 export type FoundrySource = 'cerebras' | 'gemini' | 'mock'
@@ -85,6 +85,23 @@ export interface QuorumRunResponse {
   wallMs: number
   guardianVetoes: number
   model: string
+  error?: string
+}
+
+// ---- gym-rollout ------------------------------------------------------------
+
+export type GymRolloutResponse = {
+  ok: true
+  task: WarehouseTask
+  actions: WarehouseAction[]
+  oracle: WarehouseOracle
+  rollout: WarehouseRollout
+  reward: number
+  passed: boolean
+  category: string
+} | {
+  ok: false
+  code: 'bad_request'
   error?: string
 }
 

@@ -38,6 +38,7 @@ import type {
   QuorumRunResponse,
   QuorumStep,
   QuorumMode,
+  GymRolloutResponse,
   SpeedRaceResponse,
   SpeedRaceLane,
   FoundrySource,
@@ -568,7 +569,131 @@ export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Pr
 }
 
 // ============================================================================
-// 3) speed-race — gemma-4-31b (Cerebras) vs a GPU baseline (Gemini)
+// 3) gym-rollout — external trainer action grading over the deterministic oracle
+// ============================================================================
+
+interface GymRolloutBody {
+  task?: unknown
+  siteMap?: unknown
+  embodiment?: unknown
+  actions?: unknown
+  policy?: unknown
+}
+
+class GymInputError extends Error {}
+
+const intIn = (raw: unknown, fallback: number, min: number, max: number): number => {
+  const n = Number(raw)
+  if (!Number.isFinite(n)) return fallback
+  return Math.max(min, Math.min(max, Math.round(n)))
+}
+
+function rawCell(raw: unknown): GridPos | null {
+  const r = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
+  const x = Number(r.x)
+  const y = Number(r.y)
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return null
+  return { x: Math.round(x), y: Math.round(y) }
+}
+
+function isOnGrid(cell: GridPos, width: number, height: number): boolean {
+  return cell.x >= 0 && cell.y >= 0 && cell.x < width && cell.y < height
+}
+
+function requiredCell(raw: unknown, name: string, width: number, height: number): GridPos {
+  const cell = rawCell(raw)
+  if (!cell || !isOnGrid(cell, width, height)) {
+    throw new GymInputError(`${name} must be an in-bounds {x,y} cell.`)
+  }
+  return cell
+}
+
+function safeCells(raw: unknown, width: number, height: number, protectedCells: Set<string>): GridPos[] {
+  if (!Array.isArray(raw)) return []
+  const maxCells = Math.max(0, width * height)
+  const seen = new Set<string>()
+  const out: GridPos[] = []
+  for (const item of raw.slice(0, maxCells)) {
+    const c = rawCell(item)
+    if (!c || !isOnGrid(c, width, height)) continue
+    const key = cellKey(c)
+    if (protectedCells.has(key) || seen.has(key)) continue
+    seen.add(key)
+    out.push(c)
+  }
+  return out
+}
+
+function taskFromGymBody(body: GymRolloutBody): WarehouseTask {
+  if (body.task && typeof body.task === 'object') {
+    const raw = body.task as Record<string, unknown>
+    const width = intIn(raw.width, 8, 2, 64)
+    const height = intIn(raw.height, 8, 2, 64)
+    const start = requiredCell(raw.start, 'start', width, height)
+    const item = requiredCell(raw.item, 'item', width, height)
+    const drop = requiredCell(raw.drop, 'drop', width, height)
+    const protectedCells = new Set([start, item, drop].map(cellKey))
+    const task: WarehouseTask = {
+      id: typeof raw.id === 'string' ? raw.id.slice(0, 120) : 'gym-rollout',
+      seed: intIn(raw.seed, seedFrom({ width, height, start, item, drop, obstacles: [], hazards: [], humanOnly: [], robots: [] }), 0, 2147483647),
+      level: raw.level === 'L1' || raw.level === 'L2' || raw.level === 'L3' || raw.level === 'L4' || raw.level === 'L5' ? raw.level : 'L3',
+      title: typeof raw.title === 'string' ? raw.title.slice(0, 120) : 'Gym rollout',
+      brief: typeof raw.brief === 'string' ? raw.brief.slice(0, 240) : 'External trainer rollout scored by Origin.',
+      width,
+      height,
+      start,
+      item,
+      drop,
+      obstacles: safeCells(raw.obstacles, width, height, protectedCells),
+      hazards: safeCells(raw.hazards, width, height, new Set()),
+      humanOnly: safeCells(raw.humanOnly, width, height, new Set()),
+      battery: intIn(raw.battery, Math.max(8, width * height * 2), 0, 10000),
+      maxSteps: intIn(raw.maxSteps, Math.max(8, width * height * 2) + 16, 1, 20000),
+    }
+    if (typeof raw.refusalReason === 'string') task.refusalReason = raw.refusalReason.slice(0, 300)
+    if (typeof raw.escalationHint === 'string') task.escalationHint = raw.escalationHint.slice(0, 300)
+    return task
+  }
+
+  const embodiment = chooseEmbodiment(body.embodiment)
+  const { map } = repairSiteMap(body.siteMap ?? sampleFloor())
+  return taskFromMap(map, embodiment)
+}
+
+function actionsFromGymBody(raw: unknown, maxActions: number): WarehouseAction[] {
+  if (!Array.isArray(raw)) return []
+  return raw
+    .slice(0, Math.max(0, maxActions))
+    .filter((action): action is WarehouseAction => typeof action === 'string' && (WAREHOUSE_ACTIONS as readonly string[]).includes(action))
+}
+
+export async function handleGymRollout(body: GymRolloutBody): Promise<GymRolloutResponse> {
+  try {
+    const task = taskFromGymBody(body)
+    const actions = actionsFromGymBody(body.actions, task.maxSteps)
+    const policy = typeof body.policy === 'string' ? body.policy.slice(0, 80) : 'external-trainer'
+    const oracle = bfsOracle(task)
+    const rollout = verifyWarehouseRollout(task, actions, policy)
+    return {
+      ok: true,
+      task,
+      actions: rollout.actions,
+      oracle,
+      rollout,
+      reward: rollout.reward,
+      passed: rollout.passed,
+      category: rollout.category,
+    }
+  } catch (error) {
+    if (error instanceof GymInputError) {
+      return { ok: false, code: 'bad_request', error: error.message }
+    }
+    throw error
+  }
+}
+
+// ============================================================================
+// 4) speed-race — gemma-4-31b (Cerebras) vs a GPU baseline (Gemini)
 // ============================================================================
 
 const RACE_PROMPT =

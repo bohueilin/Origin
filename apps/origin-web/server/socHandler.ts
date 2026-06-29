@@ -28,7 +28,8 @@ import {
   type Incident,
 } from '../src/foundry/soc/socEnv.ts'
 import { AGENTS, PASSPORT_SCENARIOS, authorize, delegate } from '../src/foundry/soc/passport.ts'
-import type { SocDecision, SocPerception, SocRunResponse, SocRaceResponse, SocRaceLane, SocShootoutResponse, EconomicsResponse, EnsembleResponse, EnsemblePoint, LatencyResponse, AccuracyResponse, PassportRunResponse, PassportDecision, PassportStep } from '../src/foundry/soc/socTypes.ts'
+import { routeIncident } from '../src/foundry/soc/supervision.ts'
+import type { SocDecision, SocPerception, SocRunResponse, SocRaceResponse, SocRaceLane, SocShootoutResponse, EconomicsResponse, EnsembleResponse, EnsemblePoint, LatencyResponse, AccuracyResponse, PassportRunResponse, PassportDecision, PassportStep, SupervisionResponse, SupervisionItem } from '../src/foundry/soc/socTypes.ts'
 import type { FoundrySource, GuardianVerdict } from '../src/foundry/types.ts'
 
 const SAFE_RECOVERY = 'escalate_to_human' // a universal safe default when the Guardian blocks an action
@@ -659,4 +660,80 @@ export async function handlePassportRun(_body: unknown, cerebras: CerebrasConfig
   }
 
   return { ok: true, source: sawReal ? 'cerebras' : 'mock', decisions, blocked: decisions.filter((d) => d.outcome === 'blocked').length, total: decisions.length }
+}
+
+// ---- route: supervision-run (hierarchical supervision — cheap floor / premium few) -------
+
+const SUPERVISION_DAILY_ALERTS = 10_000 // an assumed mid-size SOC volume (labeled, not measured)
+const ACTION_LABEL = new Map(SOC_ACTIONS.map((a) => [a.id, a.label]))
+
+/**
+ * Run the queue through the two-tier supervisor: a deterministic pre-filter (supervision.ts)
+ * auto-handles the alerts that match a known-safe signature for $0, and ESCALATES the suspicious
+ * minority — injection traps + genuine judgment calls — to the full gemma-4 perceive→plan→Guardian
+ * loop. Both tiers are graded by the SAME deterministic oracle, so the floor's cheap decisions are
+ * proven correct, not merely cheap. The cost projection scales the MEASURED escalation rate to an
+ * assumed daily volume.
+ */
+export async function handleSupervisionRun(_body: unknown, cerebras: CerebrasConfig): Promise<SupervisionResponse> {
+  const items: SupervisionItem[] = []
+  let sawReal = false
+  let escalatedTokens = 0
+  let escalatedMs = 0
+
+  for (const inc of INCIDENTS) {
+    const routing = routeIncident(inc)
+    if (routing.route === 'auto' && routing.autoAction) {
+      // Tier 1 — deterministic floor: a fixed safe action, no LLM. Graded by the oracle anyway.
+      const score = scoreIncident(inc, routing.autoAction)
+      items.push({
+        incidentId: inc.id, title: inc.title, severity: inc.severity, kind: inc.kind,
+        route: 'auto', signal: routing.signal, reason: routing.reason, tier: 'deterministic',
+        action: routing.autoAction, actionLabel: ACTION_LABEL.get(routing.autoAction) ?? routing.autoAction,
+        correct: score.pass, tokS: null,
+      })
+    } else {
+      // Tier 2 — the suspicious minority earns the full gemma-4 loop (fail-closed on destructive).
+      const { decision, tokens, ms } = await triage(inc, cerebras)
+      if (decision.source === 'cerebras') sawReal = true
+      escalatedTokens += tokens
+      escalatedMs += ms
+      items.push({
+        incidentId: inc.id, title: inc.title, severity: inc.severity, kind: inc.kind,
+        route: 'escalate', signal: routing.signal, reason: routing.reason, tier: 'gemma-4',
+        action: decision.applied, actionLabel: ACTION_LABEL.get(decision.applied) ?? decision.applied,
+        correct: decision.pass, tokS: decision.tokS,
+      })
+    }
+  }
+
+  const total = items.length
+  const escalateCount = items.filter((i) => i.route === 'escalate').length
+  const autoCount = total - escalateCount
+  const escalateRate = total ? escalateCount / total : 0
+  const escalatedPerDay = Math.round(SUPERVISION_DAILY_ALERTS * escalateRate)
+  const traps = items.filter((i) => i.kind === 'injection_trap')
+
+  return {
+    ok: true,
+    source: sawReal ? 'cerebras' : 'mock',
+    items,
+    total,
+    autoCount,
+    escalateCount,
+    escalateRate: Math.round(escalateRate * 100) / 100,
+    correct: items.filter((i) => i.correct).length,
+    threatsNeutralized: traps.filter((i) => !isDestructive(i.action)).length,
+    threatsTotal: traps.length,
+    escalatedTokens,
+    escalatedMs: Math.round(escalatedMs),
+    avgTokensPerEscalation: escalateCount ? Math.round(escalatedTokens / escalateCount) : 0,
+    projection: {
+      dailyAlerts: SUPERVISION_DAILY_ALERTS,
+      escalatedPerDay,
+      floorHandledPerDay: SUPERVISION_DAILY_ALERTS - escalatedPerDay,
+      workSavedPct: Math.round((1 - escalateRate) * 100),
+    },
+    model: cerebras.model,
+  }
 }

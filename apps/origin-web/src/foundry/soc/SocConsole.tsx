@@ -8,9 +8,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import '../ui/foundry.css'
 import './soc.css'
-import { socRun, socRace, leaderboard, socShootout, economics, ensemble, latency, accuracy, passportRun } from './socClient'
+import { socRun, socRace, leaderboard, socShootout, economics, ensemble, latency, accuracy, passportRun, supervisionRun } from './socClient'
 import { SOC_ACTIONS, isDestructive } from './socEnv'
-import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse, LatencyResponse, AccuracyResponse, PassportRunResponse } from './socTypes'
+import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse, LatencyResponse, AccuracyResponse, PassportRunResponse, SupervisionResponse } from './socTypes'
 import type { FoundrySource } from '../types'
 
 const LABEL = new Map(SOC_ACTIONS.map((a) => [a.id, a.label]))
@@ -392,6 +392,115 @@ export function PassportPanel() {
   )
 }
 
+// ---- Hierarchical supervision: cheap floor everywhere, gemma-4 on the few ---
+
+export function SupervisionPanel() {
+  const [data, setData] = useState<SupervisionResponse | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const run = useCallback(async () => {
+    setBusy(true)
+    setErr(null)
+    try {
+      setData(await supervisionRun())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Supervision run failed.')
+    } finally {
+      setBusy(false)
+    }
+  }, [])
+
+  const autoItems = data?.items.filter((i) => i.route === 'auto') ?? []
+  const escItems = data?.items.filter((i) => i.route === 'escalate') ?? []
+  const autoPct = data && data.total ? Math.round((data.autoCount / data.total) * 100) : 0
+
+  return (
+    <section className="fdy-card">
+      <div className="fdy-card__head">
+        <h2>One floor for all, judgment for the few</h2>
+        <p>
+          You can&rsquo;t afford a reasoning model on every alert — and you don&rsquo;t need one. A deterministic floor clears the obvious majority for
+          <strong> $0 and ~0&thinsp;ms</strong>, and escalates only the <strong>suspicious minority</strong> — the injection traps and the genuine judgment
+          calls — to a full gemma-4 perceive&rarr;plan&rarr;Guardian loop. Both tiers are graded by the same deterministic oracle.
+        </p>
+      </div>
+      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+        {busy ? 'Supervising the queue…' : data ? 'Run again' : 'Supervise the alert queue'}
+      </button>
+      {err && <p className="fdy-apierror" role="alert">{err}</p>}
+      {data && (
+        <>
+          <div className="sv-funnel">
+            <div className="sv-funnel__in">{data.total} alerts in</div>
+            <div className="sv-funnel__split">
+              <div className="sv-lane sv-lane--floor" style={{ flexGrow: Math.max(1, data.autoCount) }}>
+                <div className="sv-lane__tier">Deterministic floor</div>
+                <div className="sv-lane__count">{data.autoCount}</div>
+                <div className="sv-lane__cost">free · ~0&thinsp;ms</div>
+              </div>
+              <div className="sv-lane sv-lane--esc" style={{ flexGrow: Math.max(1, data.escalateCount) }}>
+                <div className="sv-lane__tier">Escalated to gemma-4</div>
+                <div className="sv-lane__count">{data.escalateCount}</div>
+                <div className="sv-lane__cost">{data.escalatedMs}&thinsp;ms · {data.avgTokensPerEscalation} tok ea.</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="sv-stats">
+            <div className="sv-stat sv-stat--key">
+              <span className="sv-stat__n">{data.threatsNeutralized}/{data.threatsTotal}</span>
+              <span className="sv-stat__l">injection traps neutralized — all in the escalated set</span>
+            </div>
+            <div className="sv-stat">
+              <span className="sv-stat__n">{data.correct}/{data.total}</span>
+              <span className="sv-stat__l">resolved correctly by the oracle</span>
+            </div>
+            <div className="sv-stat">
+              <span className="sv-stat__n">{autoPct}%</span>
+              <span className="sv-stat__l">cleared without touching the model</span>
+            </div>
+          </div>
+
+          <div className="sv-cols">
+            <div className="sv-col">
+              <h3 className="sv-col__h sv-col__h--floor">Floor handled · no LLM</h3>
+              <ul className="sv-list">
+                {autoItems.map((i) => (
+                  <li key={i.incidentId} className={`sv-row ${i.correct ? '' : 'sv-row--miss'}`}>
+                    <span className="sv-row__id">{i.incidentId}</span>
+                    <span className="sv-row__title">{i.title}</span>
+                    <span className="sv-row__act">{i.actionLabel}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="sv-col">
+              <h3 className="sv-col__h sv-col__h--esc">Escalated · gemma-4 + Guardian</h3>
+              <ul className="sv-list">
+                {escItems.map((i) => (
+                  <li key={i.incidentId} className={`sv-row sv-row--esc ${i.correct ? '' : 'sv-row--miss'} ${i.kind === 'injection_trap' ? 'sv-row--trap' : ''}`}>
+                    <span className="sv-row__id">{i.incidentId}</span>
+                    <span className="sv-row__title">{i.title}{i.kind === 'injection_trap' ? <span className="sv-trap"> trap</span> : null}</span>
+                    <span className="sv-row__act">{i.actionLabel}{i.tokS ? <span className="sv-row__tok"> · {i.tokS} tok/s</span> : null}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="soc-verdict">
+            <strong>{data.threatsNeutralized} of {data.threatsTotal} hidden injection attacks were neutralized — and both landed in the escalated lane,
+            exactly where judgment was needed.</strong> The floor cleared {data.autoCount} alerts for $0; you paid gemma-4 for only {data.escalateCount}.
+            At {data.projection.dailyAlerts.toLocaleString()} alerts/day that&rsquo;s <strong>{data.projection.workSavedPct}% less reasoning-model work</strong>.
+            And because Cerebras runs the escalated tier at ~1,300&thinsp;tok/s, you can escalate the entire suspicious tail instead of rationing it to save
+            money — which is exactly how subtle threats slip through a GPU-bound SOC.
+          </div>
+        </>
+      )}
+    </section>
+  )
+}
+
 // ---- the "safety tax" shootout (accuracy + cost-of-safety) ------------------
 
 function ShootLane({ l, guaranteed }: { l: SocShootoutResponse['cerebras']; guaranteed: boolean }) {
@@ -616,6 +725,8 @@ export default function SocConsole() {
       <EnsemblePanel />
 
       <PassportPanel />
+
+      <SupervisionPanel />
 
       <section className="fdy-card">
         <div className="fdy-card__head">

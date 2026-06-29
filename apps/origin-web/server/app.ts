@@ -38,7 +38,7 @@ import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
 import { handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
-import { handleSocRun, handleSocRace, handleSocShootout, handleEconomics, handleEnsemble, handleLatency, handleAccuracy, handlePassportRun } from './socHandler.ts'
+import { handleSocRun, handleSocRace, handleSocShootout, handleEconomics, handleEnsemble, handleLatency, handleAccuracy, handlePassportRun, handleSupervisionRun } from './socHandler.ts'
 import { handleLeaderboard } from './leaderboardHandler.ts'
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
@@ -430,6 +430,7 @@ export function createApp(config: AppConfig): Hono {
   app.post('/api/foundry/accuracy', async (c) => c.json(await handleAccuracy(await jsonBody(c), config.cerebras, config.gemini)))
   // Passport: identity→authority→veto — the "who is allowed" gate before the Guardian's "what".
   app.post('/api/foundry/passport-run', async (c) => c.json(await handlePassportRun(await jsonBody(c), config.cerebras)))
+  app.post('/api/foundry/supervision-run', async (c) => c.json(await handleSupervisionRun(await jsonBody(c), config.cerebras)))
 
   return app
 }

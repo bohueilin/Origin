@@ -42,6 +42,16 @@ export function Hero({ bundle }: { bundle: Bundle }) {
           </div>
         </div>
 
+        {/* Primary product action — kept high on the page so the main ask ("submit your site")
+            is the first thing people act on, right after they watch a robot earn its license. */}
+        <div className="fd-hero-submit">
+          <h2>Build a robot your floor can trust.</h2>
+          <p>Submit your site and watch it earn its license — then climb.</p>
+          <a className="fd-btn fd-btn-primary fd-hero-submit-btn" href="/app.html?start=submit">
+            Submit your site →
+          </a>
+        </div>
+
         <p className="fd-hero-note">{bundle.disclaimer}</p>
       </div>
     </header>

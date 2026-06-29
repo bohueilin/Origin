@@ -105,19 +105,19 @@ function RsiVerifierCard() {
       <div className="fdy-card__head">
         <h2>Gemma proposes. Origin verifies.</h2>
         <p>
-          One building map → 24 deterministic robot-safety candidates. The oracle overrode the proposer on 9 unsafe
-          calls, accepted 15, and oracle divergence is 0 — the verifier and the judge never disagree.
+          One building map → 40 distinct deterministic robot-safety scenarios from 120 real gemma-4-31b samples on
+          Cerebras. The Origin verifier overrode the proposer 17 times; 0 determinism-inconsistent groups.
         </p>
       </div>
       <div className="fdy-rsi-card__stats">
-        <Stat label="candidates" value={24} />
-        <Stat label="accepted" value={15} tone="pos" />
-        <Stat label="overrides" value={9} tone="warn" />
-        <Stat label="oracle divergence" value={0} tone="pos" />
+        <Stat label="scenarios" value={40} />
+        <Stat label="Gemma samples" value={120} />
+        <Stat label="verifier overrides" value={17} tone="warn" />
+        <Stat label="divergence" value={0} tone="pos" />
       </div>
       <p className="fdy-rsi-card__note">
-        These are the recorded mock-proposer run (no key needed), source-labeled in the dashboard. With a Cerebras key the
-        same path runs live gemma-4-31b; either way the oracle is the judge and divergence stays 0.
+        A real gemma-4-31b run on Cerebras (~869 tok/s), recomputed from geometry by the deterministic oracle — never an
+        LLM. The dashboard carries the full artifact and source label; with no key, propose→verify falls back to a labeled mock.
       </p>
       <a className="fdy-btn fdy-btn--primary fdy-rsi-card__link" href="/rsi/rsi_dashboard.html">
         Open the RSI verifier dashboard

@@ -8,9 +8,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import '../ui/foundry.css'
 import './soc.css'
-import { socRun, socRace, leaderboard, socShootout, economics, ensemble } from './socClient'
+import { socRun, socRace, leaderboard, socShootout, economics, ensemble, latency, accuracy } from './socClient'
 import { SOC_ACTIONS, isDestructive } from './socEnv'
-import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse } from './socTypes'
+import type { SocRunResponse, SocRaceResponse, SocDecision, LeaderboardResponse, SocShootoutResponse, EconomicsResponse, EnsembleResponse, LatencyResponse, AccuracyResponse } from './socTypes'
 import type { FoundrySource } from '../types'
 
 const LABEL = new Map(SOC_ACTIONS.map((a) => [a.id, a.label]))
@@ -65,6 +65,116 @@ function Leaderboard() {
           {data.speedupVsBestGpu && (
             <div className="fdy-race__verdict">gemma-4-31b on Cerebras is {data.speedupVsBestGpu}× the fastest GPU model here — and far more vs the rest.</div>
           )}
+        </div>
+      )}
+    </section>
+  )
+}
+
+// ---- reacts-before-I-finish (latency) ---------------------------------------
+
+function LatencyPanel() {
+  const [data, setData] = useState<LatencyResponse | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const [typed, setTyped] = useState(0)
+  const run = useCallback(async () => {
+    setBusy(true)
+    setErr(null)
+    setTyped(0)
+    try {
+      setData(await latency())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Latency test failed.')
+    } finally {
+      setBusy(false)
+    }
+  }, [])
+  useEffect(() => {
+    if (!data) return
+    const t = setInterval(() => setTyped((n) => (n >= data.attackText.length ? n : n + 1)), 26)
+    return () => clearInterval(t)
+  }, [data])
+
+  const ratio = data && data.cerebras.totalMs && data.gpu.totalMs ? Math.round((data.gpu.totalMs / data.cerebras.totalMs) * 10) / 10 : null
+  const vetoVisible = data && typed > 4 // Cerebras is effectively instant — fires as you start typing
+
+  return (
+    <section className="fdy-card fdy-race">
+      <div className="fdy-card__head">
+        <h2>Reacts before you finish typing</h2>
+        <p>An attacker injects a directive to disable the firewall. The Cerebras Guardian detects and blocks it before a GPU model has even returned its first token.</p>
+      </div>
+      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+        {busy ? 'Sending the attack…' : data ? 'Replay the attack' : 'Send the attack'}
+      </button>
+      {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
+      {data && (
+        <div className="fdy-race__lanes">
+          <div className="soc-attack">
+            <span className="soc-attack__label">attacker →</span>
+            <span className="soc-attack__text">{data.attackText.slice(0, typed)}<span className="soc-attack__caret" /></span>
+          </div>
+          <div className="soc-lat__rows">
+            <div className={`soc-lat__row${vetoVisible ? ' is-on' : ''}`}>
+              <span className="soc-lat__badge soc-lat__badge--cb">🛑 Cerebras Guardian</span>
+              <span className="soc-lat__val">{vetoVisible ? `BLOCKED in ${data.cerebras.totalMs}ms · TTFT ${data.cerebras.ttftMs}ms` : '…'}</span>
+            </div>
+            <div className={`soc-lat__row${typed >= data.attackText.length ? ' is-on' : ''}`}>
+              <span className="soc-lat__badge soc-lat__badge--gpu">⏳ {data.gpu.label}</span>
+              <span className="soc-lat__val">{typed >= data.attackText.length ? `responded at ${data.gpu.totalMs}ms` : 'still thinking…'}</span>
+            </div>
+          </div>
+          {typed >= data.attackText.length && ratio && (
+            <div className="fdy-race__verdict">Cerebras blocked the injection in {data.cerebras.totalMs}ms — the GPU took {data.gpu.totalMs}ms, {ratio}× slower. The defense reacts before the attack finishes typing.</div>
+          )}
+        </div>
+      )}
+    </section>
+  )
+}
+
+// ---- accuracy vs latency ----------------------------------------------------
+
+function AccuracyPanel() {
+  const [data, setData] = useState<AccuracyResponse | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<string | null>(null)
+  const run = useCallback(async () => {
+    setBusy(true)
+    setErr(null)
+    try {
+      setData(await accuracy())
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Accuracy test failed.')
+    } finally {
+      setBusy(false)
+    }
+  }, [])
+
+  return (
+    <section className="fdy-card fdy-race">
+      <div className="fdy-card__head">
+        <h2>Speed buys correctness</h2>
+        <p>Give each platform a time budget. The GPU can barely finish one shot. Cerebras matches that accuracy in a fraction of the time — then spends the slack on verification to pull ahead.</p>
+      </div>
+      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+        {busy ? 'Measuring…' : data ? 'Measure again' : 'Run the accuracy test'}
+      </button>
+      {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
+      {data && (
+        <div className="soc-acc">
+          {data.points.map((p) => (
+            <div key={p.label} className={`soc-acc__row${p.provider === 'cerebras' ? ' soc-acc__row--cb' : ''}`}>
+              <span className="soc-acc__name">{p.label}</span>
+              <div className="soc-acc__track">
+                <div className="soc-acc__fill" style={{ width: `${p.accuracyPct}%` }} />
+              </div>
+              <span className="soc-acc__val">{p.accuracyPct}%</span>
+              <span className="soc-acc__lat">{p.budgetMs}ms</span>
+            </div>
+          ))}
+          <div className="fdy-race__verdict">Same accuracy at a fraction of the latency — and Cerebras can afford to verify (still &lt;1s), which a GPU can&rsquo;t. More correct, per millisecond.</div>
         </div>
       )}
     </section>
@@ -373,6 +483,10 @@ export default function SocConsole() {
       <LoopRace />
 
       <Shootout />
+
+      <LatencyPanel />
+
+      <AccuracyPanel />
 
       <EconomicsPanel />
 

@@ -110,9 +110,10 @@
     .stat .tagline { display: block; margin-top: 6px; color: var(--amber); font-size: 11px; font-weight: 700; text-transform: uppercase; }
     .cf-fam { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 8px 12px; border: 1px solid var(--line); border-radius: 7px; margin-top: 8px; font-size: 14px; }
     .cf-fam b { font-variant-numeric: tabular-nums; font-size: 16px; }
-    .cf-fam.weak { border-color: rgba(194,65,12,.4); background: rgba(194,65,12,.05); }
-    .cf-ex { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
-    /* Readiness ladder */
+	    .cf-fam.weak { border-color: rgba(194,65,12,.4); background: rgba(194,65,12,.05); }
+	    .cf-ex { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+	    .lane-layout { display:grid; grid-template-columns:1.1fr .9fr; gap:18px; align-items:start; }
+	    /* Readiness ladder */
     .ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
     .rung { padding: 16px 14px; border-radius: 10px; border: 1px solid var(--line); background: #fff; position: relative; }
     .rung .lvl { font-size: 13px; font-weight: 900; color: var(--blue); letter-spacing: .05em; }
@@ -123,8 +124,9 @@
     .rung .here { position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 900; color: var(--green); text-transform: uppercase; }
     footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
     @media (max-width: 980px) {
-      .grid2, .score-grid, .money .verdict { grid-template-columns: 1fr; }
-      .ladder { grid-template-columns: 1fr 1fr; }
+	      .grid2, .score-grid, .money .verdict { grid-template-columns: 1fr; }
+	      .lane-layout { grid-template-columns: 1fr; }
+	      .ladder { grid-template-columns: 1fr 1fr; }
       .funnel-row { grid-template-columns: 130px 1fr 60px; }
       header.hero h1 { font-size: 30px; }
     }
@@ -394,6 +396,68 @@
       </section>
 	    </div>
 	
+	    <!-- 5a. DATASET LICENSE LANES -->
+	    <section>
+	      <div class="section-head">
+	        <h2>Dataset license lanes</h2>
+	        <div class="note">what each source is allowed to prove</div>
+	      </div>
+	      <div class="card">
+    <h3 style="margin-top:0">Three lanes, three different claims</h3>
+    <p class="sub">The same score can mean different things depending on rights. Research-only rows can support papers and prototype demos; commercial-safe synthetic rows can support product-development demos; customer-owned rows are the path to real deployment evidence. The lane gate fails if research-only data is treated as commercial-safe.</p>
+    <div class="lane-layout">
+      <div><div class="cf-fam" style="align-items:start">
+      <span>
+        <b style="display:block;color:var(--amber);font-size:15px">RESEARCH-ONLY</b>
+        <span style="display:block;margin-top:5px">Research prototype, benchmark, and non-commercial evaluation only. Not a commercial training or customer safety claim.</span>
+        <small style="display:block;margin-top:6px;color:#667085">CubiGraph5K/CubiCasa5K-derived (3,493) · Origin deterministic hazard augmentation (947) · MLStructFP test-data (7) · ZInD sample_tour (1)</small>
+      </span>
+      <b style="text-align:right">4,448<small style="display:block;color:#667085;font-size:11px;font-weight:700">F 1,009 / E 2,691 / R 748</small></b>
+    </div><div class="cf-fam" style="align-items:start">
+      <span>
+        <b style="display:block;color:var(--green);font-size:15px">COMMERCIAL-SAFE SYNTHETIC</b>
+        <span style="display:block;margin-top:5px">Origin-generated synthetic/procedural rows that can support commercial-safe demo and product-development claims, subject to Origin review.</span>
+        <small style="display:block;margin-top:6px;color:#667085">Origin procedural generator (256)</small>
+      </span>
+      <b style="text-align:right">256<small style="display:block;color:#667085;font-size:11px;font-weight:700">F 0 / E 256 / R 0</small></b>
+    </div><div class="cf-fam" style="align-items:start">
+      <span>
+        <b style="display:block;color:var(--blue);font-size:15px">CUSTOMER-OWNED</b>
+        <span style="display:block;margin-top:5px">A customer&#39;s own permissioned floor plans compiled into that customer&#39;s own Gym. This is the honest path to natural refuse from real restricted/human-only zones.</span>
+        <small style="display:block;margin-top:6px;color:#667085">no rows yet</small>
+      </span>
+      <b style="text-align:right">0<small style="display:block;color:#667085;font-size:11px;font-weight:700">F 0 / E 0 / R 0</small></b>
+    </div></div>
+      <div>
+        <div class="stat dark">
+          <b>RESEARCH-ONLY</b>
+          <span>natural holdout lane</span>
+          <span class="tagline" style="color:#93c5fd">202 CubiGraph/CubiCasa rows · research result</span>
+        </div>
+        <p class="sub" style="margin:12px 0 0;color:#5b4412"><b>Natural refuse requires the customer-owned lane:</b> real customer maps with real restricted zones, human-only areas, or operational hazards. Current CubiCasa-derived natural v1 has no refuse support.</p>
+        <p class="sub" style="margin:8px 0 0;color:#5b4412"><b>Hazard augmentation nuance:</b> the method is commercial-safe when applied to owned/procedural maps; the current on-disk hazard rows inherit CubiCasa-derived parent rights and stay research-lane.</p>
+      </div>
+    </div>
+    <h3 style="margin:18px 0 0">Source mapping</h3>
+    <div class="cf-fam">
+      <span>CubiGraph5K/CubiCasa5K-derived<small style="display:block;color:#667085;font-weight:800;text-transform:uppercase;margin-top:3px">not commercial claim</small></span>
+      <b>RESEARCH-ONLY</b>
+    </div><div class="cf-fam">
+      <span>Origin deterministic hazard augmentation<small style="display:block;color:#667085;font-weight:800;text-transform:uppercase;margin-top:3px">not commercial claim</small></span>
+      <b>RESEARCH-ONLY</b>
+    </div><div class="cf-fam">
+      <span>MLStructFP test-data<small style="display:block;color:var(--amber);font-weight:800;text-transform:uppercase;margin-top:3px">license review</small></span>
+      <b>RESEARCH-ONLY</b>
+    </div><div class="cf-fam">
+      <span>Origin procedural generator<small style="display:block;color:var(--green);font-weight:800;text-transform:uppercase;margin-top:3px">commercial claim allowed</small></span>
+      <b>COMMERCIAL-SAFE SYNTHETIC</b>
+    </div><div class="cf-fam">
+      <span>ZInD sample_tour<small style="display:block;color:var(--amber);font-weight:800;text-transform:uppercase;margin-top:3px">license review</small></span>
+      <b>RESEARCH-ONLY</b>
+    </div>
+  </div>
+	    </section>
+	
 	    <!-- 5a. NATURAL HOLDOUT -->
 	    <section>
 	      <div class="section-head">
@@ -402,7 +466,7 @@
 	      </div>
 	      <div class="card">
     <h3 style="margin-top:0">Natural metrics for business credibility; balanced metrics for safety analysis</h3>
-    <p class="sub">Existing real CubiGraph/CubiCasa-derived test rows only. The holdout keeps the original, unbalanced label mix and filters only exact/near train duplicates by raw occupancy, handed-reachability occupancy, topology, and source-record hashes. Because this v1 natural slice has <b>0 refuse rows</b>, refuse recall and false-accept rate are reported as <b>not estimable</b> here, not as a win.</p>
+    <p class="sub"><b>Research-lane CubiGraph/CubiCasa result.</b> Existing real CubiGraph/CubiCasa-derived test rows only. The holdout keeps the original, unbalanced label mix and filters only exact/near train duplicates by raw occupancy, handed-reachability occupancy, topology, and source-record hashes. Because this v1 natural slice has <b>0 refuse rows</b>, refuse recall and false-accept rate are reported as <b>not estimable</b> here, not as a win.</p>
     <div class="score-grid">
       <div class="stat">
     <b style="">202</b>

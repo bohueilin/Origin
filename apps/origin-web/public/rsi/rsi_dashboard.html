@@ -392,10 +392,85 @@
     </div></div>
         </div>
       </section>
+	    </div>
+	
+	    <!-- 5a. NATURAL HOLDOUT -->
+	    <section>
+	      <div class="section-head">
+	        <h2>Natural-distribution holdout</h2>
+	        <div class="note">real CubiGraph/CubiCasa rows, original label mix, train-disjoint by hash</div>
+	      </div>
+	      <div class="card">
+    <h3 style="margin-top:0">Natural metrics for business credibility; balanced metrics for safety analysis</h3>
+    <p class="sub">Existing real CubiGraph/CubiCasa-derived test rows only. The holdout keeps the original, unbalanced label mix and filters only exact/near train duplicates by raw occupancy, handed-reachability occupancy, topology, and source-record hashes. Because this v1 natural slice has <b>0 refuse rows</b>, refuse recall and false-accept rate are reported as <b>not estimable</b> here, not as a win.</p>
+    <div class="score-grid">
+      <div class="stat">
+    <b style="">202</b>
+    <span>natural rows kept</span>
+    <span class="tagline">349 candidates; 147 duplicate-shaped rows excluded</span>
+  </div>
+      <div class="stat">
+    <b style="">finish 61 / escalate 141 / refuse 0</b>
+    <span>natural label mix</span>
+    <span class="tagline">raw candidates: finish 97 / escalate 252 / refuse 0</span>
+  </div>
+      <div class="stat">
+    <b style="">97.5%</b>
+    <span>natural accuracy (learned)</span>
+    <span class="tagline">budget model; saved weights; no retraining</span>
+  </div>
+      <div class="stat">
+    <b style="">98.2%</b>
+    <span>natural present-label balance</span>
+    <span class="tagline">finish/escalate only; no class balancing</span>
+  </div>
+      <div class="stat">
+    <b style="color:var(--green)">0.0%</b>
+    <span>natural false-refuse rate</span>
+    <span class="tagline">non-refuse rows predicted as refuse</span>
+  </div>
+      <div class="stat">
+    <b style="color:var(--amber)">not estimable</b>
+    <span>natural refuse recall</span>
+    <span class="tagline">not measured until real refuse rows exist</span>
+  </div>
+      <div class="stat">
+    <b style="">97.2%</b>
+    <span>balanced saved-test reference</span>
+    <span class="tagline">learned budget policy; safety-analysis split</span>
+  </div>
+      <div class="stat">
+    <b style="">94.7%</b>
+    <span>balanced hard-case reference</span>
+    <span class="tagline">mined/oracle-filtered hard cases, not natural distribution</span>
+  </div>
+      <div class="stat">
+    <b style="">83.0%</b>
+    <span>mixed source-domain reference</span>
+    <span class="tagline">finish/escalate/refuse hard mix</span>
+  </div>
+      <div class="stat">
+    <b style="color:var(--amber)">96.5%</b>
+    <span>spatial natural comparison</span>
+    <span class="tagline">oracle-recovery upper bound; handed reachability</span>
+  </div>
+      <div class="stat">
+    <b style="color:var(--amber)">92.6%</b>
+    <span>spatial balanced reference</span>
+    <span class="tagline">upper bound, not learned spatial reasoning</span>
+  </div>
+      <div class="stat">
+    <b style="color:var(--green)">0</b>
+    <span>train-disjointness gate</span>
+    <span class="tagline">overlaps: occ 0 / reach 0 / topo 0 / source 0</span>
+  </div>
     </div>
-
-    <!-- 5b. COUNTERFACTUAL CAUSAL SENSITIVITY -->
-    <section>
+    <p class="sub" style="margin-top:14px;color:#5b4412"><b>Claim boundary:</b> natural metrics are a real-source sanity check over the distribution we already have. They do not replace balanced safety analysis, counterfactual causal tests, or future permissioned natural refuse examples.</p>
+  </div>
+	    </section>
+	
+	    <!-- 5b. COUNTERFACTUAL CAUSAL SENSITIVITY -->
+	    <section>
       <div class="section-head">
         <h2>Counterfactual causal sensitivity</h2>
         <div class="note">eval-only pairs &mdash; does the policy change for the right reason?</div>

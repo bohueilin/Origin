@@ -12,7 +12,7 @@ export function Hero({ bundle }: { bundle: Bundle }) {
     <header className="fd-hero" id="overview">
       <div className="fd-hero-center fd-shell">
         <span className="fd-hero-pill">
-          <img className="fd-hero-pill-logo" src="/origin-logo.png" alt="" aria-hidden="true" /> {PRODUCT_FULL} · CAPABILITY IS NOT PERMISSION
+          <img className="fd-hero-pill-logo" src="/origin-logo.png" alt="" aria-hidden="true" /> {PRODUCT_FULL} <span className="fd-hero-pill-sub">· CAPABILITY IS NOT PERMISSION</span>
         </span>
         <div className="fd-hero-eyebrow">Physical AI is here</div>
         <h1>Can you trust it on your floor?</h1>

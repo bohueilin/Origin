@@ -6,6 +6,7 @@ import { Hero } from './components/Hero'
 import { HowItWorks } from './components/HowItWorks'
 import { CasesSection } from './components/CasesSection'
 import { RslCurve } from './components/RslCurve'
+import { RsiPrimer } from './components/RsiPrimer'
 import { RsiClimb } from './components/RsiClimb'
 import { ModelLearning } from './components/ModelLearning'
 import { ScorecardPanel } from './components/ScorecardPanel'
@@ -101,11 +102,12 @@ export function Dashboard() {
 
         <CasesSection bundle={bundle} />
         <RslCurve bundle={bundle} />
+        <RsiPrimer />
         <RsiClimb bundle={bundle} />
         <ModelLearning />
+        <FailureRows bundle={bundle} />
         <ScorecardPanel bundle={bundle} />
         <CostReadiness bundle={bundle} />
-        <FailureRows bundle={bundle} />
         <PassportLayer />
 
         <section className="fd-close fd-shell">

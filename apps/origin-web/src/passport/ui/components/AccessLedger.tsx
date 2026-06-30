@@ -34,15 +34,21 @@ export function AccessLedger({ leases, onRevoke }: AccessLedgerProps) {
       prevStatuses.current.set(l.id, l.status)
     }
     if (justRevoked.length) {
-      setFlashing((s) => new Set([...s, ...justRevoked]))
-      const id = window.setTimeout(() => {
-        setFlashing((s) => {
-          const next = new Set(s)
-          for (const lid of justRevoked) next.delete(lid)
-          return next
-        })
-      }, 700)
-      return () => window.clearTimeout(id)
+      let clearFlashId: number | undefined
+      const addFlashId = window.setTimeout(() => {
+        setFlashing((s) => new Set([...s, ...justRevoked]))
+        clearFlashId = window.setTimeout(() => {
+          setFlashing((s) => {
+            const next = new Set(s)
+            for (const lid of justRevoked) next.delete(lid)
+            return next
+          })
+        }, 700)
+      }, 0)
+      return () => {
+        window.clearTimeout(addFlashId)
+        if (clearFlashId) window.clearTimeout(clearFlashId)
+      }
     }
   }, [leases])
 

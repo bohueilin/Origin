@@ -209,8 +209,94 @@ body {
 .fdy-brainline code { font: 600 12.5px/1 ui-monospace, monospace; background: #fff; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); }
 .fdy-train__caption { font-size: 12.5px; color: var(--muted); font-style: italic; margin: 4px 0 0; }
 
+/* ---- Passport-gated robot gym ---- */
+.fdy-passport-gym {
+  background:
+    linear-gradient(135deg, rgba(47, 109, 246, 0.08), transparent 38%),
+    var(--panel);
+}
+.fdy-passport-gym code {
+  font: 600 12.5px/1 ui-monospace, monospace;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+.fdy-passport-gym__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.fdy-passport-gym__caption,
+.fdy-passport-gym__proof {
+  margin: 10px 0 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+}
+.fdy-passport-gym__proof {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.fdy-passport-gym__rail {
+  display: grid;
+  gap: 10px;
+}
+.fdy-passport-gym__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--warn);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.fdy-passport-gym__row.is-finish { border-left-color: var(--pos); }
+.fdy-passport-gym__row.is-refuse { border-left-color: var(--neg); }
+.fdy-passport-gym__row strong {
+  font: 800 12px/1 ui-monospace, monospace;
+  color: var(--warn);
+}
+.fdy-passport-gym__row.is-finish strong { color: var(--pos); }
+.fdy-passport-gym__row.is-refuse strong { color: var(--neg); }
+.fdy-passport-gym__state {
+  font-weight: 750;
+  min-width: 0;
+}
+.fdy-passport-gym__row em {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-style: normal;
+  font-size: 12.5px;
+}
+
+/* ---- RSI verifier proof strip ---- */
+.fdy-rsi-card {
+  border-color: rgba(47, 109, 246, 0.28);
+}
+.fdy-rsi-card__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.fdy-rsi-card__note {
+  color: var(--text-soft);
+  font-size: 13.5px;
+  margin: 14px 0 0;
+}
+.fdy-rsi-card__link {
+  display: inline-block;
+  margin-top: 14px;
+  text-decoration: none;
+}
+
 @media (max-width: 720px) {
   .fdy-parse { grid-template-columns: 1fr; }
+  .fdy-passport-gym__grid { grid-template-columns: 1fr; }
+  .fdy-rsi-card__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fdy-step { grid-template-columns: 30px 1fr; }
   .fdy-step__tok { grid-column: 2; padding-top: 0; }
   .fdy-stat { min-width: 0; flex: 1 1 40%; }

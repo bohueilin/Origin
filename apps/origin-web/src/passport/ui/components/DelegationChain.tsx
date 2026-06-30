@@ -46,7 +46,6 @@ export function DelegationChain({ snap }: { snap: PassportSnapshot }) {
 
   // --- SVG attribution wires: measure node anchors after layout, redraw on resize ---
   const canvasRef = useRef<HTMLDivElement>(null)
-  const nodeRefs = useRef<Map<string, HTMLElement>>(new Map())
   const [edges, setEdges] = useState<Array<{ id: string; childId: string; d: string }>>([])
 
   useLayoutEffect(() => {
@@ -54,11 +53,17 @@ export function DelegationChain({ snap }: { snap: PassportSnapshot }) {
     if (!canvas) return
     const measure = () => {
       const base = canvas.getBoundingClientRect()
+      const nodeEls = new Map(
+        Array.from(canvas.querySelectorAll<HTMLElement>('[data-dc-node-id]')).map((el) => [
+          el.dataset.dcNodeId ?? '',
+          el,
+        ]),
+      )
       const next: Array<{ id: string; childId: string; d: string }> = []
       for (const n of nodes) {
         if (!n.parentId) continue
-        const childEl = nodeRefs.current.get(n.id)
-        const parentEl = nodeRefs.current.get(n.parentId)
+        const childEl = nodeEls.get(n.id)
+        const parentEl = nodeEls.get(n.parentId)
         if (!childEl || !parentEl) continue
         const c = childEl.getBoundingClientRect()
         const p = parentEl.getBoundingClientRect()
@@ -83,11 +88,6 @@ export function DelegationChain({ snap }: { snap: PassportSnapshot }) {
       window.removeEventListener('resize', measure)
     }
   }, [nodes])
-
-  const setRef = (id: string) => (el: HTMLElement | null) => {
-    if (el) nodeRefs.current.set(id, el)
-    else nodeRefs.current.delete(id)
-  }
 
   if (!root || nodes.length === 0) {
     return (
@@ -149,7 +149,6 @@ export function DelegationChain({ snap }: { snap: PassportSnapshot }) {
                 traced={traced}
                 tracedSet={tracedSet}
                 onTrace={setTraced}
-                setRef={setRef(root.id)}
               />
             </div>
 
@@ -166,7 +165,6 @@ export function DelegationChain({ snap }: { snap: PassportSnapshot }) {
                   traced={traced}
                   tracedSet={tracedSet}
                   onTrace={setTraced}
-                  setRef={setRef(orchestrator.id)}
                 />
               </div>
             )}
@@ -187,7 +185,6 @@ export function DelegationChain({ snap }: { snap: PassportSnapshot }) {
                       traced={traced}
                       tracedSet={tracedSet}
                       onTrace={setTraced}
-                      setRef={setRef(w.id)}
                     />
                   ))}
                 </div>
@@ -213,7 +210,6 @@ function NodeCard({
   traced,
   tracedSet,
   onTrace,
-  setRef,
 }: {
   node: DNode
   parent: DNode | undefined
@@ -221,7 +217,6 @@ function NodeCard({
   traced: string | null
   tracedSet: Set<string>
   onTrace: (id: string | null) => void
-  setRef: (el: HTMLElement | null) => void
 }) {
   const isTraced = tracedSet.has(node.id)
   const dim = traced != null && !isTraced
@@ -245,7 +240,7 @@ function NodeCard({
   return (
     <button
       type="button"
-      ref={setRef}
+      data-dc-node-id={node.id}
       className={[
         'dc-node',
         isRoot ? 'dc-node-root' : '',

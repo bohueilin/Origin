@@ -1167,14 +1167,29 @@ a.fd-foot-support-val:hover { color: var(--accent); }
 .ml-gym-seg--escalate { background: var(--warn); }
 .ml-gym-seg--refuse { background: var(--neg); }
 .ml-gym-note { font-size: 12.5px; line-height: 1.5; color: var(--text-soft); margin: 11px 0 0; }
+.ml-safety { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(220px, 0.75fr); gap: 18px; align-items: center; background: linear-gradient(135deg, rgba(47, 109, 246, 0.08), var(--panel) 42%); }
+.ml-safety h3 { font: 600 clamp(18px, 2.2vw, 22px)/1.2 'Space Grotesk', sans-serif; margin: 5px 0 8px; color: var(--text); }
+.ml-safety p { margin: 0; color: var(--text-soft); font-size: 13.5px; line-height: 1.55; }
+.ml-safety__bounds { display: grid; gap: 8px; }
+.ml-safety__bounds span { display: flex; justify-content: space-between; gap: 12px; border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 10px 12px; color: var(--text-soft); font-size: 12.5px; }
+.ml-safety__bounds b { color: var(--accent-ink); font: 700 16px/1 'Space Grotesk', sans-serif; }
+.ml-safety__bounds em { color: var(--muted); font-style: normal; font-size: 12px; line-height: 1.45; }
+.ml-rsi-link { margin-top: 14px; display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: center; color: inherit; text-decoration: none; transition: transform 0.12s ease, box-shadow 0.16s ease; }
+.ml-rsi-link:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.ml-rsi-link img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); }
+.ml-rsi-link span { display: grid; gap: 4px; }
+.ml-rsi-link b { font: 700 17px/1.2 'Space Grotesk', sans-serif; color: var(--text); }
+.ml-rsi-link em { color: var(--text-soft); font-style: normal; font-size: 13px; }
 
 @media (prefers-reduced-motion: reduce) { .ml-curve-line { animation: none; stroke-dashoffset: 0; } }
 @media (max-width: 860px) {
   .ml-perf-grid { grid-template-columns: 1fr; gap: 20px; }
   .ml-journey { grid-template-columns: repeat(2, 1fr); }
+  .ml-safety { grid-template-columns: 1fr; }
   .ml-stage::after { display: none; }
 }
 @media (max-width: 540px) {
   .ml-journey { grid-template-columns: 1fr; }
+  .ml-rsi-link { grid-template-columns: 1fr; }
   .ml-gym-seg { font-size: 10px; min-width: 52px; }
 }

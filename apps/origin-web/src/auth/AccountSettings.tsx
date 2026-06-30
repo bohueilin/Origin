@@ -323,7 +323,7 @@ function PermissionsTab() {
             <span aria-hidden="true">{required ? '🔒' : '🔓'}</span> 1Password step-up
           </span>
           <span>{required
-            ? 'On — a new grant requires your 1Password passphrase, even on an unlocked screen.'
+            ? 'On — a new grant requires Touch ID via your 1Password passkey, even on an unlocked screen.'
             : 'Off — anyone on this signed-in session can add agent authority.'}</span>
         </div>
         {required

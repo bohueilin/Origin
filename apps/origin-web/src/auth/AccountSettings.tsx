@@ -16,6 +16,8 @@ import {
 } from '../credentials/store'
 import { type VaultItem } from '../credentials/mockVault'
 import { FleetPermissions } from './FleetPermissions'
+import { GrantStepUp, type StepUpMode } from './GrantStepUp'
+import { enableStepUp, isStepUpConfigured, isStepUpRequired } from '../credentials/grantStepUp'
 import type { ApprovalPolicy, CredentialGrant, CredentialScope } from '../credentials/types'
 import { describePolicy } from '../wallet/sessionPolicy'
 import { useDialog } from './useDialog'
@@ -291,8 +293,22 @@ const DURATIONS = [
 function PermissionsTab() {
   const [rows, setRows] = useState<CredentialGrant[] | null>(null)
   const [form, setForm] = useState(false)
+  // Optional 1Password step-up: an extra passphrase check before NEW authority is granted
+  // (and before the gate itself can be switched off), so an unlocked screen alone isn't enough.
+  const [gate, setGate] = useState<StepUpMode | null>(null)
+  const [required, setRequired] = useState(() => isStepUpRequired())
+  const [configured, setConfigured] = useState(() => isStepUpConfigured())
   const reload = async () => { const r = await listGrants(); setRows(r) }
   useEffect(() => { let alive = true; (async () => { const r = await listGrants(); if (alive) setRows(r) })(); return () => { alive = false } }, [])
+
+  const onNewGrant = () => { if (isStepUpRequired()) setGate('verify'); else setForm(true) }
+  const onGatePass = () => {
+    if (gate === 'verify') setForm(true)
+    else if (gate === 'setup') { setRequired(true); setConfigured(true) }
+    else if (gate === 'disable') setRequired(false)
+    setGate(null)
+  }
+  const turnOn = () => { enableStepUp(); setRequired(true) }
 
   return (
     <div className="cset-panel">
@@ -300,11 +316,30 @@ function PermissionsTab() {
         <h2>Agent permissions</h2>
         <p>Each grant is one agent · one service · one domain · one scope — time-limited and revocable. The agent receives a brokered capability, never the secret.</p>
       </header>
-      {!form && <button className="cset-btn" onClick={() => setForm(true)}>+ New grant</button>}
+
+      <div className={`cset-stepup-bar${required ? ' cset-stepup-on' : ''}`}>
+        <div className="cset-stepup-meta">
+          <span className="cset-stepup-badge">
+            <span aria-hidden="true">{required ? '🔒' : '🔓'}</span> 1Password step-up
+          </span>
+          <span>{required
+            ? 'On — a new grant requires your 1Password passphrase, even on an unlocked screen.'
+            : 'Off — anyone on this signed-in session can add agent authority.'}</span>
+        </div>
+        {required
+          ? <button className="cset-btn-ghost" onClick={() => setGate('disable')}>Turn off</button>
+          : configured
+            ? <button className="cset-btn-ghost" onClick={turnOn}>Turn on</button>
+            : <button className="cset-btn-ghost" onClick={() => setGate('setup')}>Set up</button>}
+      </div>
+
+      {!form && <button className="cset-btn" onClick={onNewGrant}>+ New grant</button>}
       {form && <GrantForm onDone={async () => { setForm(false); await reload() }} onCancel={() => setForm(false)} />}
       <ListOrEmpty rows={rows} empty="No grants yet. A new grant lets a specific agent act on one service, within limits you set.">
         {(rows ?? []).map((g) => <GrantRow key={g.id} g={g} onChange={reload} />)}
       </ListOrEmpty>
+
+      {gate && <GrantStepUp mode={gate} onPass={onGatePass} onCancel={() => setGate(null)} />}
     </div>
   )
 }

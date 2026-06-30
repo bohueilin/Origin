@@ -61,6 +61,29 @@
 .cset-link:hover:not(:disabled) { text-decoration: underline; }
 .cset-link:disabled { opacity: .5; cursor: default; }
 .cset-btn.small { padding: 7px 12px; font-size: 12.5px; }
+.cset-btn-ghost { font: 600 12px/1 inherit; color: #2f6df6; background: #fff; border: 1px solid #d8d2c5; border-radius: 9px; padding: 8px 13px; cursor: pointer; white-space: nowrap; flex: none; }
+.cset-btn-ghost:hover:not(:disabled) { border-color: #2f6df6; background: #f7f9ff; }
+.cset-btn-ghost:disabled { opacity: .5; cursor: default; }
+
+/* ── 1Password step-up gate ─────────────────────────────────────────────── */
+.cset-stepup-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 13px; background: #f3efe6; border: 1px solid #e8e3d7; border-radius: 11px; }
+.cset-stepup-bar.cset-stepup-on { background: #eef8f3; border-color: #cfe9dd; }
+.cset-stepup-meta { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cset-stepup-meta > span:last-child { font: 500 12px/1.45 inherit; color: #6e6a5f; }
+.cset-stepup-badge { display: inline-flex; align-items: center; gap: 6px; font: 700 11.5px/1 "Space Grotesk", system-ui, sans-serif; letter-spacing: -.01em; color: #14181f; }
+.cset-stepup-on .cset-stepup-badge { color: #0b6e52; }
+
+.cset-stepup-overlay { position: fixed; inset: 0; z-index: 320; background: rgba(26, 24, 19, .5); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.cset-stepup-card { width: 100%; max-width: 408px; background: #fffefb; border: 1px solid #e8e3d7; border-radius: 16px; box-shadow: 0 24px 60px rgba(26, 24, 19, .28); padding: 22px; display: flex; flex-direction: column; gap: 13px; }
+.cset-stepup-card h3 { font: 700 17px/1.25 "Space Grotesk", system-ui, sans-serif; letter-spacing: -.02em; color: #14181f; margin: 0; }
+.cset-stepup-card p { font: 500 12.5px/1.55 inherit; color: #6e6a5f; margin: 0; }
+.cset-stepup-1p { display: inline-flex; align-items: center; gap: 7px; align-self: flex-start; font: 700 11px/1 "Space Grotesk", system-ui, sans-serif; letter-spacing: .01em; color: #0b6e52; background: #d9f2e8; border-radius: 999px; padding: 6px 11px; }
+.cset-stepup-card label { display: flex; flex-direction: column; gap: 5px; }
+.cset-stepup-card label span { font: 600 11px/1 inherit; color: #57534a; }
+.cset-stepup-card input { font: 500 14px/1.2 inherit; color: #14181f; background: #fff; border: 1px solid #d8d2c5; border-radius: 9px; padding: 11px 12px; }
+.cset-stepup-card input:focus { outline: 2px solid #2f6df6; outline-offset: 0; border-color: #2f6df6; }
+.cset-stepup-err { font: 500 12px/1.4 inherit; color: #b23a30; background: #fae9e6; border-radius: 8px; padding: 8px 10px; }
+.cset-stepup-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 2px; }
 
 .cset-subh { font: 700 12px/1 "Space Grotesk", system-ui, sans-serif; letter-spacing: .03em; text-transform: uppercase; color: #8a8578; margin: 6px 0 -4px; }
 

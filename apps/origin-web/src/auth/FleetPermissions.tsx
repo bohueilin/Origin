@@ -14,6 +14,8 @@ import {
 import { listVaultItems } from '../credentials/store'
 import { type VaultItem } from '../credentials/mockVault'
 import { brokerRequest, effectiveStatus } from '../credentials/store'
+import { isStepUpRequired } from '../credentials/grantStepUp'
+import { GrantStepUp } from './GrantStepUp'
 import type { CredentialGrant, CredentialScope } from '../credentials/types'
 
 const SCOPES: { id: CredentialScope; label: string }[] = [
@@ -271,6 +273,7 @@ function AssignPanel({ target, items, onDone, onCancel }: { target: AssignTarget
   const [durIdx, setDurIdx] = useState(2) // 7 days
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
+  const [gate, setGate] = useState(false) // 1Password step-up before assigning new authority
 
   const robots = target.kind === 'robot' ? [target.robot] : target.robots
   const targetLabel = target.kind === 'robot' ? target.robot.name : `all ${target.robots.length} robots in ${target.fleet.name}`
@@ -302,7 +305,16 @@ function AssignPanel({ target, items, onDone, onCancel }: { target: AssignTarget
   }
   function clearSel() { setSelected(new Set()); setAnchor(null) }
 
-  async function assign() {
+  // Assigning a vault credential to a robot mints real grants — the same "new authority" the
+  // step-up gate protects on the Agent permissions tab. Require the passphrase here too, so an
+  // unlocked screen can't be used to hand out authority from the Fleet matrix.
+  function requestAssign() {
+    if (selected.size === 0) { setMsg('Select at least one credential.'); return }
+    if (isStepUpRequired()) { setGate(true); return }
+    void doAssign()
+  }
+
+  async function doAssign() {
     if (selected.size === 0) { setMsg('Select at least one credential.'); return }
     setBusy(true); setMsg('')
     const chosen = items.filter((it) => selected.has(it.itemRef))
@@ -368,8 +380,9 @@ function AssignPanel({ target, items, onDone, onCancel }: { target: AssignTarget
       {msg && <div className="cset-rowmsg deny">{msg}</div>}
       <div className="cset-form-actions">
         <button className="cset-btn ghost" onClick={onCancel} disabled={busy}>Cancel</button>
-        <button className="cset-btn" onClick={assign} disabled={busy || selected.size === 0}>{busy ? 'Assigning…' : `Assign ${selected.size || ''} credential${selected.size === 1 ? '' : 's'}`}</button>
+        <button className="cset-btn" onClick={requestAssign} disabled={busy || selected.size === 0}>{busy ? 'Assigning…' : `Assign ${selected.size || ''} credential${selected.size === 1 ? '' : 's'}`}</button>
       </div>
+      {gate && <GrantStepUp mode="verify" onPass={() => { setGate(false); void doAssign() }} onCancel={() => setGate(false)} />}
     </div>
   )
 }

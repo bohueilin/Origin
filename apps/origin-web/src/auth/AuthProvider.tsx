@@ -4,6 +4,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { insforge, AUTH_ENABLED, OAUTH_RETURN } from '../insforge'
 
+// Access is restricted to the Origin owner while features are still being built. Any other
+// account that authenticates (Google or email/password) is immediately signed back out in
+// refresh(), so ONLY this address ever holds a live session.
+export const OWNER_EMAIL = 'bohueilin@gmail.com'
+const isOwnerEmail = (e?: string | null): boolean => (e ?? '').trim().toLowerCase() === OWNER_EMAIL
+
 export interface AuthUser {
   id: string
   email: string
@@ -14,6 +20,8 @@ interface AuthState {
   enabled: boolean
   ready: boolean
   user: AuthUser | null
+  /** Set when a non-owner account authenticated and was rejected — the email they used. */
+  deniedEmail: string | null
   signUp: (email: string, password: string, name: string) => Promise<{ needsVerify: boolean; error?: string }>
   verifyEmail: (email: string, otp: string) => Promise<{ error?: string }>
   resendVerification: (email: string) => Promise<{ error?: string }>
@@ -54,6 +62,7 @@ function hasRestorableSession(): boolean {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [deniedEmail, setDeniedEmail] = useState<string | null>(null)
   // Ready immediately unless there's a session to restore — so signed-out visitors never
   // block on (or trigger) an auth call.
   const [ready, setReady] = useState(() => !AUTH_ENABLED || !hasRestorableSession())
@@ -63,6 +72,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { data } = await insforge.auth.getCurrentUser()
       const u = normalizeUser(data)
+      // Owner-only: any other account that signed in is rejected and signed back out, so it
+      // never reaches the app as a live user.
+      if (u && !isOwnerEmail(u.email)) {
+        setDeniedEmail(u.email)
+        setUser(null)
+        try { await insforge.auth.signOut() } catch { /* ignore */ }
+        return false
+      }
+      if (u) setDeniedEmail(null)
       setUser(u)
       return Boolean(u)
     } catch {
@@ -145,8 +163,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo<AuthState>(
-    () => ({ enabled: AUTH_ENABLED, ready, user, signUp, verifyEmail, resendVerification, signIn, signInWithGoogle, signOut }),
-    [ready, user, signUp, verifyEmail, resendVerification, signIn, signInWithGoogle, signOut],
+    () => ({ enabled: AUTH_ENABLED, ready, user, deniedEmail, signUp, verifyEmail, resendVerification, signIn, signInWithGoogle, signOut }),
+    [ready, user, deniedEmail, signUp, verifyEmail, resendVerification, signIn, signInWithGoogle, signOut],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

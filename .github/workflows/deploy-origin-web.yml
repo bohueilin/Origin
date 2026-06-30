@@ -38,6 +38,11 @@ jobs:
         run: npm ci
 
       - name: Build origin-web
+        # InsForge auth — PUBLIC values (the anon key is RLS-guarded and already ships in the
+        # client bundle), so they're safe to inline here. Without them AUTH_ENABLED is false.
+        env:
+          VITE_INSFORGE_URL: https://36s5vrcx.us-east.insforge.app
+          VITE_INSFORGE_ANON_KEY: anon_e8a0c703bf722f5b00f3af9d6209a65024bfc50ce3ff52fef88c34dec39e5bd7
         run: npm run build:web
 
       - name: Check for Cloudflare token

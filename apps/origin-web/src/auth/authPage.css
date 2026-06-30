@@ -45,6 +45,9 @@ body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webk
 
 .ap-error { font-size: 13px; color: #b23a30; background: #fae9e6; border-radius: 9px; padding: 9px 11px; }
 .ap-note { font-size: 13px; color: #0b6e52; background: #d9f2e8; border-radius: 9px; padding: 9px 11px; }
+.ap-denied { font-size: 13px; line-height: 1.5; color: #b23a30; background: #fae9e6; border: 1px solid #f0cabf; border-radius: 10px; padding: 11px 13px; margin: 0 0 18px; }
+.ap-denied strong, .ap-denied b { color: #8f2c22; }
+.ap-owner-note { font-size: 12.5px; color: var(--muted); background: var(--panel-2, #f2efe6); border-radius: 9px; padding: 9px 12px; margin: 0 0 18px; }
 
 .ap-submit { width: 100%; font: 600 14.5px/1 var(--sans); color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: 11px; padding: 13px 14px; margin-top: 4px; cursor: pointer; transition: background .12s, transform .08s; }
 .ap-submit:hover:not(:disabled) { background: var(--accent-ink); }

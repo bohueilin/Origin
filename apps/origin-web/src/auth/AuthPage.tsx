@@ -110,6 +110,15 @@ export function AuthPage() {
             <h1 className="ap-title">{heading}</h1>
             <p className="ap-sub">{sub}</p>
 
+            {auth.deniedEmail ? (
+              <div className="ap-denied" role="alert">
+                <strong>Access is restricted.</strong> You signed in as <b>{auth.deniedEmail}</b>, which isn’t an
+                approved account. Origin is owner-only while we build — use the owner Google account.
+              </div>
+            ) : (
+              <div className="ap-owner-note" role="note">🔒 Owner access only — sign in with the Origin owner Google account.</div>
+            )}
+
             {/* Google + divider only on the first screen of each mode */}
             {step === 'details' && (
               <>

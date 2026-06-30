@@ -1,31 +1,31 @@
-// Optional step-up before granting NEW agent authority. Defends the unattended-but-
-// unlocked session: even with the page already open, adding a grant — or turning this
-// gate off — requires a passphrase the owner keeps in their 1Password vault. It is a
-// second factor on the single most dangerous action (handing an agent new authority),
-// layered on top of the owner-only sign-in.
+// Optional step-up before granting NEW agent authority, backed by a real WebAuthn passkey.
+// Defends the unattended-but-unlocked session: adding a grant — or turning this gate off —
+// requires a fresh biometric assertion (Touch ID on macOS) from a passkey the owner enrolled
+// in 1Password (or the device). It is a second factor on the single most dangerous action
+// (handing an agent new authority), layered on top of the owner-only sign-in.
 //
-// Client-side by design: a deterrent for casual physical access, not a server ACL. The
-// stored value is a PBKDF2 hash (never the passphrase), so reading localStorage doesn't
-// reveal it; and because the app is owner-only, clearing storage to wipe this config also
-// drops the session — and the attacker can't sign back in. The real secret lives in
-// 1Password; Origin only ever holds a one-way hash to compare against.
+// How "1Password" is actually involved: the passkey created here is stored by whatever passkey
+// provider the user has set in Chrome — 1Password, when its extension is the provider. The
+// browser shows a native prompt and 1Password unlocks it with Touch ID. Origin never sees a
+// secret; it only keeps the credential ID so it can ask for that specific passkey later.
+//
+// Client-first by design: a successful, user-verified ceremony is required before the gate
+// passes. For a hardened, server-enforced control the assertion would also be verified against
+// a server-issued challenge + the stored public key (an InsForge function) — a follow-up. For
+// the stated threat (a walk-up on an unlocked screen) the biometric ceremony already blocks it:
+// the intruder cannot satisfy the owner's Touch ID / 1Password.
 
-const KEY = 'origin.grantStepUp.v1'
-const MAX_FAILS = 5
-const LOCK_MS = 60_000
-const ITERATIONS = 120_000
-export const DEFAULT_LABEL = 'Origin · grant step-up'
+const KEY = 'origin.grantStepUp.v2'
+const DEFAULT_LABEL = 'Origin · grant step-up'
 
 export interface StepUpState {
   enabled: boolean
-  salt: string // base64
-  hash: string // base64 PBKDF2-derived bits
-  label: string // the 1Password item name the owner stores the passphrase under
-  fails: number
-  lockUntil: number // epoch ms; 0 when not locked
+  credentialId: string // base64url of the passkey credential id
+  label: string // the 1Password / passkey item name shown to the user
+  createdAt: number
 }
 
-export type VerifyResult = { ok: true } | { ok: false; lockedMs: number; remaining: number }
+export type StepUpResult = { ok: true } | { ok: false; error: string }
 
 function read(): StepUpState | null {
   try {
@@ -45,92 +45,125 @@ function write(s: StepUpState | null): void {
   }
 }
 
-const toB64 = (buf: ArrayBuffer): string => btoa(String.fromCharCode(...new Uint8Array(buf)))
-const fromB64 = (s: string): Uint8Array => Uint8Array.from(atob(s), (c) => c.charCodeAt(0))
+function bufToB64url(buf: ArrayBuffer): string {
+  let s = ''
+  for (const b of new Uint8Array(buf)) s += String.fromCharCode(b)
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+function b64urlToBytes(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4))
+  const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad)
+  const out = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
+  return out
+}
+
+// WebAuthn wants BufferSource backed by a real ArrayBuffer (not the ArrayBufferLike union TS
+// infers for typed arrays), so copy into a fresh ArrayBuffer for every credential field.
 function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
   const out = new ArrayBuffer(bytes.byteLength)
   new Uint8Array(out).set(bytes)
   return out
 }
-
-async function derive(passphrase: string, salt: Uint8Array): Promise<string> {
-  const enc = new TextEncoder()
-  const material = await crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveBits'])
-  const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt: toArrayBuffer(salt), iterations: ITERATIONS, hash: 'SHA-256' },
-    material,
-    256,
-  )
-  return toB64(bits)
+function randomBuffer(n: number): ArrayBuffer {
+  return toArrayBuffer(crypto.getRandomValues(new Uint8Array(n)))
 }
 
-// Constant-time-ish compare so a wrong passphrase can't be timed character-by-character.
-function constantEquals(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let r = 0
-  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  return r === 0
+// rpId must equal (or be a registrable parent of) the page's host. The full hostname always
+// satisfies that — origin-physical-ai.pages.dev for prod, localhost for dev (both secure ctx).
+function rpId(): string {
+  try { return window.location.hostname } catch { return 'localhost' }
 }
 
-/** A passphrase has been set (whether the gate is currently on or off). */
+function friendly(e: unknown): string {
+  const name = (e as { name?: string })?.name
+  if (name === 'NotAllowedError') return 'Touch ID was cancelled or timed out. Try again.'
+  if (name === 'InvalidStateError') return 'A passkey for Origin is already registered on this device.'
+  if (name === 'SecurityError') return 'Passkeys need a secure context (https or localhost).'
+  return (e as { message?: string })?.message || 'Could not complete the passkey check.'
+}
+
+export function isWebAuthnAvailable(): boolean {
+  return typeof window !== 'undefined'
+    && typeof window.PublicKeyCredential !== 'undefined'
+    && typeof navigator !== 'undefined'
+    && !!navigator.credentials?.create
+}
+
+/** A passkey has been enrolled (whether the gate is currently on or off). */
 export function isStepUpConfigured(): boolean {
   const s = read()
-  return Boolean(s && s.hash)
+  return Boolean(s && s.credentialId)
 }
 
-/** The gate is configured AND active — new grants must pass it. */
+/** The gate is enrolled AND active — new grants must pass a passkey check. */
 export function isStepUpRequired(): boolean {
   const s = read()
-  return Boolean(s && s.enabled && s.hash)
+  return Boolean(s && s.enabled && s.credentialId)
 }
 
 export function stepUpLabel(): string {
   return read()?.label || DEFAULT_LABEL
 }
 
-export function lockRemainingMs(): number {
-  const s = read()
-  if (!s) return 0
-  return Math.max(0, s.lockUntil - Date.now())
-}
-
-/** Set (or replace) the passphrase and switch the gate on. */
-export async function setupStepUp(passphrase: string, label?: string): Promise<void> {
-  const salt = crypto.getRandomValues(new Uint8Array(16))
-  const hash = await derive(passphrase, salt)
-  write({ enabled: true, salt: toB64(toArrayBuffer(salt)), hash, label: label?.trim() || DEFAULT_LABEL, fails: 0, lockUntil: 0 })
-}
-
-/** Verify a passphrase. Tracks failures and locks for a cool-down after too many. */
-export async function verifyStepUp(passphrase: string): Promise<VerifyResult> {
-  const s = read()
-  if (!s || !s.hash) return { ok: true } // nothing configured → no gate to pass
-  const now = Date.now()
-  if (s.lockUntil > now) return { ok: false, lockedMs: s.lockUntil - now, remaining: 0 }
-
-  const hash = await derive(passphrase, fromB64(s.salt))
-  if (constantEquals(hash, s.hash)) {
-    write({ ...s, fails: 0, lockUntil: 0 })
+/** Enroll a passkey (Touch ID prompt) and switch the gate on. */
+export async function enrollStepUp(label?: string): Promise<StepUpResult> {
+  if (!isWebAuthnAvailable()) return { ok: false, error: 'This browser does not support passkeys.' }
+  try {
+    const cred = (await navigator.credentials.create({
+      publicKey: {
+        rp: { name: 'Origin', id: rpId() },
+        user: { id: randomBuffer(16), name: 'origin-owner', displayName: 'Origin owner' },
+        challenge: randomBuffer(32),
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { userVerification: 'required', residentKey: 'preferred' },
+        timeout: 60_000,
+        attestation: 'none',
+      },
+    })) as PublicKeyCredential | null
+    if (!cred) return { ok: false, error: 'Passkey creation was cancelled.' }
+    const credentialId = cred.id || bufToB64url(cred.rawId)
+    write({ enabled: true, credentialId, label: label?.trim() || DEFAULT_LABEL, createdAt: Date.now() })
     return { ok: true }
+  } catch (e) {
+    return { ok: false, error: friendly(e) }
   }
-  const fails = s.fails + 1
-  const lock = fails >= MAX_FAILS
-  write({ ...s, fails: lock ? 0 : fails, lockUntil: lock ? now + LOCK_MS : 0 })
-  return { ok: false, lockedMs: lock ? LOCK_MS : 0, remaining: Math.max(0, MAX_FAILS - fails) }
 }
 
-/** Turn the gate ON for an already-configured passphrase (no secret needed to add protection). */
+/** Require a fresh, user-verified passkey assertion (Touch ID prompt). */
+export async function verifyStepUp(): Promise<StepUpResult> {
+  const s = read()
+  if (!s || !s.credentialId) return { ok: true } // nothing enrolled → no gate to pass
+  if (!isWebAuthnAvailable()) return { ok: false, error: 'This browser does not support passkeys.' }
+  try {
+    const assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: randomBuffer(32),
+        rpId: rpId(),
+        allowCredentials: [{ type: 'public-key', id: toArrayBuffer(b64urlToBytes(s.credentialId)) }],
+        userVerification: 'required',
+        timeout: 60_000,
+      },
+    })
+    return assertion ? { ok: true } : { ok: false, error: 'Verification was cancelled.' }
+  } catch (e) {
+    return { ok: false, error: friendly(e) }
+  }
+}
+
+/** Turn the gate ON for an already-enrolled passkey (adding protection is never gated). */
 export function enableStepUp(): void {
   const s = read()
-  if (s && s.hash) write({ ...s, enabled: true })
+  if (s && s.credentialId) write({ ...s, enabled: true })
 }
 
-/** Turn the gate OFF — requires the passphrase, so an intruder can't simply disable it. */
-export async function disableStepUp(passphrase: string): Promise<VerifyResult> {
-  const r = await verifyStepUp(passphrase)
+/** Turn the gate OFF — requires a passkey check, so an intruder can't simply disable it. */
+export async function disableStepUp(): Promise<StepUpResult> {
+  const r = await verifyStepUp()
   if (r.ok) {
     const s = read()
-    if (s) write({ ...s, enabled: false }) // keep the secret so re-enabling needs no re-setup
+    if (s) write({ ...s, enabled: false }) // keep the credential so re-enabling needs no re-enroll
   }
   return r
 }

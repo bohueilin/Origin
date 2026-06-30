@@ -105,8 +105,8 @@ function RsiVerifierCard() {
       <div className="fdy-card__head">
         <h2>Gemma proposes. Origin verifies.</h2>
         <p>
-          One building map → 40 distinct deterministic robot-safety scenarios from 120 real gemma-4-31b samples on
-          Cerebras. The Origin verifier overrode the proposer 17 times; 0 determinism-inconsistent groups.
+          One building map → 40 distinct deterministic robot safety tests from 120 Gemma samples; verifier overrode the
+          proposer 17 times; oracle divergence 0.
         </p>
       </div>
       <div className="fdy-rsi-card__stats">
@@ -116,8 +116,9 @@ function RsiVerifierCard() {
         <Stat label="divergence" value={0} tone="pos" />
       </div>
       <p className="fdy-rsi-card__note">
-        A real gemma-4-31b run on Cerebras (~869 tok/s), recomputed from geometry by the deterministic oracle — never an
-        LLM. The dashboard carries the full artifact and source label; with no key, propose→verify falls back to a labeled mock.
+        Recorded run: real gemma-4-31b on Cerebras (~869 tok/s), recomputed from geometry by the deterministic oracle —
+        never an LLM judge. The dashboard carries the full artifact and source label; with no key, propose→verify falls
+        back to a labeled mock.
       </p>
       <a className="fdy-btn fdy-btn--primary fdy-rsi-card__link" href="/rsi/rsi_dashboard.html">
         Open the RSI verifier dashboard

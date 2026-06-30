@@ -11,7 +11,10 @@ export interface OrderContext {
   gamePlan: string
 }
 
+const ORDER_CONTEXT_ENABLED = import.meta.env.VITE_PASSPORT_ORDER_CONTEXT === '1'
+
 export async function fetchOrderContext(): Promise<OrderContext | null> {
+  if (!ORDER_CONTEXT_ENABLED) return null
   try {
     const r = await fetch('/api/passport/order-context')
     const d = (await r.json()) as { ok?: boolean; context?: OrderContext }

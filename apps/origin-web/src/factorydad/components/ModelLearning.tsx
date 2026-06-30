@@ -1,10 +1,11 @@
-import { LEARNING_CURVE, MODEL_RESULT, PER_CLASS, EMPTY_CLASSES, GYM, JOURNEY } from '../trainingProgress'
+import { LEARNING_CURVE, MODEL_RESULT, PER_CLASS, EMPTY_CLASSES, GYM, JOURNEY, SAFETY_POLICY } from '../trainingProgress'
 
 // Plot geometry — shared by the curve + its reference lines.
 const PLOT = { x0: 64, x1: 600, y0: 28, y1: 250, accMax: 0.75, epochMax: 90 }
 const ex = (epoch: number) => PLOT.x0 + ((epoch - 1) / (PLOT.epochMax - 1)) * (PLOT.x1 - PLOT.x0)
 const ay = (acc: number) => PLOT.y1 - (acc / PLOT.accMax) * (PLOT.y1 - PLOT.y0)
 const pct = (v: number) => `${Math.round(v * 100)}%`
+const pct1 = (v: number) => `${(v * 100).toFixed(1)}%`
 
 function LearningCurve() {
   const pts = LEARNING_CURVE.map((p) => `${ex(p.epoch).toFixed(1)},${ay(p.valBalancedAcc).toFixed(1)}`)
@@ -123,7 +124,7 @@ export function ModelLearning() {
         </div>
         <p className="ml-honesty">
           <span className="ml-honesty-tag">What this is</span> the brain learning to <strong>read</strong> a floor (room structure) — the foundation.
-          The <strong>finish / escalate / refuse</strong> safety policy is labeled by the same oracle across the gym below and is the next training step on this exact substrate.
+          The <strong>finish / escalate / refuse</strong> safety policy below is a separate measured result from the same oracle-labeled gym.
         </p>
       </div>
 
@@ -156,6 +157,29 @@ export function ModelLearning() {
           are synthesized hazard / blocked-egress cases — the safety class a robot must learn to <em>not</em> act on. A balanced {GYM.balancedView}/{GYM.balancedView}/{GYM.balancedView} view trains the policy without gaming the metric.
         </p>
       </div>
+      <div className="ml-safety fd-card">
+        <div>
+          <div className="fd-kicker ml-kicker">Safety policy v1</div>
+          <h3>Finish / escalate / refuse, recovered from raw geometry.</h3>
+          <p>
+            <strong>{pct1(SAFETY_POLICY.balancedMean)}</strong> mean balanced accuracy over {SAFETY_POLICY.seedCount} raw-geometry seeds
+            {' '}(<strong>{pct1(SAFETY_POLICY.balancedMin)}-{pct1(SAFETY_POLICY.balancedMax)}</strong> range). Refuse recall:
+            {' '}<strong>{pct1(SAFETY_POLICY.refuseRecallMean)}</strong> mean, range <strong>{pct1(SAFETY_POLICY.refuseRecallMin)}-{pct1(SAFETY_POLICY.refuseRecallMax)}</strong>.
+          </p>
+        </div>
+        <div className="ml-safety__bounds">
+          <span><b>{pct1(SAFETY_POLICY.oracleRecoveryUpperBound)}</b> oracle-recovery upper bound</span>
+          <span><b>{pct1(SAFETY_POLICY.featureDisjointBalancedAcc)}</b> feature-disjoint regroup</span>
+          <em>Bounded Gym, not production certification. The oracle is the judge.</em>
+        </div>
+      </div>
+      <a className="ml-rsi-link fd-card" href="/rsi/rsi_dashboard.html">
+        <img src="/rsi/dashboard-preview.png" alt="Preview of the Origin RSI verifier dashboard" loading="lazy" />
+        <span>
+          <b>Open the RSI verifier dashboard</b>
+          <em>Gemma proposes, Origin verifies, oracle divergence 0.</em>
+        </span>
+      </a>
     </section>
   )
 }

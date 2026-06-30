@@ -5,8 +5,9 @@
 //
 // Honesty boundary (preserved in the UI): the v1 baseline learns to READ a floor (room-type
 // classification — structural understanding), graded against a deterministic oracle. The
-// finish / escalate / refuse SAFETY POLICY is labeled by that same oracle across the gym and
-// is the NEXT training step on this exact substrate — not something this baseline scores.
+// finish / escalate / refuse SAFETY POLICY is labeled by that same oracle across the gym.
+// Its headline is a 5-seed raw-geometry mean/range; the full feature 1.0 is only an
+// oracle-recovery upper bound.
 
 export interface LearnPoint { epoch: number; valBalancedAcc: number; loss: number }
 
@@ -65,6 +66,21 @@ export const GYM = {
   sftRows: 600,
 } as const
 
+/** The measured finish / escalate / refuse safety policy. Headline is raw geometry;
+ * full 36-feature perfect score is an oracle-recovery upper bound, not a safety claim. */
+export const SAFETY_POLICY = {
+  featureView: 'raw_geometry',
+  seedCount: 5,
+  balancedMean: 0.931756,
+  balancedMin: 0.917475,
+  balancedMax: 0.941108,
+  refuseRecallMean: 0.985714,
+  refuseRecallMin: 0.964286,
+  refuseRecallMax: 1.0,
+  oracleRecoveryUpperBound: 1.0,
+  featureDisjointBalancedAcc: 0.900331,
+} as const
+
 /** The four-stage customer journey: floor in → verified gym → robot trains → readiness out. */
 export interface JourneyStage {
   key: string
@@ -76,6 +92,6 @@ export interface JourneyStage {
 export const JOURNEY: JourneyStage[] = [
   { key: 'floor', label: 'Floor in', metric: '1 plan', detail: 'A customer brings their own site map — warehouse, store, hospital wing.', state: 'live' },
   { key: 'gym', label: 'Verified gym', metric: `${GYM.floors.toLocaleString()} floors`, detail: 'Each floor is compiled to a gym and labeled finish / escalate / refuse by a deterministic oracle — never an LLM.', state: 'live' },
-  { key: 'train', label: 'Robot trains', metric: `${GYM.customerFloors} tasks`, detail: 'The agent practices when to finish, when to escalate, and when to refuse near a hazard.', state: 'next' },
+  { key: 'train', label: 'Robot trains', metric: `${Math.round(SAFETY_POLICY.balancedMean * 1000) / 10}%`, detail: 'A raw-geometry safety policy learns finish / escalate / refuse over 5 seeds; the oracle remains the judge.', state: 'live' },
   { key: 'license', label: 'Readiness out', metric: 'L0 → L4', detail: 'A signed readiness license: the tier it earned, its false-accept and false-reject rates, the safe path.', state: 'next' },
 ]

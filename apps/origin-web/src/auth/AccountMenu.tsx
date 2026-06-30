@@ -23,7 +23,7 @@ export function AccountMenu() {
     return () => document.removeEventListener('mousedown', onDoc)
   }, [menu])
 
-  if (!auth.enabled) return null
+  if (!auth.enabled) return <a className="acct-signin" href={AUTH_URL}>Sign in</a>
 
   // Signed in → account chip + dropdown
   if (auth.user) {

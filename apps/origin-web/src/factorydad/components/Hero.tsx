@@ -14,14 +14,32 @@ export function Hero({ bundle }: { bundle: Bundle }) {
         <span className="fd-hero-pill">
           <img className="fd-hero-pill-logo" src="/origin-logo.png" alt="" aria-hidden="true" /> {PRODUCT_FULL} · CAPABILITY IS NOT PERMISSION
         </span>
-        <h1>A robot brain for every floor.</h1>
+        <div className="fd-hero-eyebrow">Physical AI is here</div>
+        <h1>Can you trust it on your floor?</h1>
         <p className="fd-lede">
-          {PRODUCT_NAME} is the readiness layer for autonomy — it licenses what a <strong>robot</strong>{' '}
-          may do on your floor, and what a <strong>software agent</strong> may do on your accounts,
-          calendar, and tools. A deterministic oracle decides <strong>finish</strong>,{' '}
-          <strong>escalate</strong>, or <strong>refuse</strong>; every action is identity-bound,
-          policy-governed, auditable, and revocable.
+          It’s already moving in next to people — <strong>factories, hospitals, homes</strong>. The robot is
+          arriving; the only question left is whether you can trust it. {PRODUCT_NAME} is the readiness layer
+          for autonomy — a deterministic oracle decides what a robot may do (<strong>finish</strong>,{' '}
+          <strong>escalate</strong>, or <strong>refuse</strong>), and every action is identity-bound,
+          auditable, and revocable.
         </p>
+
+        <figure className="fd-hero-film">
+          <video
+            src="/Home_Collaboration_Videos.mp4"
+            poster="/home-collaboration-poster.jpg"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            controls={false}
+            aria-hidden="true"
+          />
+          <span className="fd-film-scrim" aria-hidden="true" />
+          <figcaption className="fd-film-cap">Working alongside people — the moment trust is earned, or lost.</figcaption>
+        </figure>
 
         <div className="fd-cta">
           <a className="fd-btn fd-btn-ghost" href="/passport">Try the Passport demo →</a>

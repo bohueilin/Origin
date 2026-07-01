@@ -110,6 +110,7 @@ export async function fetchRecentRuns(): Promise<RecentRun[]> {
  * only local React state. Returns null if the endpoint is unreachable.
  */
 export async function fetchEvidenceStatus(): Promise<EvidenceStatus | null> {
+  if (import.meta.env.VITE_DISABLE_OPTIONAL_BACKEND_FETCHES === '1') return null
   try {
     const resp = await fetch('/api/evidence/status')
     const data = (await resp.json()) as ({ ok?: boolean } & EvidenceStatus) | null

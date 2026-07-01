@@ -17,7 +17,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     url: `http://localhost:${PORT}`,
-    env: { PORT: String(PORT) },
+    env: { PORT: String(PORT), VITE_DISABLE_OPTIONAL_BACKEND_FETCHES: '1' },
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },

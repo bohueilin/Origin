@@ -75,10 +75,10 @@ export function inferCaptureRole(meta: Pick<SerializableFileMeta, 'name' | 'type
   const name = meta.name.toLowerCase()
   const type = meta.type.toLowerCase()
   if (type.startsWith('video/')) return 'workflow_video'
-  if (type.startsWith('image/')) return 'site_photo'
   if (name.includes('floor') || name.includes('map') || name.includes('layout')) return 'floor_plan'
   if (name.includes('unsafe') || name.includes('forbidden') || name.includes('hazard')) return 'forbidden_example'
   if (name.includes('robot') || name.includes('hardware') || name.includes('spec')) return 'robot_profile'
+  if (type.startsWith('image/')) return 'site_photo'
   return 'sop'
 }
 
@@ -168,4 +168,3 @@ export function summarizeInputManifest(
   const rules = manifest.safetyRules.length ? `${manifest.safetyRules.length} safety rule(s)` : 'no explicit rules'
   return `${count} declared input(s): ${labels.join(', ') || 'none'}; ${rules}.`
 }
-

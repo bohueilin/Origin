@@ -17,6 +17,13 @@ describe('captureManifest', () => {
     expect(JSON.stringify(item)).not.toContain('File')
   })
 
+  it('recognizes floor-plan images before generic photo classification', () => {
+    const floor = fileMetaToCaptureItem({ name: 'site-floor-layout.png', type: 'image/png', size: 1_200_000 }, 0)
+    const photo = fileMetaToCaptureItem({ name: 'dock-door-photo.jpg', type: 'image/jpeg', size: 900_000 }, 1)
+    expect(floor.role).toBe('floor_plan')
+    expect(photo.role).toBe('site_photo')
+  })
+
   it('captures Google Drive links as declared links', () => {
     const item = driveLinkToCaptureItem('https://drive.google.com/file/demo', 1)
     expect(item?.kind).toBe('google_drive_link')
@@ -84,4 +91,3 @@ describe('captureManifest', () => {
     expect(summary).toContain('1 safety rule(s)')
   })
 })
-

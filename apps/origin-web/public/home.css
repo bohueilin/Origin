@@ -1070,3 +1070,44 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .prooftwo .card--not { border-color: #edc6c2; background: #fdf5f4; }
 .prooftwo h3 { display: flex; align-items: center; gap: 7px; }
 .honesty-line { font-size: 13px; color: var(--steel); margin-top: 12px; }
+
+/* Interactive 90-second demo (progressive enhancement: 8 panels readable with JS off) */
+.demo { margin-top: 30px; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; background: var(--paper-2); box-shadow: var(--sh-md); }
+.demo__rail { display: none; }
+.demo.is-enhanced .demo__rail { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; background: var(--paper-3); border-bottom: 1px solid var(--line); }
+.demo__dot { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-family: var(--font-sans); transition: color .12s, background .12s, border-color .12s; }
+.demo__dot span { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--paper-3); font-size: 11px; }
+.demo__dot.is-on { color: var(--signal-ink); border-color: #bcccff; background: var(--signal-wash); }
+.demo__dot.is-on span { background: var(--signal); color: #fff; }
+.demo__dot:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.demo__screen { padding: 24px; min-height: 200px; display: grid; align-content: center; }
+.demo.is-enhanced .demo__panel { display: none; }
+.demo.is-enhanced .demo__panel.is-on { display: block; animation: demoIn .35s ease; }
+@keyframes demoIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.demo__panel { margin-bottom: 14px; }
+.demo.is-enhanced .demo__panel { margin-bottom: 0; }
+.demo__panel h3 { font-family: var(--font-display); font-size: 19px; margin: 0 0 9px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--ink); }
+.demo__tag { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
+.demo__tag--n { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
+.demo__tag--plan { color: var(--signal-ink); background: var(--signal-wash); border: 1px solid #bcccff; }
+.demo__tag--held { color: var(--warn); background: #fbf4e3; border: 1px solid #ecd9ad; }
+.demo__tag--ok { color: var(--verify); background: #eaf6f0; border: 1px solid #bfe3d3; }
+.demo__tag--block { color: var(--danger); background: #fbecea; border: 1px solid #edc6c2; }
+.demo__panel p { color: var(--ink-soft); font-size: 15px; line-height: 1.55; margin: 0; max-width: 62ch; }
+.demo__panel code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: var(--ink); }
+.demo__bar { display: none; }
+.demo.is-enhanced .demo__bar { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--line); background: var(--paper-3); flex-wrap: wrap; }
+.demo__cap { font-size: 13px; color: var(--ink-soft); margin-left: 6px; }
+@media (max-width: 560px) { .demo__cap { width: 100%; margin: 8px 0 0; } .demo__screen { min-height: 240px; } }
+
+/* Mobile-compressed loop — Propose → Gate → Act/Block → Prove (replaces the 8-node diagram ≤680px) */
+.loop-compact { display: none; }
+@media (max-width: 680px) {
+  .trace-band .trace { display: none; }
+  .loop-compact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
+  .loop-compact span { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--on-dark); background: #1b1f27; border: 1px solid var(--line-dark); border-radius: 999px; padding: 8px 14px; }
+  .loop-compact .lc-plan { color: #cdd9ff; border-color: #3a4a7a; }
+  .loop-compact .lc-block { color: #f0b6ae; border-color: #6a3a34; }
+  .loop-compact .lc-ok { color: #a9e6cd; border-color: #2f6a54; }
+  .loop-compact em { color: #7f93b8; font-style: normal; font-weight: 700; }
+}

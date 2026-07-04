@@ -255,7 +255,11 @@ function openLead(trigger: HTMLElement): void {
   if (successEl) successEl.hidden = true
   if (form) { form.querySelectorAll<HTMLElement>('.field, .modal__actions, .modal__note, .modal__sub, .modal__title').forEach((n) => (n.hidden = false)) }
   if (errorEl) errorEl.hidden = true
-  track('lead_form_open', { intent })
+  // capture which CTA opened the form (hero, demo, evidence, offer, footer, etc.)
+  const source = trigger.getAttribute('data-source') || trigger.getAttribute('data-analytics') || 'unknown'
+  const srcEl = document.getElementById('lead-source') as HTMLInputElement | null
+  if (srcEl) srcEl.value = source
+  track('lead_form_open', { intent, source })
   if (typeof dialog.showModal === 'function') dialog.showModal()
   else dialog.setAttribute('open', '')
   window.setTimeout(() => document.getElementById('lead-name')?.focus(), 30)
@@ -392,4 +396,56 @@ document.querySelectorAll<HTMLElement>('[data-video-play]').forEach((btn) => {
     start().catch(() => { try { video.load() } catch { /* ignore */ } start().catch(restore) })
     track('vision_video_play')
   })
+})
+
+/* ---------- interactive 90-second demo (progressive enhancement) ---------- */
+document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
+  const panels = Array.from(demo.querySelectorAll<HTMLElement>('[data-demo-panel]'))
+  const dots = Array.from(demo.querySelectorAll<HTMLButtonElement>('[data-demo-step]'))
+  const cap = demo.querySelector<HTMLElement>('[data-demo-cap]')
+  const playBtn = demo.querySelector<HTMLButtonElement>('[data-demo-play]')
+  const prevBtn = demo.querySelector<HTMLButtonElement>('[data-demo-prev]')
+  const nextBtn = demo.querySelector<HTMLButtonElement>('[data-demo-next]')
+  if (panels.length < 2) return
+  const CAPS = [
+    'The agent proposes a risky action.',
+    'The policy gate evaluates scope, budget, and approval rules.',
+    'The verdict returns require-approval.',
+    'The tool-call proxy holds — the only path to the side effect.',
+    'A human approves; who, when, and scope are recorded.',
+    'The proxy executes only the approved action.',
+    'A second, over-scope action is blocked and recorded.',
+    'The evidence package is sealed — hash-chain valid.',
+  ]
+  demo.classList.add('is-enhanced')
+  const N = panels.length
+  let step = 0
+  let timer = 0
+
+  const stop = () => {
+    if (!timer) return
+    window.clearInterval(timer); timer = 0
+    if (playBtn) { playBtn.innerHTML = '&#9654; Play'; playBtn.setAttribute('aria-pressed', 'false') }
+  }
+  const render = () => {
+    panels.forEach((p, i) => p.classList.toggle('is-on', i === step))
+    dots.forEach((d, i) => { d.classList.toggle('is-on', i === step); d.setAttribute('aria-selected', String(i === step)) })
+    if (cap) cap.textContent = `Step ${step + 1} of ${N} · ${CAPS[step] ?? ''}`
+    prevBtn?.toggleAttribute('disabled', step === 0)
+    nextBtn?.toggleAttribute('disabled', step === N - 1)
+  }
+  const go = (i: number) => { step = Math.max(0, Math.min(N - 1, i)); render() }
+  const play = () => {
+    if (timer) { stop(); return }
+    if (playBtn) { playBtn.innerHTML = '&#10073;&#10073; Pause'; playBtn.setAttribute('aria-pressed', 'true') }
+    if (step === N - 1) go(0)
+    timer = window.setInterval(() => { if (step >= N - 1) stop(); else go(step + 1) }, 1700)
+  }
+
+  dots.forEach((d, i) => d.addEventListener('click', () => { stop(); go(i) }))
+  prevBtn?.addEventListener('click', () => { stop(); go(step - 1) })
+  nextBtn?.addEventListener('click', () => { stop(); go(step + 1) })
+  if (reduceMotion && playBtn) playBtn.style.display = 'none'
+  else playBtn?.addEventListener('click', () => { const wasPlaying = !!timer; play(); if (!wasPlaying) track('demo_play') })
+  render()
 })

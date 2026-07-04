@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=19" />
+    <link rel="stylesheet" href="/home.css?v=21" />
 
     <!-- Structured data for search engines & AI agents. NOTE: PLACEHOLDER domain email
          hello@originphysical.ai — replace with the real MX-backed company inbox. -->
@@ -318,6 +318,10 @@
             </div>
           </div>
 
+          <div class="loop-compact" aria-hidden="true">
+            <span>Propose</span><em>&rarr;</em><span class="lc-plan">Gate</span><em>&rarr;</em><span class="lc-block">Act / Block</span><em>&rarr;</em><span class="lc-ok">Prove</span>
+          </div>
+
           <p class="trace__cap">
             A simulated run of the loop — <b>not a customer deployment or performance claim.</b>
             <span class="pill pill--sim">Simulated</span>
@@ -335,14 +339,34 @@
           <p class="kicker">The demo</p>
           <h2 id="demo-title">One risky agent action, fully gated and proven.</h2>
           <p class="section__lede leadin">The 90-second loop: an agent proposes a risky action, Origin decides, the proxy controls execution, the console shows a green audit trail — then one input flips and Origin blocks an over-scope action and records the block. Sandboxed side effects; any real-money path stays human-created and human-gated.</p>
-          <ol class="cards cards--3" style="counter-reset: demo;">
-            <li class="card"><span class="card__k">Step 1</span><h3>Agent proposes</h3><p>A risky action — a refund, a production write, a code or infrastructure change.</p></li>
-            <li class="card"><span class="card__k">Step 2</span><h3>Policy gate evaluates</h3><p>Scope, budget, permissions, and approval rules — deterministically.</p></li>
-            <li class="card"><span class="card__k">Step 3</span><h3>Verdict returns</h3><p>allow · cap · require-approval · deny · pause.</p></li>
-            <li class="card"><span class="card__k">Step 4</span><h3>Proxy is the only path</h3><p>The agent can't reach the side effect except through the controlled proxy.</p></li>
-            <li class="card"><span class="card__k">Step 5</span><h3>Console shows the record</h3><p>What happened, why it was allowed, who approved, and the hash-chain status.</p></li>
-            <li class="card card--tint"><span class="card__k">Step 6</span><h3>Over-scope → blocked</h3><p>Flip one input and Origin blocks the action — and records the block, too.</p></li>
-          </ol>
+          <div class="demo" data-demo aria-label="Interactive walkthrough: one agent action, gated and proven">
+            <div class="demo__rail" role="tablist" aria-label="Demo steps">
+              <button type="button" class="demo__dot" data-demo-step="1" role="tab" aria-selected="true"><span>1</span>Propose</button>
+              <button type="button" class="demo__dot" data-demo-step="2" role="tab" aria-selected="false"><span>2</span>Gate</button>
+              <button type="button" class="demo__dot" data-demo-step="3" role="tab" aria-selected="false"><span>3</span>Verdict</button>
+              <button type="button" class="demo__dot" data-demo-step="4" role="tab" aria-selected="false"><span>4</span>Proxy</button>
+              <button type="button" class="demo__dot" data-demo-step="5" role="tab" aria-selected="false"><span>5</span>Approve</button>
+              <button type="button" class="demo__dot" data-demo-step="6" role="tab" aria-selected="false"><span>6</span>Execute</button>
+              <button type="button" class="demo__dot" data-demo-step="7" role="tab" aria-selected="false"><span>7</span>Block</button>
+              <button type="button" class="demo__dot" data-demo-step="8" role="tab" aria-selected="false"><span>8</span>Prove</button>
+            </div>
+            <div class="demo__screen">
+              <div class="demo__panel is-on" data-demo-panel="1"><h3><span class="demo__tag demo__tag--n">Propose</span> Agent proposes</h3><p><code>payments-ops-agent</code> proposes: refund <b>$480.00</b> &rarr; <code>order_8842</code> via <code>payments.refund</code>.</p></div>
+              <div class="demo__panel" data-demo-panel="2"><h3><span class="demo__tag demo__tag--plan">Gate</span> Policy gate evaluates</h3><p>Policy <code>refund-cap-v0.3</code> checks scope, actor, budget, and approval rules — deterministically. Budget $480.00 is over the $250 auto-cap.</p></div>
+              <div class="demo__panel" data-demo-panel="3"><h3><span class="demo__tag demo__tag--held">Verdict</span> Verdict: require-approval</h3><p>One of allow / cap / require-approval / deny / pause. Above-cap refunds require a human.</p></div>
+              <div class="demo__panel" data-demo-panel="4"><h3><span class="demo__tag demo__tag--held">Proxy</span> The proxy holds</h3><p><code>payments.refund</code> is held at the tool-call proxy — the agent has no other path to the side effect.</p></div>
+              <div class="demo__panel" data-demo-panel="5"><h3><span class="demo__tag demo__tag--held">Approve</span> Human approves</h3><p>payments on-call approves this one action. Who, when, and scope are recorded.</p></div>
+              <div class="demo__panel" data-demo-panel="6"><h3><span class="demo__tag demo__tag--ok">Execute</span> Executed within scope</h3><p>The proxy runs only the approved action — $480.00 &rarr; <code>order_8842</code>.</p></div>
+              <div class="demo__panel" data-demo-panel="7"><h3><span class="demo__tag demo__tag--block">Block</span> Over-scope &rarr; blocked</h3><p>A second refund above the approved scope is blocked at the proxy and recorded. The approval covered one action only.</p></div>
+              <div class="demo__panel" data-demo-panel="8"><h3><span class="demo__tag demo__tag--ok">Prove</span> Evidence sealed</h3><p>Hash-chain valid. The evidence package — proposal, verdict, approval, execution, block — is review-ready and exportable. <a href="/proof" style="color:var(--signal-ink)">See the evidence ladder &rarr;</a></p></div>
+            </div>
+            <div class="demo__bar">
+              <button type="button" class="btn btn--primary btn--sm" data-demo-play aria-pressed="false">&#9654; Play</button>
+              <button type="button" class="btn btn--ghost btn--sm" data-demo-prev aria-label="Previous step">Prev</button>
+              <button type="button" class="btn btn--ghost btn--sm" data-demo-next aria-label="Next step">Next</button>
+              <span class="demo__cap" aria-live="polite" data-demo-cap>Step 1 of 8 · The agent proposes a risky action.</span>
+            </div>
+          </div>
           <div class="cta-row" style="margin-top: 26px;">
             <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="demo_cta_click">Book an Agent Evidence Review</button>
             <a class="btn btn--ghost" href="/proof" data-analytics="demo_proof_link">See a machine-emitted trace</a>
@@ -671,6 +695,7 @@
           <input id="lead-urgency" name="urgency" type="text" placeholder="e.g. targeting launch in 3 weeks" />
         </div>
         <input type="hidden" name="intent" id="lead-intent" value="review" />
+        <input type="hidden" name="cta_source" id="lead-source" value="" />
         <!-- honeypot: hidden from humans; bots that fill it are silently dropped -->
         <input type="text" name="company_website" id="lead-hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
 

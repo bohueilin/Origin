@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=15" />
+    <link rel="stylesheet" href="/home.css?v=17" />
 
     <!-- Structured data for search engines & AI agents. NOTE: PLACEHOLDER domain email
          hello@originphysical.ai — replace with the real MX-backed company inbox. -->
@@ -161,7 +161,7 @@
             <ul class="hero__assurances" aria-label="Safety guarantees">
               <li>Human-in-the-loop override</li>
               <li>No-go zones enforced</li>
-              <li>Every action audited</li>
+              <li>Every action replayable</li>
             </ul>
           </div>
 
@@ -431,9 +431,79 @@
               </button>
             </div>
             <figcaption class="visionfilm__cap">
-              Ambient brand film — physical AI working alongside people. <span class="placeholder-note">Not the product. A 45–60s narrated console recording will replace this once a pilot is filmed.</span>
+              Ambient brand film — physical AI working alongside people. <span class="placeholder-note">Brand film, not product footage. A narrated console recording replaces this once pilot footage is available.</span>
             </figcaption>
           </figure>
+        </div>
+      </section>
+
+      <!-- ===================== Origin Trace — signature audit-replay band ===================== -->
+      <section class="section trace-band" id="trace" aria-labelledby="trace-title">
+        <div class="shell">
+          <div class="trace__head">
+            <div>
+              <p class="kicker">The Origin Trace</p>
+              <h2 id="trace-title">One work order, end to end — and provable.</h2>
+            </div>
+          </div>
+          <p class="section__lede">
+            Every task runs the same loop and leaves the same artifact: observed context, a plan, a
+            policy check, bounded action, human review on exception, verification, and a sealed audit
+            digest you can replay. This is the trace — the proof that the work was done, and done safely.
+          </p>
+
+          <ul class="trace__legend" aria-hidden="true">
+            <li class="l-plan"><i></i>Plan &amp; act</li>
+            <li class="l-held"><i></i>Held for human</li>
+            <li class="l-verify"><i></i>Verified</li>
+            <li class="l-block"><i></i>Blocked</li>
+          </ul>
+
+          <div class="trace" role="img" aria-label="Origin trace, left to right: work order, observe floor context, plan, policy check, bounded act, human review on exception, verify, and a sealed replayable audit digest — a simulated run.">
+            <div class="trace__rail" aria-hidden="true"><span class="trace__rail-fill"></span></div>
+
+            <div class="trace__node" style="--d:0s">
+              <span class="trace__dot">01</span>
+              <div class="trace__textwrap"><span class="trace__k">Work order</span><span class="trace__l">Clear Dock 2, stage returns</span></div>
+            </div>
+            <div class="trace__node" style="--d:1.05s">
+              <span class="trace__dot">02</span>
+              <div class="trace__textwrap"><span class="trace__k">Observe</span><span class="trace__l">Live floor context</span></div>
+            </div>
+            <div class="trace__node trace__node--plan" style="--d:2.1s">
+              <span class="trace__dot">03</span>
+              <div class="trace__textwrap"><span class="trace__k">Plan</span><span class="trace__l">Route + plan hash</span></div>
+            </div>
+            <div class="trace__node trace__node--plan" style="--d:3.15s">
+              <span class="trace__dot">04</span>
+              <div class="trace__textwrap"><span class="trace__k">Policy</span><span class="trace__l">No-go zones, thresholds</span></div>
+            </div>
+            <div class="trace__node trace__node--plan" style="--d:4.2s">
+              <span class="trace__dot">05</span>
+              <div class="trace__textwrap"><span class="trace__k">Act</span><span class="trace__l">Bounded execution</span></div>
+            </div>
+            <div class="trace__node trace__node--held" style="--d:5.25s">
+              <span class="trace__dot">06</span>
+              <div class="trace__textwrap"><span class="trace__k">Human review</span><span class="trace__l">Paused 14s · approved</span></div>
+            </div>
+            <div class="trace__node trace__node--verify" style="--d:6.3s">
+              <span class="trace__dot">07</span>
+              <div class="trace__textwrap"><span class="trace__k">Verify</span><span class="trace__l">Evidence attached</span></div>
+            </div>
+            <div class="trace__node trace__node--verify trace__node--seal" style="--d:7.35s">
+              <span class="trace__dot" aria-hidden="true">✓</span>
+              <div class="trace__textwrap"><span class="trace__k">Audit digest</span><span class="trace__l">Sealed &amp; replayable</span></div>
+            </div>
+          </div>
+
+          <p class="trace__cap">
+            A simulated run of the loop — <b>not a customer deployment or performance claim.</b>
+            <span class="pill pill--sim">Simulated</span>
+          </p>
+          <div class="trace__cta">
+            <a class="btn btn--primary" href="/proof" data-analytics="trace_replay_cta_click">Watch the audit replay</a>
+            <a class="btn btn--ghost-on-dark" href="#walkthrough">See the full walkthrough</a>
+          </div>
         </div>
       </section>
 
@@ -593,8 +663,8 @@
           <p class="kicker">Where Origin starts</p>
           <h2 id="wedge-title">Built first for high-mix fulfillment floors.</h2>
           <p class="section__lede">
-            We don’t claim universal deployment. Origin starts where dynamic floors hurt most — then
-            earns each new environment through a supervised pilot.
+            Origin starts with one sharp wedge and earns each new environment through evidence. It
+            starts where dynamic floors hurt most — then proves each next environment with a supervised pilot.
           </p>
           <div class="wedge">
             <article class="wedge__primary">
@@ -801,7 +871,7 @@
             <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Low confidence</h3><p>Below the configured threshold, Origin pauses and escalates.</p></li>
             <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Unknown obstacle or person in path</h3><p>It yields and re-checks before moving.</p></li>
             <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>No-go zone conflict</h3><p>Configured no-go zones block execution unless an authorized operator changes the policy.</p></li>
-            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Missing verification evidence</h3><p>No “done” without proof.</p></li>
+            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Missing verification evidence</h3><p>A task closes only when verification evidence is attached.</p></li>
             <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Robot health / state anomaly</h3><p>Anomalies stop the task, not the audit trail.</p></li>
             <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Policy conflict</h3><p>Conflicting rules route to operator review.</p></li>
             <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Operator review required</h3><p>Sensitive workflows wait for human approval.</p></li>
@@ -883,8 +953,9 @@
           <p class="kicker">Why Origin</p>
           <h2 id="whywin-title">Built for the hard part of robotics deployment.</h2>
           <p class="section__lede">
-            The capability race is crowded. The unsolved, defensible problem is the layer between
-            operator intent, floor reality, safety policy, and verified execution — where a mistake
+            Robot capability is advancing quickly; deployment still breaks at the boundary between
+            operator intent, floor reality, and safety policy. That layer — through to verified
+            execution — is the unsolved, defensible problem, where a mistake
             isn’t a typo, it’s a person or a stopped line. Origin is built for that control plane:
             where those four have to meet before robots can scale.
           </p>

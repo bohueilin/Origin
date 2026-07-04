@@ -374,24 +374,22 @@ form?.addEventListener('submit', async (e) => {
 // hidden so the native <video controls> are directly usable (no "nothing happens").
 document.querySelectorAll<HTMLElement>('[data-video]').forEach((fig) => fig.classList.add('is-enhanced'))
 document.querySelectorAll<HTMLElement>('[data-video-play]').forEach((btn) => {
+  const fig = btn.closest('[data-video]')
+  const video = fig?.querySelector('video') as HTMLVideoElement | null
+  if (!video) return
+  // Reveal the playing video only once playback truly starts; never hide the
+  // overlay up-front, or a delayed/blocked play() leaves the viewer on a static
+  // poster ("nothing happens"). If play fails, keep the overlay + the native
+  // <video controls> so a click is never a dead end.
+  const reveal = () => { btn.hidden = true }
+  const restore = () => { btn.hidden = false }
+  const start = () => { video.muted = true; return video.play().then(reveal) }
+  // It's an ambient brand film: autoplay muted where the browser allows it. If
+  // autoplay is blocked (Safari Low Power Mode, data-saver, strict autoplay),
+  // the poster/▶ overlay stays and a click starts it (with a load()+retry).
+  start().catch(() => { try { video.load() } catch { /* ignore */ } restore() })
   btn.addEventListener('click', () => {
-    const fig = btn.closest('[data-video]')
-    const video = fig?.querySelector('video') as HTMLVideoElement | null
-    if (!video) return
-    video.muted = true // property (not just the attribute) so muted-autoplay policy allows play
-    // Reveal the playing video only once playback truly starts. Hiding the
-    // overlay up-front (the old behavior) left a dead end: with preload="none"
-    // a click has to fetch the file first, and if play() is delayed or rejects
-    // the user was left staring at a static poster — "nothing happens".
-    const reveal = () => { btn.hidden = true }
-    const start = () => video.play().then(reveal)
-    start().catch(() => {
-      // preload="none" + a <source> child can need an explicit load before the
-      // first play(); retry once, and if it still fails keep the overlay (and the
-      // native <video controls>) usable so a click is never a dead end.
-      try { video.load() } catch { /* ignore */ }
-      start().catch(() => { btn.hidden = false })
-    })
+    start().catch(() => { try { video.load() } catch { /* ignore */ } start().catch(restore) })
     track('vision_video_play')
   })
 })

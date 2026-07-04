@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-75QBVCL212"></script>
     <script>
@@ -12,35 +13,255 @@
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Origin console — submit your site, build the robot brain, run the proving ground, and get a readiness license. Safe by construction: a deterministic oracle judges, never an LLM."
-    />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/app" />
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Origin Evidence Console (private-pilot preview) — an agent proposes an action, a policy gate returns a verdict, a controlled proxy holds or executes, a human approves, an over-scope call is blocked, and every step lands in a tamper-evident, hash-chained audit trail exported as a review-ready evidence package. Simulated / sandbox data." />
     <meta name="theme-color" content="#faf9f5" />
-    <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Origin Physical AI" />
+    <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://origin-physical-ai.pages.dev/app" />
-    <meta property="og:title" content="Origin console — submit, build, run, license" />
-    <meta property="og:description" content="Submit your site, build the robot brain, run the proving ground, and get a readiness license — judged by a deterministic oracle, never an LLM." />
+    <meta property="og:title" content="Origin Evidence Console — private pilot preview" />
+    <meta property="og:description" content="From agent proposal to review-ready evidence: proposal → policy verdict → controlled proxy → human approval → blocked over-scope call → tamper-evident audit trail → evidence package. Simulated / sandbox data." />
     <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Origin console — submit, build, run, license" />
-    <meta name="twitter:description" content="Build the robot brain, run the proving ground, and earn a readiness license — judged by a deterministic oracle." />
-    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
+    <meta name="twitter:title" content="Origin Evidence Console — private pilot preview" />
+    <meta name="twitter:description" content="From agent proposal to review-ready evidence — enforce, control the side effect, and prove it. Simulated / sandbox data." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <title>Origin console — submit, build, run, license</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/home.css?v=19" />
+    <title>Origin Evidence Console — private pilot preview</title>
+    <style>
+      .ec { max-width: 1180px; margin: 0 auto; padding: 26px 24px 72px; }
+      .ec__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+      .ec__brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); }
+      .ec__brand img { width: 26px; height: 26px; border-radius: 6px; }
+      .ec__brand b { font-family: var(--font-display); font-size: 18px; }
+      .ec__brand span { color: var(--steel); font-size: 13.5px; }
+      .ec__pilot { font-size: 12px; color: #8a5600; background: #fbf3e0; border: 1px solid #ecd9ad; border-radius: 999px; padding: 6px 12px; font-weight: 600; }
+      .ec h1 { font-size: clamp(24px, 3.4vw, 34px); letter-spacing: -0.02em; margin: 26px 0 6px; max-width: 22ch; }
+      .ec__lede { font-size: 16px; color: var(--ink-soft); max-width: 66ch; }
+      .ec__flow { margin: 16px 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-size: 12.5px; }
+      .ec__flow b { font-weight: 600; color: var(--ink); background: #fff; border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 11px; }
+      .ec__flow em { color: var(--steel); font-style: normal; font-weight: 700; }
+      .ec__grid { margin-top: 26px; display: grid; grid-template-columns: 300px 1fr 320px; gap: 16px; align-items: start; }
+      @media (max-width: 1000px) { .ec__grid { grid-template-columns: 1fr 1fr; } }
+      @media (max-width: 680px) { .ec__grid { grid-template-columns: 1fr; } }
+      .ec__col { display: flex; flex-direction: column; gap: 16px; }
+      .p { background: var(--paper-2); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sh-sm); overflow: hidden; }
+      .p__h { display: flex; align-items: center; gap: 8px; padding: 12px 15px; border-bottom: 1px solid var(--line); font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--steel); }
+      .p__b { padding: 14px 15px; }
+      .p__b p { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+      .st { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; border-radius: 999px; padding: 3px 9px; border: 1px solid; }
+      .st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+      .st--proposed { color: var(--steel); border-color: var(--line-2); background: #fff; }
+      .st--needs { color: var(--warn); border-color: #ecd9ad; background: #fbf4e3; }
+      .st--blocked { color: var(--danger); border-color: #edc6c2; background: #fbecea; }
+      .st--exec { color: var(--signal-ink); border-color: #bcccff; background: var(--signal-wash); }
+      .st--verified { color: var(--verify); border-color: #bfe3d3; background: #eaf6f0; }
+      .q { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+      .q li { padding: 11px 15px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+      .q li:last-child { border-bottom: 0; }
+      .q li.is-sel { background: var(--signal-wash); box-shadow: inset 3px 0 0 var(--signal); }
+      .q__t { font-size: 13px; color: var(--ink); font-weight: 600; }
+      .q__m { font-size: 12px; color: var(--steel); }
+      .kv { display: grid; grid-template-columns: 128px 1fr; gap: 7px 12px; font-size: 13px; margin: 0; }
+      .kv dt { color: var(--steel); }
+      .kv dd { margin: 0; color: var(--ink); }
+      .kv code, .q__m code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+      .checks { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px; font-size: 13px; }
+      .checks li { display: flex; align-items: center; gap: 8px; color: var(--ink-soft); }
+      .checks .ok { color: var(--verify); font-weight: 800; }
+      .checks .hold { color: var(--warn); font-weight: 800; }
+      .verdict { margin-top: 12px; font-size: 13px; font-weight: 700; color: var(--warn); background: #fbf4e3; border: 1px solid #ecd9ad; border-radius: 9px; padding: 9px 12px; }
+      .proxy--held { color: var(--warn); }
+      .approvals { display: flex; gap: 8px; margin-top: 12px; }
+      .approvals .btn { pointer-events: none; }
+      .log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; }
+      .log li { display: flex; gap: 9px; color: var(--ink-soft); }
+      .log time { color: var(--steel); font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; flex: none; }
+      .log .m--ok::before { content: "\2713\00a0"; color: var(--verify); }
+      .log .m--hold::before { content: "\23f8\00a0"; color: var(--warn); }
+      .log .m--block::before { content: "\26d4\00a0"; color: var(--danger); }
+      .blocked { border-color: #edc6c2; background: #fdf5f4; }
+      .blocked .p__h { color: var(--danger); border-bottom-color: #edc6c2; }
+      .chain { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--verify); display: flex; align-items: center; gap: 7px; }
+      .export .btn { margin-top: 12px; }
+      details.json { margin-top: 12px; }
+      details.json summary { cursor: pointer; font-size: 12.5px; color: var(--signal-ink); font-weight: 600; }
+      details.json pre { margin: 10px 0 0; background: var(--graphite); color: var(--on-dark); border-radius: 10px; padding: 14px; overflow-x: auto; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.5; }
+      .ec__note { margin-top: 26px; font-size: 12.5px; color: var(--steel); border-top: 1px solid var(--line); padding-top: 16px; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <main class="ec">
+      <div class="ec__top">
+        <a class="ec__brand" href="/" aria-label="Origin — home">
+          <img src="/origin-logo.png" alt="" />
+          <b>Origin</b> <span>Evidence Console</span>
+        </a>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span class="ec__pilot">Private-pilot preview · simulated / sandbox data</span>
+          <a class="btn btn--primary btn--sm" href="/#offer">Book an Agent Evidence Review</a>
+        </div>
+      </div>
+
+      <h1>From agent proposal to review-ready evidence.</h1>
+      <p class="ec__lede">An agent proposes an action. The policy gate returns a verdict. The controlled proxy is the only path to the side effect. A human approves when risk crosses a threshold. An over-scope retry is blocked. Every step lands in a tamper-evident, hash-chained audit trail — exported as a review-ready evidence package.</p>
+      <p class="ec__flow" aria-hidden="true"><b>Propose</b><em>&rarr;</em><b>Gate</b><em>&rarr;</em><b>Proxy</b><em>&rarr;</em><b>Approve</b><em>&rarr;</em><b>Prove</b></p>
+
+      <div class="ec__grid">
+        <!-- Left: proposal queue -->
+        <div class="ec__col">
+          <section class="p" aria-labelledby="q-h">
+            <div class="p__h" id="q-h">Proposal queue</div>
+            <ul class="q">
+              <li class="is-sel">
+                <span class="q__t">Refund $480.00 · order_8842</span>
+                <span class="q__m"><code>payments-ops-agent</code> · payments.refund</span>
+                <span class="st st--needs">Needs approval</span>
+              </li>
+              <li>
+                <span class="q__t">Update account tier · acct_5521</span>
+                <span class="q__m"><code>internal-ops-agent</code> · crm.update_record</span>
+                <span class="st st--exec">Executed</span>
+              </li>
+              <li>
+                <span class="q__t">Restart worker pool · svc-ingest</span>
+                <span class="q__m"><code>platform-agent</code> · infra.restart</span>
+                <span class="st st--proposed">Proposed</span>
+              </li>
+              <li>
+                <span class="q__t">Export customer records · seg_44</span>
+                <span class="q__m"><code>data-agent</code> · warehouse.export (PII)</span>
+                <span class="st st--blocked">Blocked</span>
+              </li>
+              <li>
+                <span class="q__t">Refund $42.10 · order_8790</span>
+                <span class="q__m"><code>payments-ops-agent</code> · payments.refund</span>
+                <span class="st st--verified">Verified</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <!-- Center: selected proposal + verdict + proxy + blocked -->
+        <div class="ec__col">
+          <section class="p" aria-labelledby="sel-h">
+            <div class="p__h" id="sel-h">Selected proposal</div>
+            <div class="p__b">
+              <dl class="kv">
+                <dt>Agent</dt><dd><code>payments-ops-agent</code></dd>
+                <dt>Workflow</dt><dd>Refund exception handling</dd>
+                <dt>Proposed action</dt><dd>Refund <b>$480.00</b> for <code>order_8842</code></dd>
+                <dt>Tool</dt><dd><code>payments.refund</code></dd>
+                <dt>Risk owner</dt><dd>payments on-call</dd>
+              </dl>
+            </div>
+          </section>
+
+          <section class="p" aria-labelledby="v-h">
+            <div class="p__h" id="v-h">Policy verdict · <code style="text-transform:none;letter-spacing:0">refund-cap-v0.3</code></div>
+            <div class="p__b">
+              <ul class="checks">
+                <li><span class="ok">&#10003;</span> Scope · <code>payments.refund</code> in allowlist</li>
+                <li><span class="ok">&#10003;</span> Actor · agent identity verified</li>
+                <li><span class="hold">!</span> Budget · $480.00 over the $250 auto-cap</li>
+                <li><span class="hold">!</span> Approval rule · above-cap refunds require a human</li>
+              </ul>
+              <p class="verdict">Verdict · require-approval</p>
+              <p style="margin-top:8px;font-size:12px;color:var(--steel)">Deterministic. One of allow / cap / require-approval / deny / pause.</p>
+            </div>
+          </section>
+
+          <section class="p" aria-labelledby="px-h">
+            <div class="p__h" id="px-h">Tool-call proxy</div>
+            <div class="p__b">
+              <p>Tool <code>payments.refund</code> is <b class="proxy--held">held pending approval</b>. The agent has no path to the side effect except through the controlled proxy — nothing runs while the verdict is <code>require-approval</code>.</p>
+            </div>
+          </section>
+
+          <section class="p blocked" aria-labelledby="bl-h">
+            <div class="p__h" id="bl-h">Blocked action</div>
+            <div class="p__b">
+              <p>A second refund attempt <b>above the approved scope</b> was <b>blocked at the proxy and recorded</b>. The earlier approval covered one action only; it does not widen the agent's standing authority.</p>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right: approval + side-effect log + audit + export -->
+        <div class="ec__col">
+          <section class="p" aria-labelledby="ap-h">
+            <div class="p__h" id="ap-h">Approval queue</div>
+            <div class="p__b">
+              <p>Risk owner · <b>payments on-call</b></p>
+              <div class="approvals">
+                <span class="btn btn--primary btn--sm">Approve</span>
+                <span class="btn btn--ghost btn--sm">Hold</span>
+                <span class="btn btn--ghost btn--sm">Deny</span>
+              </div>
+              <p style="margin-top:10px;font-size:12px;color:var(--steel)">Approved for this one action, at 09:41:26. Who, when, and scope are recorded.</p>
+            </div>
+          </section>
+
+          <section class="p" aria-labelledby="se-h">
+            <div class="p__h" id="se-h">Side-effect log · sandbox</div>
+            <div class="p__b">
+              <ul class="log">
+                <li class="m--hold"><time>09:41:02</time> Proposal received · proxy held</li>
+                <li class="m--ok"><time>09:41:26</time> Approved · payments on-call</li>
+                <li class="m--ok"><time>09:41:27</time> Executed via proxy · within scope</li>
+                <li class="m--block"><time>09:42:10</time> Over-scope retry · blocked</li>
+              </ul>
+              <p style="margin-top:10px;font-size:12px;color:var(--steel)">Sandbox / test side effects only. No live money moves; any real-money path is a human-created link + signed webhook.</p>
+            </div>
+          </section>
+
+          <section class="p" aria-labelledby="ac-h">
+            <div class="p__h" id="ac-h">Audit chain</div>
+            <div class="p__b">
+              <p class="chain"><span>&#9670;</span> hash-chain · <b style="color:var(--verify)">valid</b></p>
+              <ul class="checks" style="margin-top:10px">
+                <li>proposal · verdict · approval</li>
+                <li>proxy execution · block</li>
+                <li>sealed digest</li>
+              </ul>
+              <p style="margin-top:8px;font-size:12px;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
+            </div>
+          </section>
+
+          <section class="p export" aria-labelledby="ex-h">
+            <div class="p__h" id="ex-h">Evidence package</div>
+            <div class="p__b">
+              <p>Reviewer summary + JSON — what happened, why it was allowed, who owned the risk.</p>
+              <span class="btn btn--primary btn--sm">Export evidence package</span>
+              <details class="json">
+                <summary>View evidence JSON · simulated</summary>
+                <pre>{
+  "workflow": "refund_exception_handling",
+  "agent": "payments-ops-agent",
+  "policy": "refund-cap-v0.3",
+  "proposal": { "tool": "payments.refund",
+                "action": "refund $480.00 -&gt; order_8842" },
+  "verdict": "require-approval",
+  "approver": "payments-on-call",
+  "proxy": [ { "state": "held" }, { "state": "executed" } ],
+  "blocked": "second refund above approved scope",
+  "audit_chain": "valid",
+  "note": "simulated / sandbox - not a customer run"
+}</pre>
+              </details>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <p class="ec__note">
+        Private-pilot preview. Simulated / sandbox data — representative samples, not a live deployment.
+        Origin is decision-support and evidence infrastructure — not legal or compliance certification,
+        and it does not guarantee approval. Prototype software, not production SaaS.
+        <a href="/proof" style="color:var(--signal-ink)">See the evidence ladder &rarr;</a>
+      </p>
+    </main>
   </body>
 </html>

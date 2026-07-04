@@ -22,10 +22,10 @@
       gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
     </script>
 
-    <title>Origin Physical AI — turn floor work orders into verified robot action</title>
+    <title>Origin — the evidence layer for AI agents</title>
     <meta
       name="description"
-      content="Origin is a robot-agnostic autonomy layer for real facilities. It observes live floor context, plans safe task steps, executes through AMRs, humanoids, or ROS 2 stacks, and verifies completion with operator-grade telemetry and a replayable audit log."
+      content="Origin enforces runtime policy before AI agents can take side effects, routes tool calls through a controlled proxy, and produces a tamper-evident evidence package — so teams can get high-consequence agents through security review and prove what happened afterward."
     />
     <link rel="canonical" href="https://origin-physical-ai.pages.dev/" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
@@ -37,16 +37,16 @@
 
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Origin Physical AI" />
+    <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://origin-physical-ai.pages.dev/" />
-    <meta property="og:title" content="Origin Physical AI — turn floor work orders into verified robot action" />
-    <meta property="og:description" content="A robot-agnostic autonomy layer for real facilities. Observe live floor context, plan safe task steps, execute through AMRs / humanoids / ROS 2, and verify every completion with operator-grade telemetry and a replayable audit log." />
+    <meta property="og:title" content="Origin — the evidence layer for AI agents" />
+    <meta property="og:description" content="Runtime policy enforcement + a tamper-evident evidence package, so teams can get high-consequence AI agents through security review and prove what they did." />
     <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Origin Physical AI — turn floor work orders into verified robot action" />
-    <meta name="twitter:description" content="The autonomy layer between work orders and robot action. Observe. Plan. Act. Verify." />
+    <meta name="twitter:title" content="Origin — the evidence layer for AI agents" />
+    <meta name="twitter:description" content="Enforce what an agent is allowed to do at runtime. Prove what it did. Get through security review." />
     <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
 
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=17" />
+    <link rel="stylesheet" href="/home.css?v=18" />
 
     <!-- Structured data for search engines & AI agents. NOTE: PLACEHOLDER domain email
          hello@originphysical.ai — replace with the real MX-backed company inbox. -->
@@ -68,27 +68,27 @@
         {
           "@type": "Organization",
           "@id": "https://origin-physical-ai.pages.dev/#org",
-          "name": "Origin Physical AI",
+          "name": "Origin",
           "url": "https://origin-physical-ai.pages.dev/",
           "logo": "https://origin-physical-ai.pages.dev/origin-logo.png",
           "email": "hello@originphysical.ai",
           "founder": { "@type": "Person", "name": "Bo-Huei Lin" },
-          "description": "A robot-agnostic physical-AI autonomy layer for robots operating on real-world floors."
+          "description": "The evidence layer for AI agents: runtime policy enforcement plus a tamper-evident evidence package for high-consequence agents in security review."
         },
         {
           "@type": "WebSite",
           "@id": "https://origin-physical-ai.pages.dev/#site",
           "url": "https://origin-physical-ai.pages.dev/",
-          "name": "Origin Physical AI",
+          "name": "Origin",
           "publisher": { "@id": "https://origin-physical-ai.pages.dev/#org" }
         },
         {
           "@type": "SoftwareApplication",
           "@id": "https://origin-physical-ai.pages.dev/#app",
-          "name": "Origin Physical AI",
-          "applicationCategory": "BusinessApplication",
-          "operatingSystem": "Robot-agnostic — AMRs, humanoids, ROS 2-based stacks",
-          "description": "The autonomy layer between work orders and robot action: Observe, Plan, Act, Verify — with human override, no-go zones, confidence thresholds, and a replayable audit log for every action.",
+          "name": "Origin",
+          "applicationCategory": "SecurityApplication",
+          "operatingSystem": "Vendor-neutral — any cloud or model provider",
+          "description": "Origin enforces runtime policy on AI agents, routes every tool call through a controlled proxy, and produces a hash-chained, tamper-evident evidence package showing what an agent did, why it was allowed, and who owned the risk.",
           "publisher": { "@id": "https://origin-physical-ai.pages.dev/#org" }
         }
       ]
@@ -102,26 +102,25 @@
     <!-- ===================== SiteHeader ===================== -->
     <header class="site-header">
       <div class="shell site-header__inner">
-        <a class="brand" href="#main" aria-label="Origin Physical AI — home">
+        <a class="brand" href="#main" aria-label="Origin — home">
           <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
           <span class="brand__name">Origin</span>
-          <span class="brand__sub">Physical&nbsp;AI</span>
         </a>
 
         <nav class="site-nav" id="site-nav" aria-label="Primary">
-          <a href="#walkthrough">Walkthrough</a>
-          <a href="#how">How it works</a>
-          <a href="#pilot">Pilot</a>
-          <a href="#integrate">Integration</a>
-          <a href="#trust">Trust &amp; safety</a>
-          <a href="/trust">Trust center</a>
-          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Log in</a>
+          <a href="#demo">Demo</a>
+          <a href="#product">Product</a>
+          <a href="#evidence">Evidence</a>
+          <a href="#offer">Review</a>
+          <a href="#trust">Trust</a>
+          <a href="/brief">Brief</a>
+          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
         </nav>
 
         <div class="site-header__cta">
-          <a class="site-header__login" href="/auth" data-analytics="login_click">Log in</a>
-          <button type="button" class="btn btn--primary btn--sm" data-open-lead data-intent="demo" data-analytics="nav_cta_click">
-            Book a floor demo
+          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
+          <button type="button" class="btn btn--primary btn--sm" data-open-lead data-intent="review" data-analytics="nav_cta_click">
+            Book an Agent Evidence Review
           </button>
           <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
             <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
@@ -135,118 +134,105 @@
       <section class="hero" aria-labelledby="hero-title">
         <div class="shell hero__grid">
           <div class="hero__copy">
-            <p class="eyebrow">Physical-AI autonomy layer</p>
-            <h1 id="hero-title">Turn floor work orders into verified robot action.</h1>
+            <p class="eyebrow">The evidence layer for AI agents</p>
+            <h1 id="hero-title">Get your agent through security review — and prove what it did.</h1>
             <p class="lede">
-              Origin is a robot-agnostic autonomy layer for real facilities. It observes live floor
-              context, plans safe task steps, executes through AMRs, humanoids, or ROS 2 stacks, and
-              verifies completion with operator-grade telemetry and a replayable audit log.
+              Origin enforces runtime policy before an AI agent can take a side effect, routes every tool
+              call through a controlled proxy, and produces a tamper-evident evidence package showing what
+              happened, why it was allowed, and who owned the risk.
             </p>
 
             <div class="hero__cta cta-row">
-              <button type="button" class="btn btn--primary" data-open-lead data-intent="demo" data-analytics="hero_primary_cta_click">
-                Book a floor demo
+              <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="hero_primary_cta_click">
+                Book an Agent Evidence Review
               </button>
-              <a class="btn btn--ghost" href="#walkthrough" data-analytics="hero_secondary_cta_click">
-                Watch the workflow
+              <a class="btn btn--ghost" href="#demo" data-analytics="hero_secondary_cta_click">
+                Watch the 90-second demo
               </a>
             </div>
 
-            <p class="hero__wedge">
-              Built first for high-mix fulfillment teams deploying robots around people, congestion,
-              and changing work orders.
-            </p>
-            <p class="hero__buyer">For fulfillment operators, robotics leads, and automation teams working to cut interventions per robot-hour.</p>
+            <p class="hero__buyer">For the owner of a high-consequence agent — touching production, internal tools, code, PII, or money — that a reviewer can't yet approve.</p>
 
-            <ul class="hero__assurances" aria-label="Safety guarantees">
-              <li>Human-in-the-loop override</li>
-              <li>No-go zones enforced</li>
-              <li>Every action replayable</li>
+            <ul class="hero__assurances" aria-label="How Origin works">
+              <li>Policy gate before side effects</li>
+              <li>Tool-call proxy is the only path</li>
+              <li>Tamper-evident audit trail</li>
             </ul>
           </div>
 
-          <!-- Hero product visual: a simulated operator console. Real text, no image. -->
+          <!-- Hero product visual: a simulated Evidence Console. Real text, no image. -->
           <figure class="hero__visual" aria-labelledby="console-cap">
-            <div class="console" role="img" aria-label="Origin operator console: a live floor feed with a semantic map, a task moving through Observe, Plan, Act and Verify, robot state with a confidence meter, and a verification log.">
+            <div class="console" role="img" aria-label="Origin Evidence Console: an agent proposes a refund, a policy gate returns a verdict with scope and budget checks, the tool-call proxy is the only path to the side effect, and a hash-chained audit trail records the decision, approver, and result.">
               <div class="console__bar">
                 <span class="console__dot" aria-hidden="true"></span>
-                <span class="console__title">Origin Console</span>
-                <span class="console__scope">Floor A · Fulfillment</span>
+                <span class="console__title">Origin Evidence Console</span>
+                <span class="console__scope">Agent · payments-ops</span>
                 <span class="pill pill--sim">Simulated</span>
               </div>
 
               <div class="console__grid">
                 <div class="panel panel--feed">
-                  <p class="panel__label">Floor feed · semantic map</p>
-                  <div class="floormap" aria-hidden="true">
-                    <span class="floormap__zone floormap__zone--a">Aisle&nbsp;4</span>
-                    <span class="floormap__zone floormap__zone--b">Dock&nbsp;2</span>
-                    <span class="floormap__nogo">No-go</span>
-                    <span class="floormap__robot" title="Robot"></span>
-                    <span class="floormap__person" title="Person detected"></span>
-                    <span class="floormap__path" aria-hidden="true"></span>
-                  </div>
+                  <p class="panel__label">Agent proposal</p>
                   <ul class="tags">
-                    <li>Aisle 4 · pallet</li>
-                    <li class="tag--warn">Dock 2 · person detected</li>
-                    <li class="tag--nogo">Zone C · no-go</li>
+                    <li>Action · refund $480.00 → order_8842</li>
+                    <li>Tool · payments.refund</li>
+                    <li class="tag--warn">Scope · above $250 auto-cap</li>
                   </ul>
                 </div>
 
                 <div class="panel panel--plan">
-                  <p class="panel__label">Task plan</p>
+                  <p class="panel__label">Policy verdict</p>
                   <ol class="steps">
-                    <li class="step step--done"><span>Observe</span><b>floor state</b></li>
-                    <li class="step step--done"><span>Plan</span><b>pick &amp; move</b></li>
-                    <li class="step step--active"><span>Act</span><b>executing</b></li>
-                    <li class="step"><span>Verify</span><b>pending</b></li>
+                    <li class="step step--done"><span>Scope</span><b>in allowlist</b></li>
+                    <li class="step step--done"><span>Budget</span><b>over auto-cap</b></li>
+                    <li class="step step--active"><span>Verdict</span><b>require-approval</b></li>
+                    <li class="step"><span>Proxy</span><b>held</b></li>
                   </ol>
                   <div class="robotstate">
-                    <span class="robotstate__label">Robot AMR-07</span>
-                    <span class="meter" aria-hidden="true"><span class="meter__fill" style="width:86%"></span></span>
-                    <span class="robotstate__val">confidence 0.86</span>
+                    <span class="robotstate__label">Risk owner</span>
+                    <span class="robotstate__val">payments on-call</span>
                   </div>
                 </div>
 
                 <div class="panel panel--log">
-                  <p class="panel__label">Verification log</p>
+                  <p class="panel__label">Audit trail</p>
                   <ul class="log">
-                    <li class="log--ok"><time>09:41:02</time> Picked SKU-2231 · verified</li>
-                    <li class="log--ok"><time>09:41:19</time> Moved to Dock 2 · verified</li>
-                    <li class="log--warn"><time>09:41:26</time> Person in path · re-planned</li>
-                    <li class="log--esc"><time>09:41:31</time> Low confidence · escalated to operator</li>
+                    <li class="log--ok"><time>09:41:02</time> Proposed · payments.refund · hash ✓</li>
+                    <li class="log--warn"><time>09:41:02</time> Gate · over cap · require-approval</li>
+                    <li class="log--ok"><time>09:41:26</time> Approved · payments on-call</li>
+                    <li class="log--ok"><time>09:41:27</time> Executed via proxy · verified</li>
+                    <li class="log--esc"><time>09:42:10</time> Over-scope call · <b>blocked</b> &amp; recorded</li>
                   </ul>
                 </div>
               </div>
             </div>
             <figcaption id="console-cap" class="hero__cap">
-              Simulated operator console · representative UI — floor context, task plan, robot confidence, and a verification log for every action.
+              Simulated Evidence Console · representative UI — agent proposal, policy verdict, controlled proxy, and a hash-chained audit trail for every action.
             </figcaption>
           </figure>
         </div>
 
         <!-- Early trust strip -->
-        <div class="truststrip" aria-label="Built-in safety controls">
+        <div class="truststrip" aria-label="How Origin enforces and proves">
           <div class="shell truststrip__inner">
-            <span class="truststrip__lead">Safe by construction</span>
+            <span class="truststrip__lead">Enforce, then prove</span>
             <ul class="truststrip__items">
-              <li>Human override</li>
-              <li>No-go zones</li>
-              <li>Confidence thresholds</li>
-              <li>Replayable audit logs</li>
+              <li>Policy gate</li>
+              <li>Tool-call proxy</li>
+              <li>Human approval</li>
+              <li>Tamper-evident audit trail</li>
             </ul>
-            <a class="truststrip__link" href="#trust">See trust &amp; safety →</a>
+            <a class="truststrip__link" href="#trust">See trust &amp; controls →</a>
           </div>
         </div>
       </section>
 
       <!-- Mobile-only section index — orientation on a long page -->
       <nav class="sectionindex" aria-label="Jump to a section">
-        <a href="#walkthrough">Walkthrough</a>
+        <a href="#demo">Demo</a>
+        <a href="#product">Product</a>
         <a href="#evidence">Evidence</a>
-        <a href="#pilot">Pilot</a>
-        <a href="#proof">Scorecard</a>
-        <a href="#integrate">Integration</a>
+        <a href="#offer">Review</a>
         <a href="#trust">Trust</a>
         <a href="/brief">Brief</a>
       </nav>
@@ -255,244 +241,79 @@
       <section class="section" id="problem" aria-labelledby="problem-title">
         <div class="shell">
           <p class="kicker">The problem</p>
-          <h2 id="problem-title">Robots fail where real floors get messy.</h2>
-          <p class="section__lede">
-            A scripted robot works in a demo and breaks in production. Real floors move: layouts
-            shift, people cross paths, objects vary, priorities change. When reality drifts from the
-            script, brittle automation stalls — and a human has to step in.
+          <h2 id="problem-title">High-consequence agents get stuck before launch.</h2>
+          <p class="section__lede leadin">
+            Agents are moving from chat into action — touching production systems, internal tools,
+            infrastructure, code, PII, and money. But a reviewer can't approve what no one can bound or
+            prove. So the launch date slips.
           </p>
-
-          <div class="grid grid--3 problem__grid">
-            <article class="card"><h3>Layout changes</h3><p>Pallets, carts, and fixtures move hourly. A path that was clear at setup is blocked by lunch.</p></article>
-            <article class="card"><h3>Human interruptions</h3><p>People walk into aisles and docks. The robot must yield, re-plan, and never assume a clear floor.</p></article>
-            <article class="card"><h3>Object variability</h3><p>Same task, different item — wrapped, mis-labeled, or stacked in a way the script never saw.</p></article>
-            <article class="card"><h3>Task ambiguity</h3><p>“Clear Dock 2” means ten different things. Operator intent has to become executable steps.</p></article>
-            <article class="card"><h3>Brittle setup</h3><p>Weeks of hand-tuned waypoints that one floor change invalidates. It doesn’t generalize.</p></article>
-            <article class="card"><h3>High intervention cost</h3><p>Every stall pulls a person off other work. Interventions — not capability — cap the ROI.</p></article>
-          </div>
-
-          <div class="compare" aria-label="Scripted automation versus the adaptive Origin loop">
-            <article class="compare__col compare__col--before">
-              <p class="compare__tag">Scripted automation</p>
-              <ul class="compare__list">
-                <li>Fixed waypoints &amp; rules</li>
-                <li>Assumes a static floor</li>
-                <li>Stops on anything unseen</li>
-                <li>Human rescues each edge case</li>
-                <li>No record of why it acted</li>
-              </ul>
-              <p class="compare__verdict compare__verdict--bad">Brittle → frequent intervention</p>
-            </article>
-            <div class="compare__arrow" aria-hidden="true">→</div>
-            <article class="compare__col compare__col--after">
-              <p class="compare__tag">Adaptive Origin loop</p>
-              <ul class="compare__list">
-                <li>Perceives the floor as it is now</li>
-                <li>Re-plans when reality changes</li>
-                <li>Acts inside safety boundaries</li>
-                <li>Escalates uncertainty, doesn’t guess</li>
-                <li>Verifies &amp; logs every action</li>
-              </ul>
-              <p class="compare__verdict compare__verdict--good">Resilient → verified completion</p>
-            </article>
+          <div class="cards cards--3">
+            <article class="card"><span class="card__k">No boundary</span><h3>No blast-radius bound</h3><p>Nothing limits what the agent can reach or spend before it acts.</p></article>
+            <article class="card"><span class="card__k">No owner</span><h3>No approval owner</h3><p>When a risky action needs a human, it's unclear who signs off — or whether they did.</p></article>
+            <article class="card"><span class="card__k">No control</span><h3>No side-effect path control</h3><p>The agent can reach tools directly; there's no single checkpoint every action must pass.</p></article>
+            <article class="card"><span class="card__k">No record</span><h3>Scattered logs, no evidence</h3><p>Prompts here, logs there, a screenshot in Slack — nothing a reviewer can accept as proof.</p></article>
+            <article class="card"><span class="card__k">No proof</span><h3>Can't prove what happened</h3><p>After an incident, there's no tamper-evident record of what the agent did and why it was allowed.</p></article>
+            <article class="card"><span class="card__k">Cost</span><h3>The launch date slips</h3><p>The workflow is ready; the approval isn't. The team ships spreadsheets and "trust us."</p></article>
           </div>
         </div>
       </section>
 
-      <!-- ===================== Product walkthrough (interactive, 2 modes) ===================== -->
-      <section class="section section--dark" id="walkthrough" aria-labelledby="walk-title">
-        <div class="shell">
-          <p class="kicker kicker--on-dark">Product walkthrough</p>
-          <h2 id="walk-title">From work order to verified completion.</h2>
-          <p class="section__lede section__lede--on-dark">
-            One work order — “Clear Dock 2 and stage returns in Aisle 4” — moving through the loop.
-            <span class="placeholder-note">Simulated workflow · representative UI. A live console recording replaces this once a pilot is filmed.</span>
-          </p>
-
-          <div class="walk" data-walk>
-            <div class="walk__order">
-              <div class="walk__order-main">
-                <span class="walk__order-label">Work order #4471</span>
-                <span class="walk__order-intent">Clear Dock 2 · stage returns in Aisle 4</span>
-              </div>
-              <span class="walk__order-robot">Assigned · AMR-07</span>
-            </div>
-
-            <div class="walk__modes" role="group" aria-label="Walkthrough mode">
-              <button type="button" class="walk__mode is-active" data-walk-mode-btn="normal" aria-pressed="true">Normal run</button>
-              <button type="button" class="walk__mode" data-walk-mode-btn="exception" aria-pressed="false">Exception run</button>
-            </div>
-
-            <!-- Normal run -->
-            <div class="walk__mode-block is-active" data-walk-mode="normal">
-              <ol class="walk__tabs" aria-label="Normal run phases">
-                <li><button type="button" class="walk__tab is-active" aria-pressed="true">Request</button></li>
-                <li><button type="button" class="walk__tab" aria-pressed="false">Observe</button></li>
-                <li><button type="button" class="walk__tab" aria-pressed="false">Plan</button></li>
-                <li><button type="button" class="walk__tab" aria-pressed="false">Act</button></li>
-                <li><button type="button" class="walk__tab" aria-pressed="false">Verify</button></li>
-              </ol>
-              <div class="walk__panels">
-                <article class="walk__panel is-active" aria-label="Request">
-                  <p class="walk__phase">01 · Request</p>
-                  <p class="walk__lead">An operator submits the work order in plain language.</p>
-                  <ul class="walk__facts"><li>“Clear Dock 2 and stage returns in Aisle 4”</li><li>Assigned to AMR-07</li></ul>
-                </article>
-                <article class="walk__panel" aria-label="Observe">
-                  <p class="walk__phase">02 · Observe</p>
-                  <p class="walk__lead">Origin reads the live floor before anything moves.</p>
-                  <ul class="walk__facts"><li class="tag--ok">Pallet detected · Aisle 4</li><li>Dock 2 clear</li><li class="tag--nogo">Zone C · no-go held</li></ul>
-                </article>
-                <article class="walk__panel" aria-label="Plan">
-                  <p class="walk__phase">03 · Plan</p>
-                  <p class="walk__lead">Intent becomes executable steps — checked against policy first.</p>
-                  <ol class="walk__plan"><li>Route to Dock 2</li><li>Pick SKU-2231 · verify tag</li><li>Stage in Aisle 4</li><li>Respect Zone C no-go</li></ol>
-                </article>
-                <article class="walk__panel" aria-label="Act">
-                  <p class="walk__phase">04 · Act</p>
-                  <p class="walk__lead">Bounded commands go to the robot stack — inside limits it can’t exceed.</p>
-                  <ul class="walk__facts"><li>AMR-07 executing · speed-limited near people</li><li>Confidence 0.91</li></ul>
-                </article>
-                <article class="walk__panel" aria-label="Verify">
-                  <p class="walk__phase">05 · Verify <span class="pill pill--verify">Verified</span></p>
-                  <p class="walk__lead">Completion confirmed with evidence and logged to the audit trail.</p>
-                  <ul class="walk__facts"><li class="tag--ok">Placement confirmed · 3 photos · 1 scan</li><li class="tag--ok">Closed · logged to replayable audit trail</li></ul>
-                </article>
-              </div>
-            </div>
-
-            <!-- Exception run -->
-            <div class="walk__mode-block" data-walk-mode="exception">
-              <ol class="walk__tabs" aria-label="Exception run phases">
-                <li><button type="button" class="walk__tab is-active" aria-pressed="true">Observe</button></li>
-                <li><button type="button" class="walk__tab" aria-pressed="false">Flag</button></li>
-                <li><button type="button" class="walk__tab" aria-pressed="false">Review</button></li>
-                <li><button type="button" class="walk__tab" aria-pressed="false">Re-plan</button></li>
-                <li><button type="button" class="walk__tab" aria-pressed="false">Verify</button></li>
-              </ol>
-              <div class="walk__panels">
-                <article class="walk__panel is-active" aria-label="Observe">
-                  <p class="walk__phase">01 · Observe</p>
-                  <p class="walk__lead">Mid-task, the floor changes.</p>
-                  <ul class="walk__facts"><li class="tag--warn">Person enters Dock 2</li><li class="tag--warn">Unknown obstacle in path</li></ul>
-                </article>
-                <article class="walk__panel" aria-label="Flag">
-                  <p class="walk__phase">02 · Flag</p>
-                  <p class="walk__lead">Confidence drops below threshold — Origin holds instead of guessing.</p>
-                  <ul class="walk__facts"><li class="tag--esc">Confidence 0.62 &lt; 0.75 · paused</li><li class="tag--nogo">No-go conflict avoided</li></ul>
-                </article>
-                <article class="walk__panel" aria-label="Review">
-                  <p class="walk__phase">03 · Review</p>
-                  <p class="walk__lead">The task is routed to an operator for human review and approval.</p>
-                  <ul class="walk__facts"><li>Operator notified · context attached</li><li class="tag--ok">Operator approves a safe alternative</li></ul>
-                </article>
-                <article class="walk__panel" aria-label="Re-plan">
-                  <p class="walk__phase">04 · Re-plan</p>
-                  <p class="walk__lead">Origin re-plans around the change and resumes within safety limits.</p>
-                  <ul class="walk__facts"><li>New route avoids Dock 2</li><li>Resumed · speed-limited near people</li></ul>
-                </article>
-                <article class="walk__panel" aria-label="Verify">
-                  <p class="walk__phase">05 · Verify <span class="pill pill--verify">Verified</span></p>
-                  <p class="walk__lead">Completion confirmed — every decision, including the escalation, is in the log.</p>
-                  <ul class="walk__facts"><li class="tag--ok">Placement confirmed · evidence attached</li><li class="tag--ok">Escalation + approval recorded · closed</li></ul>
-                </article>
-              </div>
-            </div>
-
-            <div class="walk__controls">
-              <button type="button" class="btn btn--ghost btn--ghost-on-dark btn--sm" data-walk-replay>▸ Play walkthrough</button>
-              <span class="walk__progress" aria-hidden="true"><span class="walk__progress-fill"></span></span>
-            </div>
-          </div>
-
-          <div class="walk__lifecycle" aria-label="Task lifecycle: requested, planned, executing — and on an exception, paused, reviewed, resumed — then verified.">
-            <span class="wl">Requested</span>
-            <span class="wl">Planned</span>
-            <span class="wl">Executing</span>
-            <span class="wl wl--exc">Paused</span>
-            <span class="wl wl--exc">Reviewed</span>
-            <span class="wl wl--exc">Resumed</span>
-            <span class="wl wl--ok">Verified</span>
-          </div>
-
-          <div class="cta-row cta-row--center">
-            <button type="button" class="btn btn--primary" data-open-lead data-intent="demo" data-analytics="demo_cta_click">Request live demo</button>
-          </div>
-
-          <!-- Vision film — subordinate to the walkthrough -->
-          <figure class="visionfilm visionfilm--sub" data-video>
-            <div class="visionfilm__frame">
-              <video id="vision-video" class="visionfilm__video" poster="/home-collaboration-poster.jpg" preload="metadata" autoplay muted loop playsinline controls>
-                <source src="/vision-film.mp4" type="video/mp4" />
-              </video>
-              <button type="button" class="visionfilm__play" data-video-play aria-label="Play the vision film">
-                <span class="visionfilm__play-icon" aria-hidden="true">▶</span>
-                <span class="visionfilm__play-label">Watch the 10-sec vision film</span>
-              </button>
-            </div>
-            <figcaption class="visionfilm__cap">
-              Ambient brand film — physical AI working alongside people. <span class="placeholder-note">Brand film, not product footage. A narrated console recording replaces this once pilot footage is available.</span>
-            </figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <!-- ===================== Origin Trace — signature audit-replay band ===================== -->
-      <section class="section trace-band" id="trace" aria-labelledby="trace-title">
+      <!-- ===================== Origin loop — signature audit-replay band ===================== -->
+      <section class="section trace-band" id="loop" aria-labelledby="loop-title">
         <div class="shell">
           <div class="trace__head">
             <div>
-              <p class="kicker">The Origin Trace</p>
-              <h2 id="trace-title">One work order, end to end — and provable.</h2>
+              <p class="kicker">The Origin loop</p>
+              <h2 id="loop-title">Capability is not permission.</h2>
             </div>
           </div>
           <p class="section__lede">
-            Every task runs the same loop and leaves the same artifact: observed context, a plan, a
-            policy check, bounded action, human review on exception, verification, and a sealed audit
-            digest you can replay. This is the trace — the proof that the work was done, and done safely.
+            The model proposes. A deterministic policy engine decides. A single proxy is the only path to any
+            side effect. A human owns the risky calls. Every step lands in a tamper-evident trace — the proof
+            the work was allowed, and what actually happened.
           </p>
 
           <ul class="trace__legend" aria-hidden="true">
-            <li class="l-plan"><i></i>Plan &amp; act</li>
+            <li class="l-plan"><i></i>Enforce &amp; act</li>
             <li class="l-held"><i></i>Held for human</li>
             <li class="l-verify"><i></i>Verified</li>
             <li class="l-block"><i></i>Blocked</li>
           </ul>
 
-          <div class="trace" role="img" aria-label="Origin trace, left to right: work order, observe floor context, plan, policy check, bounded act, human review on exception, verify, and a sealed replayable audit digest — a simulated run.">
+          <div class="trace" role="img" aria-label="Origin loop, left to right: agent proposal, policy gate, verdict, tool-call proxy, human approval, bounded action, record, and a sealed replayable audit digest — a simulated run.">
             <div class="trace__rail" aria-hidden="true"><span class="trace__rail-fill"></span></div>
 
             <div class="trace__node" style="--d:0s">
               <span class="trace__dot">01</span>
-              <div class="trace__textwrap"><span class="trace__k">Work order</span><span class="trace__l">Clear Dock 2, stage returns</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Proposes</span><span class="trace__l">Agent proposes an action</span></div>
             </div>
-            <div class="trace__node" style="--d:1.05s">
+            <div class="trace__node trace__node--plan" style="--d:1.05s">
               <span class="trace__dot">02</span>
-              <div class="trace__textwrap"><span class="trace__k">Observe</span><span class="trace__l">Live floor context</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Policy gate</span><span class="trace__l">Scope · budget · approval</span></div>
             </div>
             <div class="trace__node trace__node--plan" style="--d:2.1s">
               <span class="trace__dot">03</span>
-              <div class="trace__textwrap"><span class="trace__k">Plan</span><span class="trace__l">Route + plan hash</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Verdict</span><span class="trace__l">allow / cap / approve / deny / pause</span></div>
             </div>
             <div class="trace__node trace__node--plan" style="--d:3.15s">
               <span class="trace__dot">04</span>
-              <div class="trace__textwrap"><span class="trace__k">Policy</span><span class="trace__l">No-go zones, thresholds</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Proxy</span><span class="trace__l">Only path to side effects</span></div>
             </div>
-            <div class="trace__node trace__node--plan" style="--d:4.2s">
+            <div class="trace__node trace__node--held" style="--d:4.2s">
               <span class="trace__dot">05</span>
-              <div class="trace__textwrap"><span class="trace__k">Act</span><span class="trace__l">Bounded execution</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Human approval</span><span class="trace__l">Risk owner signs off</span></div>
             </div>
-            <div class="trace__node trace__node--held" style="--d:5.25s">
+            <div class="trace__node trace__node--plan" style="--d:5.25s">
               <span class="trace__dot">06</span>
-              <div class="trace__textwrap"><span class="trace__k">Human review</span><span class="trace__l">Paused 14s · approved</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Bounded action</span><span class="trace__l">Executed within scope</span></div>
             </div>
             <div class="trace__node trace__node--verify" style="--d:6.3s">
               <span class="trace__dot">07</span>
-              <div class="trace__textwrap"><span class="trace__k">Verify</span><span class="trace__l">Evidence attached</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Record</span><span class="trace__l">What · why · who</span></div>
             </div>
             <div class="trace__node trace__node--verify trace__node--seal" style="--d:7.35s">
               <span class="trace__dot" aria-hidden="true">✓</span>
-              <div class="trace__textwrap"><span class="trace__k">Audit digest</span><span class="trace__l">Sealed &amp; replayable</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Audit digest</span><span class="trace__l">Hash-chained · replayable</span></div>
             </div>
           </div>
 
@@ -501,514 +322,191 @@
             <span class="pill pill--sim">Simulated</span>
           </p>
           <div class="trace__cta">
-            <a class="btn btn--primary" href="/proof" data-analytics="trace_replay_cta_click">Watch the audit replay</a>
-            <a class="btn btn--ghost-on-dark" href="#walkthrough">See the full walkthrough</a>
+            <a class="btn btn--primary" href="#demo" data-analytics="loop_demo_cta_click">Watch the 90-second demo</a>
+            <a class="btn btn--ghost-on-dark" href="/proof">See the evidence</a>
           </div>
         </div>
       </section>
 
-      <!-- ===================== Proof artifact slot ===================== -->
-      <section class="section" id="evidence" aria-labelledby="evidence-title">
+      <!-- ===================== 90-second demo ===================== -->
+      <section class="section section--tint" id="demo" aria-labelledby="demo-title">
         <div class="shell">
-          <p class="kicker">Evidence</p>
-          <h2 id="evidence-title">Proof lands here — as it’s earned.</h2>
-          <p class="section__lede">
-            Origin publishes evidence only when it is earned — console recordings, audit replays, pilot
-            traces, integration traces, and before/after workflow results — each appears here as it lands.
-          </p>
-          <div class="proofslot">
-            <p class="proofroadmap-lead"><span class="proofslot__badge">Evidence roadmap</span> Each slot fills with real pilot evidence — in this order.</p>
-            <ul class="proofroadmap" aria-label="Evidence artifacts, in the order they are produced">
-              <li><span class="proofroadmap__ck" aria-hidden="true"></span><div class="proofroadmap__body"><b>Console recording</b><p>The live operator console running a real work order.</p></div><span class="proofroadmap__when">first pilot</span></li>
-              <li><span class="proofroadmap__ck" aria-hidden="true"></span><div class="proofroadmap__body"><b>Audit-log replay</b><p>A replayable trail of every decision and escalation (specimen TR-001 + machine-emitted console trace TR-002 live — simulated adapter; the supervised-run replay lands in the first pilot).</p></div><span class="proofroadmap__when proofroadmap__when--live">TR-001 + TR-002 live</span></li>
-              <li><span class="proofroadmap__ck" aria-hidden="true"></span><div class="proofroadmap__body"><b>Pilot trace</b><p>One workflow, end to end, with the scorecard attached.</p></div><span class="proofroadmap__when">during pilot</span></li>
-              <li><span class="proofroadmap__ck" aria-hidden="true"></span><div class="proofroadmap__body"><b>Integration trace</b><p>Work orders in, verified actions and events out.</p></div><span class="proofroadmap__when">during pilot</span></li>
-              <li><span class="proofroadmap__ck" aria-hidden="true"></span><div class="proofroadmap__body"><b>Before / after workflow</b><p>Interventions and verified completions, baseline vs. Origin.</p></div><span class="proofroadmap__when">after pilot</span></li>
-            </ul>
-            <div class="proofcard" aria-label="First evidence artifact — specimen audit trace TR-001">
-              <span class="proofcard__badge proofcard__badge--live">First artifact · live</span>
-              <p class="proofcard__title">Specimen audit trace TR-001 — replayable</p>
-              <dl class="proofcard__meta">
-                <div><dt>Date authored</dt><dd>2026-07-01</dd></div>
-                <div><dt>Workflow</dt><dd>Dock clearing · returns staging (WO-4471)</dd></div>
-                <div><dt>Robot / platform</dt><dd>Simulated AMR adapter (ROS 2 interface)</dd></div>
-                <div><dt>Evidence source</dt><dd>Replayable trace + audit JSON <span style="white-space:nowrap">(26 events,</span> reproducible digests)</dd></div>
-                <div><dt>Scorecard</dt><dd>1 / 1 verified · 1 exception escalated and resolved <span style="white-space:nowrap">(specimen, n&nbsp;=&nbsp;1)</span></dd></div>
-              </dl>
-              <p class="proofcard__note">A worked specimen authored to the runtime’s audit schema — illustrative scenario, not a recorded execution, not a customer deployment. Now joined by <b>TR-002</b>: the same schema machine-emitted by the console preview engine during a recorded session (simulated adapter, real session timestamps). The supervised-run trace lands with the first pilot.</p>
-              <div class="proofcard__ctas">
-                <a class="btn btn--primary btn--sm" href="/proof" data-analytics="evidence_trace_click">View the replayable trace</a>
-                <a class="btn btn--ghost btn--sm" href="/evidence/trace-001-audit.json" download>Audit log (JSON)</a>
-              </div>
-            </div>
-            <p class="proofslot__note">A disciplined evidence slot — the first artifact is a worked specimen, clearly labeled; recorded and customer proof replaces it only as it’s earned, never stock imagery. Origin returns decision-support and verification records, not certifications or guarantees.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== Why now ===================== -->
-      <section class="section section--tint" id="why-now" aria-labelledby="whynow-title">
-        <div class="shell">
-          <p class="kicker">Why now</p>
-          <h2 id="whynow-title">Robotics is moving from demos to production — and getting stuck.</h2>
-          <p class="section__lede">
-            Robot hardware is entering real operations. The bottleneck is shifting from demos to safe
-            deployment, integration, and proof — from “can a robot do it?” to “can we deploy it
-            safely, at scale, and prove it worked?” Four gaps stall production:
-          </p>
-          <div class="grid grid--4 whynow">
-            <article class="whynow__item"><span class="whynow__num" aria-hidden="true">01</span><h3>Dynamic floors</h3><p>Real spaces change faster than scripts and fixed maps can keep up with.</p></article>
-            <article class="whynow__item"><span class="whynow__num" aria-hidden="true">02</span><h3>Integration burden</h3><p>Every robot, WMS, and floor is different — bespoke integration kills timelines.</p></article>
-            <article class="whynow__item"><span class="whynow__num" aria-hidden="true">03</span><h3>Safety controls</h3><p>Autonomy around people needs enforceable limits, overrides, and no-go zones.</p></article>
-            <article class="whynow__item"><span class="whynow__num" aria-hidden="true">04</span><h3>No verification</h3><p>“Done” without evidence doesn’t earn the trust needed to expand a deployment.</p></article>
-          </div>
-          <p class="whynow__close">Origin closes the deployment gap: start with one supervised workflow, measure the evidence, and expand only when the scorecard says yes.</p>
-        </div>
-      </section>
-
-      <!-- ===================== Product definition ===================== -->
-      <section class="section" id="product" aria-labelledby="product-title">
-        <div class="shell">
-          <p class="kicker">What Origin is</p>
-          <h2 id="product-title">The autonomy layer between work orders and robot action.</h2>
-          <p class="section__lede">
-            Origin sits between your operators and your robots. It takes what the floor and the
-            operator know, and turns it into safe, evidence-backed robot action — with a full record
-            of what happened and why.
-          </p>
-
-          <ul class="worksrow" aria-label="Works with your stack">
-            <li>Robot-agnostic</li>
-            <li>AMRs &amp; humanoids</li>
-            <li>ROS 2-based stacks</li>
-            <li>Your WMS / work-order system</li>
-          </ul>
-
-          <div class="io">
-            <div class="io__col">
-              <p class="io__head">Inputs</p>
-              <ul class="io__list">
-                <li>Floor context — live layout, obstacles, people</li>
-                <li>Task intent — the operator’s work order</li>
-                <li>Robot state — pose, battery, capabilities</li>
-                <li>Operator policies — no-go zones, thresholds</li>
-              </ul>
-            </div>
-
-            <figure class="io__diagram">
-              <svg viewBox="0 0 260 300" role="img" aria-labelledby="arch-title arch-desc" class="archsvg">
-                <title id="arch-title">Origin architecture</title>
-                <desc id="arch-desc">Work orders and floor context flow into the Origin autonomy layer, which runs Observe, Plan, Act and Verify under policy and safety controls, then sends bounded commands to the robot stack and returns telemetry and an audit log to operators.</desc>
-                <g class="arch__node arch__node--top">
-                  <rect x="30" y="12" width="200" height="42" rx="8" />
-                  <text x="130" y="30">Work orders · operator intent</text>
-                  <text x="130" y="45" class="arch__muted">floor context · policies</text>
-                </g>
-                <line class="arch__flow" x1="130" y1="54" x2="130" y2="86" />
-                <g class="arch__node arch__node--core">
-                  <rect x="18" y="88" width="224" height="120" rx="10" />
-                  <text x="130" y="108" class="arch__core-label">Origin autonomy layer</text>
-                  <g class="arch__chips">
-                    <rect x="34" y="122" width="86" height="26" rx="6" /><text x="77" y="139">Observe</text>
-                    <rect x="140" y="122" width="86" height="26" rx="6" /><text x="183" y="139">Plan</text>
-                    <rect x="34" y="158" width="86" height="26" rx="6" /><text x="77" y="175">Act</text>
-                    <rect x="140" y="158" width="86" height="26" rx="6" /><text x="183" y="175">Verify</text>
-                  </g>
-                  <text x="130" y="200" class="arch__muted">policy &amp; safety controls</text>
-                </g>
-                <line class="arch__flow" x1="130" y1="208" x2="130" y2="240" />
-                <g class="arch__node arch__node--bot">
-                  <rect x="30" y="242" width="200" height="42" rx="8" />
-                  <text x="130" y="260">Robot stack</text>
-                  <text x="130" y="275" class="arch__muted">ROS 2 · AMRs · humanoids</text>
-                </g>
-              </svg>
-              <figcaption>Telemetry and an audit log flow back to operators at every step.</figcaption>
-            </figure>
-
-            <div class="io__col">
-              <p class="io__head">Outputs</p>
-              <ul class="io__list">
-                <li>Verified actions — confirmed or escalated</li>
-                <li>Operator-grade telemetry — live status</li>
-                <li>Exceptions — surfaced, never silently guessed</li>
-                <li>Audit log — every decision, replayable</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== How it works ===================== -->
-      <section class="section section--tint" id="how" aria-labelledby="how-title">
-        <div class="shell">
-          <p class="kicker">How it works</p>
-          <h2 id="how-title">Observe. Plan. Act. Verify.</h2>
-          <p class="section__lede">
-            One closed loop runs on every task. It re-runs whenever the floor changes — so the robot
-            stays right even when the world moves.
-          </p>
-          <ol class="loop" data-loop>
-            <li class="loop__step" data-step="1"><span class="loop__num" aria-hidden="true">01</span><h3>Observe</h3><p>Perceive floor state and constraints — layout, obstacles, people, and the current position of every object that matters.</p></li>
-            <li class="loop__step" data-step="2"><span class="loop__num" aria-hidden="true">02</span><h3>Plan</h3><p>Translate operator intent into robot-executable steps — sequenced, feasible, and checked against policy before anything moves.</p></li>
-            <li class="loop__step" data-step="3"><span class="loop__num" aria-hidden="true">03</span><h3>Act</h3><p>Send commands through the robot stack inside safety boundaries — speed, zones, and force limits the robot cannot exceed.</p></li>
-            <li class="loop__step" data-step="4"><span class="loop__num" aria-hidden="true">04</span><h3>Verify</h3><p>Confirm completion, log the evidence, and escalate uncertainty to an operator instead of guessing.</p></li>
+          <p class="kicker">The demo</p>
+          <h2 id="demo-title">One risky agent action, fully gated and proven.</h2>
+          <p class="section__lede leadin">The 90-second loop: an agent proposes a risky action, Origin decides, the proxy controls execution, the console shows a green audit trail — then one input flips and Origin blocks an over-scope action and records the block. Sandboxed side effects; any real-money path stays human-created and human-gated.</p>
+          <ol class="cards cards--3" style="counter-reset: demo;">
+            <li class="card"><span class="card__k">Step 1</span><h3>Agent proposes</h3><p>A risky action — a refund, a production write, a code or infrastructure change.</p></li>
+            <li class="card"><span class="card__k">Step 2</span><h3>Policy gate evaluates</h3><p>Scope, budget, permissions, and approval rules — deterministically.</p></li>
+            <li class="card"><span class="card__k">Step 3</span><h3>Verdict returns</h3><p>allow · cap · require-approval · deny · pause.</p></li>
+            <li class="card"><span class="card__k">Step 4</span><h3>Proxy is the only path</h3><p>The agent can't reach the side effect except through the controlled proxy.</p></li>
+            <li class="card"><span class="card__k">Step 5</span><h3>Console shows the record</h3><p>What happened, why it was allowed, who approved, and the hash-chain status.</p></li>
+            <li class="card card--tint"><span class="card__k">Step 6</span><h3>Over-scope → blocked</h3><p>Flip one input and Origin blocks the action — and records the block, too.</p></li>
           </ol>
+          <div class="cta-row" style="margin-top: 26px;">
+            <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="demo_cta_click">Book an Agent Evidence Review</button>
+            <a class="btn btn--ghost" href="/proof" data-analytics="demo_proof_link">See a machine-emitted trace</a>
+          </div>
         </div>
       </section>
 
-      <!-- ===================== Wedge deep dive ===================== -->
+      <!-- ===================== First wedge ===================== -->
       <section class="section" id="wedge" aria-labelledby="wedge-title">
         <div class="shell">
           <p class="kicker">Where Origin starts</p>
-          <h2 id="wedge-title">Built first for high-mix fulfillment floors.</h2>
-          <p class="section__lede">
-            Origin starts with one sharp wedge and earns each new environment through evidence. It
-            starts where dynamic floors hurt most — then proves each next environment with a supervised pilot.
+          <h2 id="wedge-title">Built first for internal-ops and production-access agents.</h2>
+          <p class="section__lede leadin">
+            Origin starts where the risk is concrete and the reviewer is one person: agents that touch
+            production systems, internal tools, infrastructure, code, PII, or money-adjacent workflows.
+            One wrong action has real blast radius — which is exactly where a gate, a proxy, and a
+            tamper-evident record earn their keep. We widen from there through evidence, not press releases.
           </p>
-          <div class="wedge">
-            <article class="wedge__primary">
-              <p class="wedge__badge">Primary wedge</p>
-              <h3>High-mix fulfillment &amp; 3PL</h3>
-              <dl class="wedge__grid">
-                <div><dt>Pain</dt><dd>Mixed SKUs and shifting dock congestion break scripted picking and staging. Every exception pulls an operator off the floor.</dd></div>
-                <div><dt>Origin capability</dt><dd>Perceives congestion and people in real time, re-plans routes and picks, holds no-go zones, and verifies each placement with evidence.</dd></div>
-                <div><dt>Measurable outcome</dt><dd>Fewer human interventions per shift and more verified completions per robot-hour. <span class="placeholder-note">Targets set at pilot kickoff.</span></dd></div>
-              </dl>
-              <div class="wedge__workflows">
-                <p class="wedge__wf-h">Example first workflows</p>
-                <ul>
-                  <li>Dock clearing</li>
-                  <li>Returns staging</li>
-                  <li>Pallet staging</li>
-                  <li>Aisle replenishment</li>
-                </ul>
-              </div>
-            </article>
-            <aside class="wedge__future">
-              <p class="wedge__future-h">Expansion candidates — not yet claimed</p>
-              <ul>
-                <li><b>Manufacturing lines</b> — line-side material moves that must retime to line state.</li>
-                <li><b>Facilities &amp; cleaning</b> — dynamic public spaces where fixed coverage routes fail.</li>
-              </ul>
-              <p class="wedge__future-note">Each becomes a primary market only after a pilot proves it — never before.</p>
-            </aside>
-          </div>
         </div>
       </section>
 
-      <!-- ===================== Pilot scorecard (+ decision gate) ===================== -->
-      <section class="section section--tint" id="proof" aria-labelledby="proof-title">
-        <div class="shell">
-          <p class="kicker">Pilot scorecard</p>
-          <h2 id="proof-title">What we measure — and how it decides expand, hold, or stop.</h2>
-          <p class="section__lede">
-            Every supervised pilot reports the same scorecard, so results are comparable, owned, and
-            honest. It’s a pilot-contracting tool, not a metrics dump.
-            <span class="placeholder-note">Baselines and targets are set with you at kickoff.</span>
-          </p>
-          <div class="scorecard-wrap">
-            <table class="scorecard">
-              <caption class="sr-only">Pilot scorecard — metric, baseline, target, evidence source, owner, and decision gate.</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Metric</th>
-                  <th scope="col">Baseline</th>
-                  <th scope="col">Target</th>
-                  <th scope="col">Evidence source</th>
-                  <th scope="col">Owner</th>
-                  <th scope="col">Decision gate</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Task success rate</th>
-                  <td data-label="Baseline"><span class="placeholder">[measured during supervised pilot]</span></td>
-                  <td data-label="Target">↑ vs. baseline</td>
-                  <td data-label="Evidence source">Task + verification logs</td>
-                  <td data-label="Owner">Ops + Origin</td>
-                  <td data-label="Decision gate">Above target → expand</td>
-                </tr>
-                <tr>
-                  <th scope="row">Human intervention rate</th>
-                  <td data-label="Baseline"><span class="placeholder">[measured during supervised pilot]</span></td>
-                  <td data-label="Target">↓ per 100 tasks</td>
-                  <td data-label="Evidence source">Operator takeover events</td>
-                  <td data-label="Owner">Ops + Origin</td>
-                  <td data-label="Decision gate">Flat/rising → hold</td>
-                </tr>
-                <tr>
-                  <th scope="row">Safety exceptions</th>
-                  <td data-label="Baseline"><span class="placeholder">[measured during supervised pilot]</span></td>
-                  <td data-label="Target">0 unsafe actions</td>
-                  <td data-label="Evidence source">Escalation + audit log</td>
-                  <td data-label="Owner">Ops + Origin</td>
-                  <td data-label="Decision gate">Any unsafe action → stop</td>
-                </tr>
-                <tr>
-                  <th scope="row">Verified completions</th>
-                  <td data-label="Baseline"><span class="placeholder">[measured during supervised pilot]</span></td>
-                  <td data-label="Target">↑ with evidence</td>
-                  <td data-label="Evidence source">Audit trail (photos, scans)</td>
-                  <td data-label="Owner">Ops + Origin</td>
-                  <td data-label="Decision gate">Above target → expand</td>
-                </tr>
-                <tr>
-                  <th scope="row">Uptime</th>
-                  <td data-label="Baseline"><span class="placeholder">[measured during supervised pilot]</span></td>
-                  <td data-label="Target">↑ productive hours</td>
-                  <td data-label="Evidence source">Fleet telemetry</td>
-                  <td data-label="Owner">Ops + Origin</td>
-                  <td data-label="Decision gate">Below floor → hold</td>
-                </tr>
-                <tr>
-                  <th scope="row">Cost per task</th>
-                  <td data-label="Baseline"><span class="placeholder">[measured during supervised pilot]</span></td>
-                  <td data-label="Target">↓ fully-loaded</td>
-                  <td data-label="Evidence source">Task log + labor model</td>
-                  <td data-label="Owner">Finance + Origin</td>
-                  <td data-label="Decision gate">Below target → expand</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="cta-row">
-            <button type="button" class="btn btn--primary" data-open-lead data-intent="pilot" data-analytics="pilot_scorecard_cta">Discuss a supervised pilot</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== Pilot package ===================== -->
-      <section class="section" id="pilot" aria-labelledby="pilot-title">
-        <div class="shell">
-          <p class="kicker">Pilot package</p>
-          <h2 id="pilot-title">What a design partner gets — and what Origin needs.</h2>
-          <p class="section__lede">
-            A supervised pilot is scoped, measured, and reversible. No week-by-week theater — clear
-            inputs, clear gates, human-in-the-loop throughout.
-          </p>
-          <div class="pilotpkg">
-            <div class="pilotpkg__col">
-              <p class="pilotpkg__head">You get</p>
-              <ul class="pilotpkg__list">
-                <li>One target workflow, live under supervision</li>
-                <li>Operator-grade telemetry + a replayable audit log</li>
-                <li>The pilot scorecard with agreed decision gates</li>
-                <li>Clear success criteria and an operational review owner</li>
-                <li>A reversible deployment — expand, hold, or stop on evidence</li>
-              </ul>
-            </div>
-            <div class="pilotpkg__col pilotpkg__col--need">
-              <p class="pilotpkg__head">Origin needs to assess</p>
-              <ul class="pilotpkg__list">
-                <li>Target workflow &amp; success criteria</li>
-                <li>Floor / environment constraints</li>
-                <li>Robot / platform available</li>
-                <li>Work-order or WMS integration point</li>
-                <li>Safety boundaries &amp; no-go zones</li>
-                <li>Telemetry &amp; evidence required</li>
-                <li>Who owns the operational review</li>
-              </ul>
-            </div>
-          </div>
-          <p class="pilotpkg__notready"><strong>Not ready for a pilot yet</strong> if there’s no robot telemetry, no work-order source, no configurable safety boundaries, or no operator to own supervision — we’ll tell you honestly rather than force a fit.</p>
-          <div class="cta-row">
-            <button type="button" class="btn btn--primary" data-open-lead data-intent="pilot" data-analytics="pilot_package_cta">Discuss a supervised pilot</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== Integration requirements ===================== -->
-      <section class="section section--tint" id="integrate" aria-labelledby="integrate-title">
-        <div class="shell">
-          <p class="kicker">Integration</p>
-          <h2 id="integrate-title">Deployment requirements — not universal compatibility.</h2>
-          <p class="section__lede">
-            Origin is robot-agnostic by design, but every deployment is scoped. These are the surfaces
-            we integrate with; we confirm fit per site rather than claiming it works everywhere.
-          </p>
-          <div class="grid grid--4 integration">
-            <div class="intg"><span class="intg__tier intg__tier--req">Required</span><h3>Work orders / task source</h3><p>Read task intent from your WMS, work-order system, or a manual queue.</p></div>
-            <div class="intg"><span class="intg__tier intg__tier--req">Required</span><h3>Robot interface</h3><p>A ROS 2-based stack or platform SDK to send bounded commands.</p></div>
-            <div class="intg"><span class="intg__tier intg__tier--req">Required</span><h3>Robot telemetry</h3><p>Robot state — pose, battery, health — to plan and verify against.</p></div>
-            <div class="intg"><span class="intg__tier intg__tier--req">Required</span><h3>Site map &amp; zones</h3><p>A floor map and configurable no-go zones.</p></div>
-            <div class="intg"><span class="intg__tier intg__tier--req">Required</span><h3>Safety policy config</h3><p>Confidence thresholds, limits, and escalation rules.</p></div>
-            <div class="intg"><span class="intg__tier intg__tier--opt">Optional</span><h3>Fleet manager</h3><p>Coordinate through your existing fleet manager, if you run one.</p></div>
-            <div class="intg"><span class="intg__tier intg__tier--opt">Optional</span><h3>Audit / event export</h3><p>Stream Origin’s events and evidence into your systems.</p></div>
-            <div class="intg"><span class="intg__tier intg__tier--fut">Future</span><h3>WMS write-back</h3><p>Two-way sync of task status back into your WMS.</p></div>
-          </div>
-          <p class="integration__legend"><span class="intg__tier intg__tier--req">Required</span> to run a pilot · <span class="intg__tier intg__tier--opt">Optional</span> enhancements · <span class="intg__tier intg__tier--fut">Future</span> on the roadmap. Exact interfaces are scoped per deployment.</p>
-
-          <details class="intg-appendix">
-            <summary>Partner interface appendix — what integration actually requires</summary>
-            <div class="intg-appendix__body">
-              <dl class="intg-appendix__dl">
-                <div><dt>Robot interface</dt><dd>ROS 2 topics/actions or a platform SDK for bounded commands (move · pick · place · stop) plus command acknowledgements.</dd></div>
-                <div><dt>Telemetry schema</dt><dd>Robot pose, velocity, battery, health, and task state at an agreed rate.</dd></div>
-                <div><dt>Command boundaries</dt><dd>Speed, zone, and force limits Origin must respect — enforced by policy, not convention.</dd></div>
-                <div><dt>Work-order contract</dt><dd>Task intent in/out via a WMS API, a work-order feed, or a manual queue.</dd></div>
-                <div><dt>Maps &amp; zones</dt><dd>Floor map plus no-go zone geometry, importable per site.</dd></div>
-                <div><dt>Safety policy config</dt><dd>Confidence thresholds, escalation rules, and review gates.</dd></div>
-                <div><dt>Event / audit format</dt><dd>Structured events and evidence emitted to your audit-log / event stream.</dd></div>
-                <div><dt>Onboarding</dt><dd>A simulator or supervised bring-up before live runtime.</dd></div>
-              </dl>
-              <p class="intg-appendix__note">Exact schemas, rates, and message formats are confirmed per deployment. <button type="button" class="linkbtn" data-open-lead data-intent="partner" data-analytics="interface_appendix_cta">Request the integration spec →</button></p>
-            </div>
-          </details>
-        </div>
-      </section>
-
-      <!-- ===================== Safety boundaries / non-goals ===================== -->
-      <section class="section" id="escalate" aria-labelledby="escalate-title">
-        <div class="shell">
-          <p class="kicker">Boundaries</p>
-          <h2 id="escalate-title">Where Origin escalates instead of guessing.</h2>
-          <p class="section__lede">
-            Autonomy that’s safe around people has to know its limits. Origin holds and routes to a
-            human — it does not automate blindly — in these cases:
-          </p>
-          <ul class="escalate" aria-label="When Origin escalates">
-            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Low confidence</h3><p>Below the configured threshold, Origin pauses and escalates.</p></li>
-            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Unknown obstacle or person in path</h3><p>It yields and re-checks before moving.</p></li>
-            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>No-go zone conflict</h3><p>Configured no-go zones block execution unless an authorized operator changes the policy.</p></li>
-            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Missing verification evidence</h3><p>A task closes only when verification evidence is attached.</p></li>
-            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Robot health / state anomaly</h3><p>Anomalies stop the task, not the audit trail.</p></li>
-            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Policy conflict</h3><p>Conflicting rules route to operator review.</p></li>
-            <li><span class="escalate__mark" aria-hidden="true">⤴</span><h3>Operator review required</h3><p>Sensitive workflows wait for human approval.</p></li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- ===================== Trust & safety ===================== -->
-      <section class="section section--tint" id="trust" aria-labelledby="trust-title">
-        <div class="shell">
-          <p class="kicker">Trust &amp; safety</p>
-          <h2 id="trust-title">Policy-bounded autonomy for shared human spaces.</h2>
-          <p class="section__lede">
-            Origin is built for robots operating around people, assets, and changing environments.
-            Autonomy is policy-bounded, verification is evidence-backed, and a human stays responsible.
-          </p>
-          <div class="trust">
-            <ul class="checklist" aria-label="Trust and safety controls">
-              <li><h3>Human override</h3><p>An operator can pause, redirect, or stop any robot at any time.</p></li>
-              <li><h3>No-go zones</h3><p>Configured spatial boundaries block execution unless an authorized operator changes the policy.</p></li>
-              <li><h3>Confidence thresholds</h3><p>Below the bar, Origin escalates instead of acting.</p></li>
-              <li><h3>Replayable audit logs</h3><p>Every decision and action recorded and replayable.</p></li>
-              <li><h3>Evidence-backed verification</h3><p>Completion is confirmed against evidence, not assumed.</p></li>
-              <li><h3>Exception handling</h3><p>Uncertainty is surfaced and routed to a human — never silently guessed.</p></li>
-              <li><h3>Human-in-the-loop responsibility</h3><p>The operator stays accountable; Origin provides the controls.</p></li>
-              <li><h3>Deployment-specific data handling</h3><p>Floor and telemetry data scoped and access-controlled per site.</p></li>
-            </ul>
-            <figure class="auditpanel">
-              <div class="console console--compact" role="img" aria-label="Sample audit log: verified pick, re-plan around a person, and an operator-approved escalation, each with a timestamp.">
-                <div class="console__bar">
-                  <span class="console__dot" aria-hidden="true"></span>
-                  <span class="console__title">Audit log</span>
-                  <span class="pill">replayable</span>
-                </div>
-                <ul class="log log--audit">
-                  <li class="log--ok"><time>09:41:02</time> AMR-07 · pick SKU-2231 · <b>verified</b></li>
-                  <li class="log--warn"><time>09:41:26</time> person in path · <b>re-planned</b></li>
-                  <li class="log--esc"><time>09:41:31</time> confidence 0.62 &lt; 0.75 · <b>escalated</b></li>
-                  <li class="log--ok"><time>09:41:48</time> operator approved · <b>resumed</b></li>
-                  <li class="log--ok"><time>09:42:10</time> stage Aisle 4 · <b>verified · closed</b></li>
-                </ul>
-              </div>
-              <figcaption>A representative audit trail — every action attributable and reviewable.</figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== Trust Center Lite ===================== -->
-      <section class="section" id="trust-center" aria-labelledby="tc-title">
-        <div class="shell">
-          <p class="kicker">Trust center</p>
-          <h2 id="tc-title">Data, access, and responsibility — stated plainly.</h2>
-          <p class="section__lede">
-            Conservative by design and consistent with our
-            <a href="/legal/privacy-policy.html">privacy policy</a> and
-            <a href="/legal/terms-of-service.html">terms</a>.
-          </p>
-          <div class="grid grid--3 trustcenter">
-            <div class="tc"><h3>Data collected</h3><p>Floor context, work orders, robot &amp; deployment telemetry, and usage analytics.</p></div>
-            <div class="tc"><h3>Telemetry scope</h3><p>Scoped to the deployment; used to plan, verify, and audit robot actions.</p></div>
-            <div class="tc"><h3>Data retention</h3><p>Retained for the life of the engagement and as required by law; deletable on request at engagement end.</p></div>
-            <div class="tc"><h3>Access control</h3><p>Least-privilege access with per-deployment scoping.</p></div>
-            <div class="tc"><h3>Audit-log purpose</h3><p>Evidence and accountability — a replayable record of every decision.</p></div>
-            <div class="tc"><h3>Incident &amp; escalation</h3><p>Uncertainty and anomalies escalate to a human operator.</p></div>
-            <div class="tc"><h3>Your responsibility</h3><p>On-site safety, supervision, and your robots and personnel.</p></div>
-            <div class="tc"><h3>Origin’s responsibility</h3><p>The software controls — planning, boundaries, verification, audit.</p></div>
-            <div class="tc"><h3>DPA &amp; security review</h3><p>A DPA and security review are available on request.</p></div>
-          </div>
-          <div class="cta-row">
-            <a class="btn btn--ghost" href="/trust" data-analytics="trust_center_click">Read the full trust center →</a>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== Why Origin wins + team ===================== -->
-      <section class="section section--tint" id="why-origin" aria-labelledby="whywin-title">
+      <!-- ===================== What teams use today ===================== -->
+      <section class="section section--tint" id="why" aria-labelledby="why-title">
         <div class="shell">
           <p class="kicker">Why Origin</p>
-          <h2 id="whywin-title">Built for the hard part of robotics deployment.</h2>
-          <p class="section__lede">
-            Robot capability is advancing quickly; deployment still breaks at the boundary between
-            operator intent, floor reality, and safety policy. That layer — through to verified
-            execution — is the unsolved, defensible problem, where a mistake
-            isn’t a typo, it’s a person or a stopped line. Origin is built for that control plane:
-            where those four have to meet before robots can scale.
-          </p>
-          <div class="whywin">
-            <div class="whywin__pt"><h3>Deployment, not demos</h3><p>Designed around the messy production floor, not a staged clip.</p></div>
-            <div class="whywin__pt"><h3>Safety is the product</h3><p>Policy-bounded autonomy and evidence-backed verification, first-class.</p></div>
-            <div class="whywin__pt"><h3>Robot-agnostic wedge</h3><p>One layer across AMRs, humanoids, and ROS 2 — starting with one sharp wedge.</p></div>
+          <h2 id="why-title">Spreadsheets, logs, and "trust us" don't get agents approved.</h2>
+          <p class="section__lede leadin">Identity and observability are adjacent jobs. Origin owns the approval path — enforcing what's allowed before side effects, then proving the decision afterward.</p>
+          <div class="compare-row">
+            <div class="compare-line"><b>Identity</b><span>Tells you <em>who the agent is</em>. Necessary — but it doesn't bound what the agent may do.</span></div>
+            <div class="compare-line"><b>Observability</b><span>Helps engineers <em>debug what happened</em>. Built for debugging, not for approval.</span></div>
+            <div class="compare-line compare-line--origin"><b>Origin</b><span>Enforces what's allowed <em>before</em> side effects — and produces a review-ready record of the decision, action, approver, and audit trail. Vendor-neutral across clouds and model providers.</span></div>
           </div>
-          <p class="team__note">
-            <strong>Team.</strong> Founded by Bo-Huei Lin.
-            <span class="placeholder-note">Advisor and team profiles are added here as they’re verified — no placeholder credentials.</span>
-          </p>
         </div>
       </section>
 
-      <!-- ===================== AudienceCTA — routed cards ===================== -->
-      <section class="section audience" aria-labelledby="aud-title">
+      <!-- ===================== Product components ===================== -->
+      <section class="section" id="product" aria-labelledby="product-title">
         <div class="shell">
-          <p class="kicker">Find your path</p>
-          <h2 id="aud-title">Who are you here as?</h2>
-          <div class="grid grid--4 audience__cards">
-            <button type="button" class="routecard" data-open-lead data-intent="operator" data-audience="operator" data-analytics="audience_cta_selection">
-              <span class="routecard__role">Operator</span>
-              <span class="routecard__desc">Evaluate a supervised pilot on one floor, with agreed decision gates.</span>
-              <span class="routecard__go">Evaluate a supervised pilot →</span>
-            </button>
-            <button type="button" class="routecard" data-open-lead data-intent="partner" data-audience="partner" data-analytics="audience_cta_selection">
-              <span class="routecard__role">Robot / platform partner</span>
-              <span class="routecard__desc">Discuss integrating your AMR, humanoid, or ROS 2 stack.</span>
-              <span class="routecard__go">Discuss integration →</span>
-            </button>
-            <button type="button" class="routecard" data-open-lead data-intent="investor" data-audience="investor" data-analytics="audience_cta_selection">
-              <span class="routecard__role">Investor</span>
-              <span class="routecard__desc">Wedge, timing, and what proof is coming — get the brief.</span>
-              <span class="routecard__go">Request company brief →</span>
-            </button>
-            <button type="button" class="routecard" data-open-lead data-intent="engineer" data-audience="engineer" data-analytics="audience_cta_selection">
-              <span class="routecard__role">Engineer</span>
-              <span class="routecard__desc">The hard problems: perception, planning, safety, verification.</span>
-              <span class="routecard__go">Explore technical challenges →</span>
-            </button>
+          <p class="kicker">Product</p>
+          <h2 id="product-title">Enforcement and evidence, as one control plane.</h2>
+          <div class="cards cards--3">
+            <article class="card"><span class="card__k">Decide</span><h3>Policy engine</h3><p>Deterministic allow / cap / require-approval / deny / pause on every proposed action.</p></article>
+            <article class="card"><span class="card__k">Control</span><h3>Tool-call proxy</h3><p>The single path to any side effect — the agent can't reach around it.</p></article>
+            <article class="card"><span class="card__k">Escalate</span><h3>Human approval</h3><p>Risky actions route to a named risk owner, and the approval is recorded.</p></article>
+            <article class="card"><span class="card__k">Bound</span><h3>Budget &amp; blast-radius limits</h3><p>Scope, spend, and reach caps enforced before an action runs.</p></article>
+            <article class="card"><span class="card__k">Stop</span><h3>Kill switches</h3><p>Pause a workflow or revoke a scope without redeploying the agent.</p></article>
+            <article class="card"><span class="card__k">Prove</span><h3>Hash-chained audit trail</h3><p>Every proposal, verdict, approval, action, block, and exception, tamper-evident and replayable.</p></article>
+            <article class="card"><span class="card__k">Review</span><h3>Evidence Console</h3><p>What happened, why it was allowed, who owned the risk — in one reviewer-facing view.</p></article>
+            <article class="card"><span class="card__k">Export</span><h3>Evidence package</h3><p>A review-ready artifact you can hand to a security reviewer or attach to a change record.</p></article>
           </div>
         </div>
       </section>
 
-      <!-- ===================== Final CTA ===================== -->
-      <section class="section finalcta" id="contact" aria-labelledby="final-title">
-        <div class="shell finalcta__inner">
-          <h2 id="final-title">Bring Origin to your first floor.</h2>
-          <p class="finalcta__sub">Start with one workflow. Measure every task. Scale what works.</p>
-          <div class="cta-row cta-row--center">
-            <button type="button" class="btn btn--primary btn--lg" data-open-lead data-intent="demo" data-analytics="final_primary_cta_click">Book a floor demo</button>
-            <button type="button" class="btn btn--ghost btn--lg" data-open-lead data-intent="pilot" data-analytics="pilot_cta_click">Discuss a pilot</button>
+      <!-- ===================== Offer ===================== -->
+      <section class="section section--tint" id="offer" aria-labelledby="offer-title">
+        <div class="shell">
+          <p class="kicker">Start here</p>
+          <h2 id="offer-title">Start with an Agent Launch Evidence Review.</h2>
+          <p class="section__lede leadin">A founder-led engagement to get one blocked agent workflow through review — and hand you the evidence package that does it.</p>
+          <div class="two-col">
+            <div class="card">
+              <span class="card__k">You bring</span>
+              <ul class="deflist">
+                <li><span class="dl-mark">→</span><span>The agent workflow you're trying to ship</span></li>
+                <li><span class="dl-mark">→</span><span>The tools and systems it touches</span></li>
+                <li><span class="dl-mark">→</span><span>What's blocking approval — and who signs off</span></li>
+                <li><span class="dl-mark">→</span><span>What that reviewer needs to see to say yes</span></li>
+              </ul>
+            </div>
+            <div class="card card--tint">
+              <span class="card__k">Origin provides</span>
+              <ul class="deflist">
+                <li><span class="dl-mark">✓</span><span>A policy map for the workflow</span></li>
+                <li><span class="dl-mark">✓</span><span>A controlled proxy path for side effects</span></li>
+                <li><span class="dl-mark">✓</span><span>A demo trace of the gated loop</span></li>
+                <li><span class="dl-mark">✓</span><span>A review-ready, tamper-evident evidence package</span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="cta-row" style="margin-top: 28px;">
+            <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="offer_cta_click">Book an Agent Evidence Review</button>
+            <button type="button" class="btn btn--ghost" data-open-lead data-intent="blocker" data-analytics="offer_blocker_cta">Send us the reviewer blocker</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Evidence roadmap ===================== -->
+      <section class="section" id="evidence" aria-labelledby="evidence-title">
+        <div class="shell">
+          <p class="kicker">Evidence</p>
+          <h2 id="evidence-title">Proof lands here — as it's earned.</h2>
+          <p class="section__lede leadin">We publish evidence in rungs, and we never dress one rung up as another. What's here today is an authored specimen and a machine-emitted sandbox trace — not a customer deployment.</p>
+          <div class="cards cards--3">
+            <article class="card"><span class="card__k">TR-A001 · here</span><h3>Authored evidence specimen</h3><p>A hand-authored example of the evidence package format — shows the shape, claims nothing about a run.</p></article>
+            <article class="card"><span class="card__k">TR-A002 · here</span><h3>Machine-emitted sandbox trace</h3><p>The console engine emitting a real hash-chained trace over a sandboxed agent action — including a blocked over-scope call.</p></article>
+            <article class="card"><span class="card__k">Next · when earned</span><h3>First design-partner trace</h3><p>Evidence from a real external workflow — published only once a design partner runs it.</p></article>
+          </div>
+          <p class="mono-note" style="margin-top: 18px;">Plumbing proof ≠ customer proof. A human-created payment link + a signed webhook proves the evidence system captures a real transaction end-to-end — the agent never touches live money, and that isn't customer revenue.</p>
+          <div class="cta-row" style="margin-top: 22px;">
+            <a class="btn btn--primary" href="/proof" data-analytics="evidence_proof_link">Open the evidence traces</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Metrics ===================== -->
+      <section class="section section--tint" id="metrics" aria-labelledby="metrics-title">
+        <div class="shell">
+          <p class="kicker">How we measure it</p>
+          <h2 id="metrics-title">One north star, and hard guardrails.</h2>
+          <p class="section__lede leadin">Our north star is agent workflows taken <b>through security review to approval</b> using Origin evidence. Around it, guardrails that must hold. We don't publish numbers we haven't earned.</p>
+          <div class="cards cards--3">
+            <article class="card card--tint"><span class="card__k">North star</span><h3>Unblocked launches</h3><p>Agent workflows approved through security review using Origin's evidence.</p></article>
+            <article class="card"><span class="card__k">Guardrail</span><h3>Audit-chain integrity</h3><p>Tamper-verification failures on the chain. Target: zero.</p></article>
+            <article class="card"><span class="card__k">Guardrail</span><h3>Unauthorized side effects</h3><p>Side effects not routed through the proxy. Target: zero.</p></article>
+            <article class="card"><span class="card__k">Guardrail</span><h3>Evidence completeness</h3><p>Share of actions with a full who / why / what record.</p></article>
+            <article class="card"><span class="card__k">Guardrail</span><h3>False-block rate</h3><p>Legitimate actions wrongly denied — tuned per customer, with FAR/FRR discipline.</p></article>
+            <article class="card"><span class="card__k">Leading</span><h3>Reviews &amp; discovery</h3><p>Paid/LOI evidence reviews, discovery calls completed, days saved to approval.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Trust ===================== -->
+      <section class="section" id="trust" aria-labelledby="trust-title">
+        <div class="shell">
+          <p class="kicker">Trust &amp; controls</p>
+          <h2 id="trust-title">Built for reviewers, not just builders.</h2>
+          <div class="cards cards--3">
+            <article class="card"><h3>Proxy is the only path</h3><p>Side effects can't happen except through the controlled tool-call proxy.</p></article>
+            <article class="card"><h3>Tamper-evident audit chain</h3><p>A hash-chained record of every proposal, verdict, approval, and action.</p></article>
+            <article class="card"><h3>Human approvals &amp; risk owner</h3><p>Risky actions require a named approver — and that decision is recorded.</p></article>
+            <article class="card"><h3>Scope &amp; budget limits</h3><p>Blast radius and spend are bounded before an action runs.</p></article>
+            <article class="card"><h3>Kill switch</h3><p>Pause a workflow or revoke a scope without redeploying.</p></article>
+            <article class="card"><h3>Vendor-neutral · exportable</h3><p>Across clouds and model providers, with an evidence package you can export.</p></article>
+          </div>
+          <p class="mono-note" style="margin-top: 18px;">Origin is decision-support and evidence infrastructure. We use "tamper-evident," not "tamper-proof"; "review-ready," not "reviewer-accepted." It does not provide legal or compliance certification, and the customer stays responsible for the agents and tools they connect.</p>
+          <div class="cta-row" style="margin-top: 20px;">
+            <a class="btn btn--ghost" href="/trust" data-analytics="trust_center_link">Read the trust center</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Founder credibility ===================== -->
+      <section class="section section--tint" id="founder" aria-labelledby="founder-title">
+        <div class="shell">
+          <p class="kicker">Who's building it</p>
+          <h2 id="founder-title">Built by someone who has blocked unsafe launches.</h2>
+          <p class="section__lede leadin">
+            Origin comes from ~20 years building the "prove it's safe before you ship" layer — payment-grade
+            biometric authentication (designing the false-accept / false-reject operating points that let a
+            face unlock a payment), frontier-safety launch gates and residual-risk ownership, and RL
+            environments with verifier integrity. I've <b>been</b> the reviewer who couldn't approve a launch
+            because there was no way to bound what a system could do or prove what it did. Origin is that
+            missing layer, built for agents.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== Discovery / final CTA ===================== -->
+      <section class="section" id="contact" aria-labelledby="final-title">
+        <div class="shell final">
+          <h2 id="final-title">Have an agent stuck in security review?</h2>
+          <p class="section__lede leadin">Show us one blocked workflow. We'll map the risk, run the evidence loop, and tell you honestly whether Origin can get it through — and what the reviewer would need to see.</p>
+          <div class="cta-row">
+            <button type="button" class="btn btn--primary btn--lg" data-open-lead data-intent="review" data-analytics="final_primary_cta_click">Book an Agent Evidence Review</button>
+            <button type="button" class="btn btn--ghost btn--lg" data-open-lead data-intent="blocker" data-analytics="final_blocker_cta">Send us the reviewer blocker</button>
           </div>
         </div>
       </section>
@@ -1018,27 +516,25 @@
     <footer class="site-footer">
       <div class="shell site-footer__inner">
         <div class="site-footer__brand">
-          <a class="brand" href="#main" aria-label="Origin Physical AI — home">
+          <a class="brand" href="#main" aria-label="Origin — home">
             <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
             <span class="brand__name">Origin</span>
           </a>
-          <p>The autonomy layer between work orders and robot action.</p>
+          <p>The evidence layer for AI agents.</p>
         </div>
         <nav class="site-footer__nav" aria-label="Footer">
           <div>
             <p class="site-footer__h">Product</p>
-            <a href="#walkthrough">Walkthrough</a>
-            <a href="#how">How it works</a>
-            <a href="/proof">Evidence · TR-001</a>
-            <a href="/app">Console (simulated preview)</a>
-            <a href="#integrate">Integration</a>
-            <a href="#trust">Trust &amp; safety</a>
+            <a href="#demo">Demo</a>
+            <a href="#product">Product</a>
+            <a href="/proof">Evidence · traces</a>
+            <a href="/app">Evidence Console (preview)</a>
+            <a href="#trust">Trust &amp; controls</a>
             <a href="/trust">Trust center</a>
           </div>
           <div>
             <p class="site-footer__h">Company</p>
-            <a href="#pilot">Pilot</a>
-            <a href="#proof">Pilot scorecard</a>
+            <a href="#offer">Agent Evidence Review</a>
             <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
             <a href="/llms.txt">For AI agents</a>
             <!-- PLACEHOLDER domain email — replace with a real MX-backed inbox. Primary lead path is the /api/lead function; this mailto is a fallback only. -->
@@ -1047,11 +543,11 @@
         </nav>
       </div>
       <div class="shell site-footer__legal">
-        <span>© <span data-year>2026</span> Origin Physical AI</span>
+        <span>© <span data-year>2026</span> Origin</span>
         <span class="site-footer__legal-links">
           <a href="/legal/privacy-policy.html">Privacy</a>
           <a href="/legal/terms-of-service.html">Terms</a>
-          <button type="button" class="site-footer__contact" data-open-lead data-intent="demo">Contact</button>
+          <button type="button" class="site-footer__contact" data-open-lead data-intent="review">Contact</button>
         </span>
       </div>
     </footer>
@@ -1060,8 +556,8 @@
     <dialog id="lead-modal" class="modal" aria-labelledby="lead-title">
       <form method="dialog" class="modal__form" id="lead-form" novalidate>
         <button type="button" class="modal__close" data-close-lead aria-label="Close">×</button>
-        <h2 id="lead-title" class="modal__title">Book a floor demo</h2>
-        <p class="modal__sub" id="lead-sub">Tell us about your floor and robots. A deployment lead will follow up.</p>
+        <h2 id="lead-title" class="modal__title">Book an Agent Evidence Review</h2>
+        <p class="modal__sub" id="lead-sub">Tell us about the agent that's stuck in review. We follow up to learn — not to pitch.</p>
 
         <div class="field">
           <label for="lead-name">Name<span aria-hidden="true"> *</span></label>
@@ -1079,34 +575,39 @@
           <label for="lead-role">Role</label>
           <select id="lead-role" name="role">
             <option value="">Select…</option>
-            <option>Operations</option>
-            <option>Robotics / engineering</option>
+            <option>Engineering / platform</option>
+            <option>Security / review</option>
+            <option>Product</option>
             <option>Executive</option>
             <option>Investor</option>
             <option>Other</option>
           </select>
         </div>
         <div class="field">
-          <label for="lead-floor">Floor &amp; robots</label>
-          <textarea id="lead-floor" name="floor" rows="3" placeholder="e.g. fulfillment floor, 4 AMRs, ROS 2"></textarea>
+          <label for="lead-agent">What agent are you trying to ship, and what does it touch?</label>
+          <textarea id="lead-agent" name="agent" rows="2" placeholder="e.g. an internal-ops agent that can write to production and issue refunds"></textarea>
         </div>
-        <input type="hidden" name="intent" id="lead-intent" value="demo" />
+        <div class="field">
+          <label for="lead-blocker">What's blocking approval — and who signs off?</label>
+          <textarea id="lead-blocker" name="blocker" rows="2" placeholder="e.g. security can't bound the blast radius; the platform lead has to approve"></textarea>
+        </div>
+        <input type="hidden" name="intent" id="lead-intent" value="review" />
         <!-- honeypot: hidden from humans; bots that fill it are silently dropped -->
         <input type="text" name="company_website" id="lead-hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
         <p class="field__error" id="lead-error" role="alert" aria-live="assertive" hidden></p>
 
         <div class="modal__actions">
-          <button type="submit" class="btn btn--primary" id="lead-submit">Request demo</button>
+          <button type="submit" class="btn btn--primary" id="lead-submit">Request review</button>
           <button type="button" class="btn btn--ghost" data-close-lead>Cancel</button>
         </div>
-        <p class="modal__note">We send this securely to our team — a deployment lead follows up. No spam.</p>
+        <p class="modal__note">We send this securely to our team. No spam.</p>
 
         <div class="modal__success" id="lead-success" hidden>
           <p class="modal__success-mark" aria-hidden="true">✓</p>
           <h3>Thanks — request received.</h3>
-          <p id="lead-success-msg">A deployment lead will follow up at the email you provided.</p>
-          <p class="modal__success-fallback" id="lead-success-fallback" hidden>We couldn’t reach our server, so your email app will open so you can send it directly. Or email <a class="modal__success-mail" id="lead-success-mail" href="mailto:hello@originphysical.ai" data-analytics="lead_mailto_fallback">hello@originphysical.ai</a>.</p>
+          <p id="lead-success-msg">We'll follow up at the email you provided.</p>
+          <p class="modal__success-fallback" id="lead-success-fallback" hidden>We couldn't reach our server, so your email app will open so you can send it directly. Or email <a class="modal__success-mail" id="lead-success-mail" href="mailto:hello@originphysical.ai" data-analytics="lead_mailto_fallback">hello@originphysical.ai</a>.</p>
           <button type="button" class="btn btn--ghost" data-close-lead>Close</button>
         </div>
       </form>
@@ -1114,8 +615,8 @@
 
     <!-- Sticky mobile CTA — long page; keep conversion in reach -->
     <div class="mobilecta" aria-label="Quick actions">
-      <button type="button" class="btn btn--primary btn--sm" data-open-lead data-intent="demo" data-analytics="sticky_cta_demo">Book a floor demo</button>
-      <a class="btn btn--ghost btn--sm" href="#walkthrough" data-analytics="sticky_cta_workflow">Watch the workflow</a>
+      <button type="button" class="btn btn--primary btn--sm" data-open-lead data-intent="review" data-analytics="sticky_cta_review">Book an Evidence Review</button>
+      <a class="btn btn--ghost btn--sm" href="#demo" data-analytics="sticky_cta_demo">Watch the demo</a>
     </div>
 
     <script type="module" src="/src/home/enhance.ts"></script>

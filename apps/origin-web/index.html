@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=18" />
+    <link rel="stylesheet" href="/home.css?v=19" />
 
     <!-- Structured data for search engines & AI agents. NOTE: PLACEHOLDER domain email
          hello@originphysical.ai — replace with the real MX-backed company inbox. -->
@@ -152,6 +152,7 @@
             </div>
 
             <p class="hero__buyer">For the owner of a high-consequence agent — touching production, internal tools, code, PII, or money — that a reviewer can't yet approve.</p>
+            <p class="honesty-line">Prototype in private pilot. Origin is decision-support and evidence infrastructure — not production SaaS, and not compliance certification.</p>
 
             <ul class="hero__assurances" aria-label="How Origin works">
               <li>Policy gate before side effects</li>
@@ -433,12 +434,46 @@
         <div class="shell">
           <p class="kicker">Evidence</p>
           <h2 id="evidence-title">Proof lands here — as it's earned.</h2>
-          <p class="section__lede leadin">We publish evidence in rungs, and we never dress one rung up as another. What's here today is an authored specimen and a machine-emitted sandbox trace — not a customer deployment.</p>
+          <p class="section__lede leadin">We publish evidence in rungs, and we never dress one rung up as another. What's here today is an authored specimen — the machine-emitted and design-partner traces are forthcoming.</p>
           <div class="cards cards--3">
-            <article class="card"><span class="card__k">TR-A001 · here</span><h3>Authored evidence specimen</h3><p>A hand-authored example of the evidence package format — shows the shape, claims nothing about a run.</p></article>
-            <article class="card"><span class="card__k">TR-A002 · here</span><h3>Machine-emitted sandbox trace</h3><p>The console engine emitting a real hash-chained trace over a sandboxed agent action — including a blocked over-scope call.</p></article>
-            <article class="card"><span class="card__k">Next · when earned</span><h3>First design-partner trace</h3><p>Evidence from a real external workflow — published only once a design partner runs it.</p></article>
+            <article class="card"><span class="card__k">TR-A001 · available</span><h3>Authored evidence specimen</h3><p>A hand-authored example of the evidence package format — shows the shape, claims nothing about a run.</p></article>
+            <article class="card"><span class="card__k">TR-A002 · in progress</span><h3>Machine-emitted sandbox trace</h3><p>The console engine emitting a real hash-chained trace over a sandboxed agent action — not yet published.</p></article>
+            <article class="card"><span class="card__k">TR-A003 · when earned</span><h3>First design-partner trace</h3><p>Evidence from a real external workflow — published only once a design partner runs it.</p></article>
           </div>
+
+          <!-- Reviewer-facing evidence package — what a security reviewer receives -->
+          <div class="evpack" aria-label="What a reviewer receives">
+            <div class="evpack__bar"><span class="console__dot" aria-hidden="true"></span><b>Evidence package — order_8842 refund</b><span class="pill pill--sim">Authored specimen</span></div>
+            <div class="evpack__body">
+              <div class="evpack__col">
+                <span class="evpack__k">The record</span>
+                <ul>
+                  <li>Agent · <code>payments-ops-agent</code></li>
+                  <li>Proposed · <code>payments.refund $480.00 → order_8842</code></li>
+                  <li>Verdict · <code>require-approval</code> (over $250 auto-cap)</li>
+                  <li>Approved · <code>payments on-call</code> · 14s hold</li>
+                  <li>Executed · via proxy · within scope</li>
+                  <li>Over-scope retry · <code>blocked &amp; recorded</code></li>
+                </ul>
+              </div>
+              <div class="evpack__col">
+                <span class="evpack__k">The proof</span>
+                <ul>
+                  <li>Every step hash-chained &amp; tamper-evident</li>
+                  <li>Who owned the risk, and when they approved</li>
+                  <li>Exportable, replayable audit digest</li>
+                  <li class="evpack__chain">chain intact ✓ · digest sealed</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- What it does / does not prove -->
+          <div class="prooftwo">
+            <article class="card card--shows"><h3><span aria-hidden="true">✓</span> What this shows</h3><p>The shape of the evidence a reviewer receives, the loop working end to end in a sandbox, and an over-scope action being blocked and recorded.</p></article>
+            <article class="card card--not"><h3><span aria-hidden="true">—</span> What it does not show</h3><p>Not a customer deployment. Not a performance claim. No reviewer has accepted it. The specimen is authored (illustrative), not a machine-emitted run.</p></article>
+          </div>
+
           <p class="mono-note" style="margin-top: 18px;">Plumbing proof ≠ customer proof. A human-created payment link + a signed webhook proves the evidence system captures a real transaction end-to-end — the agent never touches live money, and that isn't customer revenue.</p>
           <div class="cta-row" style="margin-top: 22px;">
             <a class="btn btn--primary" href="/proof" data-analytics="evidence_proof_link">Open the evidence traces</a>
@@ -496,6 +531,26 @@
             because there was no way to bound what a system could do or prove what it did. Origin is that
             missing layer, built for agents.
           </p>
+          <p class="honesty-line" style="max-width:64ch">Origin's longer arc is physical AI — the same enforce-and-prove core, pointed at robots acting on real floors. That's the vision, not today's product.</p>
+        </div>
+      </section>
+
+      <!-- ===================== Role paths ===================== -->
+      <section class="section" id="paths" aria-labelledby="paths-title">
+        <div class="shell">
+          <p class="kicker">Find your path</p>
+          <h2 id="paths-title">Different seat, different proof.</h2>
+          <div class="cards cards--3">
+            <button type="button" class="card routecard" data-open-lead data-intent="review" data-audience="engineering" data-analytics="path_builder">
+              <span class="card__k">Builder</span><h3>Ship the agent</h3><p>You own the workflow and need it through review. Start with an Evidence Review.</p><span style="margin-top:auto;font-weight:600;font-size:13.5px;color:var(--signal-ink)">Book a review →</span>
+            </button>
+            <button type="button" class="card routecard" data-open-lead data-intent="blocker" data-audience="security" data-analytics="path_reviewer">
+              <span class="card__k">Reviewer</span><h3>Approve it safely</h3><p>You have to sign off. Tell us the blocker and see the evidence a reviewer receives.</p><span style="margin-top:auto;font-weight:600;font-size:13.5px;color:var(--signal-ink)">Send the blocker →</span>
+            </button>
+            <a class="card routecard" href="/brief" data-analytics="path_investor">
+              <span class="card__k">Investor</span><h3>See the thesis</h3><p>The evidence layer for AI agents — the one-page brief and the honest evidence ladder.</p><span style="margin-top:auto;font-weight:600;font-size:13.5px;color:var(--signal-ink)">Read the brief →</span>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -506,7 +561,7 @@
           <p class="section__lede leadin">Show us one blocked workflow. We'll map the risk, run the evidence loop, and tell you honestly whether Origin can get it through — and what the reviewer would need to see.</p>
           <div class="cta-row">
             <button type="button" class="btn btn--primary btn--lg" data-open-lead data-intent="review" data-analytics="final_primary_cta_click">Book an Agent Evidence Review</button>
-            <button type="button" class="btn btn--ghost btn--lg" data-open-lead data-intent="blocker" data-analytics="final_blocker_cta">Send us the reviewer blocker</button>
+            <a class="btn btn--ghost btn--lg" href="mailto:hello@originphysical.ai?subject=Reviewer%20blocker&amp;body=The%20agent%3A%0AWhat%20it%20touches%3A%0AThe%20blocker%3A%0AWho%20signs%20off%3A" data-analytics="final_blocker_mailto">Send us the reviewer blocker</a>
           </div>
         </div>
       </section>
@@ -584,12 +639,36 @@
           </select>
         </div>
         <div class="field">
-          <label for="lead-agent">What agent are you trying to ship, and what does it touch?</label>
-          <textarea id="lead-agent" name="agent" rows="2" placeholder="e.g. an internal-ops agent that can write to production and issue refunds"></textarea>
+          <label for="lead-agent">What agent are you trying to ship?</label>
+          <input id="lead-agent" name="agent" type="text" placeholder="e.g. an internal-ops agent that can write to production" />
         </div>
         <div class="field">
-          <label for="lead-blocker">What's blocking approval — and who signs off?</label>
-          <textarea id="lead-blocker" name="blocker" rows="2" placeholder="e.g. security can't bound the blast radius; the platform lead has to approve"></textarea>
+          <label>What does it touch?</label>
+          <div class="field__checks">
+            <label><input type="checkbox" name="touches" value="production" /> Production</label>
+            <label><input type="checkbox" name="touches" value="internal tools" /> Internal tools</label>
+            <label><input type="checkbox" name="touches" value="code" /> Code</label>
+            <label><input type="checkbox" name="touches" value="PII" /> PII</label>
+            <label><input type="checkbox" name="touches" value="money" /> Money</label>
+            <label><input type="checkbox" name="touches" value="infrastructure" /> Infrastructure</label>
+            <label><input type="checkbox" name="touches" value="other" /> Other</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="lead-blocker">What's blocking approval?</label>
+          <textarea id="lead-blocker" name="blocker" rows="2" placeholder="e.g. security can't bound the blast radius"></textarea>
+        </div>
+        <div class="field">
+          <label for="lead-signoff">Who signs off?</label>
+          <input id="lead-signoff" name="signoff" type="text" placeholder="e.g. the platform lead + security review" />
+        </div>
+        <div class="field">
+          <label for="lead-workaround">Current workaround</label>
+          <input id="lead-workaround" name="workaround" type="text" placeholder="e.g. manual approvals in Slack, ad-hoc logs" />
+        </div>
+        <div class="field">
+          <label for="lead-urgency">Urgency / launch date <span style="color:var(--steel)">(optional)</span></label>
+          <input id="lead-urgency" name="urgency" type="text" placeholder="e.g. targeting launch in 3 weeks" />
         </div>
         <input type="hidden" name="intent" id="lead-intent" value="review" />
         <!-- honeypot: hidden from humans; bots that fill it are silently dropped -->

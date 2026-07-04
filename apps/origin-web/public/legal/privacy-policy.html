@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Origin Physical AI Privacy Policy." />
+    <meta name="description" content="Origin Privacy Policy — how the evidence layer for AI agents collects and uses account, agent-workflow, tool-call, policy-decision, and audit-log data to enforce runtime policy and produce a tamper-evident evidence package." />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/legal/privacy-policy.html" />
     <meta name="theme-color" content="#faf9f5" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-    <title>Privacy Policy · Origin Physical AI</title>
+    <title>Privacy Policy · Origin</title>
     <style>
       :root { --bg:#faf9f5; --panel:#fffefb; --line:#e8e3d7; --ink:#1a1813; --soft:#42403a; --muted:#6e6a5f; --accent-ink:#1d4ed8; --sans:'Inter',system-ui,sans-serif; --display:'Space Grotesk',var(--sans); }
       * { box-sizing:border-box; }
@@ -36,64 +37,79 @@
   <body>
     <nav class="legal-nav">
       <div class="legal-nav-inner">
-        <a class="legal-brand" href="/"><span class="legal-logo">OR</span> Origin Physical AI</a>
+        <a class="legal-brand" href="/"><span class="legal-logo">OR</span> Origin</a>
         <a class="back" href="/">← Back to Origin</a>
       </div>
     </nav>
     <main>
       <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: June 25, 2026</p>
-      <p class="intro">This Privacy Policy explains what information Origin Physical AI (“we”) collects, how we use it, and the choices you have. By using Origin, you agree to this Policy.</p>
+      <p class="updated">Last updated: July 2026</p>
+      <p class="intro">This Privacy Policy explains what information Origin (“we”) collects, how we use it, and the choices you have. Origin is the evidence layer for AI agents. It enforces runtime policy before an AI agent takes a side effect, routes every tool call through a controlled proxy, and produces a tamper-evident, hash-chained evidence package showing what an agent did, why it was allowed, and who owned the risk — so teams can get high-consequence agents through security review. Origin is currently available through a founder-led pilot program. The prototype runs; it is not production SaaS. By using Origin, you agree to this Policy.</p>
 
       <h2>Information we collect</h2>
       <ul>
         <li><strong>Account information</strong> — your name and email when you create an account, and authentication data handled by our identity provider.</li>
-        <li><strong>Content you submit</strong> — sites, floor plans, and configurations you upload to evaluate.</li>
-        <li><strong>Agent governance data</strong> — the grants, session keys, and approval decisions you create, and an append-only audit log of credential-broker activity.</li>
-        <li><strong>Usage and device data</strong> — basic logs, IP address, and diagnostics needed to operate and secure the Service.</li>
+        <li><strong>Agent workflow metadata</strong> — the agent workflows, policies, scopes, budgets, and approval rules you configure so the Service can enforce what an agent is allowed to do.</li>
+        <li><strong>Tool-call requests and responses</strong> — the proposed and executed tool calls that pass through the controlled proxy, including their parameters and results, so the Service can evaluate and record each side effect.</li>
+        <li><strong>Policy decisions</strong> — the verdict returned for each proposed action (allow, cap, require-approval, deny, or pause) and the inputs that produced it.</li>
+        <li><strong>Approval metadata</strong> — the named risk owner, the approval or denial, and the time it was recorded when a risky action is escalated to a human.</li>
+        <li><strong>Audit logs</strong> — the append-only, hash-chained record of every proposal, verdict, approval, action, block, and exception that forms the evidence package.</li>
+        <li><strong>Customer-system identifiers</strong> — references to the tools, systems, and resources your agents connect to (for example resource names or account identifiers) needed to enforce scope and produce the record.</li>
+        <li><strong>Usage and security logs</strong> — basic logs, IP address, and diagnostics needed to operate and secure the Service, plus aggregated usage analytics.</li>
+        <li><strong>Contact and lead information</strong> — details you submit through a form or an evidence-review request, such as your name, work email, company, role, and the workflow you describe.</li>
       </ul>
-
-      <h2>What we deliberately do <em>not</em> collect</h2>
-      <div class="callout">
-        Origin does not store your raw passwords, seed phrases, private keys, or long-lived third-party credentials, and never exposes them to agents. The credential broker holds only references and issues opaque, scoped, time-limited handles. Wallets are linked by public address (and proof of ownership); we hold no signing keys. The audit log stores redacted metadata, not secrets.
-      </div>
 
       <h2>How we use information</h2>
       <ul>
-        <li>To provide, maintain, and secure the Service and your account.</li>
-        <li>To enforce the scoped, revocable authority you grant to agents and to record an audit trail.</li>
+        <li>To enforce runtime policy — evaluating each proposed agent action and returning a deterministic verdict before any side effect occurs.</li>
+        <li>To route every tool call through the controlled proxy, which is the only path to a side effect, and to record what passed through it.</li>
+        <li>To produce the tamper-evident, hash-chained evidence package showing what an agent did, why it was allowed, and who owned the risk.</li>
+        <li>To operate, maintain, and secure the Service and your account.</li>
+        <li>To surface human-in-the-loop controls — human approval for risky actions, scope and budget limits, and kill switches to pause a workflow or revoke a scope.</li>
         <li>To communicate with you about your account, security, and changes to the Service.</li>
         <li>To detect, prevent, and respond to abuse, fraud, and security incidents.</li>
       </ul>
 
+      <h2>Human-in-the-loop controls</h2>
+      <p>Risky actions do not execute silently. When a policy decision returns require-approval, the action is held at the proxy and routed to a named risk owner, whose approval or denial is recorded in the audit log alongside the action. Scope and budget limits bound blast radius before an action runs, and a kill switch can pause a workflow or revoke a scope without redeploying the agent. These controls are part of the record: the evidence package reflects who owned the risk and what they decided.</p>
+
+      <h2>Append-only, hash-chained audit logs</h2>
+      <p>The audit log is append-only and hash-chained, so the record of what the Service evaluated, allowed, and recorded is tamper-evident and replayable. Its purpose is to provide evidence and accountability for each agent action. Audit access is scoped to the workflow it belongs to and subject to the applicable controls.</p>
+
       <h2>How we share information</h2>
-      <p>We do not sell your personal information. We share it only with: (a) service providers that help us run the Service (for example, hosting, identity, and infrastructure providers) under appropriate confidentiality and security obligations; (b) authorities when required by law; and (c) a successor in the event of a merger or acquisition, subject to this Policy.</p>
+      <p>We do not sell your personal information. We share it only with: (a) sub-processors that help us run the Service (for example, hosting, identity, and infrastructure providers) under appropriate confidentiality and security obligations; (b) authorities when required by law; and (c) a successor in the event of a merger or acquisition, subject to this Policy. A current list of sub-processors is available on request and is referenced in the Data Processing Agreement (DPA).</p>
 
       <h2>Security</h2>
-      <p>We use technical and organizational measures designed to protect your information, including least-privilege access, scoped tokens, encryption in transit, append-only audit logging, and fail-closed enforcement at the credential broker. No method of transmission or storage is perfectly secure.</p>
+      <p>We use technical and organizational measures designed to protect your information, including least-privilege (need-to-know) access, encryption in transit, and append-only, hash-chained audit logs of policy and tool-call activity. Access to workflow data and audit logs is scoped to the workflow it belongs to and subject to the applicable controls. Origin is responsible for the software controls it provides; you remain responsible for the agents and tools you connect. No method of transmission or storage is perfectly secure. A DPA and a security review are available on request.</p>
 
       <h2>Data retention and deletion</h2>
-      <p>We retain information for as long as your account is active or as needed to provide the Service and meet legal obligations. You can delete your credential data from your account’s Danger Zone at any time; the append-only audit log is retained as the record of that deletion. To request removal of your account, contact us.</p>
+      <p>We retain information for the life of the engagement and as required by law. Audit logs are append-only and may be retained as the evidentiary record of policy and tool-call activity. Retention windows applied during the pilot are defaults; the finalized retention terms are set in the DPA. To request removal of your account or associated data, contact us using the details below.</p>
 
       <h2>Your rights</h2>
       <p>Depending on your location, you may have rights to access, correct, export, or delete your personal information, and to object to or restrict certain processing. To exercise these rights, contact us using the details below. You may also have the right to lodge a complaint with your local data-protection authority.</p>
 
-      <h2>Cookies</h2>
-      <p>We use only essential cookies and local storage needed to keep you signed in and operate the Service. We do not use non-essential tracking or advertising cookies.</p>
+      <h2>Cookies and analytics</h2>
+      <p>We use only essential cookies and local storage needed to keep you signed in and operate the Service. We also use Google Analytics configured in Consent Mode v2 with <code>analytics_storage</code> denied by default, so no non-essential analytics or advertising cookies are set unless you grant consent.</p>
 
       <h2>Children</h2>
       <p>The Service is not directed to children under 16, and we do not knowingly collect their personal information.</p>
+
+      <h2>Origin's role</h2>
+      <div class="callout">
+        <p style="margin:0">Origin provides policy enforcement, evidence, and decision-support records — not legal or compliance certification. We use “tamper-evident” (not “tamper-proof”) and “review-ready” (not “reviewer-accepted”). The customer remains responsible for the agents and tools they connect and for the decisions made using Origin's records.</p>
+      </div>
 
       <h2>Changes</h2>
       <p>We may update this Policy. If we make material changes, we will take reasonable steps to notify you and update the “Last updated” date above.</p>
 
       <h2>Contact</h2>
-      <p>Questions about privacy? Reach us at <a href="mailto:privacy@origin.ai">privacy@origin.ai</a> or through the contact section of our website.</p>
+      <!-- PLACEHOLDER domain email — replace with the real MX-backed company inbox; lead delivery does NOT depend on this. -->
+      <p>Questions about privacy? Reach us at <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a> or through the contact section of our website.</p>
     </main>
     <footer>
       <a href="/legal/terms-of-service.html">Terms of Service</a>
       <a href="/">Home</a>
-      <span>© 2026 Origin Physical AI</span>
+      <span>© 2026 Origin</span>
     </footer>
   </body>
 </html>

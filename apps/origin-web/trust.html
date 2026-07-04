@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Analytics with Consent Mode v2 — analytics_storage denied by default,
+         so no cookies are set until (optional) consent is granted. This keeps the
+         privacy policy's "no non-essential tracking cookies" statement true. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-75QBVCL212"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied'
+      });
+      gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
+    </script>
+
+    <title>Trust &amp; controls — Origin, the evidence layer for AI agents</title>
+    <meta
+      name="description"
+      content="Origin trust center for security and procurement review: the data we collect, telemetry scope, retention defaults, access control, encryption in transit, hash-chained tamper-evident audit logs, incident escalation, the customer/Origin responsibility split, and the security packet available by request. Decision-support and evidence infrastructure — not legal or compliance certification."
+    />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/trust" />
+    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/home.css?v=18" />
+
+    <style>
+      /* Local helpers layered on top of the shared design system — tables only. */
+      .trust-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14.5px; }
+      .trust-table th, .trust-table td { text-align: left; vertical-align: top; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+      .trust-table th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--signal-ink); font-weight: 700; white-space: nowrap; }
+      .trust-table td { color: var(--ink-soft); }
+      .trust-table td b { color: var(--ink); font-weight: 600; }
+      .trust-table tr:last-child td { border-bottom: none; }
+      .trust-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .trust-status { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .03em; padding: 2px 8px; border-radius: 999px; background: var(--signal-wash); color: var(--signal-ink); border: 1px solid #bcccff; white-space: nowrap; }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- ===================== SiteHeader ===================== -->
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/" aria-label="Origin — home">
+          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <span class="brand__name">Origin</span>
+        </a>
+
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="/#demo">Demo</a>
+          <a href="/#product">Product</a>
+          <a href="/#evidence">Evidence</a>
+          <a href="/#offer">Review</a>
+          <a href="/#trust">Trust</a>
+          <a href="/brief">Brief</a>
+          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
+        </nav>
+
+        <div class="site-header__cta">
+          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
+          <a class="btn btn--primary btn--sm" href="/#offer" data-analytics="nav_cta_click">
+            Book an Agent Evidence Review
+          </a>
+          <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ===================== Intro ===================== -->
+      <section class="section" aria-labelledby="trust-title">
+        <div class="shell">
+          <p class="kicker">Trust &amp; controls</p>
+          <h1 id="trust-title">Built for reviewers, not just builders.</h1>
+          <p class="section__lede leadin">
+            This page states Origin's posture plainly for security and procurement review. Origin is
+            decision-support and evidence infrastructure — it enforces runtime policy on AI agents, routes
+            side effects through a controlled proxy, and produces a tamper-evident evidence package. It is
+            <b>not</b> legal or compliance certification, and it does not guarantee approval.
+          </p>
+          <p class="mono-note" style="margin-top: 14px;">
+            The prototype runs; it is not production SaaS. We use "tamper-evident," not "tamper-proof," and
+            "review-ready," not "reviewer-accepted." Specifics below are pilot defaults, finalized per
+            engagement in the Data Processing Agreement (DPA).
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== Data & telemetry ===================== -->
+      <section class="section section--tint" id="data" aria-labelledby="data-title">
+        <div class="shell">
+          <p class="kicker">What Origin handles</p>
+          <h2 id="data-title">Data we collect, and the telemetry we record.</h2>
+          <p class="section__lede leadin">
+            Scoped to what an engagement needs to enforce policy and produce evidence — not repurposed
+            across customers.
+          </p>
+          <div class="two-col">
+            <div class="card">
+              <span class="card__k">Data we collect</span>
+              <ul class="deflist">
+                <li><span class="dl-mark">→</span><span><b>Account details</b> — the people and org set up to use Origin.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Agent workflow metadata</b> — the definition of the workflow under review.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Tool-call requests &amp; responses</b> — proposed side effects and their results.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Policy decisions</b> — the verdict on each proposed action.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Approval metadata</b> — who approved a risky action, and when.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Audit logs</b> — the hash-chained record of the loop.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Customer-system identifiers</b> — references to the tools and systems the agent touches.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Usage &amp; security logs</b> — operational and security telemetry for the service.</span></li>
+              </ul>
+            </div>
+            <div class="card card--tint">
+              <span class="card__k">Telemetry scope</span>
+              <p style="margin-bottom: 4px;">Each run of the loop records a bounded set of events:</p>
+              <ul class="deflist">
+                <li><span class="dl-mark">✓</span><span><b>Proposal</b> — the action an agent asks to take.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Verdict</b> — allow · cap · require-approval · deny · pause.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Proxy execution</b> — the side effect run through the controlled path.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Block</b> — an over-scope or denied action, recorded.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Approval</b> — the risk owner's sign-off.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Exception</b> — errors and anomalies in the run.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Audit digest</b> — the hash-chained seal over the run.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Retention ===================== -->
+      <section class="section" id="retention" aria-labelledby="retention-title">
+        <div class="shell">
+          <p class="kicker">Retention</p>
+          <h2 id="retention-title">How long each class of data is kept.</h2>
+          <p class="section__lede leadin">
+            Pilot defaults, finalized in the DPA. Placeholders below are marked and confirmed per engagement.
+          </p>
+          <div class="card" style="margin-top: 24px;">
+            <div class="trust-scroll">
+              <table class="trust-table">
+                <thead>
+                  <tr><th scope="col">Data class</th><th scope="col">Default retention</th><th scope="col">Notes</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><b>Audit &amp; evidence package</b></td>
+                    <td>Retained for the engagement <span class="trust-status">pilot default, finalized in the DPA</span></td>
+                    <td>The hash-chained record of what the agent did and why it was allowed. Retained so evidence stays reviewable; archived or deleted per the DPA at engagement end.</td>
+                  </tr>
+                  <tr>
+                    <td><b>Raw tool-call payloads</b></td>
+                    <td>Minimized <span class="trust-status">pilot default, finalized in the DPA</span></td>
+                    <td>Request/response bodies for side effects. Kept only as long as needed to produce and verify the evidence package; can be redacted or shortened per engagement.</td>
+                  </tr>
+                  <tr>
+                    <td><b>Contact &amp; lead data</b></td>
+                    <td>Until deletion is requested</td>
+                    <td>Information you submit to book a review. Deletion honored on request; the audit log retains the record of the deletion itself.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <p class="mono-note" style="margin-top: 16px;">
+            Deletion requests are honored at engagement end. The audit log retains the record of the
+            deletion — not the deleted payload.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== Controls ===================== -->
+      <section class="section section--tint" id="controls" aria-labelledby="controls-title">
+        <div class="shell">
+          <p class="kicker">Security controls</p>
+          <h2 id="controls-title">Access, encryption, audit, and escalation.</h2>
+          <div class="cards cards--2">
+            <article class="card">
+              <span class="card__k">Access control</span>
+              <h3>Least-privilege, scoped &amp; logged</h3>
+              <p>Need-to-know access scoped per engagement. Administrative access is limited and recorded. Secrets are held server-side and are never exposed to agents.</p>
+            </article>
+            <article class="card">
+              <span class="card__k">Encryption / transport</span>
+              <h3>TLS in transit</h3>
+              <p>Traffic is encrypted in transit (HTTPS/TLS). Production credentials for connected tools are resolved server-side, never handed to the agent.</p>
+            </article>
+            <article class="card">
+              <span class="card__k">Audit logs</span>
+              <h3>Append-only, hash-chained, tamper-evident</h3>
+              <p>Every proposal, verdict, approval, action, block, and exception is written to an append-only, hash-chained record. Tampering breaks the chain and is detectable — it is tamper-evident, not tamper-proof.</p>
+            </article>
+            <article class="card">
+              <span class="card__k">Incident escalation</span>
+              <h3>Uncertainty routes to a human</h3>
+              <p>Over-scope calls, low-confidence verdicts, and anomalies are held for a named risk owner rather than executed. Material incidents are handled under the engagement's agreed process.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Responsibility split ===================== -->
+      <section class="section" id="responsibility" aria-labelledby="responsibility-title">
+        <div class="shell">
+          <p class="kicker">Responsibility</p>
+          <h2 id="responsibility-title">Who owns what.</h2>
+          <p class="section__lede leadin">
+            Origin provides the enforcement and evidence layer. You stay in control of your agents and the
+            systems they touch.
+          </p>
+          <div class="two-col">
+            <div class="card">
+              <span class="card__k">You (the customer) own</span>
+              <ul class="deflist">
+                <li><span class="dl-mark">→</span><span>The agents you connect and what they're allowed to attempt.</span></li>
+                <li><span class="dl-mark">→</span><span>The tools and systems the agent touches.</span></li>
+                <li><span class="dl-mark">→</span><span>The business decisions the workflow drives.</span></li>
+                <li><span class="dl-mark">→</span><span>Your reviewers and who signs off on risky actions.</span></li>
+                <li><span class="dl-mark">→</span><span>Your production systems and operational safety.</span></li>
+              </ul>
+            </div>
+            <div class="card card--tint">
+              <span class="card__k">Origin provides</span>
+              <ul class="deflist">
+                <li><span class="dl-mark">✓</span><span>Runtime policy enforcement on proposed actions.</span></li>
+                <li><span class="dl-mark">✓</span><span>The controlled proxy path — the only route to a side effect.</span></li>
+                <li><span class="dl-mark">✓</span><span>Append-only, hash-chained audit records.</span></li>
+                <li><span class="dl-mark">✓</span><span>The exportable evidence package for review.</span></li>
+              </ul>
+            </div>
+          </div>
+          <p class="mono-note" style="margin-top: 18px;">
+            Origin is not a custodian of your agents, your connected tools, or your production systems. It
+            enforces and records; the customer stays responsible for what they connect.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== Security packet ===================== -->
+      <section class="section section--tint" id="packet" aria-labelledby="packet-title">
+        <div class="shell">
+          <p class="kicker">For procurement</p>
+          <h2 id="packet-title">Security packet, by request.</h2>
+          <p class="section__lede leadin">
+            For vendor security and procurement review, we assemble a packet per engagement. Availability
+            is marked below — some items are pilot-specific and confirmed for your deployment.
+          </p>
+          <div class="card" style="margin-top: 24px;">
+            <div class="trust-scroll">
+              <table class="trust-table">
+                <thead>
+                  <tr><th scope="col">Item</th><th scope="col">What it covers</th><th scope="col">Availability</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><b>DPA</b></td><td>Data Processing Agreement, including finalized retention terms.</td><td><span class="trust-status">by request</span></td></tr>
+                  <tr><td><b>Subprocessor list</b></td><td>Infrastructure, hosting, and identity providers under confidentiality &amp; security obligations.</td><td><span class="trust-status">by request</span></td></tr>
+                  <tr><td><b>Retention schedule</b></td><td>Per-class retention finalized for your deployment.</td><td><span class="trust-status">pilot-specific</span></td></tr>
+                  <tr><td><b>Security checklist</b></td><td>A written summary of the controls on this page for your review process.</td><td><span class="trust-status">by request</span></td></tr>
+                  <tr><td><b>Incident contact</b></td><td>The escalation path and named contact for material incidents.</td><td><span class="trust-status">by request</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="cta-row" style="margin-top: 26px;">
+            <a class="btn btn--primary" href="/#offer" data-analytics="trust_review_cta_click">Book an Agent Evidence Review</a>
+            <a class="btn btn--ghost" href="mailto:hello@originphysical.ai?subject=Origin%20security%20packet%20request" data-analytics="trust_packet_request">Request the security packet</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Closing note ===================== -->
+      <section class="section" id="closing" aria-labelledby="closing-title">
+        <div class="shell">
+          <p class="kicker">The bottom line</p>
+          <h2 id="closing-title">Vendor-neutral, exportable, honest about its limits.</h2>
+          <p class="section__lede leadin">
+            Origin runs across clouds and model providers, and the evidence package is yours to export and
+            hand to a reviewer. It is decision-support and evidence infrastructure — <b>not</b> a compliance
+            certification, a legal defense, or a guarantee of approval. Tamper-evident, not tamper-proof.
+          </p>
+          <div class="cta-row" style="margin-top: 24px;">
+            <a class="btn btn--primary" href="/#offer" data-analytics="trust_closing_cta_click">Book an Agent Evidence Review</a>
+            <a class="btn btn--ghost" href="/brief" data-analytics="trust_brief_link">Read the one-page brief</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== Footer ===================== -->
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <div class="site-footer__brand">
+          <a class="brand" href="/" aria-label="Origin — home">
+            <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
+            <span class="brand__name">Origin</span>
+          </a>
+          <p>The evidence layer for AI agents.</p>
+        </div>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <div>
+            <p class="site-footer__h">Product</p>
+            <a href="/#demo">Demo</a>
+            <a href="/#product">Product</a>
+            <a href="/proof">Evidence · traces</a>
+            <a href="/app">Evidence Console (preview)</a>
+            <a href="/#trust">Trust &amp; controls</a>
+            <a href="/trust">Trust center</a>
+          </div>
+          <div>
+            <p class="site-footer__h">Company</p>
+            <a href="/#offer">Agent Evidence Review</a>
+            <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
+            <a href="/llms.txt">For AI agents</a>
+            <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a>
+          </div>
+        </nav>
+      </div>
+      <div class="shell site-footer__legal">
+        <span>© <span data-year>2026</span> Origin</span>
+        <span class="site-footer__legal-links">
+          <a href="/legal/privacy-policy.html">Privacy</a>
+          <a href="/legal/terms-of-service.html">Terms</a>
+          <a href="/#offer">Contact</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/home/enhance.ts"></script>
+  </body>
+</html>

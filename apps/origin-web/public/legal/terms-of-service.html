@@ -4,12 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Origin Physical AI Terms of Service." />
+    <meta name="description" content="Origin — the evidence layer for AI agents. Terms of Service governing use of the runtime policy enforcement, tool-call proxy, and tamper-evident evidence package." />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/legal/terms-of-service.html" />
+    <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#faf9f5" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-    <title>Terms of Service · Origin Physical AI</title>
+    <title>Terms of Service · Origin</title>
     <style>
       :root { --bg:#faf9f5; --panel:#fffefb; --line:#e8e3d7; --ink:#1a1813; --soft:#42403a; --muted:#6e6a5f; --accent-ink:#1d4ed8; --sans:'Inter',system-ui,sans-serif; --display:'Space Grotesk',var(--sans); }
       * { box-sizing:border-box; }
@@ -36,63 +38,71 @@
   <body>
     <nav class="legal-nav">
       <div class="legal-nav-inner">
-        <a class="legal-brand" href="/"><span class="legal-logo">OR</span> Origin Physical AI</a>
+        <a class="legal-brand" href="/"><span class="legal-logo">OR</span> Origin</a>
         <a class="back" href="/">← Back to Origin</a>
       </div>
     </nav>
     <main>
       <h1>Terms of Service</h1>
-      <p class="updated">Last updated: June 25, 2026</p>
-      <p class="intro">These Terms of Service (“Terms”) govern your access to and use of Origin Physical AI (the “Service”). By creating an account or using the Service, you agree to these Terms. If you do not agree, do not use the Service.</p>
+      <p class="updated">Last updated: July 2026</p>
+      <p class="intro">These Terms of Service (“Terms”) govern your access to and use of Origin (the “Service”). By creating an account or using the Service, you agree to these Terms. If you do not agree, do not use the Service.</p>
 
       <h2>1. The Service</h2>
-      <p>Origin provides a robot-readiness evaluation console and a credential “control plane” that lets software agents act on your behalf under scoped, revocable authority. Features may change, and we may add, modify, or remove functionality over time.</p>
+      <p>Origin is the evidence layer for AI agents. The Service enforces runtime policy before an AI agent takes a side effect, routes tool calls through a controlled proxy path, and produces a tamper-evident, hash-chained evidence package showing what an agent did, why it was allowed, and who owned the risk. It is intended to help teams get high-consequence agents through security review and to demonstrate afterward what happened. The Service is currently offered as a prototype for private-pilot use to selected customers under a pilot engagement. It is not production SaaS. Features may change, and we may add, modify, or remove functionality over time.</p>
 
       <h2>2. Your account</h2>
       <p>You must provide accurate information and keep your credentials secure. You are responsible for activity under your account. You must be at least 16 years old (or the age of digital consent in your jurisdiction) to use the Service. Notify us promptly of any unauthorized use.</p>
 
-      <h2>3. Agents, grants, and credentials</h2>
+      <h2>3. What you own and control</h2>
       <div class="callout">
-        Origin is designed so that agents never receive your raw passwords, seed phrases, private keys, or long-lived credentials. Agents act only through scoped, time-limited, revocable grants that you create and can revoke at any time. You are responsible for the grants you issue and the agents you authorize.
+        Origin is decision-support and evidence infrastructure — not the operator of your agents, tools, or systems. You retain control at all times and are solely responsible for the agents you deploy, the tools and systems you connect, the business decisions those agents support, the reviewers who approve them, and your production environments.
       </div>
       <ul>
-        <li>You decide which agents may act, on which services, within which limits, and for how long.</li>
-        <li>Sensitive actions (including wallet signing) require your explicit, in-the-moment approval.</li>
-        <li>You are responsible for reviewing requests before approving them, and for the consequences of approvals you grant.</li>
-        <li>Origin is a control and governance layer; it is not a custodian of your funds, wallets, or third-party accounts.</li>
+        <li>You own and are responsible for the AI agents you run through the Service, including their prompts, models, and behavior.</li>
+        <li>You own and are responsible for the tools, data sources, and production systems you connect, and for the credentials granting that access.</li>
+        <li>You are responsible for defining your own policies, approval owners, scope and budget limits, and for reviewing verdicts, approvals, and exceptions.</li>
+        <li>You are responsible for the business decisions made using Origin’s outputs, and for your own compliance with laws and regulations that apply to you.</li>
+        <li>Origin does not assume custody or control of your agents, connected tools, or production systems.</li>
       </ul>
 
-      <h2>4. Acceptable use</h2>
-      <p>You agree not to: (a) use the Service unlawfully or to harm others; (b) attempt to bypass the Service’s security, rate limits, or access controls; (c) use the Service to gain unauthorized access to any system, account, or data; (d) reverse engineer or interfere with the Service except as permitted by law; or (e) use the Service to develop a competing product by copying it.</p>
+      <h2>4. What Origin provides — and what it does not</h2>
+      <p>Origin provides policy enforcement, the controlled tool-call proxy path, audit records, and evidence infrastructure. These are decision-support tools. Origin does <b>not</b> provide legal advice, compliance certification, or a guarantee that any reviewer, auditor, or authority will approve an agent or workflow. Evidence packages are “review-ready,” meaning built to be handed to a reviewer — not “reviewer-accepted.” Records are “tamper-evident,” meaning tampering is detectable — not “tamper-proof.” Nothing in the Service constitutes a warranty of security, safety, correctness, or fitness for a particular purpose.</p>
 
-      <h2>5. Third-party services</h2>
-      <p>The Service integrates with third parties (for example, identity, vault, and wallet providers). Your use of those services is governed by their terms, and we are not responsible for them.</p>
+      <h2>5. Acceptable use</h2>
+      <p>You agree not to: (a) use the Service unlawfully or to harm others; (b) attempt to bypass the Service’s policy enforcement, proxy path, security, rate limits, or access controls, or to route agent side effects around the controlled proxy; (c) use the Service to gain unauthorized access to any system, account, or data; (d) connect agents or tools you are not authorized to operate; (e) reverse engineer or interfere with the Service except as permitted by law; or (f) use the Service to develop a competing product by copying it.</p>
 
-      <h2>6. Intellectual property</h2>
-      <p>Origin and its content are owned by us and our licensors. We grant you a limited, non-exclusive, non-transferable license to use the Service. You retain ownership of content you submit; you grant us a license to host and process it to operate the Service.</p>
+      <h2>6. No live agent-initiated money movement</h2>
+      <p>The Service is a prototype and does not permit an AI agent to autonomously move money. Any payment shown in a demonstration is a human-created payment link confirmed by a signed webhook; the agent never touches live funds, and any amount so captured is not customer revenue. You must not rely on the Service to authorize, initiate, or settle financial transactions on your behalf.</p>
 
-      <h2>7. Disclaimers</h2>
-      <p>The Service is provided “as is” and “as available,” without warranties of any kind, to the maximum extent permitted by law. Readiness scores and evaluations are decision-support tools, not certifications or guarantees of safety, performance, or fitness for a particular purpose.</p>
+      <h2>7. Third-party services and connected tools</h2>
+      <p>The Service integrates with third-party software, model providers, cloud platforms, and the internal tools and systems you connect. Your use of those systems is governed by their own terms, and we are not responsible for their operation, availability, security, or outputs.</p>
 
-      <h2>8. Limitation of liability</h2>
-      <p>To the maximum extent permitted by law, Origin and its affiliates will not be liable for any indirect, incidental, special, consequential, or punitive damages, or for lost profits, revenues, data, or goodwill. Our aggregate liability for any claim relating to the Service is limited to the greater of the amounts you paid us in the 12 months before the claim or USD $100.</p>
+      <h2>8. Intellectual property</h2>
+      <p>Origin and its content are owned by us and our licensors. We grant you a limited, non-exclusive, non-transferable license to use the Service. You retain ownership of content you submit, including your policies, agent configurations, and traces; you grant us a license to host and process it to operate the Service.</p>
 
-      <h2>9. Termination</h2>
+      <h2>9. Disclaimers</h2>
+      <p>The Service is provided “as is” and “as available,” without warranties of any kind, to the maximum extent permitted by law. It is an early-stage prototype and is not production SaaS. Policy verdicts, proxy behavior, audit records, and evidence packages are decision-support outputs for supervising agent work; they are not certifications, legal or compliance advice, or guarantees of approval, safety, performance, or fitness for a particular purpose.</p>
+
+      <h2>10. Limitation of liability</h2>
+      <p>To the maximum extent permitted by law, Origin and its affiliates will not be liable for any indirect, incidental, special, consequential, or punitive damages, or for lost profits, revenues, data, or goodwill, including any loss arising from an agent action, a policy decision, or reliance on an evidence package. Our aggregate liability for any claim relating to the Service is limited to the greater of the amounts you paid us in the 12 months before the claim or USD $100.</p>
+
+      <h2>11. Termination</h2>
       <p>You may stop using the Service and delete your account at any time. We may suspend or terminate access if you violate these Terms or to protect the Service or other users.</p>
 
-      <h2>10. Changes</h2>
+      <h2>12. Changes</h2>
       <p>We may update these Terms. If we make material changes, we will take reasonable steps to notify you. Your continued use after changes take effect constitutes acceptance.</p>
 
-      <h2>11. Governing law</h2>
-      <p>These Terms are governed by the laws of the jurisdiction in which Origin is established, without regard to conflict-of-laws rules. Disputes will be resolved in the courts of that jurisdiction, unless applicable law provides otherwise.</p>
+      <h2>13. Governing law</h2>
+      <p>These Terms are governed by the laws of the jurisdiction in which Origin is established, without regard to conflict-of-laws rules. Disputes will be resolved in the courts of that jurisdiction, unless applicable law provides otherwise. (Governing-law placeholder — to be finalized with the operating entity’s jurisdiction.)</p>
 
-      <h2>12. Contact</h2>
-      <p>Questions about these Terms? Reach us at <a href="mailto:legal@origin.ai">legal@origin.ai</a> or through the contact section of our website.</p>
+      <h2>14. Contact</h2>
+      <!-- PLACEHOLDER domain email — replace with the real MX-backed company inbox; lead delivery does NOT depend on this. -->
+      <p>Questions about these Terms? Reach us at <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a> or through the contact section of our website.</p>
     </main>
     <footer>
       <a href="/legal/privacy-policy.html">Privacy Policy</a>
       <a href="/">Home</a>
-      <span>© 2026 Origin Physical AI</span>
+      <span>© 2026 Origin</span>
     </footer>
   </body>
 </html>

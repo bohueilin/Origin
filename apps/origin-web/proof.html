@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evidence traces — the honest ladder — Origin</title>
+    <meta
+      name="description"
+      content="Origin publishes evidence in rungs and never dresses one up as another. Available now: TR-A001, an authored evidence-package specimen that shows the format. The machine-emitted sandbox trace and the first design-partner trace are forthcoming."
+    />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/proof" />
+    <meta name="theme-color" content="#f6f5f2" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Origin" />
+    <meta property="og:url" content="https://origin-physical-ai.pages.dev/proof" />
+    <meta property="og:title" content="Evidence traces — the honest ladder — Origin" />
+    <meta property="og:description" content="Evidence in rungs, never dressed up as another. Available now: TR-A001, an authored evidence-package specimen showing the format. Machine-emitted and design-partner traces are forthcoming." />
+    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/home.css?v=18" />
+    <style>
+      /* Standalone page shell — same pattern as brief.html */
+      .proof { max-width: 960px; margin: 0 auto; padding: 32px 24px 72px; }
+      .proof__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+      .proof__brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); }
+      .proof__brand img { width: 30px; height: 30px; border-radius: 7px; }
+      .proof__brand b { font-family: var(--font-display); font-size: 20px; }
+      .proof__brand span { color: var(--steel); font-size: 14px; }
+      .proof__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+      .proof h1 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.02em; margin: 18px 0 10px; }
+      .proof__lede { font-size: 17px; color: var(--ink-soft); max-width: 66ch; line-height: 1.6; }
+      .proof__lede b { color: var(--ink); }
+      .proof section { margin-top: 44px; }
+      .proof h2 { font-size: clamp(21px, 2.8vw, 27px); letter-spacing: -0.015em; margin: 0 0 6px; }
+      .proof__sub { font-size: 14.5px; color: var(--steel); max-width: 64ch; line-height: 1.55; margin-top: 4px; }
+
+      /* Honest label — amber, unmissable */
+      .proof__label { margin-top: 14px; background: #fbf3e0; border: 1px solid #ecd9ad; color: #8a5600; border-radius: 10px; padding: 11px 16px; font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+
+      /* The ladder — three rung cards */
+      .rungs { margin-top: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      @media (max-width: 820px) { .rungs { grid-template-columns: 1fr; } }
+      .rung { background: var(--paper-2); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--sh-sm); display: flex; flex-direction: column; }
+      .rung--now { border-color: #bcccff; }
+      .rung__badge { align-self: flex-start; font-family: var(--font-display); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; border-radius: 999px; padding: 4px 11px; margin-bottom: 12px; }
+      .rung__badge--now { color: var(--signal-ink); background: var(--signal-wash); border: 1px solid #bcccff; }
+      .rung__badge--wip { color: #8a5600; background: #fbf3e0; border: 1px solid #ecd9ad; }
+      .rung__badge--soon { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
+      .rung__id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--steel); }
+      .rung h3 { font-size: 17px; margin: 6px 0 8px; letter-spacing: -0.01em; }
+      .rung p { font-size: 14px; color: var(--ink-soft); line-height: 1.55; margin: 0; }
+      .rung__foot { margin-top: auto; padding-top: 14px; }
+      .rung__link { font-size: 13.5px; font-weight: 600; color: var(--signal-ink); text-decoration: underline; text-underline-offset: 2px; }
+
+      /* Specimen fields — dl of the agent-evidence record */
+      .spec { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .spec > div { background: var(--paper-2); border: 1px solid var(--line); border-radius: 10px; padding: 13px 16px; box-shadow: var(--sh-sm); }
+      .spec div.is-wide { grid-column: 1 / -1; }
+      .spec dt { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--steel); margin-bottom: 3px; }
+      .spec dd { margin: 0; font-size: 14.5px; color: var(--ink); line-height: 1.5; }
+      .spec dd b { color: var(--ink); }
+      .spec .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; }
+      @media (max-width: 700px) { .spec { grid-template-columns: 1fr; } }
+
+      /* Illustrative JSON snippet */
+      .spec-json { margin-top: 16px; }
+      .spec-json h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--steel); margin-bottom: 8px; }
+      .spec-json pre { margin: 0; overflow-x: auto; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; box-shadow: var(--sh-sm); }
+      .spec-json code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--ink); line-height: 1.65; white-space: pre; }
+
+      /* Shows / does-not-show */
+      .proof__pair { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      @media (max-width: 700px) { .proof__pair { grid-template-columns: 1fr; } }
+      .proof__card { background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--sh-sm); }
+      .proof__card h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+      .proof__card--yes h3 { color: var(--signal-ink); }
+      .proof__card--no h3 { color: var(--steel); }
+      .proof__card ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+      .proof__card li { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+      .proof__card a { text-decoration: underline; text-underline-offset: 2px; }
+
+      /* Footer */
+      .proof__cta { margin-top: 44px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 26px; }
+      .proof__foot { margin-top: 20px; font-size: 13px; color: var(--steel); }
+      .proof__foot a { color: var(--steel); text-decoration: underline; text-underline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <main class="proof">
+      <div class="proof__top">
+        <a class="proof__brand" href="/" aria-label="Origin — home">
+          <img src="/origin-logo.png" alt="" />
+          <b>Origin</b> <span>the evidence layer for AI agents</span>
+        </a>
+        <div class="proof__actions">
+          <a class="btn btn--ghost btn--sm" href="/brief">One-page brief</a>
+          <a class="btn btn--primary btn--sm" href="/#offer">Book an Agent Evidence Review</a>
+        </div>
+      </div>
+
+      <p class="kicker" style="margin-top:22px">Evidence · traces</p>
+      <h1>Evidence traces — the honest ladder.</h1>
+      <p class="proof__lede">
+        Origin publishes evidence in rungs and never dresses one up as another. What is available
+        <b>now</b> is an <b>authored specimen</b> — it shows the exact format of an evidence package,
+        with nothing claimed about a real run. The machine-emitted sandbox trace and the first
+        design-partner trace are <b>forthcoming</b>, and this page will not show either until it can
+        do so honestly.
+      </p>
+
+      <!-- ═══════════ The ladder — three rungs ═══════════ -->
+      <section id="ladder" aria-label="The evidence ladder">
+        <p class="kicker">The ladder</p>
+        <h2>Three rungs, labeled for exactly what they are.</h2>
+        <p class="proof__sub">Each rung is a different kind of evidence. We only publish a rung once it exists — and we never relabel a lower rung as a higher one.</p>
+
+        <div class="rungs">
+          <article class="rung rung--now">
+            <span class="rung__badge rung__badge--now">Available now</span>
+            <span class="rung__id">TR-A001</span>
+            <h3>Authored evidence specimen</h3>
+            <p>A hand-authored example of the evidence-package format — it shows the <b>shape</b> of the record. Illustrative, not a machine-emitted run.</p>
+            <div class="rung__foot"><a class="rung__link" href="#tr-a001">See the specimen ↓</a></div>
+          </article>
+
+          <article class="rung">
+            <span class="rung__badge rung__badge--wip">In progress</span>
+            <span class="rung__id">TR-A002</span>
+            <h3>Machine-emitted sandbox agent trace</h3>
+            <p>The console engine emitting a real hash-chained trace over a sandboxed agent action. <b>Not yet available</b> — we will not show trace data, JSON, or hashes for it until the engine produces them.</p>
+            <div class="rung__foot"><span class="rung__id">Forthcoming</span></div>
+          </article>
+
+          <article class="rung">
+            <span class="rung__badge rung__badge--soon">When earned</span>
+            <span class="rung__id">TR-A003</span>
+            <h3>First design-partner trace</h3>
+            <p>Evidence from a real external workflow, published only once a design partner has actually run it. <b>Not yet available.</b></p>
+            <div class="rung__foot"><span class="rung__id">Forthcoming</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ═══════════ TR-A001 — authored specimen ═══════════ -->
+      <section id="tr-a001" aria-label="TR-A001 — authored evidence specimen">
+        <p class="kicker">TR-A001 · available now</p>
+        <h2>Authored evidence specimen — the format of a package.</h2>
+        <p class="proof__label">
+          Authored specimen · illustrative, not a machine-emitted run. The fields below show the
+          exact shape of an Origin evidence package; the scenario, timestamps, and hash are authored
+          to that schema — not recorded from a live agent.
+        </p>
+        <p class="proof__sub">
+          A single high-consequence action — a payments-ops agent proposing a refund above its
+          auto-cap — worked through Origin's runtime semantics: the policy verdict, the controlled
+          tool-call proxy, the human approval, a blocked over-scope action, and the audit-chain
+          digest. This is the payments-ops sample from the homepage console, written out in full.
+        </p>
+
+        <dl class="spec">
+          <div class="is-wide">
+            <dt>Agent workflow</dt>
+            <dd><b>payments-ops-agent</b> — an internal-ops agent authorized to issue customer refunds, within scope and budget.</dd>
+          </div>
+          <div>
+            <dt>Proposed action</dt>
+            <dd>Refund <b>$480.00</b> for <span class="mono">order_8842</span> via tool <span class="mono">payments.refund</span>.</dd>
+          </div>
+          <div>
+            <dt>Policy in force</dt>
+            <dd>Tool in allowlist · auto-cap <b>$250</b> · above-cap refunds require a human approval.</dd>
+          </div>
+          <div>
+            <dt>Policy verdict</dt>
+            <dd><b>require-approval</b> — $480.00 is over the $250 auto-cap, so the action is held rather than auto-executed.</dd>
+          </div>
+          <div>
+            <dt>Risk owner</dt>
+            <dd><b>payments on-call</b> — the named human who owns the decision on above-cap refunds.</dd>
+          </div>
+          <div class="is-wide">
+            <dt>Tool-call proxy event</dt>
+            <dd><span class="mono">payments.refund</span> is <b>held at the proxy</b> until approval — the agent has no path to the side effect except through the controlled proxy, so nothing moves while the verdict is <span class="mono">require-approval</span>.</dd>
+          </div>
+          <div class="is-wide">
+            <dt>Human approval</dt>
+            <dd>payments on-call <b>approves</b> the held refund. The proxy then executes exactly the approved action ($480.00 → <span class="mono">order_8842</span>) and the approval is recorded with who, when, and scope.</dd>
+          </div>
+          <div class="is-wide">
+            <dt>Blocked over-scope action</dt>
+            <dd>A second refund attempt <b>above the approved scope</b> is <b>blocked at the proxy and recorded</b> — the earlier approval covered one action only; it does not widen the agent's standing authority.</dd>
+          </div>
+          <div class="is-wide">
+            <dt>Audit-chain digest</dt>
+            <dd>Every entry — proposal, verdict, proxy hold, approval, execution, and the blocked over-scope call — is written into a <b>hash-chained, tamper-evident</b> record that can be replayed and exported as the evidence package.</dd>
+          </div>
+        </dl>
+
+        <div class="spec-json">
+          <h3>Illustrative package shape — authored / illustrative</h3>
+          <pre><code>// authored / illustrative — NOT a machine-emitted run
+{
+  "artifact": "TR-A001",
+  "kind": "authored_specimen",
+  "agent": "payments-ops-agent",
+  "events": [
+    { "t": "09:41:02", "type": "proposal",
+      "tool": "payments.refund",
+      "action": "refund $480.00 → order_8842" },
+    { "t": "09:41:02", "type": "policy_verdict",
+      "checks": { "scope": "in_allowlist", "budget": "over_auto_cap($250)" },
+      "verdict": "require-approval",
+      "risk_owner": "payments on-call" },
+    { "t": "09:41:02", "type": "proxy_event",
+      "tool": "payments.refund", "state": "held_pending_approval" },
+    { "t": "09:41:26", "type": "approval",
+      "approver": "payments on-call", "scope": "order_8842 · one action" },
+    { "t": "09:41:27", "type": "execution",
+      "via": "proxy", "result": "verified" },
+    { "t": "09:42:10", "type": "proxy_event",
+      "action": "second refund above approved scope",
+      "state": "blocked", "recorded": true }
+  ],
+  "audit_chain": { "algorithm": "sha256", "state": "illustrative_digest" }
+}</code></pre>
+          <p class="proof__sub">The values above are authored to the evidence-package schema to show its shape. The digest is a placeholder — no machine-emitted hash is claimed for TR-A001.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════ Shows / does-not-show ═══════════ -->
+      <section aria-label="What TR-A001 shows and does not show">
+        <h2>What TR-A001 shows — and what it doesn't.</h2>
+        <div class="proof__pair">
+          <div class="proof__card proof__card--yes">
+            <h3>This shows</h3>
+            <ul>
+              <li>The <b>shape</b> of an Origin evidence package — the fields a reviewer would read.</li>
+              <li>A policy verdict that <b>holds</b> a risky action instead of auto-executing it.</li>
+              <li>A named risk owner and a recorded human approval, scoped to a single action.</li>
+              <li>The tool-call proxy as the only path to the side effect — the action is held until approved.</li>
+              <li>A blocked over-scope action, recorded — approval doesn't widen standing authority.</li>
+              <li>A hash-chained, tamper-evident audit record as the format of the package.</li>
+            </ul>
+          </div>
+          <div class="proof__card proof__card--no">
+            <h3>This does not show</h3>
+            <ul>
+              <li><b>Not a customer deployment</b> — no customer site, customer data, or customer money.</li>
+              <li><b>Not a performance claim</b> — no throughput, latency, reliability, or any measured metric.</li>
+              <li><b>No reviewer-acceptance claim</b> — it is review-ready decision-support, not reviewer-accepted or certified.</li>
+              <li><b>TR-A001 is authored (illustrative), not a machine-emitted run</b> — the scenario, timestamps, and digest are written to the schema, not recorded from a live agent.</li>
+              <li>The machine-emitted sandbox trace (TR-A002) and the first design-partner trace (TR-A003) are forthcoming — not shown here.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="mono-note" style="margin-top:18px;">Origin is decision-support and evidence infrastructure. We use "tamper-evident," not "tamper-proof"; "review-ready," not "reviewer-accepted." The prototype runs; it is not production SaaS, and it does not provide legal or compliance certification.</p>
+      </section>
+
+      <div class="proof__cta">
+        <a class="btn btn--primary" href="/#offer">Book an Agent Evidence Review</a>
+        <a class="btn btn--ghost" href="/#evidence">See the evidence roadmap</a>
+        <a class="btn btn--ghost" href="/brief">Read the one-page brief</a>
+      </div>
+      <p class="proof__foot">
+        © <span id="yr">2026</span> Origin · the evidence layer for AI agents ·
+        <a href="/">Home</a> · <a href="/trust">Trust center</a> · <a href="/brief">Brief</a>
+      </p>
+    </main>
+    <script>
+      var y = document.getElementById('yr');
+      if (y) y.textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

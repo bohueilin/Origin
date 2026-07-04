@@ -1045,3 +1045,28 @@ a:hover { text-decoration: underline; }
 ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .final { text-align: center; max-width: 720px; margin-inline: auto; }
 .final .cta-row { justify-content: center; }
+
+/* Lead-form checkbox group + reviewer evidence-package card + does/doesn't cards */
+.field__checks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.field__checks label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-soft); background: var(--paper-2); border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; cursor: pointer; font-weight: 500; }
+.field__checks input { accent-color: var(--signal); }
+.evpack { margin-top: 30px; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; box-shadow: var(--sh-md); background: var(--paper-2); }
+.evpack__bar { display: flex; align-items: center; gap: 9px; padding: 12px 16px; background: var(--graphite); color: var(--on-dark); }
+.evpack__bar b { font-family: var(--font-display); font-size: 14px; }
+.evpack__bar .pill--sim { margin-left: auto; }
+.evpack__body { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0; }
+@media (max-width: 640px) { .evpack__body { grid-template-columns: 1fr; } }
+.evpack__col { padding: 18px 20px; }
+.evpack__col + .evpack__col { border-left: 1px solid var(--line); }
+@media (max-width: 640px) { .evpack__col + .evpack__col { border-left: 0; border-top: 1px solid var(--line); } }
+.evpack__k { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); }
+.evpack ul { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.evpack li { font-size: 13.5px; color: var(--ink-soft); display: flex; gap: 8px; }
+.evpack li code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--ink); }
+.evpack__chain { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--verify); }
+.prooftwo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+@media (max-width: 560px) { .prooftwo { grid-template-columns: 1fr; } }
+.prooftwo .card--shows { border-color: #bfe3d3; }
+.prooftwo .card--not { border-color: #edc6c2; background: #fdf5f4; }
+.prooftwo h3 { display: flex; align-items: center; gap: 7px; }
+.honesty-line { font-size: 13px; color: var(--steel); margin-top: 12px; }

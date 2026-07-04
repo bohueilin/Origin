@@ -13,7 +13,7 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Create your Origin account — the control plane for agent autonomy." />
+    <meta name="description" content="Access to the Origin Evidence Console is invite-only during private pilot. Origin is the evidence layer for AI agents — runtime policy enforcement plus a tamper-evident evidence package." />
     <meta name="theme-color" content="#faf9f5" />
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,10 +22,17 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <title>Create with Origin</title>
+    <title>Private pilot access — Origin Evidence Console</title>
   </head>
   <body>
     <div id="auth-root"></div>
+    <noscript>
+      <div style="max-width:420px;margin:64px auto;padding:0 24px;font-family:'Inter',system-ui,sans-serif;color:#1a1813;line-height:1.6">
+        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:28px">Private pilot access</h1>
+        <p>Origin Evidence Console access is invite-only during private pilot. Account creation is paused while we work with design partners.</p>
+        <p><a href="/#offer" style="color:#1d4ed8">Book an Agent Evidence Review</a> to request access, or email <a href="mailto:hello@originphysical.ai" style="color:#1d4ed8">hello@originphysical.ai</a>.</p>
+      </div>
+    </noscript>
     <script type="module" src="/src/auth/authMain.tsx"></script>
   </body>
 </html>

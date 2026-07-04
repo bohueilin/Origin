@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Origin — one-page brief</title>
+    <meta name="description" content="A one-page brief on Origin, the evidence layer for AI agents: runtime policy enforcement, a tool-call proxy, and a tamper-evident evidence package that helps teams get high-consequence agents through security review." />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/brief" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f6f5f2" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/home.css?v=18" />
+    <style>
+      .brief { max-width: 940px; margin: 0 auto; padding: 40px 24px 64px; }
+      .brief__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+      .brief__brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); }
+      .brief__brand img { width: 30px; height: 30px; border-radius: 7px; }
+      .brief__brand b { font-family: var(--font-display); font-size: 20px; }
+      .brief__brand span { color: var(--steel); font-size: 14px; }
+      .brief__actions { display: flex; gap: 10px; }
+      .brief h1 { font-size: clamp(26px, 4vw, 36px); letter-spacing: -0.02em; margin: 26px 0 8px; max-width: 22ch; }
+      .brief__eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--signal-ink); font-weight: 700; margin: 26px 0 0; }
+      .brief__lede { font-size: 17px; color: var(--ink-soft); max-width: 64ch; }
+      .brief__grid { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      @media (max-width: 700px) { .brief__grid { grid-template-columns: 1fr; } }
+      .brief__card { background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--sh-sm); }
+      .brief__card.is-wide { grid-column: 1 / -1; }
+      .brief__card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--signal-ink); margin-bottom: 10px; }
+      .brief__card p, .brief__card li { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+      .brief__card ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; }
+      .brief__flow { margin-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+      .brief__flow span { font-size: 12.5px; font-weight: 600; color: var(--ink); background: #fff; border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 12px; box-shadow: var(--sh-sm); }
+      .brief__flow span.is-core { color: var(--signal-ink); border-color: #bcccff; background: var(--signal-wash); }
+      .brief__flow em { color: var(--steel); font-style: normal; font-weight: 700; }
+      .brief__two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 2px; }
+      @media (max-width: 560px) { .brief__two { grid-template-columns: 1fr; } }
+      .brief__foot { margin-top: 30px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 18px; font-size: 13px; color: var(--steel); }
+      .brief__note { margin-top: 18px; font-size: 12.5px; color: var(--steel); font-style: italic; }
+      @media print {
+        .brief__actions, .site-header { display: none !important; }
+        body { background: #fff; }
+        .brief__card { box-shadow: none; break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="brief">
+      <div class="brief__top">
+        <a class="brief__brand" href="/" aria-label="Origin — home">
+          <img src="/origin-logo.png" alt="" />
+          <b>Origin</b> <span>the evidence layer for AI agents</span>
+        </a>
+        <div class="brief__actions">
+          <button type="button" class="btn btn--ghost btn--sm" onclick="window.print()">Print / Save PDF</button>
+          <a class="btn btn--primary btn--sm" href="/#offer">Book an Agent Evidence Review</a>
+        </div>
+      </div>
+
+      <p class="brief__eyebrow">The evidence layer for AI agents</p>
+      <h1>Get your agent through security review — and prove what it did.</h1>
+      <p class="brief__lede">
+        Origin enforces runtime policy before an AI agent takes a side effect, routes every tool call
+        through a controlled proxy, and produces a tamper-evident evidence package showing what happened,
+        why it was allowed, and who owned the risk.
+      </p>
+
+      <div class="brief__grid">
+        <div class="brief__card is-wide">
+          <h2>The 90-second evidence loop</h2>
+          <div class="brief__flow">
+            <span>Agent <em>proposes</em></span><em>→</em>
+            <span class="is-core">Policy gate</span><em>→</em>
+            <span>Verdict</span><em>→</em>
+            <span class="is-core">Tool-call proxy</span><em>→</em>
+            <span>Human approval</span><em>→</em>
+            <span>Bounded action</span><em>→</em>
+            <span class="is-core">Audit digest</span>
+          </div>
+          <p style="margin-top:12px">Verdict is one of allow / cap / require-approval / deny / pause. The proxy is the only path to a side effect. Flip one input and Origin blocks an over-scope action — and records the block. Sandboxed side effects; any real-money path stays human-created and human-gated.</p>
+        </div>
+
+        <div class="brief__card">
+          <h2>Who it's for</h2>
+          <p>The owner of a high-consequence AI agent that's blocked in security review because no one can bound the blast radius or prove what it did.</p>
+          <ul>
+            <li>Agents that touch production, internal tools, infrastructure, code, PII, or money-adjacent workflows.</li>
+            <li>First wedge: internal-ops / production-access agents.</li>
+          </ul>
+        </div>
+
+        <div class="brief__card">
+          <h2>What the evidence package contains</h2>
+          <ul>
+            <li>Each proposal, verdict, approval, action, block, and exception</li>
+            <li>The tool-call proxy events (the only side-effect path)</li>
+            <li>Who owned the risk, and when they approved</li>
+            <li>A hash-chained, tamper-evident audit digest — replayable and exportable</li>
+          </ul>
+        </div>
+
+        <div class="brief__card is-wide">
+          <h2>Start with an Agent Launch Evidence Review</h2>
+          <p>A founder-led engagement to get one blocked agent workflow through review — and hand you the evidence package that does it.</p>
+          <div class="brief__two">
+            <div>
+              <p style="font-weight:600;color:var(--ink);margin:6px 0 4px">You bring</p>
+              <ul>
+                <li>The agent workflow you're trying to ship</li>
+                <li>The tools and systems it touches</li>
+                <li>What's blocking approval — and who signs off</li>
+              </ul>
+            </div>
+            <div>
+              <p style="font-weight:600;color:var(--ink);margin:6px 0 4px">Origin provides</p>
+              <ul>
+                <li>A policy map for the workflow</li>
+                <li>A controlled proxy path for side effects</li>
+                <li>A demo trace + a review-ready evidence package</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="brief__card">
+          <h2>You're ready if</h2>
+          <ul>
+            <li>You have a high-consequence agent workflow</li>
+            <li>There's a real reviewer and a real blocker</li>
+            <li>There's a tool-call path we can route through a proxy</li>
+            <li>Someone owns approvals for risky actions</li>
+          </ul>
+          <p style="margin-top:10px">Not ready if any of those is missing — we'll say so.</p>
+        </div>
+
+        <div class="brief__card">
+          <h2>Proof honesty</h2>
+          <p>We publish evidence in rungs and never dress one up as another:</p>
+          <ul>
+            <li><b>TR-A001</b> — authored evidence specimen (shows the format)</li>
+            <li><b>TR-A002</b> — machine-emitted sandbox agent trace</li>
+            <li><b>TR-A003</b> — first design-partner trace, when earned</li>
+          </ul>
+          <p style="margin-top:10px">The prototype runs; it is not production SaaS. Tamper-evident, not tamper-proof. Review-ready, not reviewer-accepted.</p>
+        </div>
+      </div>
+
+      <p class="brief__note">Origin is decision-support and evidence infrastructure — not legal or compliance certification. No customers, logos, or metrics are claimed here unless independently verifiable. Send this to your security or platform lead.</p>
+
+      <div class="brief__foot">
+        <span>Origin · the evidence layer for AI agents · origin-physical-ai.pages.dev</span>
+        <span>Brief v2 · 2026-07 · <a href="/">origin-physical-ai.pages.dev</a></span>
+      </div>
+    </main>
+  </body>
+</html>

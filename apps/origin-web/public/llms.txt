@@ -1,23 +1,53 @@
-# Origin Physical AI
+# Origin
 
-> Origin Physical AI is the robot-readiness layer for Physical AI. Submit your site, build a robot brain, run it in a deterministic proving ground, and get a readiness license — graded on a finish / escalate / refuse decision model with RSL (Robot Safety Level) tiers and FAR/FRR. A deterministic oracle is the only judge; nothing is scored by an LLM.
+> Origin is the evidence layer for AI agents. It helps teams get high-consequence AI agents through security review by enforcing runtime policy before an agent takes a side effect, routing every tool call through a controlled proxy, and producing a tamper-evident evidence package that shows what the agent did, why it was allowed, and who owned the risk.
 
 ## What it is
-- A pipeline that turns a real site map into a graded readiness license for a physical-AI robot deployment.
-- Four steps: (1) submit your site, (2) build the robot brain, (3) run the proving ground, (4) get the readiness license.
-- The decision model is finish / escalate / refuse: a ready robot finishes safe work, escalates ambiguity, and refuses unsafe actions.
+- A vendor-neutral control plane that sits between an AI agent and the tools it can act on.
+- The model proposes an action; a deterministic policy engine decides allow / cap / require-approval / deny / pause; a single tool-call proxy is the only path to any side effect; every step is recorded in a hash-chained, tamper-evident audit trail.
+- The output is a review-ready evidence package a team can hand to a security reviewer or attach to a change record.
 
-## Pages
-- [Home](https://origin-physical-ai.pages.dev/): the product story and how it works.
-- [Console](https://origin-physical-ai.pages.dev/app): submit a site, build the brain, run the deterministic proving ground, and read the readiness license.
+## Who it is for
+- The owner of a high-consequence AI agent that is blocked in security review because no one can bound the blast radius or prove what the agent did.
+- First wedge: internal-ops and production-access agents — agents that touch production systems, internal tools, infrastructure, code, PII, or money-adjacent workflows.
 
-## How scoring works
-- A deterministic oracle scores every run — reproducible, no LLM judge.
-- Models are placed on RSL tiers; cost-vs-readiness is shown side by side.
-- Metrics include FAR (false-accept rate) and FRR (false-reject rate).
+## The problem it solves
+- Agents are moving from chat into action, but reviewers can't approve what they can't bound or prove.
+- Teams get agents through review today with spreadsheets, ad-hoc logging, and "trust us." Origin replaces that with enforcement before side effects and a review-ready record afterward.
 
-## Honesty
-- "Measured" numbers come from a real oracle-scored run. Everything else is explicitly labeled "projected." No fabricated metrics.
+## How it works
+- Propose: the agent proposes an action.
+- Gate: a deterministic policy engine checks scope, budget, permissions, and approval rules and returns a verdict (allow / cap / require-approval / deny / pause).
+- Proxy: the tool-call proxy is the only path to a side effect — the agent can't reach around it.
+- Approve: risky actions route to a named risk owner; the approval is recorded.
+- Prove: every proposal, verdict, approval, action, block, and exception lands in a hash-chained audit trail and a sealed, replayable audit digest.
 
-## Contact
-- For access or questions: bohueilin@gmail.com
+## Product components
+- Policy engine (runtime enforcement)
+- Tool-call proxy (single side-effect path)
+- Human approval workflow (named risk owner)
+- Budget / scope / blast-radius limits
+- Kill switches
+- Hash-chained, tamper-evident audit trail
+- Evidence Console (reviewer-facing view)
+- Exportable, review-ready evidence package
+
+## How you engage
+- Start with a founder-led Agent Launch Evidence Review: bring one blocked agent workflow, and Origin maps the policy, provides a controlled proxy path, runs the loop, and hands over the evidence package.
+
+## Positioning vs adjacent tools
+- Identity tools tell you who the agent is. Observability tools help engineers debug what happened. Origin enforces what an agent is allowed to do before side effects happen, and proves the decision afterward — for approval, not debugging.
+
+## Honest status
+- The prototype runs; Origin is not production SaaS.
+- No customers, logos, metrics, or reviewer acceptances are claimed unless independently verifiable.
+- Evidence is labeled by rung: authored specimen, machine-emitted sandbox trace, and a design-partner trace when earned.
+- Language is precise: "tamper-evident" (not tamper-proof), "review-ready" (not reviewer-accepted). Origin is decision-support and evidence infrastructure, not legal or compliance certification.
+- Physical AI is a longer-term arc and founder-depth note, not the current product.
+
+## Links
+- Home: https://origin-physical-ai.pages.dev/
+- Evidence traces: https://origin-physical-ai.pages.dev/proof
+- Trust & controls: https://origin-physical-ai.pages.dev/trust
+- One-page brief: https://origin-physical-ai.pages.dev/brief
+- Contact: hello@originphysical.ai

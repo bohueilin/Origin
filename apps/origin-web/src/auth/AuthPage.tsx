@@ -4,6 +4,21 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from './AuthProvider'
 
+// Account creation is paused while Origin is in private pilots. While this is
+// false, the create-account actions (Continue-with-Google in sign-up + the
+// Create-account button) are disabled; sign-in still works for existing owners.
+// Flip to true to open sign-ups.
+const SIGNUPS_OPEN = false
+
+// Password policy for account creation.
+const PW_RULES: { id: string; label: string; test: (p: string) => boolean }[] = [
+  { id: 'len', label: 'At least 10 characters', test: (p) => p.length >= 10 },
+  { id: 'upper', label: 'One uppercase letter', test: (p) => /[A-Z]/.test(p) },
+  { id: 'lower', label: 'One lowercase letter', test: (p) => /[a-z]/.test(p) },
+  { id: 'num', label: 'One number', test: (p) => /\d/.test(p) },
+  { id: 'sym', label: 'One symbol', test: (p) => /[^A-Za-z0-9]/.test(p) },
+]
+
 function GoogleMark() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -34,6 +49,7 @@ export function AuthPage() {
   const [last, setLast] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [otp, setOtp] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -45,9 +61,20 @@ export function AuthPage() {
   }, [auth.ready, auth.user, next])
 
   const go = () => window.location.assign(next)
-  const switchMode = (m: Mode) => { setMode(m); setStep('details'); setError(''); setNote(''); setPassword(''); setOtp('') }
+  const switchMode = (m: Mode) => { setMode(m); setStep('details'); setError(''); setNote(''); setPassword(''); setConfirm(''); setOtp('') }
+
+  // password strength (sign-up)
+  const pwChecks = PW_RULES.map((r) => ({ ...r, ok: r.test(password) }))
+  const pwScore = pwChecks.filter((r) => r.ok).length
+  const pwValid = pwScore === PW_RULES.length
+  const pwStrength = password.length === 0 ? '' : pwScore <= 2 ? 'weak' : pwScore === 3 ? 'fair' : pwScore === 4 ? 'good' : 'strong'
+  const pwStrengthLabel = pwStrength ? pwStrength[0].toUpperCase() + pwStrength.slice(1) : ''
+  const confirmMatch = confirm.length > 0 && password === confirm
+  const createDisabled = mode === 'signup' && step === 'password' && (!SIGNUPS_OPEN || !pwValid || !confirmMatch)
 
   async function onGoogle() {
+    // Hard gate (not just the disabled attribute): no account creation while paused.
+    if (mode === 'signup' && !SIGNUPS_OPEN) { setError('Account creation is paused while we’re in private pilots.'); return }
     setError(''); setBusy(true)
     const { error } = await auth.signInWithGoogle({ redirectTo: googleRedirect })
     setBusy(false)
@@ -72,6 +99,9 @@ export function AuthPage() {
         return setStep('password')
       }
       // step === 'password'
+      if (!SIGNUPS_OPEN) return setError('Account creation is paused while we’re in private pilots.')
+      if (!pwValid) return setError('Please choose a password that meets all the requirements.')
+      if (password !== confirm) return setError('Passwords don’t match.')
       setBusy(true)
       const name = `${first.trim()} ${last.trim()}`.trim()
       const { needsVerify, error } = await auth.signUp(email.trim(), password, name)
@@ -91,11 +121,11 @@ export function AuthPage() {
   }
 
   const heading = step === 'verify' ? 'Verify your email'
-    : mode === 'signup' ? (step === 'password' ? 'Create a password' : 'Create with Origin')
+    : mode === 'signup' ? (step === 'password' ? 'Create a password' : 'Private pilot access')
     : 'Welcome back'
   const sub = step === 'verify' ? note
-    : mode === 'signup' ? (step === 'password' ? 'One more step — set a password for your account.' : 'Scoped, revocable authority for your AI agents — without ever holding your keys.')
-    : 'Sign in to your control plane.'
+    : mode === 'signup' ? (step === 'password' ? 'Set a secure password for your account.' : 'Origin Evidence Console access is invite-only during private pilot. Book an Agent Evidence Review to request access.')
+    : 'Sign in to the Origin Evidence Console.'
 
   return (
     <div className="ap-shell">
@@ -115,6 +145,11 @@ export function AuthPage() {
                 <strong>Access is restricted.</strong> You signed in as <b>{auth.deniedEmail}</b>, which isn’t an
                 approved account. Origin is owner-only while we build — use the owner Google account.
               </div>
+            ) : mode === 'signup' && !SIGNUPS_OPEN ? (
+              <div className="ap-paused" role="note" id="ap-paused-note">
+                🔒 <strong>Private pilot only.</strong> Account creation is paused while we work with design partners.{' '}
+                <a className="ap-link" href="/" data-analytics="auth_return_to_demo">Book an Agent Evidence Review →</a>
+              </div>
             ) : (
               <div className="ap-owner-note" role="note">🔒 Owner access only — sign in with the Origin owner Google account.</div>
             )}
@@ -122,7 +157,8 @@ export function AuthPage() {
             {/* Google + divider only on the first screen of each mode */}
             {step === 'details' && (
               <>
-                <button type="button" className="ap-google" onClick={onGoogle} disabled={busy}>
+                <button type="button" className="ap-google" onClick={onGoogle} disabled={busy || (mode === 'signup' && !SIGNUPS_OPEN)}
+                  aria-describedby={mode === 'signup' && !SIGNUPS_OPEN ? 'ap-paused-note' : undefined}>
                   <GoogleMark /> Continue with Google
                 </button>
                 <div className="ap-or"><span>or</span></div>
@@ -153,10 +189,30 @@ export function AuthPage() {
                   </label>
                 </>
               ) : mode === 'signup' && step === 'password' ? (
-                <label className="ap-field">
-                  <span>Password</span>
-                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" minLength={6} autoFocus required />
-                </label>
+                <>
+                  <label className="ap-field">
+                    <span>Password</span>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" autoFocus required aria-describedby="ap-pw-help" />
+                  </label>
+                  {password && (
+                    <div className={`ap-pw-strength ap-pw-${pwStrength}`} aria-hidden="true">
+                      <span className="ap-pw-bar"><span style={{ width: `${(pwScore / PW_RULES.length) * 100}%` }} /></span>
+                      <span className="ap-pw-label">{pwStrengthLabel}</span>
+                    </div>
+                  )}
+                  <ul className="ap-pw-rules" id="ap-pw-help" aria-label="Password requirements">
+                    {pwChecks.map((r) => (
+                      <li key={r.id} className={r.ok ? 'is-ok' : ''}>
+                        <span aria-hidden="true">{r.ok ? '✓' : '○'}</span>{r.label}
+                      </li>
+                    ))}
+                  </ul>
+                  <label className="ap-field">
+                    <span>Confirm password</span>
+                    <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" required aria-invalid={confirm.length > 0 && !confirmMatch} />
+                  </label>
+                  {confirm.length > 0 && !confirmMatch && <div className="ap-pw-mismatch" role="alert">Passwords don’t match.</div>}
+                </>
               ) : (
                 <>
                   <label className="ap-field">
@@ -170,14 +226,16 @@ export function AuthPage() {
                 </>
               )}
 
-              {error && <div className="ap-error">{error}</div>}
+              {error && <div className="ap-error" role="alert">{error}</div>}
               {note && step !== 'verify' && <div className="ap-note">{note}</div>}
 
-              <button className="ap-submit" type="submit" disabled={busy}>
+              <button className="ap-submit" type="submit" disabled={busy || createDisabled}
+                aria-describedby={mode === 'signup' && !SIGNUPS_OPEN ? 'ap-paused-note' : undefined}>
                 {busy ? 'Working…'
                   : step === 'verify' ? 'Verify & continue'
-                  : mode === 'signup' ? (step === 'password' ? 'Create account' : 'Continue')
-                  : 'Continue'}
+                  : mode === 'signup'
+                    ? (step === 'password' ? (SIGNUPS_OPEN ? 'Create account' : 'Sign-ups paused') : 'Continue')
+                    : 'Continue'}
               </button>
             </form>
 
@@ -206,8 +264,8 @@ export function AuthPage() {
       <aside className="ap-art" aria-hidden="true">
         <div className="ap-art-inner">
           <img className="ap-art-mark" src="/origin-logo.png" alt="Origin" />
-          <p className="ap-art-line">Permission for every agent.</p>
-          <p className="ap-art-sub">Scoped · revocable · human-in-the-loop.</p>
+          <p className="ap-art-line">Enforce, then prove.</p>
+          <p className="ap-art-sub">Propose · Gate · Proxy · Verify.</p>
         </div>
       </aside>
     </div>

@@ -7,6 +7,7 @@ const PAGES: Array<[string, string]> = [
   ['home', '/'],
   ['console', '/app.html'],
   ['auth', '/auth.html'],
+  ['proof', '/proof.html'],
 ]
 
 for (const [name, path] of PAGES) {

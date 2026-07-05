@@ -26,7 +26,7 @@ export const REAL_CUSTOMER_EVIDENCE_GATE_SUMMARY = {
     { label: 'Approved for evaluation', status: 'ready', detail: 'Oracle labeling and policy eval may run locally.' },
     { label: 'Approved for training', status: 'ready', detail: 'Training requires separate explicit authorization.' },
     { label: 'Blocked from CUSTOMER_OWNED holdout', status: 'blocked', detail: 'Synthetic or counterfactual rows cannot be rebranded.' },
-    { label: 'Ready for oracle labeling', status: 'ready', detail: 'Only approved real customer evidence reaches the oracle.' },
+    { label: 'Ready for verification labeling', status: 'ready', detail: 'Only approved real customer evidence reaches verification.' },
   ],
   defaultGate: {
     rowsCompiled: 0,

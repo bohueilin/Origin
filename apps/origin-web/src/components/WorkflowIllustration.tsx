@@ -85,15 +85,15 @@ export function WorkflowIllustration({
         <button className="btn ghost back" onClick={onBack}>
           ← Back to approval
         </button>
-        <div className="flow-kicker">Proving ground</div>
+        <div className="flow-kicker">Supervised run</div>
         <h1>Watch the plan run on the floor you drew.</h1>
         <p className="flow-sub">
           An illustration of your approved workflow on your own floor. The verdict — and the safe
-          route the robot takes — come from the deterministic oracle: a shortest-path search that
+          route the robot takes — come from evidence-backed verification: a shortest-path search that
           routes around every wall and hazard. No model, no guesswork.
         </p>
 
-        <StepBridge done="Workflow frozen + sealed" next="watch your fleet run it; the oracle mints the call — finish, escalate, or refuse." />
+        <StepBridge done="Workflow frozen + sealed" next="watch your fleet run it; verification mints the call — finish, escalate, or refuse." />
 
         <div className="illustration-grid">
           <div className="simulation-stage">
@@ -104,7 +104,7 @@ export function WorkflowIllustration({
                 <button className={dim === '2d' ? 'on' : ''} aria-pressed={dim === '2d'} onClick={() => setDim('2d')}>2D map</button>
                 <button className={dim === '3d' ? 'on' : ''} aria-pressed={dim === '3d'} onClick={() => setDim('3d')}>3D view</button>
               </div>
-              <strong>Oracle verdict: {oracle.label.toUpperCase()}</strong>
+              <strong>Verified verdict: {oracle.label.toUpperCase()}</strong>
             </div>
             {dim === '3d' ? (
               <ProvingGround3D siteMap={frozen.siteMap} verdict={oracle.label} embodiment={plan.requirement.embodiment} domain={plan.requirement.domain} />
@@ -150,8 +150,8 @@ export function WorkflowIllustration({
                   <span className="lg-human">H Human-only</span>
                 </div>
                 <p className="deploy-note">
-                  The robot starts where you placed it and walks the safe path the deterministic
-                  oracle found on <strong>the floor you drew</strong> — your walls and hazards
+                  The robot starts where you placed it and walks the safe path evidence-backed
+                  verification found on <strong>the floor you drew</strong> — your walls and hazards
                   included. Add a wall that blocks the route and the verdict flips to escalate; box
                   the item in with hazards and it must refuse.
                 </p>
@@ -160,14 +160,14 @@ export function WorkflowIllustration({
           </div>
 
           <div className="simulation-copy">
-            <div className="panel-kicker">The oracle's call</div>
+            <div className="panel-kicker">The verified call</div>
             <h2 className={`verdict-head lbl-${oracle.label}`}>{oracle.label.toUpperCase()}</h2>
             <p className="oracle-frame certified-explainer">
-              <strong>“Certified now”</strong> is the exact route the deterministic oracle just verified
-              safe on <strong>the floor you drew</strong> — that lane is what earns a readiness license.
+              <strong>“Certified now”</strong> is the exact route evidence-backed verification just confirmed
+              safe on <strong>the floor you drew</strong> — that lane is what earns verified readiness.
               <strong>“Your floor”</strong> is your full fleet deployment, shown as a preview because each
               robot isn’t individually scored yet. It’s not about matching some reference floor — it’s
-              <em> your</em> floor, scored.
+              <em> your</em> floor, verified.
             </p>
             {multi ? (
               <>
@@ -175,7 +175,7 @@ export function WorkflowIllustration({
                   <div className="lane-stat scored">
                     <span className="lane-stat-k">✓ Certified now <em>scored</em></span>
                     <strong>1 robot · {actions.length} action{actions.length === 1 ? '' : 's'}</strong>
-                    <small>The deterministic oracle solved this one lane start to finish. <b>This is your license.</b></small>
+                    <small>Evidence-backed verification solved this one lane start to finish. <b>This is your verification report.</b></small>
                   </div>
                   <div className="lane-stat preview">
                     <span className="lane-stat-k">Your floor <em>preview</em></span>
@@ -189,7 +189,7 @@ export function WorkflowIllustration({
               </>
             ) : (
               <p className="oracle-frame">
-                Your floor runs one robot, so the lane the oracle scored <strong>is</strong> your whole floor — what you see is exactly what’s licensed.
+                Your floor runs one robot, so the lane verification scored <strong>is</strong> your whole floor — what you see is exactly what’s verified.
               </p>
             )}
             <p className="oracle-reason">{oracle.reason}</p>

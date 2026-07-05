@@ -144,23 +144,23 @@ const RSI_PIPELINE = [
   },
   {
     step: '03',
-    title: 'RSI task generator',
+    title: 'Task planner',
     detail: 'The site becomes many start / item / drop / obstacle / restricted-zone tasks for the robot.',
   },
   {
     step: '04',
-    title: 'Deterministic oracle',
+    title: 'Evidence-backed verification',
     detail: 'A rule-based environment labels finish, escalate, or refuse. The model never grades itself.',
   },
   {
     step: '05',
-    title: 'RL readiness Gym',
+    title: 'Supervised run',
     detail: 'Labels, rewards, counterfactuals, and hard negatives become training and evaluation signal.',
   },
   {
     step: '06',
     title: 'Deployment evidence',
-    detail: 'Teams get refuse recall, FAR / FRR, trace proof, and a measured readiness boundary.',
+    detail: 'Teams get refuse recall, unsafe- / missed-action rates, trace proof, and a measured readiness boundary.',
   },
 ]
 
@@ -266,13 +266,13 @@ export function CaptureConsole({
     ? siteGymPhase === 'processing'
       ? 'Processing media into site context'
       : siteGymRun
-        ? `Trace ${formatPhase(siteGymRun.trace.verdict)} · ${siteGymRun.metrics.taskCount} oracle-labeled tasks`
+        ? `Trace ${formatPhase(siteGymRun.trace.verdict)} · ${siteGymRun.metrics.taskCount} verified tasks`
         : 'Ready to generate a best-effort site representation'
     : 'Waiting for site evidence or notes'
   const nextAction = canContinue
     ? siteGymRun
       ? 'Review the generated map, tasks, metrics, and trace'
-      : 'Review the summary, then generate the site Gym'
+      : 'Review the summary, then generate the verification run'
     : 'Describe the job the robot must perform'
 
   useEffect(() => {
@@ -503,12 +503,19 @@ export function CaptureConsole({
           ← Back
         </button>
         <div className="flow-kicker">Create your site</div>
+        <p className="pilot-banner" role="note" aria-label="Preview environment notice">
+          <span className="pilot-dot" aria-hidden="true" />
+          <span>
+            <strong>Private-pilot preview · simulated data</strong> — this is step one: set up and
+            verify your site. The live operator console runs it on your floor during a supervised pilot.
+          </span>
+        </p>
         <h1>Create your site before the robot ever steps on it.</h1>
         <p className="flow-sub">
           Give Origin the context a robotics team normally has to reconstruct by hand: floor plans,
           walkthrough videos, photos, SOPs, links, constraints, and the work the robot must perform.
-          Origin turns that evidence into a site map, generates RSI tasks, runs deterministic labels,
-          and produces the robot-readiness Gym before any live deployment.
+          Origin turns that evidence into a site map, plans safe task steps, and verifies them against
+          operator-grade telemetry before any live deployment.
         </p>
 
         <div className="site-thesis" aria-label="How Origin turns site context into robot readiness">
@@ -521,12 +528,12 @@ export function CaptureConsole({
             <strong>2D map + task environment</strong>
           </div>
           <div>
-            <span>Oracle decides</span>
+            <span>Verification decides</span>
             <strong>Finish · escalate · refuse</strong>
           </div>
           <div>
             <span>Team receives</span>
-            <strong>Readiness metrics + trace proof</strong>
+            <strong>Verification metrics + trace proof</strong>
           </div>
         </div>
 
@@ -550,7 +557,7 @@ export function CaptureConsole({
             <span className="vr-check" aria-hidden="true">✓</span>
             <p>
               Template loaded — review your brief in fields <strong>1–3</strong> below, then press{' '}
-              <strong>Generate site Gym</strong>.
+              <strong>Generate verification run</strong>.
             </p>
           </div>
         )}
@@ -581,7 +588,7 @@ export function CaptureConsole({
             <span className="vr-check" aria-hidden="true">✓</span>
             <p>
               Filled from your voice — review fields <strong>1–3</strong> below, then press{' '}
-              <strong>Generate site Gym</strong>.
+              <strong>Generate verification run</strong>.
             </p>
           </div>
         )}
@@ -750,11 +757,11 @@ export function CaptureConsole({
             <section className={`site-gym-proof ${siteGymPhase}`} aria-labelledby="site-gym-proof-title">
               <div className="site-gym-head">
                 <div>
-                  <span className="panel-kicker">Video-to-Site-to-Gym MVP</span>
+                  <span className="panel-kicker">Video-to-verification MVP</span>
                   <h3 id="site-gym-proof-title">Local pipeline proof</h3>
                   <p>
-                    Uploaded media now produces a bounded site representation, RSI tasks, oracle
-                    labels, readiness metrics, and a replayable trace. Video contributes keyframes
+                    Uploaded media now produces a bounded site representation, robot tasks, verified
+                    labels, verification metrics, and a replayable trace. Video contributes keyframes
                     and spatial hints; uncertainty stays visible.
                   </p>
                 </div>
@@ -775,8 +782,8 @@ export function CaptureConsole({
                       ['Upload evidence', 'complete'],
                       ['Generate draft map', 'complete'],
                       ['Approve map', siteGymRun.reviewState.status === 'approved' || siteGymRun.reviewState.status === 'exported' ? 'complete' : 'needs review'],
-                      ['Compile Gym', 'complete'],
-                      ['Run oracle', 'complete'],
+                      ['Compile verification run', 'complete'],
+                      ['Run verification', 'complete'],
                       ['Export trace', siteGymRun.reviewState.status === 'exported' ? 'complete' : 'exportable'],
                     ].map(([label, state]) => (
                       <div className={`demo-step ${state.replace(' ', '-')}`} key={label}>
@@ -827,8 +834,8 @@ export function CaptureConsole({
                       <span className="panel-kicker">Portable evidence bundle</span>
                       <strong>{siteGymRun.evidenceBundle.bundleId}</strong>
                       <p>
-                        Exports site representation, compiler-ready customer_floor.json, Gym tasks,
-                        oracle labels, readiness metrics, trace JSON, review state, and claim boundaries.
+                        Exports site representation, compiler-ready customer_floor.json, robot tasks,
+                        verified labels, verification metrics, trace JSON, review state, and claim boundaries.
                       </p>
                       <div className="bundle-files">
                         {siteGymRun.evidenceBundle.files.map((file) => (
@@ -851,7 +858,7 @@ export function CaptureConsole({
                           <strong>Verdict path: safe-conservative, needs calibration</strong>
                           <p>
                             This sample generates a compiler-ready <code>customer_floor.json</code> for
-                            the Floor-design customer Gym. The current saved budget policy catches
+                            the Floor-design verification run. The current saved budget policy catches
                             restricted-zone refuse cases, but the customer holdout shows over-refusal on
                             valid finish/escalate tasks, so it must be calibrated before live authority.
                           </p>
@@ -863,14 +870,14 @@ export function CaptureConsole({
                             <small>{siteGymRun.customerFloor.site_map.restricted.length} declared restricted cell(s)</small>
                           </div>
                           <div>
-                            <span>Oracle-labeled tasks</span>
+                            <span>Verified tasks</span>
                             <strong>{siteGymRun.metrics.labelDistribution.finish} / {siteGymRun.metrics.labelDistribution.escalate} / {siteGymRun.metrics.labelDistribution.refuse}</strong>
                             <small>finish / escalate / refuse in this web bundle</small>
                           </div>
                           <div>
                             <span>Readiness verdict</span>
                             <strong>SAFE_CONSERVATIVE</strong>
-                            <small>Floor-design customer holdout: FAR 0, FRR high</small>
+                            <small>Floor-design customer holdout: unsafe-action 0, missed-action high</small>
                           </div>
                           <div>
                             <span>Calibration plan</span>
@@ -888,7 +895,7 @@ export function CaptureConsole({
                             <p>
                               Origin turns the failure into customer-owned calibration data:
                               {` ${CUSTOMER_CALIBRATION_SUMMARY.generatedRows} calibration rows `}
-                              across finish, escalate, and refuse. Labels still come only from the deterministic oracle.
+                              across finish, escalate, and refuse. Labels still come only from evidence-backed verification.
                               Training stays disabled until the customer approves use of this customer-owned slice.
                             </p>
                           </div>
@@ -943,7 +950,7 @@ export function CaptureConsole({
                               <strong>{task.title}</strong>
                               <p>{task.siteLocation}</p>
                               <small>
-                                Oracle {task.oracleVerdict.toUpperCase()} · policy {task.currentPolicyVerdict.toUpperCase()}.
+                                Verified {task.oracleVerdict.toUpperCase()} · policy {task.currentPolicyVerdict.toUpperCase()}.
                                 {` ${task.whyNeeded} `}
                                 Target: {task.target}
                               </small>
@@ -976,12 +983,12 @@ export function CaptureConsole({
                           <div>
                             <span>Current saved policy</span>
                             <strong>{formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.currentPolicy.balancedAccuracy)}</strong>
-                            <small>FRR {formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.currentPolicy.falseRefuseRate)} · FAR {formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.currentPolicy.falseAcceptRate)}</small>
+                            <small>missed {formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.currentPolicy.falseRefuseRate)} · unsafe {formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.currentPolicy.falseAcceptRate)}</small>
                           </div>
                           <div>
                             <span>Learned candidate</span>
                             <strong>{formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.learnedCandidate.balancedAccuracy)}</strong>
-                            <small>FRR {formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.learnedCandidate.falseRefuseRate)} · FAR {formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.learnedCandidate.falseAcceptRate)}</small>
+                            <small>missed {formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.learnedCandidate.falseRefuseRate)} · unsafe {formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.learnedCandidate.falseAcceptRate)}</small>
                           </div>
                           <div>
                             <span>Rule harness</span>
@@ -989,7 +996,7 @@ export function CaptureConsole({
                             <small>{CUSTOMER_POLICY_GATE_SUMMARY.ruleHarness.note}</small>
                           </div>
                           <div>
-                            <span>Oracle upper bound</span>
+                            <span>Verified upper bound</span>
                             <strong>{formatPolicyGatePercent(CUSTOMER_POLICY_GATE_SUMMARY.oracleUpperBound.balancedAccuracy)}</strong>
                             <small>deterministic replay, not a model</small>
                           </div>
@@ -1018,7 +1025,7 @@ export function CaptureConsole({
                             <small>forbidden features used</small>
                           </div>
                           <div>
-                            <span>Unsafe false accepts</span>
+                            <span>Unsafe actions</span>
                             <strong>{CUSTOMER_POLICY_GATE_SUMMARY.learnedCandidate.unsafeFalseAccepts}</strong>
                             <small>held-out customer test split</small>
                           </div>
@@ -1052,7 +1059,7 @@ export function CaptureConsole({
                             <small>threshold 99% · broader claim blocked</small>
                           </div>
                           <div>
-                            <span>Current FAR</span>
+                            <span>Current unsafe-action rate</span>
                             <strong>{formatRobustnessPercent(CUSTOMER_ROBUSTNESS_SUMMARY.currentGate.falseAcceptRate)}</strong>
                             <small>threshold 1% · {CUSTOMER_ROBUSTNESS_SUMMARY.currentGate.counterfactualFailCount} misses</small>
                           </div>
@@ -1064,7 +1071,7 @@ export function CaptureConsole({
                           <div>
                             <span>Robustness candidate</span>
                             <strong>{formatRobustnessPercent(CUSTOMER_ROBUSTNESS_SUMMARY.robustnessCandidate.genericRefuseRecall)}</strong>
-                            <small>generic recall · FAR {formatRobustnessPercent(CUSTOMER_ROBUSTNESS_SUMMARY.robustnessCandidate.genericFalseAcceptRate)}</small>
+                            <small>generic recall · unsafe {formatRobustnessPercent(CUSTOMER_ROBUSTNESS_SUMMARY.robustnessCandidate.genericFalseAcceptRate)}</small>
                           </div>
                         </div>
                         <div className="policy-gate-thresholds">
@@ -1093,7 +1100,7 @@ export function CaptureConsole({
                           <div>
                             <span>Customer test preserved</span>
                             <strong>{formatRobustnessPercent(CUSTOMER_ROBUSTNESS_SUMMARY.robustnessCandidate.customerTestBalancedAccuracy)}</strong>
-                            <small>unsafe false accepts {CUSTOMER_ROBUSTNESS_SUMMARY.robustnessCandidate.unsafeFalseAccepts}</small>
+                            <small>unsafe actions {CUSTOMER_ROBUSTNESS_SUMMARY.robustnessCandidate.unsafeFalseAccepts}</small>
                           </div>
                         </div>
                         <p className="calibration-boundary">
@@ -1159,7 +1166,7 @@ export function CaptureConsole({
                               <p>{item.why}</p>
                               <small>
                                 Evidence {item.evidence}. Review {item.reviewStatus}.
-                                Oracle {item.oracle.toUpperCase()} · learned {item.learned.toUpperCase()}.
+                                Verified {item.oracle.toUpperCase()} · learned {item.learned.toUpperCase()}.
                               </small>
                             </article>
                           ))}
@@ -1236,7 +1243,7 @@ export function CaptureConsole({
                             <strong>{AUTHORIZED_FIXTURE_GATE_SUMMARY.status}: local positive path, real readiness still blocked</strong>
                             <p>
                               This fixture shows the happy path for a design partner: approved evidence,
-                              completed redaction, SHA provenance, oracle-labeled hard cases, policy eval,
+                              completed redaction, SHA provenance, verified hard cases, policy eval,
                               and an audit trail. It is deliberately labeled as not real customer data.
                             </p>
                           </div>
@@ -1282,12 +1289,12 @@ export function CaptureConsole({
                           <div>
                             <span>Policy eval</span>
                             <strong>{formatAuthorizedFixturePercent(AUTHORIZED_FIXTURE_GATE_SUMMARY.policyEval.balancedAccuracy)}</strong>
-                            <small>refuse {formatAuthorizedFixturePercent(AUTHORIZED_FIXTURE_GATE_SUMMARY.policyEval.refuseRecall)} · FAR {formatAuthorizedFixturePercent(AUTHORIZED_FIXTURE_GATE_SUMMARY.policyEval.falseAcceptRate)}</small>
+                            <small>refuse {formatAuthorizedFixturePercent(AUTHORIZED_FIXTURE_GATE_SUMMARY.policyEval.refuseRecall)} · unsafe {formatAuthorizedFixturePercent(AUTHORIZED_FIXTURE_GATE_SUMMARY.policyEval.falseAcceptRate)}</small>
                           </div>
                           <div>
-                            <span>Oracle divergence</span>
+                            <span>Verified divergence</span>
                             <strong>{AUTHORIZED_FIXTURE_GATE_SUMMARY.oracleDivergence}</strong>
-                            <small>deterministic oracle remains the judge</small>
+                            <small>evidence-backed verification remains the judge</small>
                           </div>
                         </div>
                         <div className="policy-gate-thresholds">
@@ -1367,7 +1374,7 @@ export function CaptureConsole({
                             <small>local-only by default</small>
                           </div>
                           <div>
-                            <span>Oracle authority</span>
+                            <span>Verification authority</span>
                             <strong>{DESIGN_PARTNER_INTAKE_SUMMARY.oracleLabelAuthority}</strong>
                             <small>only label/reward judge</small>
                           </div>
@@ -1453,19 +1460,19 @@ export function CaptureConsole({
                     </div>
 
                     <div className="readiness-card">
-                      <span className="panel-kicker">Readiness metrics</span>
+                      <span className="panel-kicker">Verification metrics</span>
                       <strong className="readiness-score">{siteGymRun.metrics.readinessScore}/100</strong>
                       <div className="metric-grid">
                         <div><span>Tasks</span><strong>{siteGymRun.metrics.taskCount}</strong></div>
                         <div><span>Finish</span><strong>{siteGymRun.metrics.labelDistribution.finish}</strong></div>
                         <div><span>Escalate</span><strong>{siteGymRun.metrics.labelDistribution.escalate}</strong></div>
                         <div><span>Refuse</span><strong>{siteGymRun.metrics.labelDistribution.refuse}</strong></div>
-                        <div><span>FAR</span><strong>{formatPercent(siteGymRun.metrics.falseAcceptRisk)}</strong></div>
-                        <div><span>FRR</span><strong>{formatPercent(siteGymRun.metrics.falseRefuseRisk)}</strong></div>
+                        <div><span>Unsafe-action rate</span><strong>{formatPercent(siteGymRun.metrics.falseAcceptRisk)}</strong></div>
+                        <div><span>Missed-action rate</span><strong>{formatPercent(siteGymRun.metrics.falseRefuseRisk)}</strong></div>
                       </div>
                       <p>
-                        Oracle replay balanced accuracy is {formatPercent(siteGymRun.metrics.balancedAccuracy)};
-                        refusal recall is {formatPercent(siteGymRun.metrics.refusalRecall)}. These are Gym
+                        Verified replay balanced accuracy is {formatPercent(siteGymRun.metrics.balancedAccuracy)};
+                        refusal recall is {formatPercent(siteGymRun.metrics.refusalRecall)}. These are verification
                         integrity metrics, not a learned robot policy certification.
                       </p>
                     </div>
@@ -1509,7 +1516,7 @@ export function CaptureConsole({
                       <strong>Reviewable autonomy infrastructure</strong>
                       <ul>
                         <li>{siteGymRun.siteRepresentation.dimensions.width}x{siteGymRun.siteRepresentation.dimensions.length} structured map</li>
-                        <li>{siteGymRun.tasks.length} RSI tasks</li>
+                        <li>{siteGymRun.tasks.length} robot tasks</li>
                         <li>{siteGymRun.metrics.labelDistribution.finish} finish · {siteGymRun.metrics.labelDistribution.escalate} escalate · {siteGymRun.metrics.labelDistribution.refuse} refuse</li>
                         <li>{siteGymRun.trace.trace_id} replayable trace</li>
                       </ul>
@@ -1554,7 +1561,7 @@ export function CaptureConsole({
                         <p>{task.description}</p>
                         <small>
                           Source: {task.source_map_feature}. Evidence: {task.required_evidence.join(', ')}.
-                          Oracle: {task.reason}
+                          Verified: {task.reason}
                         </small>
                       </div>
                     ))}
@@ -1566,7 +1573,7 @@ export function CaptureConsole({
                       <strong>{siteGymRun.trace.trace_id}</strong>
                       <p>
                         Digest {siteGymRun.trace.digest} ties inputs, artifacts, site map,
-                        task set, oracle version {siteGymRun.trace.oracle_version}, and metrics.
+                        task set, verification version {siteGymRun.trace.oracle_version}, and metrics.
                       </p>
                     </div>
                     <ul>
@@ -1589,7 +1596,7 @@ export function CaptureConsole({
               ) : (
                 <div className="site-gym-empty">
                   Upload a walkthrough video, floor plan, photo, or reference to generate the first
-                  local Site-to-Gym trace.
+                  local verification trace.
                 </div>
               )}
             </section>
@@ -1664,7 +1671,7 @@ export function CaptureConsole({
                 <span className="field-hint">
                   {embodiments.length === 1
                     ? profile.note
-                    : `${embodiments.length} types — your proving ground will run a mixed fleet.`}
+                    : `${embodiments.length} types — your supervised run will use a mixed fleet.`}
                 </span>
               </div>
             </div>
@@ -1698,7 +1705,7 @@ export function CaptureConsole({
             <h2 id="rsi-title">The site becomes a training environment, not just an uploaded file.</h2>
             <p>
               RSI means Reference State Initialization: Origin turns your customer-owned site into
-              many realistic robot starting states and tasks. The Robot-Readiness Gym then evaluates
+              many realistic robot starting states and tasks. The verification run then evaluates
               whether the robot should finish, escalate, or refuse before it earns live authority.
             </p>
           </div>
@@ -1718,23 +1725,23 @@ export function CaptureConsole({
             </div>
             <div>
               <strong>Environment verifies.</strong>
-              <span>The deterministic oracle computes labels and rewards. No self-grading.</span>
+              <span>Evidence-backed verification computes labels and rewards. No self-grading.</span>
             </div>
             <div>
               <strong>Trace proves.</strong>
-              <span>Readiness is shown through refuse recall, FAR / FRR, counterfactuals, and audit traces.</span>
+              <span>Readiness is shown through refuse recall, unsafe- / missed-action rates, counterfactuals, and audit traces.</span>
             </div>
           </div>
         </section>
 
         <div className="flow-actions">
           <button className="btn primary hero-action" onClick={() => submit('analyze')} disabled={!canContinue}>
-            Generate site Gym
+            Generate verification run
           </button>
           <button className="btn ghost" onClick={() => submit('manual')} disabled={!canContinue}>
             Map manually instead
           </button>
-          <span className="trust-note">Local media processing · oracle labels only · no model self-grading</span>
+          <span className="trust-note">Local media processing · verified labels only · no model self-grading</span>
         </div>
       </div>
     </section>

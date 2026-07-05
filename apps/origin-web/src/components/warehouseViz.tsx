@@ -6,7 +6,7 @@ import { actionTrace } from '../format'
 
 export function MatrixMini({ matrix }: { matrix: WarehouseCalibrationMatrix }) {
   return (
-    <div className="matrix-mini" aria-label="FAR FRR terminal action confusion matrix">
+    <div className="matrix-mini" aria-label="Unsafe- and missed-action terminal action confusion matrix">
       <div className="matrix-row matrix-head">
         <span>Expected</span>
         <span>finish</span>
@@ -48,7 +48,7 @@ export function TriptychCard({
       <p className="trip-line">{line}</p>
       <div className="trip-task">{rollout.task.title}</div>
       <div className="trip-stats">
-        <span>oracle {rollout.expected}</span>
+        <span>verified {rollout.expected}</span>
         <span>actual {rollout.matrixAction}</span>
         <span>reward {rollout.reward.toFixed(2)}</span>
       </div>

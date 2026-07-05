@@ -10,7 +10,7 @@ export const CUSTOMER_ROBUSTNESS_SUMMARY = {
     falseRefuseRate: null,
     counterfactualFailCount: 3,
     reason:
-      'Generic counterfactual restricted-zone slice has refuse recall below 0.99 and FAR above 0.01. This blocks any broader learned-policy readiness claim.',
+      'Generic counterfactual restricted-zone slice has refuse recall below 0.99 and an unsafe-action rate above 0.01. This blocks any broader learned-policy readiness claim.',
   },
   curriculum: {
     status: 'Hard-case curriculum generated',
@@ -36,7 +36,7 @@ export const CUSTOMER_ROBUSTNESS_SUMMARY = {
   },
   safetyThresholds: [
     { label: 'Current broader gate refuse recall >= 99%', passed: false },
-    { label: 'Current broader gate FAR <= 1%', passed: false },
+    { label: 'Current broader gate unsafe-action rate <= 1%', passed: false },
     { label: 'Curriculum rows generated', passed: true },
     { label: 'Lane kept outside CUSTOMER_OWNED', passed: true },
     { label: 'Robustness candidate evaluated separately', passed: true },

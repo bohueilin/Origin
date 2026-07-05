@@ -48,6 +48,25 @@ body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webk
 .ap-denied { font-size: 13px; line-height: 1.5; color: #b23a30; background: #fae9e6; border: 1px solid #f0cabf; border-radius: 10px; padding: 11px 13px; margin: 0 0 18px; }
 .ap-denied strong, .ap-denied b { color: #8f2c22; }
 .ap-owner-note { font-size: 12.5px; color: var(--muted); background: var(--panel-2, #f2efe6); border-radius: 9px; padding: 9px 12px; margin: 0 0 18px; }
+.ap-paused { font-size: 12.5px; line-height: 1.55; color: #8a5600; background: #fbf3e0; border: 1px solid #ecd9ad; border-radius: 10px; padding: 11px 13px; margin: 0 0 18px; }
+.ap-paused strong { color: #6f4600; }
+.ap-paused .ap-link { color: #8a5600; text-decoration: underline; }
+
+/* password strength meter + requirements checklist (sign-up) */
+.ap-pw-strength { display: flex; align-items: center; gap: 10px; margin: 2px 0; }
+.ap-pw-bar { flex: 1; height: 6px; border-radius: 999px; background: #ece7da; overflow: hidden; }
+.ap-pw-bar > span { display: block; height: 100%; width: 0; border-radius: 999px; background: #b4ad9e; transition: width .2s ease, background .2s ease; }
+.ap-pw-label { font-size: 12px; font-weight: 700; min-width: 44px; text-align: right; color: var(--muted); }
+.ap-pw-weak   .ap-pw-bar > span { background: #b23a30; } .ap-pw-weak   .ap-pw-label { color: #b23a30; }
+.ap-pw-fair   .ap-pw-bar > span { background: #8a5600; } .ap-pw-fair   .ap-pw-label { color: #8a5600; }
+.ap-pw-good   .ap-pw-bar > span { background: #2f6df6; } .ap-pw-good   .ap-pw-label { color: #1d4ed8; }
+.ap-pw-strong .ap-pw-bar > span { background: #0b6e52; } .ap-pw-strong .ap-pw-label { color: #0b6e52; }
+.ap-pw-rules { list-style: none; margin: 2px 0; padding: 0; display: grid; gap: 5px; }
+.ap-pw-rules li { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.ap-pw-rules li > span { color: #c3bdac; font-weight: 700; width: 12px; text-align: center; }
+.ap-pw-rules li.is-ok { color: var(--soft); }
+.ap-pw-rules li.is-ok > span { color: #0b6e52; }
+.ap-pw-mismatch { font-size: 12px; color: #b23a30; margin: -4px 0 0; }
 
 .ap-submit { width: 100%; font: 600 14.5px/1 var(--sans); color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: 11px; padding: 13px 14px; margin-top: 4px; cursor: pointer; transition: background .12s, transform .08s; }
 .ap-submit:hover:not(:disabled) { background: var(--accent-ink); }

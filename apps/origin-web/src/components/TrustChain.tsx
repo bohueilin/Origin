@@ -8,8 +8,8 @@ const STEPS: { k: string; who: 'you' | 'ai' | 'oracle'; d: string }[] = [
   { k: 'AI draft', who: 'ai', d: 'A proposed site map, storyboard, and rules — never the judge.' },
   { k: 'Human approval', who: 'you', d: 'You edit and confirm what the system understood.' },
   { k: 'Frozen workflow', who: 'you', d: 'An approved, hashed snapshot of the workflow.' },
-  { k: 'Oracle labels', who: 'oracle', d: 'A fixed algorithm sets finish / escalate / refuse.' },
-  { k: 'FAR / FRR', who: 'oracle', d: 'Calibration measured against those labels.' },
+  { k: 'Verified labels', who: 'oracle', d: 'A fixed algorithm sets finish / escalate / refuse.' },
+  { k: 'Unsafe / missed action', who: 'oracle', d: 'Calibration measured against those labels.' },
   { k: 'Evidence digest', who: 'oracle', d: 'A tamper-evident record of the run.' },
 ]
 
@@ -28,7 +28,7 @@ export function TrustChain({ compact = false }: { compact?: boolean }) {
       <div className="tc-legend">
         <span className="tc-leg tc-leg-ai">AI-proposed</span>
         <span className="tc-leg tc-leg-you">Confirmed by you</span>
-        <span className="tc-leg tc-leg-oracle">Scored by the oracle</span>
+        <span className="tc-leg tc-leg-oracle">Verified against telemetry</span>
       </div>
     </section>
   )

@@ -83,7 +83,7 @@ export function floorToCaptureFields(entry: FloorCatalogEntry): CaptureFields {
   const scenario = entry.scenario?.trim()
   const noGo = (entry.layout as Record<string, unknown> | undefined)?.no_go_zones
   const robots = (entry.layout as Record<string, unknown> | undefined)?.robots
-  const outcome = `Operate "${prettyFloorLabel(entry.label)}" safely — a robot earning its readiness license on this floor.`
+  const outcome = `Operate "${prettyFloorLabel(entry.label)}" safely — a robot earning verified readiness on this floor.`
   const description =
     scenario && scenario.length > 8
       ? scenario

@@ -6,7 +6,7 @@
     <title>Evidence traces — the honest ladder — Origin</title>
     <meta
       name="description"
-      content="Origin publishes evidence in rungs and never dresses one up as another. Available now: TR-A001, an authored evidence-package specimen that shows the format. The machine-emitted sandbox trace and the first design-partner trace are forthcoming."
+      content="Origin publishes evidence in rungs and never dresses one up as another. Available now: TR-A001, an authored evidence-package specimen that shows the format; and TR-A002, a machine-emitted sandbox trace with a real, re-verifiable SHA-256 hash chain. The first design-partner trace is forthcoming."
     />
     <link rel="canonical" href="https://origin-physical-ai.pages.dev/proof" />
     <meta name="theme-color" content="#f6f5f2" />
@@ -14,7 +14,7 @@
     <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://origin-physical-ai.pages.dev/proof" />
     <meta property="og:title" content="Evidence traces — the honest ladder — Origin" />
-    <meta property="og:description" content="Evidence in rungs, never dressed up as another. Available now: TR-A001, an authored evidence-package specimen showing the format. Machine-emitted and design-partner traces are forthcoming." />
+    <meta property="og:description" content="Evidence in rungs, never dressed up as another. Available now: TR-A001, an authored specimen showing the format, and TR-A002, a machine-emitted sandbox trace with a re-verifiable SHA-256 hash chain. The design-partner trace is forthcoming." />
     <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -26,7 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/home.css?v=18" />
+    <link rel="stylesheet" href="/home.css?v=22" />
     <style>
       /* Standalone page shell — same pattern as brief.html */
       .proof { max-width: 960px; margin: 0 auto; padding: 32px 24px 72px; }
@@ -89,6 +89,32 @@
       .proof__card li { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
       .proof__card a { text-decoration: underline; text-underline-offset: 2px; }
 
+      /* ── TR-A002 machine-emitted trace ── */
+      .tr2-exec { margin-top: 16px; background: var(--ink); color: #eef1f6; border-radius: 14px; padding: 22px 24px; box-shadow: var(--sh-sm); }
+      .tr2-exec p { margin: 0; font-size: 15px; line-height: 1.6; color: #d5dae4; }
+      .tr2-exec b { color: #fff; }
+      .tr2-exec .tr2-not { display: block; margin-top: 12px; font-size: 13px; color: #aeb6c6; }
+      .tr2-digest { margin-top: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--signal-wash); border: 1px solid #bcccff; border-radius: 12px; padding: 13px 16px; }
+      .tr2-digest .tr2-digest__k { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--signal-ink); font-weight: 700; }
+      .tr2-digest .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--ink); word-break: break-all; }
+      /* the 12-event flow, policy-state coloured */
+      .tr2-flow { margin-top: 20px; list-style: none; padding: 0; display: grid; gap: 7px; counter-reset: ev; }
+      .tr2-flow li { display: grid; grid-template-columns: 26px 1fr; align-items: baseline; gap: 12px; background: var(--paper-2); border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 9px; padding: 10px 14px; }
+      .tr2-flow li::before { counter-increment: ev; content: counter(ev); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--steel); text-align: right; }
+      .tr2-flow .ev__a { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--ink); font-weight: 600; }
+      .tr2-flow .ev__d { font-size: 13.5px; color: var(--ink-soft); }
+      .tr2-flow li.is-plan { border-left-color: var(--signal); }
+      .tr2-flow li.is-held { border-left-color: #d9a441; }
+      .tr2-flow li.is-ok { border-left-color: #2f9e6f; }
+      .tr2-flow li.is-block { border-left-color: #d1495b; background: #fdf1f2; }
+      .tr2-flow li.is-seal { border-left-color: var(--ink); }
+      /* verify command block */
+      .tr2-verify { margin-top: 18px; background: #0d1117; border-radius: 12px; padding: 16px 18px; }
+      .tr2-verify pre { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: #d5dae4; line-height: 1.7; white-space: pre-wrap; }
+      .tr2-verify .tr2-verify__c { color: #7fd88f; }
+      .tr2-verify .tr2-verify__cap { margin-top: 10px; font-size: 12.5px; color: var(--steel); }
+      .tr2-dl { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+
       /* Footer */
       .proof__cta { margin-top: 44px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 26px; }
       .proof__foot { margin-top: 20px; font-size: 13px; color: var(--steel); }
@@ -111,22 +137,22 @@
       <p class="kicker" style="margin-top:22px">Evidence · traces</p>
       <h1>Evidence traces — the honest ladder.</h1>
       <p class="proof__lede">
-        Origin publishes evidence in rungs and never dresses one up as another. What is available
-        <b>now</b> is an <b>authored specimen</b> — it shows the exact format of an evidence package,
-        with nothing claimed about a real run. The machine-emitted sandbox trace and the first
-        design-partner trace are <b>forthcoming</b>, and this page will not show either until it can
-        do so honestly.
+        Origin publishes evidence in rungs and never dresses one up as another. Available
+        <b>now</b>: an <b>authored specimen</b> that shows the exact format of an evidence package
+        (TR-A001), and a <b>machine-emitted sandbox trace</b> whose SHA-256 hash chain you can
+        re-verify yourself (TR-A002). The first <b>design-partner</b> trace is <b>forthcoming</b> —
+        and this page will not show it until a design partner has actually run it.
       </p>
 
       <!-- Executive summary card — scannable before the technical trace -->
       <div style="margin-top:24px;border:1px solid var(--line-2);border-radius:14px;background:var(--paper-2);box-shadow:var(--sh-sm);padding:20px 22px">
         <p style="font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--signal-ink);margin:0 0 12px">In one glance</p>
         <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:14.5px;color:var(--ink-soft)">
-          <li><b style="color:var(--ink)">TR-A001</b> — shows the evidence-package format only. Authored, illustrative; not a machine-emitted run.</li>
-          <li><b style="color:var(--ink)">TR-A002</b> — will show the console engine emitting a machine-emitted sandbox trace. In progress.</li>
+          <li><b style="color:var(--ink)">TR-A001</b> — shows the evidence-package format only. Authored, illustrative; not a machine-emitted run. <a href="#tr-a001" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></li>
+          <li><b style="color:var(--ink)">TR-A002</b> — <b style="color:var(--ink)">available now</b>: a machine-emitted sandbox trace, 12 events, real SHA-256 hash chain, digest <span class="mono" style="font-size:12px">ca1d4690…</span>. Re-verify with <span class="mono" style="font-size:12px">npm run proof:verify</span>. <a href="#tr-a002" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></li>
           <li><b style="color:var(--ink)">TR-A003</b> — will be the first external design-partner trace. When earned.</li>
         </ul>
-        <p style="margin:14px 0 0;font-size:12.5px;color:var(--steel)">Plumbing proof is not customer proof. No customer deployment, performance claim, or reviewer acceptance is claimed here.</p>
+        <p style="margin:14px 0 0;font-size:12.5px;color:var(--steel)">Plumbing proof is not customer proof. TR-A002 proves the trace engine works; it is not a customer deployment, performance claim, or reviewer acceptance.</p>
       </div>
 
       <!-- ═══════════ The ladder — three rungs ═══════════ -->
@@ -144,12 +170,12 @@
             <div class="rung__foot"><a class="rung__link" href="#tr-a001">See the specimen ↓</a></div>
           </article>
 
-          <article class="rung">
-            <span class="rung__badge rung__badge--wip">In progress</span>
+          <article class="rung rung--now">
+            <span class="rung__badge rung__badge--now">Available now</span>
             <span class="rung__id">TR-A002</span>
             <h3>Machine-emitted sandbox agent trace</h3>
-            <p>The console engine emitting a real hash-chained trace over a sandboxed agent action. <b>Not yet available</b> — we will not show trace data, JSON, or hashes for it until the engine produces them.</p>
-            <div class="rung__foot"><span class="rung__id">Forthcoming</span></div>
+            <p>Emitted by Origin's trace engine over a sandboxed agent action — 12 events on a <b>real SHA-256 hash chain</b> you can re-verify. Sandbox only; no live money, no customer data.</p>
+            <div class="rung__foot"><a class="rung__link" href="#tr-a002">See the trace ↓</a></div>
           </article>
 
           <article class="rung">
@@ -275,6 +301,116 @@
           </div>
         </div>
         <p class="mono-note" style="margin-top:18px;">Origin is decision-support and evidence infrastructure. We use "tamper-evident," not "tamper-proof"; "review-ready," not "reviewer-accepted." The prototype runs; it is not production SaaS, and it does not provide legal or compliance certification.</p>
+      </section>
+
+      <!-- ═══════════ TR-A002 — machine-emitted sandbox trace ═══════════ -->
+      <section id="tr-a002" aria-label="TR-A002 — machine-emitted sandbox trace">
+        <p class="kicker">TR-A002 · available now</p>
+        <h2>Machine-emitted sandbox trace — a real hash chain you can re-verify.</h2>
+        <p class="proof__sub">
+          This one is not authored. Origin's trace emitter runs the same payments-ops workflow through
+          the runtime — proposal, policy verdict, proxy hold, human approval, sandbox execution, a
+          blocked over-scope retry — and commits every event to a SHA-256 hash chain. The published
+          file below is the emitter's exact output; the verify command re-derives the chain and fails
+          if a single byte changed.
+        </p>
+
+        <div class="tr2-exec">
+          <p><b>TR-A002 is a machine-emitted sandbox trace.</b> The Origin trace emitter produces
+          proposal → policy verdict → proxy hold → approval → sandbox execution → blocked over-scope
+          retry → a sealed hash-chain digest, as a real, re-verifiable SHA-256 chain over 12 events.
+          <span class="tr2-not">It is <b>not</b> a customer deployment, <b>not</b> production SaaS,
+          and <b>not</b> a performance claim. No live money moves — the <span class="mono">payments.refund</span>
+          side effect executes in a sandbox only.</span></p>
+        </div>
+
+        <div class="tr2-digest">
+          <span class="tr2-digest__k">Final digest · sha256</span>
+          <span class="mono">ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32</span>
+        </div>
+
+        <dl class="spec" style="margin-top:18px">
+          <div><dt>Emitted by</dt><dd class="mono" style="font-size:13px">scripts/generate-tr-a002.mjs</dd></div>
+          <div><dt>Events · algorithm</dt><dd><b>12</b> · SHA-256 hash chain</dd></div>
+          <div><dt>Agent</dt><dd class="mono">payments-ops-agent</dd></div>
+          <div><dt>Policy</dt><dd class="mono">refund-cap-v0.3</dd></div>
+          <div><dt>Approver / risk owner</dt><dd class="mono">payments-on-call</dd></div>
+          <div><dt>Sandbox</dt><dd><b>true</b> · no live money</dd></div>
+        </dl>
+
+        <p class="proof__sub" style="margin-top:22px"><b>The 12 events, in order.</b></p>
+        <ol class="tr2-flow" aria-label="TR-A002 event sequence">
+          <li class="is-plan"><span class="ev__a">proposal.created</span><span class="ev__d">Agent proposes a $480.00 refund on <span class="mono">order_8842</span>.</span></li>
+          <li class="is-plan"><span class="ev__a">policy.evaluated</span><span class="ev__d">Checked against refund-cap-v0.3: $480 is over the $250 auto-cap, within the $500 ceiling.</span></li>
+          <li class="is-held"><span class="ev__a">verdict.require_approval</span><span class="ev__d">Verdict: require human approval. Risk owner: payments-on-call.</span></li>
+          <li class="is-held"><span class="ev__a">proxy.held</span><span class="ev__d">Side effect held at the proxy — <span class="mono">payments.refund</span> not dispatched.</span></li>
+          <li class="is-held"><span class="ev__a">approval.requested</span><span class="ev__d">Approval requested from payments-on-call with the verdict and side-effect scope.</span></li>
+          <li class="is-ok"><span class="ev__a">approval.granted</span><span class="ev__d">Human approver grants the $480.00 refund.</span></li>
+          <li class="is-ok"><span class="ev__a">proxy.executed_sandbox</span><span class="ev__d">Executed in sandbox — simulated refund, no live money moved.</span></li>
+          <li class="is-ok"><span class="ev__a">action.recorded</span><span class="ev__d">Recorded to the audit chain with approver, verdict, and scope.</span></li>
+          <li class="is-plan"><span class="ev__a">retry.proposed_over_scope</span><span class="ev__d">Agent proposes a second refund of $920.00 — above the $500 ceiling.</span></li>
+          <li class="is-block"><span class="ev__a">verdict.deny_or_block</span><span class="ev__d">Verdict: deny — $920 exceeds the approved scope.</span></li>
+          <li class="is-block"><span class="ev__a">proxy.blocked</span><span class="ev__d">Side effect <b>BLOCKED</b> at the proxy — the over-scope refund is never dispatched. The block is recorded.</span></li>
+          <li class="is-seal"><span class="ev__a">evidence.digest_sealed</span><span class="ev__d">Hash chain over the preceding 11 events is committed to the final digest.</span></li>
+        </ol>
+
+        <div class="spec-json" style="margin-top:22px">
+          <h3>Emitter output — verbatim excerpt (first + sealing event)</h3>
+          <pre><code>// machine-emitted — public/proof/tr-a002.json (12 events; excerpt)
+{
+  "seq": 1, "event_id": "evt_001",
+  "ts": "2026-07-04T17:00:00.000Z",
+  "actor": "payments-ops-agent", "action": "proposal.created",
+  "tool": "payments.refund",
+  "side_effect": { "amount_usd": 480, "target": "order_8842", "executed": false },
+  "sandbox": true,
+  "prev_hash": "0000…0000",
+  "event_hash": "8fa159f391851f662390bcd4f43d7aa3b47c5634bae8e5fd887c93b424e0c57b"
+}
+// … events 2–11 (policy → held → approval → sandbox exec → over-scope → blocked) …
+{
+  "seq": 12, "event_id": "evt_012",
+  "action": "evidence.digest_sealed", "actor": "origin-recorder",
+  "chain_root": "3af6a34d3035faa9aa599c035dde7ae1e10d37e517df5e617cc6319ed0236453",
+  "prev_hash": "3af6a34d3035faa9aa599c035dde7ae1e10d37e517df5e617cc6319ed0236453",
+  "event_hash": "ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32"
+}</code></pre>
+          <p class="proof__sub">Each <span class="mono">event_hash</span> = SHA-256 of the event's canonical JSON together with the previous hash. The sealing event's hash <b>is</b> the final digest, so it commits every prior event.</p>
+        </div>
+
+        <div class="tr2-dl">
+          <a class="btn btn--ghost btn--sm" href="/proof/tr-a002.json" download>Download full trace (JSON · 12 events)</a>
+          <a class="btn btn--ghost btn--sm" href="/proof/tr-a002-summary.json" download>Download summary</a>
+        </div>
+
+        <div class="tr2-verify">
+          <pre><span class="tr2-verify__c"># re-derive the hash chain and confirm nothing was tampered with</span>
+npm run proof:verify
+<span class="tr2-verify__c"># → PASS every event hash + prev_hash link verifies</span>
+<span class="tr2-verify__c"># → final_digest == sealing event hash · log_digest recomputes</span></pre>
+          <p class="tr2-verify__cap">The verifier recomputes every event hash from its own bytes and checks the links. Edit any field of any event and it exits non-zero — that is what "tamper-evident" means here.</p>
+        </div>
+
+        <div class="proof__pair" style="margin-top:24px">
+          <div class="proof__card proof__card--yes">
+            <h3>What TR-A002 shows</h3>
+            <ul>
+              <li>Origin's trace engine emitting a <b>real, tamper-evident</b> record of an agent workflow — not authored by hand.</li>
+              <li>The full loop as machine events: proposal, policy verdict, proxy hold, human approval, sandbox execution.</li>
+              <li>A <b>blocked over-scope retry</b>, recorded — the approval covered one action, not standing authority.</li>
+              <li>A SHA-256 hash chain whose digest you can <b>re-verify independently</b> with the published file.</li>
+            </ul>
+          </div>
+          <div class="proof__card proof__card--no">
+            <h3>What TR-A002 does not show</h3>
+            <ul>
+              <li><b>Not a customer deployment</b> — inputs are simulated; no customer site, data, or money.</li>
+              <li><b>Not live money</b> — the <span class="mono">payments.refund</span> side effect executes in a sandbox only.</li>
+              <li><b>Not a performance claim</b> — timestamps are deterministic pseudo-timestamps, not a latency measurement.</li>
+              <li><b>Not reviewer acceptance or compliance certification</b> — it proves the trace engine works, nothing about a real reviewer's decision.</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
       <div class="proof__cta">

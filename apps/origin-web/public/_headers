@@ -6,9 +6,20 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), browsing-topics=()
+  # Global CSP. Hardens script/object/base-uri/frame-ancestors while leaving
+  # connect/img/media permissive (https:/wss:) so the /app console's InsForge +
+  # worker + realtime calls keep working. 'unsafe-inline'/'unsafe-eval' are the
+  # pragmatic cost of a static (no-nonce) multi-page bundle.
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self' https: wss:
 
 # Hashed build assets are content-addressed → cache hard, forever
 /assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Homepage stylesheet is versioned via ?v= — safe to cache hard
+/home.css
   Cache-Control: public, max-age=31536000, immutable
 
 # Fonts & media — long cache

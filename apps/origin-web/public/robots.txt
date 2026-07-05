@@ -1,4 +1,4 @@
-# Origin Physical AI — robot-readiness for Physical AI
+# Origin — the evidence layer for AI agents
 # https://origin-physical-ai.pages.dev
 
 User-agent: *

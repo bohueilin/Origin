@@ -22,9 +22,9 @@ export function TrustStack({ data }: { data: TrustStackData }) {
         <div className="panel-kicker">Trust stack</div>
         <h3>One spine, four rungs — each must hold before the next is asked.</h3>
         <p>
-          The brain’s verifier and the autonomy license are not two scores; they are one ladder. A
-          plan earns readiness only after it is <strong>feasible</strong>, <strong>safe</strong>, and
-          its <strong>permissions</strong> are correctly called by the deterministic oracle.
+          The brain’s verifier and verified readiness are not two scores; they are one ladder. A
+          plan reaches readiness only after it is <strong>feasible</strong>, <strong>safe</strong>, and
+          its <strong>permissions</strong> are correctly called by evidence-backed verification.
         </p>
       </div>
 
@@ -35,7 +35,7 @@ export function TrustStack({ data }: { data: TrustStackData }) {
             <div className="ts-rung-name">Feasibility</div>
             <p className="ts-rung-claim">
               The verifier gates every proposed call against the hard constraints — infeasible
-              calls are blocked before anything reaches the oracle.
+              calls are blocked before anything reaches verification.
             </p>
             <div className="ts-rung-metrics">
               <span className="ts-chip">{feasibility.failureTags} failure categories caught</span>
@@ -67,15 +67,15 @@ export function TrustStack({ data }: { data: TrustStackData }) {
           <div className="ts-rung-body">
             <div className="ts-rung-name">Permission</div>
             <p className="ts-rung-claim">
-              The oracle calls each task finish / escalate / refuse, and the operating point is
-              measured by false-accept and false-reject rates.
+              Verification calls each task finish / escalate / refuse, and the operating point is
+              measured by unsafe-action and missed-action rates.
             </p>
             <div className="ts-rung-metrics">
               <span className="ts-chip lbl-finish">{permission.finish} finish</span>
               <span className="ts-chip lbl-escalate">{permission.escalate} escalate</span>
               <span className="ts-chip lbl-refuse">{permission.refuse} refuse</span>
-              <span className="ts-chip">FAR {pct(permission.far)}</span>
-              <span className="ts-chip">FRR {pct(permission.frr)}</span>
+              <span className="ts-chip">unsafe {pct(permission.far)}</span>
+              <span className="ts-chip">missed {pct(permission.frr)}</span>
             </div>
           </div>
         </li>
@@ -90,8 +90,8 @@ export function TrustStack({ data }: { data: TrustStackData }) {
               Readiness · {readiness.tierName}
             </div>
             <p className="ts-rung-claim">
-              Only with the three rungs below holding does the environment earn an RSL tier — the
-              autonomy-license readiness for this floor.
+              Only with the three rungs below holding does the environment reach an RSL tier — the
+              verified readiness for this floor.
             </p>
             <div className="ts-rung-metrics">
               <span className="ts-chip ts-ok">{readiness.decisionLabel}</span>
@@ -101,7 +101,7 @@ export function TrustStack({ data }: { data: TrustStackData }) {
       </ol>
 
       <p className="ts-foot">
-        Same evidence, one narrative — the deterministic oracle is the only judge at every rung.
+        Same evidence, one narrative — evidence-backed verification is the only judge at every rung.
       </p>
     </div>
   )

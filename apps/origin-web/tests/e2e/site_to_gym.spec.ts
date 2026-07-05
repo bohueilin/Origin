@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test'
 
 test('site-to-gym sample package renders review, export, and claim boundaries', async ({ page }) => {
-  await page.goto('/app.html')
+  await page.goto('/app.html?start=capture')
   await page.getByRole('button', { name: 'Run customer-owned readiness demo' }).click()
-  await expect(page.getByText('Video-to-Site-to-Gym MVP', { exact: true })).toBeVisible()
+  await expect(page.getByText('Video-to-verification MVP', { exact: true })).toBeVisible()
   await expect(page.getByText('Human review gate', { exact: true })).toBeVisible()
   await expect(page.getByText('Portable evidence bundle', { exact: true })).toBeVisible()
   await expect(page.getByText('Customer-owned readiness demo', { exact: true })).toBeVisible()
@@ -43,7 +43,7 @@ test('site-to-gym sample package renders review, export, and claim boundaries', 
 })
 
 test('mixed media upload shows keyframes, parser provenance/fallback, task cards, and trace', async ({ page }) => {
-  await page.goto('/app.html')
+  await page.goto('/app.html?start=capture')
   await page.locator('input[type="file"]').setInputFiles([
     {
       name: 'customer-walkthrough.mp4',

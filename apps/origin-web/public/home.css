@@ -67,7 +67,13 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* clip (not hidden) prevents any residual sub-viewport overflow from creating a
+     horizontal scrollbar on narrow phones, without breaking position: sticky. */
+  overflow-x: clip;
 }
+/* grid/flex children must be allowed to shrink below their content min-width,
+   or a wide child (e.g. a button row) stretches the track past the viewport. */
+.hero__copy, .hero__visual { min-width: 0; }
 
 h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; margin: 0; line-height: 1.12; }
 p { margin: 0; }
@@ -788,6 +794,9 @@ a:hover { text-decoration: underline; }
   .mobilecta { display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 38; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: rgba(246,245,242,.94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
   .mobilecta .btn { flex: 1; min-height: 44px; }
   body { padding-bottom: 76px; }
+  /* the long header CTA button is redundant once the sticky bar + burger show —
+     hiding it keeps the header row from overflowing on phones (≤~430px). */
+  .site-header__cta .btn--primary { display: none; }
 }
 
 /* ============================================================
@@ -1095,6 +1104,19 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .demo__tag--block { color: var(--danger); background: #fbecea; border: 1px solid #edc6c2; }
 .demo__panel p { color: var(--ink-soft); font-size: 15px; line-height: 1.55; margin: 0; max-width: 62ch; }
 .demo__panel code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: var(--ink); }
+/* per-step console readout — turns each step into a concrete product state */
+.demo__readout { margin-top: 15px; display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--ink-soft); background: var(--paper-3); border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 9px; padding: 10px 14px; }
+.demo__readout b { color: var(--ink); font-weight: 700; }
+.demo__readout .rd-state { margin-left: auto; font-weight: 700; letter-spacing: .03em; }
+.demo__readout--plan { border-left-color: var(--signal); }
+.demo__readout--plan .rd-state { color: var(--signal-ink); }
+.demo__readout--held { border-left-color: var(--warn); }
+.demo__readout--held .rd-state { color: var(--warn); }
+.demo__readout--ok { border-left-color: var(--verify); }
+.demo__readout--ok .rd-state { color: var(--verify); }
+.demo__readout--block { border-left-color: var(--danger); background: #fbecea; color: #9c342a; }
+.demo__readout--block b, .demo__readout--block .rd-state { color: var(--danger); }
+@media (max-width: 560px) { .demo__readout .rd-state { margin-left: 0; } }
 .demo__bar { display: none; }
 .demo.is-enhanced .demo__bar { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--line); background: var(--paper-3); flex-wrap: wrap; }
 .demo__cap { font-size: 13px; color: var(--ink-soft); margin-left: 6px; }

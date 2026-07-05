@@ -28,7 +28,7 @@ export function UnderstandingProgress({
         <h1>Watch the brain read your floor and propose every call.</h1>
         <p className="flow-sub">
           The brain proposes; a deterministic check gates infeasible calls. No media bytes were
-          read and no license is granted here — you confirm every assumption next, then the oracle
+          read and nothing is verified here — you confirm every assumption next, then verification
           scores the frozen workflow.
         </p>
 
@@ -48,7 +48,7 @@ export function UnderstandingProgress({
           <button className="btn primary hero-action" onClick={onContinue} disabled={!done}>
             Review proposed workflow
           </button>
-          <span className="trust-note">Interpretation only · deterministic oracle judges later</span>
+          <span className="trust-note">Interpretation only · verified against telemetry later</span>
         </div>
       </div>
     </section>

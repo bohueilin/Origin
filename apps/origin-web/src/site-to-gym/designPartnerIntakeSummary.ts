@@ -21,7 +21,7 @@ export const DESIGN_PARTNER_INTAKE_SUMMARY = {
   ],
   originOutputs: [
     'customer-owned hard-case holdout',
-    'deterministic oracle labels',
+    'verified labels',
     'policy evaluation report',
     'included/excluded evidence review log',
     'evidence bundle manifest',

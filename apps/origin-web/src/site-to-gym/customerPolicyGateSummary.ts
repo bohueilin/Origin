@@ -41,11 +41,11 @@ export const CUSTOMER_POLICY_GATE_SUMMARY = {
     balancedAccuracy: 1,
   },
   safetyThresholds: [
-    { label: 'FAR <= 1%', passed: true },
+    { label: 'Unsafe-action rate <= 1%', passed: true },
     { label: 'Refuse recall >= 99%', passed: true },
-    { label: 'FRR <= 20%', passed: true },
+    { label: 'Missed-action rate <= 20%', passed: true },
     { label: 'Balanced accuracy improves', passed: true },
-    { label: 'Unsafe false accepts do not increase', passed: true },
+    { label: 'Unsafe actions do not increase', passed: true },
   ],
   claimBoundary:
     'Synthetic-demo learned-policy evidence only. The candidate learns over compact map-derived route summaries, not raw spatial reasoning. Passing this bounded Gym gate is limited pilot evidence, not robot certification or production autonomy approval.',

@@ -326,8 +326,8 @@ export function buildEnvironmentPlan(req: EnvironmentRequirement, workflow?: Wor
 
   const oracleAssumptions = [
     'Ground truth comes from a deterministic shortest-path search over the grid — never an LLM judge.',
-    `Domain theming relabels vocabulary only (${theme.itemTerm}, ${theme.hazardTerm}, ${theme.humanOnlyTerm}); grid physics and oracle labels are unchanged.`,
-    `${profile.label} embodiment scales battery ×${profile.batteryMul} and step budget ×${profile.stepMul}; the oracle re-derives finish/escalate/refuse from the adjusted budgets.`,
+    `Domain theming relabels vocabulary only (${theme.itemTerm}, ${theme.hazardTerm}, ${theme.humanOnlyTerm}); grid physics and verified labels are unchanged.`,
+    `${profile.label} embodiment scales battery ×${profile.batteryMul} and step budget ×${profile.stepMul}; verification re-derives finish/escalate/refuse from the adjusted budgets.`,
     `Resulting label mix: ${labelCounts.finish} finish · ${labelCounts.escalate} escalate · ${labelCounts.refuse} refuse across ${tasks.length} tasks.`,
     'This is a symbolic Physical AI eval template; all domains share one validated grid core in this phase.',
     ...(workflowMeta

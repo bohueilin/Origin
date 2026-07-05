@@ -27,7 +27,7 @@ function buildLines(draft: WorkflowUnderstanding): Line[] {
   lines.push({ kind: 'stage', text: 'Verifying feasibility (deterministic check)…' })
   const ruleCount = draft.finishRules.length + draft.escalateRules.length + draft.refuseRules.length
   lines.push({ kind: 'repair', text: `Checked ${ruleCount} call(s) against the hard constraints · infeasible calls are gated, never scored.` })
-  lines.push({ kind: 'done', text: 'Workflow drafted. The deterministic oracle scores it after you freeze.' })
+  lines.push({ kind: 'done', text: 'Workflow drafted. Evidence-backed verification scores it after you freeze.' })
   return lines
 }
 
@@ -93,7 +93,7 @@ export function BrainStream({ draft, onDone }: { draft: WorkflowUnderstanding; o
         <span className="bs-legend bs-finish">finish</span>
         <span className="bs-legend bs-escalate">escalate</span>
         <span className="bs-legend bs-refuse">refuse</span>
-        <span className="bs-foot-note">Illustrative trace — the deterministic oracle is the judge.</span>
+        <span className="bs-foot-note">Illustrative trace — evidence-backed verification is the judge.</span>
       </div>
     </div>
   )

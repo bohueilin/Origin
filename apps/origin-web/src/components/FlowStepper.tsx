@@ -1,7 +1,7 @@
 // Bright, premium progress rail shown across the authoring flow so the operator
-// always knows where they are: Capture -> Understand -> Align -> License test -> License.
+// always knows where they are: Capture -> Understand -> Align -> Verify -> Report.
 
-const STEPS = ['Capture', 'Understand', 'Align', 'License test', 'License'] as const
+const STEPS = ['Capture', 'Understand', 'Align', 'Verify', 'Report'] as const
 
 // Map each app view to a step index. Returns -1 for views outside the flow
 // (landing / showcase) so the rail hides itself.

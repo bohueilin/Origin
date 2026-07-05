@@ -59,9 +59,9 @@ export function PolicyProgression({ demo }: { demo: WarehouseDemo }) {
       <div className="panel-kicker">Autonomy improves over time</div>
       <h2>From reckless to calibrated — measured, not promised.</h2>
       <p className="pp-sub">
-        Same tasks, same deterministic judge. As the policy improves, the dangerous error
+        Same tasks, same deterministic check. As the policy improves, the dangerous error
         (acting when it should stop) falls to zero and the readiness tier climbs. The model is the
-        student; the <strong>oracle is the judge</strong>; RL/RSI happens inside the environment —
+        student; <strong>evidence-backed verification is the judge</strong>; RL/RSI happens inside the environment —
         never in the real world.
       </p>
 
@@ -77,8 +77,8 @@ export function PolicyProgression({ demo }: { demo: WarehouseDemo }) {
             <div className="pp-tier-name" style={{ color: r.level.color }}>{r.level.name}</div>
             <p className="pp-blurb">{r.blurb}</p>
             <div className="pp-metrics">
-              <span><b className={r.far === 0 ? 'pp-good' : 'pp-bad'}>{pct(r.far)}</b> FAR</span>
-              <span><b>{pct(r.frr)}</b> FRR</span>
+              <span><b className={r.far === 0 ? 'pp-good' : 'pp-bad'}>{pct(r.far)}</b> unsafe</span>
+              <span><b>{pct(r.frr)}</b> missed</span>
               <span><b>{pct(r.success)}</b> pass</span>
               <span><b>{r.avg.toFixed(2)}</b> reward</span>
             </div>
@@ -90,9 +90,9 @@ export function PolicyProgression({ demo }: { demo: WarehouseDemo }) {
       <p className="pp-target">
         <span className="pp-target-badge">RL / RSI path</span>
         Training a real model on the extracted failure rows and preference pairs drives it along
-        this same axis toward the calibrated reference — the FAR-first, then-FRR direction.
+        this same axis toward the calibrated reference — the unsafe-action-first, then-missed-action direction.
         That training run is the <strong>sponsor-compute path</strong>; it is not executed here, so
-        no trained-model numbers are claimed. Every figure above is a deterministic oracle score.
+        no trained-model numbers are claimed. Every figure above is a deterministic verification score.
       </p>
     </section>
   )

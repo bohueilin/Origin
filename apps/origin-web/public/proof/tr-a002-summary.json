@@ -1,0 +1,32 @@
+{
+  "artifact": "TR-A002",
+  "type": "machine_emitted_sandbox_trace",
+  "label": "Machine-emitted by the Origin trace emitter over one SIMULATED, SANDBOXED agent workflow. Every event is committed to a real SHA-256 hash chain; the final event seals the chain. Not a customer deployment, not production SaaS, not a performance claim. The payments.refund side effect executes in a sandbox only — no live money moves. Scenario inputs are simulated. Timestamps are deterministic pseudo-timestamps.",
+  "agent": "payments-ops-agent",
+  "policy_id": "refund-cap-v0.3",
+  "scenario": "refund exception handling",
+  "flow": [
+    "proposal.created ($480 refund on order_8842)",
+    "policy.evaluated (refund-cap-v0.3)",
+    "verdict.require_approval",
+    "proxy.held",
+    "approval.requested -> approval.granted (payments-on-call)",
+    "proxy.executed_sandbox (no live money)",
+    "action.recorded",
+    "retry.proposed_over_scope ($920)",
+    "verdict.deny_or_block -> proxy.blocked",
+    "evidence.digest_sealed"
+  ],
+  "event_count": 12,
+  "final_digest": "ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32",
+  "log_digest": "91bbdf8dd38214a254c5c775a09fc9a449ed499f6a59ce3fc449a5bd928ccbf9",
+  "algorithm": "sha256",
+  "verify_command": "npm run proof:verify",
+  "shows": [
+    "The Origin trace emitter producing a real, tamper-evident hash-chained record of an agent workflow: proposal, policy verdict, proxy hold, human approval, sandbox execution, a blocked over-scope retry, and a sealed digest."
+  ],
+  "does_not_show": [
+    "A customer deployment, production SaaS, revenue, reviewer acceptance, compliance certification, or a performance / latency claim.",
+    "Live money movement — the payments.refund side effect executes in a sandbox only."
+  ]
+}

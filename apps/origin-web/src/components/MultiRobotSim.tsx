@@ -149,7 +149,7 @@ export function MultiRobotSim({
           ? 'Collision-free in time and space.'
           : 'Routed around walls, hazards, and — where the space allows — each other.'}
         {verdictLabel && (
-          <> The deterministic oracle still scores one lane as the licensed verdict (<span className={`lbl-${verdictLabel}`}>{verdictLabel}</span>).</>
+          <> Evidence-backed verification still scores one lane as the verified verdict (<span className={`lbl-${verdictLabel}`}>{verdictLabel}</span>).</>
         )}
       </p>
     </>

@@ -18,7 +18,7 @@ export function LicenseSummary({ license }: Props) {
           {level.id}
         </div>
         <div className="license-name-block">
-          <div className="license-eyebrow">Autonomy license</div>
+          <div className="license-eyebrow">Verified readiness</div>
           <div className="license-name" style={{ color: level.color }}>
             {level.name}
           </div>
@@ -28,7 +28,7 @@ export function LicenseSummary({ license }: Props) {
       <p className="license-blurb">{level.blurb}</p>
       <p className="license-permission">{level.permission}</p>
 
-      <ol className="license-ladder" aria-label="Autonomy license ladder">
+      <ol className="license-ladder" aria-label="Verified readiness ladder">
         {ORDER.map((id) => {
           const lvl = LICENSE_LEVELS[id]
           const active = id === level.id

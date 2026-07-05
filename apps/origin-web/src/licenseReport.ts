@@ -102,7 +102,7 @@ export function buildPhysicalAiLicenseReport(
 
   return {
     reportId: `${plan.id}_${demo.version}`,
-    title: `${plan.theme.label} / ${plan.profile.label} Autonomy License`,
+    title: `${plan.theme.label} / ${plan.profile.label} Verification Report`,
     decision,
     decisionLabel,
     summary:
@@ -135,9 +135,9 @@ export function buildPhysicalAiLicenseReport(
       'Upload real SOPs, floor plan, and unsafe examples to replace template assumptions.',
       'Run the target robot/model through the same finish/escalate/refuse eval before granting autonomy.',
       'Persist the generated eval and model traces as tamper-evident evidence.',
-      'Tune operating thresholds around FAR first, then FRR, because false accepts create physical-world risk.',
+      'Tune operating thresholds around the unsafe-action rate first, then the missed-action rate, because unsafe actions create physical-world risk.',
     ],
     disclaimer:
-      'This is a readiness evidence pack, not a regulatory certification. It shows how the reference oracle scores this environment; a real robot/model must still earn its own license on the same eval.',
+      'This is a readiness evidence pack, not a regulatory certification. It shows how the reference run scores this environment; a real robot/model must still earn its own verified readiness on the same eval.',
   }
 }

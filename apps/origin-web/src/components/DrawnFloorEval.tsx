@@ -64,12 +64,12 @@ export function DrawnFloorEval({
   const recklessCaught = verdict !== 'finish' && recklessRollout.reward === 0
 
   return (
-    <section className="drawn-eval" aria-label="Your drawn floor, scored by the oracle">
-      <div className="panel-kicker">Your floor, judged by the same oracle</div>
+    <section className="drawn-eval" aria-label="Your drawn floor, verified against telemetry">
+      <div className="panel-kicker">Your floor, judged by the same verification</div>
       <h2>You drew this floor — here's the deterministic verdict.</h2>
       <p className="de-sub">
         The map you placed in “Does this match the real workflow?” is now scored by the same
-        deterministic oracle as the benchmark. You define the layout; the oracle alone decides{' '}
+        evidence-backed verification as the benchmark. You define the layout; verification alone decides{' '}
         <strong>finish</strong>, <strong>escalate</strong>, or <strong>refuse</strong>.
       </p>
 
@@ -77,7 +77,7 @@ export function DrawnFloorEval({
         <div
           className="site-grid de-grid"
           style={{ gridTemplateColumns: `repeat(${siteMap.width}, 1fr)` }}
-          aria-label="Drawn floor grid with the oracle's safe path"
+          aria-label="Drawn floor grid with the verified safe path"
         >
           {Array.from({ length: siteMap.width * siteMap.height }, (_, i) => {
             const x = i % siteMap.width
@@ -110,7 +110,7 @@ export function DrawnFloorEval({
 
           <div className="de-compare">
             <div className="de-cmp de-cmp-oracle">
-              <span>Calibrated oracle</span>
+              <span>Calibrated reference</span>
               <code>
                 {oracleRollout.passed ? 'pass' : 'fail'} · reward {oracleRollout.reward.toFixed(2)}
               </code>
@@ -125,7 +125,7 @@ export function DrawnFloorEval({
           </div>
 
           <p className="de-note">
-            Deterministic oracle — no model, no LLM. Change the walls or {hazardTerm} cells on the
+            Evidence-backed verification — no model, no LLM. Change the walls or {hazardTerm} cells on the
             previous step and the verdict changes with them.
           </p>
         </div>

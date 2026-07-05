@@ -15,8 +15,9 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/home.css?v=18" />
+    <link rel="stylesheet" href="/home.css?v=22" />
     <style>
+      /* ---- scoped to the brief; never touches home.css ---- */
       .brief { max-width: 940px; margin: 0 auto; padding: 40px 24px 64px; }
       .brief__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
       .brief__brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); }
@@ -24,28 +25,79 @@
       .brief__brand b { font-family: var(--font-display); font-size: 20px; }
       .brief__brand span { color: var(--steel); font-size: 14px; }
       .brief__actions { display: flex; gap: 10px; }
-      .brief h1 { font-size: clamp(26px, 4vw, 36px); letter-spacing: -0.02em; margin: 26px 0 8px; max-width: 22ch; }
-      .brief__eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--signal-ink); font-weight: 700; margin: 26px 0 0; }
+
+      .brief__meta { margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 12px; color: var(--steel); }
+      .brief__ver { font-weight: 700; letter-spacing: .04em; color: var(--ink); background: var(--paper-3); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px 10px; }
+      .brief__ver-sim { color: var(--steel); }
+
+      .brief h1 { font-size: clamp(26px, 4vw, 36px); letter-spacing: -0.02em; margin: 16px 0 8px; max-width: 22ch; }
+      .brief__eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--signal-ink); font-weight: 700; margin: 22px 0 0; }
       .brief__lede { font-size: 17px; color: var(--ink-soft); max-width: 64ch; }
-      .brief__grid { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+      .brief__grid { margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
       @media (max-width: 700px) { .brief__grid { grid-template-columns: 1fr; } }
       .brief__card { background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--sh-sm); }
       .brief__card.is-wide { grid-column: 1 / -1; }
       .brief__card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--signal-ink); margin-bottom: 10px; }
       .brief__card p, .brief__card li { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
       .brief__card ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; }
+      .brief__lead { font-weight: 600; color: var(--ink); margin: 6px 0 4px; }
+
+      /* ---- Evidence Package diagram ---- */
+      .brief__pipe { margin-top: 4px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; align-items: stretch; }
+      @media (max-width: 720px) { .brief__pipe { grid-template-columns: 1fr 1fr; } }
+      .brief__step { position: relative; background: #fff; border: 1px solid var(--line-2); border-radius: 10px; padding: 12px 12px 12px 14px; box-shadow: var(--sh-sm); margin: 4px; }
+      .brief__step .n { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; color: var(--steel); }
+      .brief__step .t { display: block; font-size: 12.5px; font-weight: 700; color: var(--ink); margin-top: 3px; line-height: 1.25; }
+      .brief__step .d { display: block; font-size: 11px; color: var(--ink-soft); margin-top: 4px; line-height: 1.35; }
+      .brief__step[data-tone="plan"]   { border-color: #bcccff; background: var(--signal-wash); }
+      .brief__step[data-tone="plan"] .t   { color: var(--signal-ink); }
+      .brief__step[data-tone="hold"]   { border-color: #e6c98a; background: #fbf3df; }
+      .brief__step[data-tone="hold"] .t   { color: var(--warn); }
+      .brief__step[data-tone="done"]   { border-color: #9fd2be; background: #eaf6f0; }
+      .brief__step[data-tone="done"] .t   { color: var(--verify); }
+      .brief__legend { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 11.5px; color: var(--steel); }
+      .brief__legend b { font-weight: 700; }
+      .brief__legend .k { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: baseline; border: 1px solid rgba(0,0,0,.15); }
+      .k--plan { background: var(--signal-wash); border-color: #bcccff; }
+      .k--hold { background: #fbf3df; border-color: #e6c98a; }
+      .k--done { background: #eaf6f0; border-color: #9fd2be; }
+
       .brief__flow { margin-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
       .brief__flow span { font-size: 12.5px; font-weight: 600; color: var(--ink); background: #fff; border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 12px; box-shadow: var(--sh-sm); }
       .brief__flow span.is-core { color: var(--signal-ink); border-color: #bcccff; background: var(--signal-wash); }
       .brief__flow em { color: var(--steel); font-style: normal; font-weight: 700; }
+
       .brief__two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 2px; }
       @media (max-width: 560px) { .brief__two { grid-template-columns: 1fr; } }
+
+      /* ---- evidence ladder ---- */
+      .rung { display: grid; gap: 3px; padding: 10px 0; border-top: 1px solid var(--line); }
+      .rung:first-of-type { border-top: 0; padding-top: 2px; }
+      .rung__id { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--ink); }
+      .rung__tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: 1px; }
+      .rung__tag--now { color: var(--verify); background: #eaf6f0; border: 1px solid #9fd2be; }
+      .rung__tag--spec { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
+      .rung__tag--soon { color: var(--signal-ink); background: var(--signal-wash); border: 1px solid #bcccff; }
+      .rung p { font-size: 12.5px; }
+      .rung code, .brief code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; background: var(--paper-3); border: 1px solid var(--line-2); border-radius: 5px; padding: 1px 5px; color: var(--ink); word-break: break-all; }
+
       .brief__foot { margin-top: 30px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 18px; font-size: 13px; color: var(--steel); }
       .brief__note { margin-top: 18px; font-size: 12.5px; color: var(--steel); font-style: italic; }
+      .brief__print-only { display: none; }
+
       @media print {
-        .brief__actions, .site-header { display: none !important; }
-        body { background: #fff; }
-        .brief__card { box-shadow: none; break-inside: avoid; }
+        @page { margin: 14mm; }
+        .brief__actions, .site-header, .skip-link { display: none !important; }
+        html, body { background: #fff !important; }
+        .brief { max-width: none; padding: 0; color: #000; }
+        .brief h1, .brief__lede, .brief__card p, .brief__card li, .brief__step .t, .brief__step .d, .rung__id, .rung p { color: #000 !important; }
+        .brief__eyebrow, .brief__card h2, .rung__id { color: #000 !important; }
+        .brief__card, .brief__step, .brief__flow span { box-shadow: none !important; }
+        .brief__card, .rung, .brief__pipe, .brief__two { break-inside: avoid; page-break-inside: avoid; }
+        h1, h2 { break-after: avoid; }
+        a { color: #000 !important; text-decoration: none; }
+        .brief__print-only { display: block; }
       }
     </style>
   </head>
@@ -62,15 +114,57 @@
         </div>
       </div>
 
+      <div class="brief__meta">
+        <span class="brief__ver">v2 · 2026-07-04</span>
+        <span class="brief__ver-sim">Private pilot · prototype, not production SaaS · forwardable one-pager</span>
+      </div>
+
       <p class="brief__eyebrow">The evidence layer for AI agents</p>
       <h1>Get your agent through security review — and prove what it did.</h1>
       <p class="brief__lede">
         Origin enforces runtime policy before an AI agent takes a side effect, routes every tool call
-        through a controlled proxy, and produces a tamper-evident evidence package showing what happened,
-        why it was allowed, and who owned the risk.
+        through a controlled proxy, requires human approval where policy demands it, and produces a
+        tamper-evident, hash-chained evidence package showing what happened, why it was allowed, and
+        who owned the risk.
       </p>
 
       <div class="brief__grid">
+        <div class="brief__card is-wide">
+          <h2>The evidence package — how one action is bounded and proven</h2>
+          <div class="brief__pipe" role="img" aria-label="Evidence pipeline: proposal, policy verdict, controlled proxy, approval or block, hash-chained audit trail, then a review-ready evidence package.">
+            <div class="brief__step" data-tone="plan">
+              <span class="n">01</span><span class="t">Proposal</span>
+              <span class="d">Agent proposes a side effect before it can act.</span>
+            </div>
+            <div class="brief__step" data-tone="plan">
+              <span class="n">02</span><span class="t">Policy verdict</span>
+              <span class="d">allow / cap / require-approval / deny / pause.</span>
+            </div>
+            <div class="brief__step" data-tone="plan">
+              <span class="n">03</span><span class="t">Controlled proxy</span>
+              <span class="d">The only path to a real side effect.</span>
+            </div>
+            <div class="brief__step" data-tone="hold">
+              <span class="n">04</span><span class="t">Approval / block</span>
+              <span class="d">Human gate on risky actions; over-scope is blocked.</span>
+            </div>
+            <div class="brief__step" data-tone="done">
+              <span class="n">05</span><span class="t">Audit chain</span>
+              <span class="d">Every event hash-chained, tamper-evident.</span>
+            </div>
+            <div class="brief__step" data-tone="done">
+              <span class="n">06</span><span class="t">Evidence package</span>
+              <span class="d">Review-ready export: what, why, who owned the risk.</span>
+            </div>
+          </div>
+          <div class="brief__legend" aria-hidden="true">
+            <span><span class="k k--plan"></span>enforce / plan</span>
+            <span><span class="k k--hold"></span>held / approval</span>
+            <span><span class="k k--done"></span>verified / recorded</span>
+            <span><b>red</b> = blocked · <b>gray</b> = simulated</span>
+          </div>
+        </div>
+
         <div class="brief__card is-wide">
           <h2>The 90-second evidence loop</h2>
           <div class="brief__flow">
@@ -82,7 +176,7 @@
             <span>Bounded action</span><em>→</em>
             <span class="is-core">Audit digest</span>
           </div>
-          <p style="margin-top:12px">Verdict is one of allow / cap / require-approval / deny / pause. The proxy is the only path to a side effect. Flip one input and Origin blocks an over-scope action — and records the block. Sandboxed side effects; any real-money path stays human-created and human-gated.</p>
+          <p style="margin-top:12px">Watch one workflow run end to end. The proxy is the only path to a side effect. Flip one input and Origin blocks an over-scope action — and records the block. Side effects are sandboxed; any real-money path stays human-created and human-gated, so the agent never touches live money.</p>
         </div>
 
         <div class="brief__card">
@@ -109,7 +203,7 @@
           <p>A founder-led engagement to get one blocked agent workflow through review — and hand you the evidence package that does it.</p>
           <div class="brief__two">
             <div>
-              <p style="font-weight:600;color:var(--ink);margin:6px 0 4px">You bring</p>
+              <p class="brief__lead">You bring</p>
               <ul>
                 <li>The agent workflow you're trying to ship</li>
                 <li>The tools and systems it touches</li>
@@ -117,7 +211,7 @@
               </ul>
             </div>
             <div>
-              <p style="font-weight:600;color:var(--ink);margin:6px 0 4px">Origin provides</p>
+              <p class="brief__lead">Origin provides</p>
               <ul>
                 <li>A policy map for the workflow</li>
                 <li>A controlled proxy path for side effects</li>
@@ -134,28 +228,48 @@
             <li>There's a real reviewer and a real blocker</li>
             <li>There's a tool-call path we can route through a proxy</li>
             <li>Someone owns approvals for risky actions</li>
+            <li>You're willing to instrument the agent's events</li>
           </ul>
-          <p style="margin-top:10px">Not ready if any of those is missing — we'll say so.</p>
         </div>
 
         <div class="brief__card">
-          <h2>Proof honesty</h2>
-          <p>We publish evidence in rungs and never dress one up as another:</p>
+          <h2>Not ready if</h2>
           <ul>
-            <li><b>TR-A001</b> — authored evidence specimen (shows the format)</li>
-            <li><b>TR-A002</b> — machine-emitted sandbox agent trace</li>
-            <li><b>TR-A003</b> — first design-partner trace, when earned</li>
+            <li>No high-consequence workflow — the stakes don't warrant it</li>
+            <li>No reviewer or blocker — nothing is actually gating the launch</li>
+            <li>No tool-call path to route through a proxy</li>
+            <li>No owner for approvals on risky actions</li>
+            <li>No willingness to instrument the agent's events</li>
           </ul>
-          <p style="margin-top:10px">The prototype runs; it is not production SaaS. Tamper-evident, not tamper-proof. Review-ready, not reviewer-accepted.</p>
+          <p style="margin-top:10px">If any of these is true, we'll say so — early.</p>
+        </div>
+
+        <div class="brief__card is-wide">
+          <h2>The evidence ladder — proof honesty</h2>
+          <p>We publish evidence in rungs and never dress one up as another.</p>
+          <div class="rung">
+            <span class="rung__id">TR-A001<span class="rung__tag rung__tag--spec">Authored specimen</span></span>
+            <p>An authored evidence specimen that shows the package <em>format</em> only — illustrative, not a machine-emitted run. See <a href="/proof#tr-a001">/proof#tr-a001</a>.</p>
+          </div>
+          <div class="rung">
+            <span class="rung__id">TR-A002<span class="rung__tag rung__tag--now">Available now</span></span>
+            <p>A machine-emitted sandbox trace: <b>12 events</b>, a real <b>SHA-256 hash chain</b>, final digest <code>ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32</code>. Re-verifiable with <code>npm run proof:verify</code>; download at <a href="/proof/tr-a002.json">/proof/tr-a002.json</a>. Sandbox only — no live money, no customer data, not a performance claim. See <a href="/proof#tr-a002">/proof#tr-a002</a>.</p>
+          </div>
+          <div class="rung">
+            <span class="rung__id">TR-A003<span class="rung__tag rung__tag--soon">When earned</span></span>
+            <p>The first external design-partner trace — forthcoming. We won't show data for it until it exists.</p>
+          </div>
+          <p style="margin-top:12px;font-size:12.5px;color:var(--steel)">The prototype runs; it is not production SaaS. Tamper-evident, not tamper-proof. Review-ready, not reviewer-accepted. Decision-support, not a guarantee of approval.</p>
         </div>
       </div>
 
       <p class="brief__note">Origin is decision-support and evidence infrastructure — not legal or compliance certification. No customers, logos, or metrics are claimed here unless independently verifiable. Send this to your security or platform lead.</p>
 
       <div class="brief__foot">
-        <span>Origin · the evidence layer for AI agents · origin-physical-ai.pages.dev</span>
-        <span>Brief v2 · 2026-07 · <a href="/">origin-physical-ai.pages.dev</a></span>
+        <span>Origin · the evidence layer for AI agents</span>
+        <span>See it live: <a href="https://origin-physical-ai.pages.dev/">origin-physical-ai.pages.dev</a> · Brief v2 · 2026-07-04</span>
       </div>
+      <p class="brief__print-only" style="margin-top:14px;font-size:12px;color:#000;">Live site (type this in): origin-physical-ai.pages.dev · Demo: origin-physical-ai.pages.dev/#demo · Proof: origin-physical-ai.pages.dev/proof</p>
     </main>
   </body>
 </html>

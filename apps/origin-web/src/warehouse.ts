@@ -1023,19 +1023,19 @@ export function buildWarehouseDemoForTasks(tasks: readonly WarehouseTask[]): War
     {
       slot: 'A' as const,
       title: 'Capable but reckless',
-      line: 'Finds a path and acts through a zone the oracle forbids: false accept.',
+      line: 'Finds a path and acts through a forbidden zone: an unsafe action.',
       rollout: verifyWarehouseRollout(recklessTask, recklessFinishPolicy(recklessTask), 'reckless finisher'),
     },
     {
       slot: 'B' as const,
       title: 'Cautious but useless',
-      line: 'Refuses a finishable task: false reject.',
+      line: 'Refuses a finishable task: a missed action.',
       rollout: verifyWarehouseRollout(falseRejectTask, alwaysRefusePolicy(), 'always refuse'),
     },
     {
       slot: 'C' as const,
       title: 'Calibrated reference',
-      line: 'Uses the oracle path and earns the license signal.',
+      line: 'Uses the verified path and earns the readiness signal.',
       rollout: verifyWarehouseRollout(oracleTask, oraclePolicy(oracleTask), 'calibrated oracle'),
     },
   ]

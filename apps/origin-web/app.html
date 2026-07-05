@@ -29,7 +29,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/home.css?v=19" />
+    <link rel="stylesheet" href="/home.css?v=22" />
     <title>Origin Evidence Console — private pilot preview</title>
     <style>
       .ec { max-width: 1180px; margin: 0 auto; padding: 26px 24px 72px; }
@@ -91,6 +91,51 @@
       details.json summary { cursor: pointer; font-size: 12.5px; color: var(--signal-ink); font-weight: 600; }
       details.json pre { margin: 10px 0 0; background: var(--graphite); color: var(--on-dark); border-radius: 10px; padding: 14px; overflow-x: auto; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.5; }
       .ec__note { margin-top: 26px; font-size: 12.5px; color: var(--steel); border-top: 1px solid var(--line); padding-top: 16px; }
+
+      /* Scenario switcher (tablist) */
+      .ec__scenarios { margin: 22px 0 4px; }
+      .ec__scenarios-lbl { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); margin: 0 0 9px; }
+      .tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; }
+      .tab {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: inherit; font-size: 13px; font-weight: 600; color: var(--ink-soft);
+        background: #fff; border: 1px solid var(--line-2); border-radius: 999px;
+        padding: 8px 15px; cursor: pointer; line-height: 1.2; text-align: left;
+        transition: border-color .12s ease, background .12s ease, color .12s ease;
+      }
+      .tab:hover { border-color: var(--steel); color: var(--ink); }
+      .tab:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+      .tab[aria-selected="true"] {
+        color: var(--signal-ink); background: var(--signal-wash);
+        border-color: var(--signal); box-shadow: inset 0 0 0 1px var(--signal);
+      }
+      .tab__n { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--steel); font-weight: 700; }
+      .tab[aria-selected="true"] .tab__n { color: var(--signal-ink); }
+      .tab__risk { font-size: 11px; font-weight: 700; letter-spacing: .03em; color: var(--danger); background: #fbecea; border: 1px solid #edc6c2; border-radius: 999px; padding: 1px 7px; }
+
+      /* Scenario section */
+      .scen { margin-top: 4px; }
+      .scen__head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 20px 0 2px; }
+      .scen h2 { font-size: clamp(18px, 2.2vw, 22px); letter-spacing: -0.015em; margin: 0; }
+      .scen__meta { font-size: 12.5px; color: var(--steel); }
+      .scen__meta code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+      .scen__sub { font-size: 13.5px; color: var(--ink-soft); margin: 4px 0 0; max-width: 74ch; }
+      /* When JS is off, a divider separates the stacked scenarios */
+      .scen + .scen { border-top: 1px solid var(--line); padding-top: 6px; }
+
+      /* Blocked over-scope peak — emphasized */
+      .blocked { border-color: #e3a49c; background: #fdf5f4; }
+      .blocked .p__h { color: var(--danger); border-bottom-color: #edc6c2; }
+      .blocked__tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--danger); border-radius: 6px; padding: 4px 9px; }
+      .blocked__req { margin-top: 11px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--danger); background: #fbecea; border: 1px solid #edc6c2; border-radius: 8px; padding: 9px 11px; word-break: break-word; }
+      .blocked__why { margin-top: 10px; font-size: 13px; color: var(--ink-soft); }
+      .blocked__chain { margin-top: 10px; font-size: 12px; color: var(--steel); }
+      .blocked__chain b { color: var(--danger); }
+      .blocked__link { margin-top: 11px; font-size: 12.5px; }
+      .blocked__link a { color: var(--signal-ink); font-weight: 600; }
+
+      /* JS-on: only the active scenario is shown (set by inline script) */
+      .scen[hidden] { display: none; }
     </style>
   </head>
   <body>
@@ -110,134 +155,152 @@
       <p class="ec__lede">An agent proposes an action. The policy gate returns a verdict. The controlled proxy is the only path to the side effect. A human approves when risk crosses a threshold. An over-scope retry is blocked. Every step lands in a tamper-evident, hash-chained audit trail — exported as a review-ready evidence package.</p>
       <p class="ec__flow" aria-hidden="true"><b>Propose</b><em>&rarr;</em><b>Gate</b><em>&rarr;</em><b>Proxy</b><em>&rarr;</em><b>Approve</b><em>&rarr;</em><b>Prove</b></p>
 
-      <div class="ec__grid">
-        <!-- Left: proposal queue -->
-        <div class="ec__col">
-          <section class="p" aria-labelledby="q-h">
-            <div class="p__h" id="q-h">Proposal queue</div>
-            <ul class="q">
-              <li class="is-sel">
-                <span class="q__t">Refund $480.00 · order_8842</span>
-                <span class="q__m"><code>payments-ops-agent</code> · payments.refund</span>
-                <span class="st st--needs">Needs approval</span>
-              </li>
-              <li>
-                <span class="q__t">Update account tier · acct_5521</span>
-                <span class="q__m"><code>internal-ops-agent</code> · crm.update_record</span>
-                <span class="st st--exec">Executed</span>
-              </li>
-              <li>
-                <span class="q__t">Restart worker pool · svc-ingest</span>
-                <span class="q__m"><code>platform-agent</code> · infra.restart</span>
-                <span class="st st--proposed">Proposed</span>
-              </li>
-              <li>
-                <span class="q__t">Export customer records · seg_44</span>
-                <span class="q__m"><code>data-agent</code> · warehouse.export (PII)</span>
-                <span class="st st--blocked">Blocked</span>
-              </li>
-              <li>
-                <span class="q__t">Refund $42.10 · order_8790</span>
-                <span class="q__m"><code>payments-ops-agent</code> · payments.refund</span>
-                <span class="st st--verified">Verified</span>
-              </li>
-            </ul>
-          </section>
+      <!-- Scenario switcher. With JS off, this is inert and all three scenarios below are stacked & readable. -->
+      <div class="ec__scenarios">
+        <p class="ec__scenarios-lbl" id="scen-lbl">Walk a scenario</p>
+        <div class="tabs" role="tablist" aria-labelledby="scen-lbl">
+          <button type="button" class="tab" role="tab" id="tab-refund" aria-controls="scen-refund" aria-selected="true" tabindex="0">
+            <span class="tab__n">01</span> Refund exception
+          </button>
+          <button type="button" class="tab" role="tab" id="tab-prod" aria-controls="scen-prod" aria-selected="false" tabindex="-1">
+            <span class="tab__n">02</span> Production change
+          </button>
+          <button type="button" class="tab" role="tab" id="tab-pii" aria-controls="scen-pii" aria-selected="false" tabindex="-1">
+            <span class="tab__n">03</span> PII export
+          </button>
         </div>
+      </div>
 
-        <!-- Center: selected proposal + verdict + proxy + blocked -->
-        <div class="ec__col">
-          <section class="p" aria-labelledby="sel-h">
-            <div class="p__h" id="sel-h">Selected proposal</div>
-            <div class="p__b">
-              <dl class="kv">
-                <dt>Agent</dt><dd><code>payments-ops-agent</code></dd>
-                <dt>Workflow</dt><dd>Refund exception handling</dd>
-                <dt>Proposed action</dt><dd>Refund <b>$480.00</b> for <code>order_8842</code></dd>
-                <dt>Tool</dt><dd><code>payments.refund</code></dd>
-                <dt>Risk owner</dt><dd>payments on-call</dd>
-              </dl>
-            </div>
-          </section>
+      <!-- ============ SCENARIO 1 · Refund exception (default) ============ -->
+      <section class="scen" id="scen-refund" role="tabpanel" aria-labelledby="tab-refund" tabindex="0">
+        <div class="scen__head">
+          <h2 id="scen-refund-h">Refund exception</h2>
+          <span class="scen__meta"><code>payments-ops-agent</code> · <code>payments.refund</code> · policy <code>refund-cap-v0.3</code></span>
+        </div>
+        <p class="scen__sub">An above-cap refund needs a human; a second refund over the hard ceiling is denied and blocked at the proxy. This mirrors the published machine-emitted <b>sandbox</b> trace TR-A002 (simulated; no live money).</p>
 
-          <section class="p" aria-labelledby="v-h">
-            <div class="p__h" id="v-h">Policy verdict · <code style="text-transform:none;letter-spacing:0">refund-cap-v0.3</code></div>
-            <div class="p__b">
-              <ul class="checks">
-                <li><span class="ok">&#10003;</span> Scope · <code>payments.refund</code> in allowlist</li>
-                <li><span class="ok">&#10003;</span> Actor · agent identity verified</li>
-                <li><span class="hold">!</span> Budget · $480.00 over the $250 auto-cap</li>
-                <li><span class="hold">!</span> Approval rule · above-cap refunds require a human</li>
+        <div class="ec__grid">
+          <!-- Left: proposal queue -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="r-q-h">
+              <div class="p__h" id="r-q-h">Proposal queue</div>
+              <ul class="q">
+                <li class="is-sel">
+                  <span class="q__t">Refund $480.00 · order_8842</span>
+                  <span class="q__m"><code>payments-ops-agent</code> · payments.refund</span>
+                  <span class="st st--needs">Needs approval</span>
+                </li>
+                <li>
+                  <span class="q__t">Refund $920.00 · order_8842</span>
+                  <span class="q__m"><code>payments-ops-agent</code> · payments.refund</span>
+                  <span class="st st--blocked">Blocked</span>
+                </li>
+                <li>
+                  <span class="q__t">Refund $42.10 · order_8790</span>
+                  <span class="q__m"><code>payments-ops-agent</code> · payments.refund</span>
+                  <span class="st st--verified">Verified</span>
+                </li>
               </ul>
-              <p class="verdict">Verdict · require-approval</p>
-              <p style="margin-top:8px;font-size:12px;color:var(--steel)">Deterministic. One of allow / cap / require-approval / deny / pause.</p>
-            </div>
-          </section>
+            </section>
+          </div>
 
-          <section class="p" aria-labelledby="px-h">
-            <div class="p__h" id="px-h">Tool-call proxy</div>
-            <div class="p__b">
-              <p>Tool <code>payments.refund</code> is <b class="proxy--held">held pending approval</b>. The agent has no path to the side effect except through the controlled proxy — nothing runs while the verdict is <code>require-approval</code>.</p>
-            </div>
-          </section>
-
-          <section class="p blocked" aria-labelledby="bl-h">
-            <div class="p__h" id="bl-h">Blocked action</div>
-            <div class="p__b">
-              <p>A second refund attempt <b>above the approved scope</b> was <b>blocked at the proxy and recorded</b>. The earlier approval covered one action only; it does not widen the agent's standing authority.</p>
-            </div>
-          </section>
-        </div>
-
-        <!-- Right: approval + side-effect log + audit + export -->
-        <div class="ec__col">
-          <section class="p" aria-labelledby="ap-h">
-            <div class="p__h" id="ap-h">Approval queue</div>
-            <div class="p__b">
-              <p>Risk owner · <b>payments on-call</b></p>
-              <div class="approvals">
-                <span class="btn btn--primary btn--sm">Approve</span>
-                <span class="btn btn--ghost btn--sm">Hold</span>
-                <span class="btn btn--ghost btn--sm">Deny</span>
+          <!-- Center: selected proposal + verdict + proxy + blocked -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="r-sel-h">
+              <div class="p__h" id="r-sel-h">Selected proposal</div>
+              <div class="p__b">
+                <dl class="kv">
+                  <dt>Agent</dt><dd><code>payments-ops-agent</code></dd>
+                  <dt>Workflow</dt><dd>Refund exception handling</dd>
+                  <dt>Proposed action</dt><dd>Refund <b>$480.00</b> for <code>order_8842</code></dd>
+                  <dt>Tool</dt><dd><code>payments.refund</code></dd>
+                  <dt>Risk owner</dt><dd>payments on-call</dd>
+                </dl>
               </div>
-              <p style="margin-top:10px;font-size:12px;color:var(--steel)">Approved for this one action, at 09:41:26. Who, when, and scope are recorded.</p>
-            </div>
-          </section>
+            </section>
 
-          <section class="p" aria-labelledby="se-h">
-            <div class="p__h" id="se-h">Side-effect log · sandbox</div>
-            <div class="p__b">
-              <ul class="log">
-                <li class="m--hold"><time>09:41:02</time> Proposal received · proxy held</li>
-                <li class="m--ok"><time>09:41:26</time> Approved · payments on-call</li>
-                <li class="m--ok"><time>09:41:27</time> Executed via proxy · within scope</li>
-                <li class="m--block"><time>09:42:10</time> Over-scope retry · blocked</li>
-              </ul>
-              <p style="margin-top:10px;font-size:12px;color:var(--steel)">Sandbox / test side effects only. No live money moves; any real-money path is a human-created link + signed webhook.</p>
-            </div>
-          </section>
+            <section class="p" aria-labelledby="r-v-h">
+              <div class="p__h" id="r-v-h">Policy verdict · <code style="text-transform:none;letter-spacing:0">refund-cap-v0.3</code></div>
+              <div class="p__b">
+                <ul class="checks">
+                  <li><span class="ok">&#10003;</span> Scope · <code>payments.refund</code> in allowlist</li>
+                  <li><span class="ok">&#10003;</span> Actor · agent identity verified</li>
+                  <li><span class="hold">!</span> Budget · $480.00 over the $250 auto-cap</li>
+                  <li><span class="ok">&#10003;</span> Ceiling · within the $500 approval ceiling</li>
+                  <li><span class="hold">!</span> Approval rule · above-cap refunds require a human</li>
+                </ul>
+                <p class="verdict">Verdict · require-approval</p>
+                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Deterministic. One of allow / cap / require-approval / deny / pause.</p>
+              </div>
+            </section>
 
-          <section class="p" aria-labelledby="ac-h">
-            <div class="p__h" id="ac-h">Audit chain</div>
-            <div class="p__b">
-              <p class="chain"><span>&#9670;</span> hash-chain · <b style="color:var(--verify)">valid</b></p>
-              <ul class="checks" style="margin-top:10px">
-                <li>proposal · verdict · approval</li>
-                <li>proxy execution · block</li>
-                <li>sealed digest</li>
-              </ul>
-              <p style="margin-top:8px;font-size:12px;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
-            </div>
-          </section>
+            <section class="p" aria-labelledby="r-px-h">
+              <div class="p__h" id="r-px-h">Tool-call proxy</div>
+              <div class="p__b">
+                <p>Tool <code>payments.refund</code> is <b class="proxy--held">held pending approval</b>. The agent has no path to the side effect except through the controlled proxy — nothing runs while the verdict is <code>require-approval</code>.</p>
+              </div>
+            </section>
 
-          <section class="p export" aria-labelledby="ex-h">
-            <div class="p__h" id="ex-h">Evidence package</div>
-            <div class="p__b">
-              <p>Reviewer summary + JSON — what happened, why it was allowed, who owned the risk.</p>
-              <span class="btn btn--primary btn--sm">Export evidence package</span>
-              <details class="json">
-                <summary>View evidence JSON · simulated</summary>
-                <pre>{
+            <section class="p blocked" aria-labelledby="r-bl-h">
+              <div class="p__h" id="r-bl-h"><span class="blocked__tag">Blocked at the proxy · recorded</span></div>
+              <div class="p__b">
+                <p class="blocked__req">payments.refund &nbsp;$920.00 &rarr; order_8842</p>
+                <p class="blocked__why">After the approved refund, the agent proposed a <b>second refund of $920.00</b> — over the <b>$500</b> hard ceiling. Verdict <b>deny</b>. The proxy blocked it; the unauthorized refund never ran. One approval covers one action — it does not widen the agent's standing authority.</p>
+                <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
+                <p class="blocked__link"><a href="/proof#tr-a002">See the machine-emitted sandbox trace of this loop &rarr;</a></p>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right: approval + side-effect log + audit + export -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="r-ap-h">
+              <div class="p__h" id="r-ap-h">Approval queue</div>
+              <div class="p__b">
+                <p>Risk owner · <b>payments on-call</b></p>
+                <div class="approvals">
+                  <span class="btn btn--primary btn--sm">Approve</span>
+                  <span class="btn btn--ghost btn--sm">Hold</span>
+                  <span class="btn btn--ghost btn--sm">Deny</span>
+                </div>
+                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Approved for this one action, at 09:41:26. Who, when, and scope are recorded.</p>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="r-se-h">
+              <div class="p__h" id="r-se-h">Side-effect log · sandbox</div>
+              <div class="p__b">
+                <ul class="log">
+                  <li class="m--hold"><time>09:41:02</time> Proposal received · proxy held</li>
+                  <li class="m--ok"><time>09:41:26</time> Approved · payments on-call</li>
+                  <li class="m--ok"><time>09:41:27</time> Executed via proxy · within scope</li>
+                  <li class="m--block"><time>09:42:10</time> Over-ceiling refund · blocked</li>
+                </ul>
+                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Sandbox / test side effects only. No live money moves; any real-money path is a human-created link + signed webhook.</p>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="r-ac-h">
+              <div class="p__h" id="r-ac-h">Audit chain</div>
+              <div class="p__b">
+                <p class="chain"><span>&#9670;</span> hash-chain · <b style="color:var(--verify)">valid</b></p>
+                <ul class="checks" style="margin-top:10px">
+                  <li>proposal · verdict · approval</li>
+                  <li>proxy execution · block</li>
+                  <li>sealed digest</li>
+                </ul>
+                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
+              </div>
+            </section>
+
+            <section class="p export" aria-labelledby="r-ex-h">
+              <div class="p__h" id="r-ex-h">Evidence package</div>
+              <div class="p__b">
+                <p>Reviewer summary + JSON — what happened, why it was allowed, who owned the risk.</p>
+                <span class="btn btn--primary btn--sm">Export evidence package</span>
+                <details class="json">
+                  <summary>View evidence JSON · simulated</summary>
+                  <pre>{
   "workflow": "refund_exception_handling",
   "agent": "payments-ops-agent",
   "policy": "refund-cap-v0.3",
@@ -246,15 +309,310 @@
   "verdict": "require-approval",
   "approver": "payments-on-call",
   "proxy": [ { "state": "held" }, { "state": "executed" } ],
-  "blocked": "second refund above approved scope",
+  "blocked": "second refund $920.00 over $500 ceiling",
   "audit_chain": "valid",
   "note": "simulated / sandbox - not a customer run"
 }</pre>
-              </details>
-            </div>
-          </section>
+                </details>
+              </div>
+            </section>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <!-- ============ SCENARIO 2 · Production change ============ -->
+      <section class="scen" id="scen-prod" role="tabpanel" aria-labelledby="tab-prod" tabindex="0">
+        <div class="scen__head">
+          <h2 id="scen-prod-h">Production change</h2>
+          <span class="scen__meta"><code>deploy-ops-agent</code> · <code>infra.service.restart</code> · policy <code>prod-change-v0.2</code></span>
+        </div>
+        <p class="scen__sub">An approved restart runs inside the change window; an unapproved escalation to disable auth is denied and blocked at the proxy.</p>
+
+        <div class="ec__grid">
+          <!-- Left: proposal queue -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="d-q-h">
+              <div class="p__h" id="d-q-h">Proposal queue</div>
+              <ul class="q">
+                <li class="is-sel">
+                  <span class="q__t">Restart service · payments-api (prod)</span>
+                  <span class="q__m"><code>deploy-ops-agent</code> · infra.service.restart</span>
+                  <span class="st st--needs">Needs approval</span>
+                </li>
+                <li>
+                  <span class="q__t">Disable auth middleware · payments-api</span>
+                  <span class="q__m"><code>deploy-ops-agent</code> · infra.service.config</span>
+                  <span class="st st--blocked">Blocked</span>
+                </li>
+                <li>
+                  <span class="q__t">Restart service · reports-worker (staging)</span>
+                  <span class="q__m"><code>deploy-ops-agent</code> · infra.service.restart</span>
+                  <span class="st st--verified">Verified</span>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <!-- Center -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="d-sel-h">
+              <div class="p__h" id="d-sel-h">Selected proposal</div>
+              <div class="p__b">
+                <dl class="kv">
+                  <dt>Agent</dt><dd><code>deploy-ops-agent</code></dd>
+                  <dt>Workflow</dt><dd>Production change window</dd>
+                  <dt>Proposed action</dt><dd>Restart <b>payments-api</b> in production</dd>
+                  <dt>Tool</dt><dd><code>infra.service.restart</code></dd>
+                  <dt>Risk owner</dt><dd>platform on-call</dd>
+                </dl>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="d-v-h">
+              <div class="p__h" id="d-v-h">Policy verdict · <code style="text-transform:none;letter-spacing:0">prod-change-v0.2</code></div>
+              <div class="p__b">
+                <ul class="checks">
+                  <li><span class="ok">&#10003;</span> Scope · <code>infra.service.restart</code> in allowlist</li>
+                  <li><span class="ok">&#10003;</span> Actor · agent identity verified</li>
+                  <li><span class="ok">&#10003;</span> Window · inside the approved change window</li>
+                  <li><span class="hold">!</span> Target · production service — human required</li>
+                </ul>
+                <p class="verdict">Verdict · require-approval</p>
+                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Deterministic. One of allow / cap / require-approval / deny / pause.</p>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="d-px-h">
+              <div class="p__h" id="d-px-h">Tool-call proxy</div>
+              <div class="p__b">
+                <p>Tool <code>infra.service.restart</code> is <b class="proxy--held">held pending approval</b>. The controlled proxy is the only path to the production side effect — nothing restarts while the verdict is <code>require-approval</code>.</p>
+              </div>
+            </section>
+
+            <section class="p blocked" aria-labelledby="d-bl-h">
+              <div class="p__h" id="d-bl-h"><span class="blocked__tag">Blocked at the proxy · recorded</span></div>
+              <div class="p__b">
+                <p class="blocked__req">infra.service.config &nbsp;disable-auth-middleware &rarr; payments-api</p>
+                <p class="blocked__why">After the restart, the agent tried to <b>disable the auth middleware on payments-api</b> — an <b>unapproved escalation</b> outside the approved change window. Verdict <b>deny</b>. The proxy blocked it; auth was never disabled. Approval for a restart does not authorize a config change.</p>
+                <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
+                <p class="blocked__link"><a href="/proof#tr-a002">See the machine-emitted sandbox trace of this loop &rarr;</a></p>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="d-ap-h">
+              <div class="p__h" id="d-ap-h">Approval queue</div>
+              <div class="p__b">
+                <p>Risk owner · <b>platform on-call</b></p>
+                <div class="approvals">
+                  <span class="btn btn--primary btn--sm">Approve</span>
+                  <span class="btn btn--ghost btn--sm">Hold</span>
+                  <span class="btn btn--ghost btn--sm">Deny</span>
+                </div>
+                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Approved for this one restart, at 14:07:12. Who, when, and scope are recorded.</p>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="d-se-h">
+              <div class="p__h" id="d-se-h">Side-effect log · sandbox</div>
+              <div class="p__b">
+                <ul class="log">
+                  <li class="m--hold"><time>14:06:48</time> Proposal received · proxy held</li>
+                  <li class="m--ok"><time>14:07:12</time> Approved · platform on-call</li>
+                  <li class="m--ok"><time>14:07:13</time> Restart executed via proxy · within scope</li>
+                  <li class="m--block"><time>14:08:55</time> Disable-auth escalation · blocked</li>
+                </ul>
+                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Sandbox / test side effects only. No production system is touched; the restart runs against a sandbox stand-in.</p>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="d-ac-h">
+              <div class="p__h" id="d-ac-h">Audit chain</div>
+              <div class="p__b">
+                <p class="chain"><span>&#9670;</span> hash-chain · <b style="color:var(--verify)">valid</b></p>
+                <ul class="checks" style="margin-top:10px">
+                  <li>proposal · verdict · approval</li>
+                  <li>proxy execution · block</li>
+                  <li>sealed digest</li>
+                </ul>
+                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
+              </div>
+            </section>
+
+            <section class="p export" aria-labelledby="d-ex-h">
+              <div class="p__h" id="d-ex-h">Evidence package</div>
+              <div class="p__b">
+                <p>Reviewer summary + JSON — what happened, why it was allowed, who owned the risk.</p>
+                <span class="btn btn--primary btn--sm">Export evidence package</span>
+                <details class="json">
+                  <summary>View evidence JSON · simulated</summary>
+                  <pre>{
+  "workflow": "production_change_window",
+  "agent": "deploy-ops-agent",
+  "policy": "prod-change-v0.2",
+  "proposal": { "tool": "infra.service.restart",
+                "action": "restart payments-api (prod)" },
+  "verdict": "require-approval",
+  "approver": "platform-on-call",
+  "proxy": [ { "state": "held" }, { "state": "executed" } ],
+  "blocked": "disable auth middleware (escalation)",
+  "audit_chain": "valid",
+  "note": "simulated / sandbox - not a customer run"
+}</pre>
+                </details>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCENARIO 3 · PII export ============ -->
+      <section class="scen" id="scen-pii" role="tabpanel" aria-labelledby="tab-pii" tabindex="0">
+        <div class="scen__head">
+          <h2 id="scen-pii-h">PII export</h2>
+          <span class="scen__meta"><code>support-ops-agent</code> · <code>data.export</code> · policy <code>pii-export-v0.1</code></span>
+        </div>
+        <p class="scen__sub">A single-record export for a verified ticket has an approval path and runs; a bulk export of 12,480 customer records has no approval path and is denied outright.</p>
+
+        <div class="ec__grid">
+          <!-- Left: proposal queue -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="s-q-h">
+              <div class="p__h" id="s-q-h">Proposal queue</div>
+              <ul class="q">
+                <li class="is-sel">
+                  <span class="q__t">Export 12,480 records &rarr; s3://vendor-bucket</span>
+                  <span class="q__m"><code>support-ops-agent</code> · data.export (bulk PII)</span>
+                  <span class="st st--blocked">Blocked</span>
+                </li>
+                <li>
+                  <span class="q__t">Export 1 record · ticket_3391</span>
+                  <span class="q__m"><code>support-ops-agent</code> · data.export</span>
+                  <span class="st st--verified">Verified</span>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <!-- Center -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="s-sel-h">
+              <div class="p__h" id="s-sel-h">Selected proposal</div>
+              <div class="p__b">
+                <dl class="kv">
+                  <dt>Agent</dt><dd><code>support-ops-agent</code></dd>
+                  <dt>Workflow</dt><dd>Support data export</dd>
+                  <dt>Proposed action</dt><dd>Export <b>12,480 customer records</b> &rarr; <code>s3://vendor-bucket</code></dd>
+                  <dt>Tool</dt><dd><code>data.export</code></dd>
+                  <dt>Risk owner</dt><dd>data-protection owner (none granted)</dd>
+                </dl>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="s-v-h">
+              <div class="p__h" id="s-v-h">Policy verdict · <code style="text-transform:none;letter-spacing:0">pii-export-v0.1</code></div>
+              <div class="p__b">
+                <ul class="checks">
+                  <li><span class="ok">&#10003;</span> Scope · <code>data.export</code> in allowlist</li>
+                  <li><span class="ok">&#10003;</span> Actor · agent identity verified</li>
+                  <li><span class="hold">!</span> Volume · 12,480 records — bulk PII threshold crossed</li>
+                  <li><span class="hold">!</span> Destination · external <code>s3://vendor-bucket</code></li>
+                  <li><span class="hold">!</span> Approval path · none — bulk PII export needs a data-protection owner who has not granted it</li>
+                </ul>
+                <p class="verdict" style="color:var(--danger);background:#fbecea;border-color:#edc6c2">Verdict · deny</p>
+                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Deterministic. No approver can widen this — there is no approval path for bulk PII export.</p>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="s-px-h">
+              <div class="p__h" id="s-px-h">Tool-call proxy · in-scope contrast</div>
+              <div class="p__b">
+                <p>For contrast, the agent also proposed exporting <b>a single record for verified <code>ticket_3391</code></b> — verdict <b>require-approval</b>, approved by <b>data-protection on-call</b>, then <b class="proxy--held" style="color:var(--verify)">executed via the proxy in sandbox</b>. In-scope work still flows; only the bulk export is stopped.</p>
+              </div>
+            </section>
+
+            <section class="p blocked" aria-labelledby="s-bl-h">
+              <div class="p__h" id="s-bl-h"><span class="blocked__tag">Blocked at the proxy · recorded</span></div>
+              <div class="p__b">
+                <p class="blocked__req">data.export &nbsp;12,480 records &rarr; s3://vendor-bucket</p>
+                <p class="blocked__why">The <b>bulk export of 12,480 customer records</b> to an external bucket was <b>denied</b> — there is no approval path for bulk PII export without a data-protection owner, and none granted it. The proxy blocked it; the unauthorized export <b>never ran</b>. No data left the boundary.</p>
+                <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
+                <p class="blocked__link"><a href="/proof#tr-a002">See the machine-emitted sandbox trace of this loop &rarr;</a></p>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right -->
+          <div class="ec__col">
+            <section class="p" aria-labelledby="s-ap-h">
+              <div class="p__h" id="s-ap-h">Approval queue</div>
+              <div class="p__b">
+                <p>Risk owner · <b>data-protection on-call</b></p>
+                <div class="approvals">
+                  <span class="btn btn--primary btn--sm">Approve</span>
+                  <span class="btn btn--ghost btn--sm">Hold</span>
+                  <span class="btn btn--ghost btn--sm">Deny</span>
+                </div>
+                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Single-record export approved at 11:22:40. The bulk export has <b>no approval path</b> to offer.</p>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="s-se-h">
+              <div class="p__h" id="s-se-h">Side-effect log · sandbox</div>
+              <div class="p__b">
+                <ul class="log">
+                  <li class="m--hold"><time>11:22:18</time> Single-record proposal · proxy held</li>
+                  <li class="m--ok"><time>11:22:40</time> Approved · data-protection on-call</li>
+                  <li class="m--ok"><time>11:22:41</time> 1 record exported via proxy · within scope</li>
+                  <li class="m--block"><time>11:24:03</time> Bulk PII export · blocked</li>
+                </ul>
+                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Sandbox / test side effects only. No customer data leaves the boundary; exports run against sandbox fixtures.</p>
+              </div>
+            </section>
+
+            <section class="p" aria-labelledby="s-ac-h">
+              <div class="p__h" id="s-ac-h">Audit chain</div>
+              <div class="p__b">
+                <p class="chain"><span>&#9670;</span> hash-chain · <b style="color:var(--verify)">valid</b></p>
+                <ul class="checks" style="margin-top:10px">
+                  <li>proposal · verdict · approval</li>
+                  <li>proxy execution · block</li>
+                  <li>sealed digest</li>
+                </ul>
+                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
+              </div>
+            </section>
+
+            <section class="p export" aria-labelledby="s-ex-h">
+              <div class="p__h" id="s-ex-h">Evidence package</div>
+              <div class="p__b">
+                <p>Reviewer summary + JSON — what happened, why it was allowed, who owned the risk.</p>
+                <span class="btn btn--primary btn--sm">Export evidence package</span>
+                <details class="json">
+                  <summary>View evidence JSON · simulated</summary>
+                  <pre>{
+  "workflow": "support_data_export",
+  "agent": "support-ops-agent",
+  "policy": "pii-export-v0.1",
+  "allowed": { "tool": "data.export",
+               "action": "export 1 record -&gt; ticket_3391",
+               "verdict": "require-approval",
+               "approver": "data-protection-on-call",
+               "proxy": "executed" },
+  "blocked": { "action": "export 12,480 records -&gt; s3://vendor-bucket",
+               "verdict": "deny",
+               "reason": "no approval path for bulk PII export" },
+  "audit_chain": "valid",
+  "note": "simulated / sandbox - not a customer run"
+}</pre>
+                </details>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
 
       <p class="ec__note">
         Private-pilot preview. Simulated / sandbox data — representative samples, not a live deployment.
@@ -263,5 +621,51 @@
         <a href="/proof" style="color:var(--signal-ink)">See the evidence ladder &rarr;</a>
       </p>
     </main>
+
+    <!--
+      Progressive enhancement only. With JS disabled, all three <section class="scen">
+      panels stay visible and stacked (each with its own <h2>), so the full three-scenario
+      story is readable. This script simply hides all but the selected scenario and wires
+      the tablist (click, arrow keys, aria-selected).
+    -->
+    <script>
+      (function () {
+        var tablist = document.querySelector('.tabs[role="tablist"]');
+        if (!tablist) return;
+        var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+        if (tabs.length < 2) return;
+
+        function panelFor(tab) {
+          return document.getElementById(tab.getAttribute('aria-controls'));
+        }
+
+        function select(tab, focus) {
+          tabs.forEach(function (t) {
+            var selected = t === tab;
+            t.setAttribute('aria-selected', selected ? 'true' : 'false');
+            t.tabIndex = selected ? 0 : -1;
+            var panel = panelFor(t);
+            if (panel) panel.hidden = !selected;
+          });
+          if (focus) tab.focus();
+        }
+
+        tabs.forEach(function (tab, i) {
+          tab.addEventListener('click', function () { select(tab, false); });
+          tab.addEventListener('keydown', function (e) {
+            var idx = null;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') idx = (i + 1) % tabs.length;
+            else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') idx = (i - 1 + tabs.length) % tabs.length;
+            else if (e.key === 'Home') idx = 0;
+            else if (e.key === 'End') idx = tabs.length - 1;
+            if (idx !== null) { e.preventDefault(); select(tabs[idx], true); }
+          });
+        });
+
+        // On load, collapse to the tab marked aria-selected (default: first).
+        var initial = tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })[0] || tabs[0];
+        select(initial, false);
+      })();
+    </script>
   </body>
 </html>

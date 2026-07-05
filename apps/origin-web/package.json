@@ -12,9 +12,11 @@
     "server": "node server/main.ts",
     "foundry": "bash foundry.sh",
     "verify:evidence": "node scripts/verifyServerEvidence.mjs",
+    "proof:generate": "node scripts/generate-tr-a002.mjs",
+    "proof:verify": "node scripts/verify-tr-a002.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "gates": "npm run build && npm run lint && npm run verify:evidence && npm test",
+    "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm test",
     "gates:full": "npm run gates && npm run test:e2e"
   },
   "dependencies": {
@@ -40,6 +42,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "playwright": "^1.61.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.12",

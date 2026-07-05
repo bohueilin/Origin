@@ -79,7 +79,7 @@ export function siteMapToWarehouseTask(
     seed: seedFrom(map),
     level: 'L3',
     title: 'Your drawn floor',
-    brief: 'Operator-defined layout, scored by the deterministic oracle.',
+    brief: 'Operator-defined layout, verified against telemetry.',
     width: map.width,
     height: map.height,
     start,

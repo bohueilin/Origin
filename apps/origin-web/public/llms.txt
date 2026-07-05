@@ -41,9 +41,13 @@
 ## Honest status
 - The prototype runs; Origin is not production SaaS.
 - No customers, logos, metrics, or reviewer acceptances are claimed unless independently verifiable.
-- Evidence is labeled by rung: authored specimen, machine-emitted sandbox trace, and a design-partner trace when earned.
 - Language is precise: "tamper-evident" (not tamper-proof), "review-ready" (not reviewer-accepted). Origin is decision-support and evidence infrastructure, not legal or compliance certification.
 - Physical AI is a longer-term arc and founder-depth note, not the current product.
+
+## Evidence ladder (current truth)
+- TR-A001 — authored evidence specimen. Shows the evidence-package FORMAT only; illustrative, not a machine-emitted run. Lives at /proof#tr-a001.
+- TR-A002 — AVAILABLE NOW. A machine-emitted sandbox trace: 12 events with a real, re-verifiable SHA-256 hash chain, final digest ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32. Re-verify with "npm run proof:verify"; download at /proof/tr-a002.json. Sandbox only — no live money, no customer data, and not a performance claim. Lives at /proof#tr-a002.
+- TR-A003 — first external design-partner trace, forthcoming (not yet earned; no data shown for it).
 
 ## Links
 - Home: https://origin-physical-ai.pages.dev/

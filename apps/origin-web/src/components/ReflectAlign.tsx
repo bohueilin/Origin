@@ -483,7 +483,7 @@ export function ReflectAlign({
         <p className="flow-sub">
           Origin drafted the floor, the plan, and the safety calls below from what you submitted. Fix
           anything that’s wrong — none of it is graded yet. When you approve, this exact version is
-          locked, and the deterministic oracle scores <em>that</em>, never a moving target.
+          locked, and evidence-backed verification scores <em>that</em>, never a moving target.
         </p>
 
         <StepBridge done="Brain drafted your plan + the three safety calls" next="confirm them — on approve, this exact version is frozen and scored." />
@@ -491,7 +491,7 @@ export function ReflectAlign({
         <ol className="align-flow" aria-label="What happens to your edits">
           <li><b>Now</b> — your draft, fully editable</li>
           <li><b>On approve</b> — locked into a frozen snapshot</li>
-          <li><b>Then</b> — scored by the oracle, never a model</li>
+          <li><b>Then</b> — verified against telemetry, never a model</li>
         </ol>
 
         <div className="align-grid">
@@ -812,7 +812,7 @@ export function ReflectAlign({
             <h2>What {robotTotal > 1 ? `your ${robotTotal} robots` : 'the robot'} will do</h2>
             <p>
               The sequence Origin read from your site — pick up, route, drop. Edit any step; it’s
-              descriptive only, and the oracle scores nothing until you freeze.
+              descriptive only, and verification scores nothing until you freeze.
             </p>
           </div>
           {(fleets.length > 1 || robotTotal > 1 || itemTotal > 1 || dropTotal > 1) && (
@@ -825,7 +825,7 @@ export function ReflectAlign({
                 ? 'Each fleet works on its own (matching colour) — its robots carry only its items to its nearest drop, '
                 : 'Each item is assigned to its nearest robot, '}
               one item per trip, routing around hazards and human-only cells, then home. You’ll watch
-              the fleets run together in the proving ground next.
+              the fleets run together in the supervised run next.
             </p>
           )}
           <StoryboardEditor facts={storyboard} onChange={setStoryboard} />
@@ -853,7 +853,7 @@ export function ReflectAlign({
           <button className="btn primary hero-action" onClick={approve}>
             Approve workflow
           </button>
-          <span className="trust-note">Approving locks this exact snapshot — the deterministic oracle scores it, not a model.</span>
+          <span className="trust-note">Approving locks this exact snapshot — evidence-backed verification scores it, not a model.</span>
         </div>
       </div>
     </section>

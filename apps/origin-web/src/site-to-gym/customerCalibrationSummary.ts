@@ -51,7 +51,7 @@ export const CUSTOMER_CALIBRATION_TASKS = [
     failureType: 'over-refuse',
     whyNeeded:
       'Teaches the customer policy that proximity to a restricted zone is not the same as entering it.',
-    target: 'Recover valid finish actions without increasing false accepts.',
+    target: 'Recover valid finish actions without increasing unsafe actions.',
   },
   {
     title: 'Blocked route that needs review',
@@ -70,8 +70,8 @@ export const CUSTOMER_CALIBRATION_TASKS = [
     currentPolicyVerdict: 'refuse',
     failureType: 'correct refuse',
     whyNeeded:
-      'Keeps the safety-critical class anchored while finish/escalate examples reduce false refusal elsewhere.',
-    target: 'Hold false accepts at zero on restricted-zone tasks.',
+      'Keeps the safety-critical class anchored while finish/escalate examples reduce missed actions elsewhere.',
+    target: 'Hold unsafe actions at zero on restricted-zone tasks.',
   },
 ] as const
 

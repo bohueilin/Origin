@@ -119,21 +119,21 @@ export function LicenseResults({
         </button>
         <div>
           <div className="section-title">
-            Autonomy License report · {plan.theme.label} · {plan.profile.label}
+            Verification report · {plan.theme.label} · {plan.profile.label}
           </div>
           <h2>{plan.requirement.outcome}</h2>
         </div>
       </div>
 
-      <StepBridge done="Scored by the deterministic oracle — finish / escalate / refuse, with FAR & FRR" next="this is your readiness license — hand it to a safety team." />
+      <StepBridge done="Verified against telemetry — finish / escalate / refuse, with unsafe- & missed-action rates" next="this is your verification report — hand it to a safety team." />
 
       <div className="license-cert" style={{ borderColor: license.level.color }}>
         <div className="cert-seal" style={{ background: license.level.color }}>
           <span className="cert-tier">{license.level.id}</span>
-          <span className="cert-seal-sub">LICENSE</span>
+          <span className="cert-seal-sub">VERIFIED</span>
         </div>
         <div className="cert-main">
-          <div className="cert-eyebrow">Autonomy License · readiness evidence pack</div>
+          <div className="cert-eyebrow">Verified readiness · evidence pack</div>
           <div className="cert-title" style={{ color: license.level.color }}>
             {license.level.name}
           </div>
@@ -142,9 +142,9 @@ export function LicenseResults({
               Issued for <strong>{plan.theme.label}</strong> · <strong>{plan.profile.label}</strong>
             </span>
             <span>
-              Reference-oracle operating point{' '}
-              <strong>FAR {pct(report.calibration.far)}</strong> ·{' '}
-              <strong>FRR {pct(report.calibration.frr)}</strong>
+              Reference operating point{' '}
+              <strong>unsafe {pct(report.calibration.far)}</strong> ·{' '}
+              <strong>missed {pct(report.calibration.frr)}</strong>
             </span>
           </div>
           <div className="cert-chain" aria-label="Evidence provenance">
@@ -154,11 +154,11 @@ export function LicenseResults({
             <span className="cert-arrow" aria-hidden="true">→</span>
             <span>Eval frozen</span>
             <span className="cert-arrow" aria-hidden="true">→</span>
-            <span className="cert-scored">Scored by deterministic oracle</span>
+            <span className="cert-scored">Verified against telemetry</span>
           </div>
         </div>
         <div className="cert-side">
-          <span className="cert-id" title="The deterministic test run this report scores.">
+          <span className="cert-id" title="The deterministic run this report verifies.">
             <em>Eval plan</em> {report.reportId}
           </span>
           {(plan.workflow?.approvedFactsHash || frozen?.approvedFactsHash) && (
@@ -176,8 +176,8 @@ export function LicenseResults({
       <div className="agent-under-test" role="note">
         <span className="aut-badge">Agent under test</span>
         <p>
-          Integration pending — the reference oracle is shown as the bar to clear, not a robot’s
-          actual score. A model-under-test plugs in here and re-certifies on every change.
+          Integration pending — the reference run is shown as the bar to clear, not a robot’s
+          actual score. A model-under-test plugs in here and re-verifies on every change.
         </p>
       </div>
 
@@ -192,7 +192,7 @@ export function LicenseResults({
               {license.level.name}
             </div>
             <p className="results-license-note">
-              The calibrated oracle earns this tier here. A real model is scored against the same
+              The calibrated reference reaches this tier here. A real model is verified against the same
               env via the model path (next phase); no model has been run yet.
             </p>
           </div>
@@ -202,8 +202,8 @@ export function LicenseResults({
           <div className={`decision-badge decision-${report.decision}`}>{report.decisionLabel}</div>
           <p>{report.summary}</p>
           <div className="decision-metrics">
-            <span>FAR {pct(report.calibration.far)}</span>
-            <span>FRR {pct(report.calibration.frr)}</span>
+            <span>unsafe {pct(report.calibration.far)}</span>
+            <span>missed {pct(report.calibration.frr)}</span>
             <span>Avg {report.calibration.avgReward.toFixed(2)}</span>
           </div>
         </div>
@@ -211,7 +211,7 @@ export function LicenseResults({
           <div className="panel-kicker">Readiness read-out</div>
           <ul>
             <li>
-              <span className="lbl-finish">May do autonomously</span> tasks the oracle labels{' '}
+              <span className="lbl-finish">May do autonomously</span> tasks verification labels{' '}
               <strong>finish</strong> ({plan.labelCounts.finish})
             </li>
             <li>
@@ -348,12 +348,12 @@ export function LicenseResults({
           <div>
             <span>3</span>
             Eval frozen
-            <small>Canonical tasks only; oracle labels untouched</small>
+            <small>Canonical tasks only; verified labels untouched</small>
           </div>
           <div>
             <span>4</span>
             Safety case
-            <small>FAR/FRR + reward gates + evidence</small>
+            <small>unsafe-/missed-action rates + reward gates + evidence</small>
           </div>
         </div>
       )}
@@ -402,13 +402,13 @@ export function LicenseResults({
 
       <div className="warehouse-grid">
         <div className="warehouse-panel">
-          <div className="panel-kicker">Headline calibration (FAR / FRR)</div>
+          <div className="panel-kicker">Headline calibration (unsafe / missed action)</div>
           <div className="baseline-list">
             {demo.baselines.map((b) => (
               <div className="baseline-row" key={b.name}>
                 <span>{b.name}</span>
-                <span>FAR {pct(b.matrix.far)}</span>
-                <span>FRR {pct(b.matrix.frr)}</span>
+                <span>unsafe {pct(b.matrix.far)}</span>
+                <span>missed {pct(b.matrix.frr)}</span>
                 <span>avg {b.avgReward.toFixed(2)}</span>
               </div>
             ))}
@@ -417,7 +417,7 @@ export function LicenseResults({
         </div>
 
         <div className="warehouse-panel">
-          <div className="panel-kicker">Reward-hacking trace</div>
+          <div className="panel-kicker">Faked-finish trace</div>
           <h3>{demo.rewardHack.task.title}</h3>
           <p>
             A fake terminal finish without pick/drop gets outcome 0, so shaping cannot rescue it:
@@ -426,13 +426,13 @@ export function LicenseResults({
           <p className="trip-trace">{actionTrace(demo.rewardHack.actions)}</p>
           <div className="trip-stats">
             <span>{demo.rewardHack.category}</span>
-            <span>oracle {demo.rewardHack.expected}</span>
+            <span>verified {demo.rewardHack.expected}</span>
             <span>actual {demo.rewardHack.matrixAction}</span>
           </div>
         </div>
 
         <div className="warehouse-panel">
-          <div className="panel-kicker">Signal Extractor</div>
+          <div className="panel-kicker">Training signal</div>
           <div className="signal-grid">
             <span>{demo.signal.failureTags.length}</span>
             <span>failure tags</span>
@@ -444,7 +444,7 @@ export function LicenseResults({
           {report.samplePreference && (
             <div className="pref-pair" aria-label="Sample preference pair">
               <div className="pref-row pref-good">
-                <span>oracle preferred</span>
+                <span>verification preferred</span>
                 <code>{actionTrace(report.samplePreference.preferred)}</code>
               </div>
               <div className="pref-row pref-bad">
@@ -463,7 +463,7 @@ export function LicenseResults({
           <div className="panel-kicker">AIUC wedge</div>
           <p>{demo.aiucWedge}</p>
           <p className="signal-note">
-            Generated client-side from the deterministic oracle. Evidence persistence + a live model
+            Generated client-side from evidence-backed verification. Evidence persistence + a live model
             path plug into this report in the next phase.
           </p>
         </div>

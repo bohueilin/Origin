@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=21" />
+    <link rel="stylesheet" href="/home.css?v=22" />
 
     <!-- Structured data for search engines & AI agents. NOTE: PLACEHOLDER domain email
          hello@originphysical.ai — replace with the real MX-backed company inbox. -->
@@ -351,14 +351,14 @@
               <button type="button" class="demo__dot" data-demo-step="8" role="tab" aria-selected="false"><span>8</span>Prove</button>
             </div>
             <div class="demo__screen">
-              <div class="demo__panel is-on" data-demo-panel="1"><h3><span class="demo__tag demo__tag--n">Propose</span> Agent proposes</h3><p><code>payments-ops-agent</code> proposes: refund <b>$480.00</b> &rarr; <code>order_8842</code> via <code>payments.refund</code>.</p></div>
-              <div class="demo__panel" data-demo-panel="2"><h3><span class="demo__tag demo__tag--plan">Gate</span> Policy gate evaluates</h3><p>Policy <code>refund-cap-v0.3</code> checks scope, actor, budget, and approval rules — deterministically. Budget $480.00 is over the $250 auto-cap.</p></div>
-              <div class="demo__panel" data-demo-panel="3"><h3><span class="demo__tag demo__tag--held">Verdict</span> Verdict: require-approval</h3><p>One of allow / cap / require-approval / deny / pause. Above-cap refunds require a human.</p></div>
-              <div class="demo__panel" data-demo-panel="4"><h3><span class="demo__tag demo__tag--held">Proxy</span> The proxy holds</h3><p><code>payments.refund</code> is held at the tool-call proxy — the agent has no other path to the side effect.</p></div>
-              <div class="demo__panel" data-demo-panel="5"><h3><span class="demo__tag demo__tag--held">Approve</span> Human approves</h3><p>payments on-call approves this one action. Who, when, and scope are recorded.</p></div>
-              <div class="demo__panel" data-demo-panel="6"><h3><span class="demo__tag demo__tag--ok">Execute</span> Executed within scope</h3><p>The proxy runs only the approved action — $480.00 &rarr; <code>order_8842</code>.</p></div>
-              <div class="demo__panel" data-demo-panel="7"><h3><span class="demo__tag demo__tag--block">Block</span> Over-scope &rarr; blocked</h3><p>A second refund above the approved scope is blocked at the proxy and recorded. The approval covered one action only.</p></div>
-              <div class="demo__panel" data-demo-panel="8"><h3><span class="demo__tag demo__tag--ok">Prove</span> Evidence sealed</h3><p>Hash-chain valid. The evidence package — proposal, verdict, approval, execution, block — is review-ready and exportable. <a href="/proof" style="color:var(--signal-ink)">See the evidence ladder &rarr;</a></p></div>
+              <div class="demo__panel is-on" data-demo-panel="1"><h3><span class="demo__tag demo__tag--n">Propose</span> Agent proposes</h3><p><code>payments-ops-agent</code> proposes: refund <b>$480.00</b> &rarr; <code>order_8842</code> via <code>payments.refund</code>.</p><p class="demo__readout demo__readout--plan"><b>payments.refund</b> · $480.00 &rarr; order_8842 <span class="rd-state">PROPOSED</span></p></div>
+              <div class="demo__panel" data-demo-panel="2"><h3><span class="demo__tag demo__tag--plan">Gate</span> Policy gate evaluates</h3><p>Policy <code>refund-cap-v0.3</code> checks scope, actor, budget, and approval rules — deterministically. Budget $480.00 is over the $250 auto-cap.</p><p class="demo__readout demo__readout--plan"><b>refund-cap-v0.3</b> · $480.00 vs $250 auto-cap <span class="rd-state">OVER CAP</span></p></div>
+              <div class="demo__panel" data-demo-panel="3"><h3><span class="demo__tag demo__tag--held">Verdict</span> Verdict: require-approval</h3><p>One of allow / cap / require-approval / deny / pause. Above-cap refunds require a human.</p><p class="demo__readout demo__readout--held"><b>Verdict</b> · risk owner: payments-on-call <span class="rd-state">REQUIRE-APPROVAL</span></p></div>
+              <div class="demo__panel" data-demo-panel="4"><h3><span class="demo__tag demo__tag--held">Proxy</span> The proxy holds</h3><p><code>payments.refund</code> is held at the tool-call proxy — the agent has no other path to the side effect.</p><p class="demo__readout demo__readout--held"><b>proxy</b> · payments.refund not dispatched <span class="rd-state">HELD</span></p></div>
+              <div class="demo__panel" data-demo-panel="5"><h3><span class="demo__tag demo__tag--held">Approve</span> Human approves</h3><p>payments on-call approves this one action. Who, when, and scope are recorded.</p><p class="demo__readout demo__readout--ok"><b>approver</b> · payments-on-call · scope: one action <span class="rd-state">APPROVED</span></p></div>
+              <div class="demo__panel" data-demo-panel="6"><h3><span class="demo__tag demo__tag--ok">Execute</span> Executed within scope</h3><p>The proxy runs only the approved action — $480.00 &rarr; <code>order_8842</code>. Sandboxed; no live money.</p><p class="demo__readout demo__readout--ok"><b>proxy</b> · $480.00 &rarr; order_8842 · sandbox <span class="rd-state">EXECUTED</span></p></div>
+              <div class="demo__panel" data-demo-panel="7"><h3><span class="demo__tag demo__tag--block">Block</span> Over-scope &rarr; blocked</h3><p>A second refund of <b>$920.00</b> — above the approved scope — is blocked at the proxy and recorded. The approval covered one action only; it does not widen standing authority.</p><p class="demo__readout demo__readout--block"><b>payments.refund</b> · $920.00 · over $500 ceiling <span class="rd-state">BLOCKED &amp; RECORDED</span></p></div>
+              <div class="demo__panel" data-demo-panel="8"><h3><span class="demo__tag demo__tag--ok">Prove</span> Evidence sealed</h3><p>Hash-chain valid. The evidence package — proposal, verdict, approval, execution, block — is review-ready and exportable. This exact loop is published, machine-emitted, as <a href="/proof#tr-a002" style="color:var(--signal-ink)">TR-A002 &rarr;</a></p><p class="demo__readout demo__readout--ok"><b>digest</b> · sha256 ca1d4690… · chain intact <span class="rd-state">SEALED</span></p></div>
             </div>
             <div class="demo__bar">
               <button type="button" class="btn btn--primary btn--sm" data-demo-play aria-pressed="false">&#9654; Play</button>
@@ -369,7 +369,7 @@
           </div>
           <div class="cta-row" style="margin-top: 26px;">
             <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="demo_cta_click">Book an Agent Evidence Review</button>
-            <a class="btn btn--ghost" href="/proof" data-analytics="demo_proof_link">See a machine-emitted trace</a>
+            <a class="btn btn--ghost" href="/proof#tr-a002" data-analytics="demo_proof_link">See the machine-emitted trace</a>
           </div>
         </div>
       </section>
@@ -393,7 +393,7 @@
         <div class="shell">
           <p class="kicker">Why Origin</p>
           <h2 id="why-title">Spreadsheets, logs, and "trust us" don't get agents approved.</h2>
-          <p class="section__lede leadin">Identity and observability are adjacent jobs. Origin owns the approval path — enforcing what's allowed before side effects, then proving the decision afterward.</p>
+          <p class="section__lede leadin">Identity and observability are adjacent jobs. Origin focuses on the approval path — enforcing what's allowed before side effects, then proving the decision afterward.</p>
           <div class="compare-row">
             <div class="compare-line"><b>Identity</b><span>Tells you <em>who the agent is</em>. Necessary — but it doesn't bound what the agent may do.</span></div>
             <div class="compare-line"><b>Observability</b><span>Helps engineers <em>debug what happened</em>. Built for debugging, not for approval.</span></div>
@@ -458,10 +458,10 @@
         <div class="shell">
           <p class="kicker">Evidence</p>
           <h2 id="evidence-title">Proof lands here — as it's earned.</h2>
-          <p class="section__lede leadin">We publish evidence in rungs, and we never dress one rung up as another. What's here today is an authored specimen — the machine-emitted and design-partner traces are forthcoming.</p>
+          <p class="section__lede leadin">We publish evidence in rungs, and we never dress one rung up as another. Available today: an authored specimen <b>and</b> a machine-emitted sandbox trace with a re-verifiable hash chain. The design-partner trace is forthcoming.</p>
           <div class="cards cards--3">
-            <article class="card"><span class="card__k">TR-A001 · available</span><h3>Authored evidence specimen</h3><p>Shows the shape of the evidence a reviewer receives — policy verdicts, approvals, proxy events, blocked actions, audit digests. It does not claim a machine-emitted run.</p></article>
-            <article class="card"><span class="card__k">TR-A002 · in progress</span><h3>Machine-emitted sandbox trace</h3><p>The console engine emitting a real hash-chained trace over a sandboxed agent action — not yet published.</p></article>
+            <article class="card"><span class="card__k">TR-A001 · available</span><h3>Authored evidence specimen</h3><p>Shows the shape of the evidence a reviewer receives — policy verdicts, approvals, proxy events, blocked actions, audit digests. It does not claim a machine-emitted run. <a href="/proof#tr-a001" style="color:var(--signal-ink);font-weight:600">See it →</a></p></article>
+            <article class="card"><span class="card__k">TR-A002 · available</span><h3>Machine-emitted sandbox trace</h3><p>Origin's trace engine emitting a real 12-event, hash-chained record over a sandboxed agent action — digest <code>ca1d4690…</code>, re-verifiable with <code>npm run proof:verify</code>. Sandbox only; no live money. <a href="/proof#tr-a002" style="color:var(--signal-ink);font-weight:600">See it →</a></p></article>
             <article class="card"><span class="card__k">TR-A003 · when earned</span><h3>First design-partner trace</h3><p>Evidence from a real external workflow — published only once a design partner runs it.</p></article>
           </div>
 
@@ -494,8 +494,8 @@
 
           <!-- What it does / does not prove -->
           <div class="prooftwo">
-            <article class="card card--shows"><h3><span aria-hidden="true">✓</span> What this shows</h3><p>The shape of the evidence a reviewer receives, the loop working end to end in a sandbox, and an over-scope action being blocked and recorded.</p></article>
-            <article class="card card--not"><h3><span aria-hidden="true">—</span> What it does not show</h3><p>Not a customer deployment. Not a performance claim. No reviewer has accepted it. The specimen is authored (illustrative), not a machine-emitted run.</p></article>
+            <article class="card card--shows"><h3><span aria-hidden="true">✓</span> What this shows</h3><p>The shape of the evidence a reviewer receives — proposal, policy verdict, approval, execution, and an over-scope action blocked and recorded. The machine-emitted version of this same loop is <a href="/proof#tr-a002" style="color:var(--signal-ink);font-weight:600">TR-A002</a>.</p></article>
+            <article class="card card--not"><h3><span aria-hidden="true">—</span> What it does not show</h3><p>Not a customer deployment. Not a performance claim. No reviewer has accepted it. This specimen is authored (illustrative); the sandbox run with real hashes is TR-A002.</p></article>
           </div>
 
           <p class="mono-note" style="margin-top: 18px;">Plumbing proof ≠ customer proof. A human-created payment link + a signed webhook proves the evidence system captures a real transaction end-to-end — the agent never touches live money, and that isn't customer revenue.</p>
@@ -510,9 +510,9 @@
         <div class="shell">
           <p class="kicker">How we measure it</p>
           <h2 id="metrics-title">One north star, and hard guardrails.</h2>
-          <p class="section__lede leadin">Our north star is agent workflows taken <b>through security review to approval</b> using Origin evidence. Around it, guardrails that must hold. We don't publish numbers we haven't earned.</p>
+          <p class="section__lede leadin">Our north star is agent workflows <b>prepared for security review with Origin evidence</b> — and approved only when the customer's own reviewer accepts the risk. Around it, guardrails that must hold. We don't publish numbers we haven't earned.</p>
           <div class="cards cards--3">
-            <article class="card card--tint"><span class="card__k">North star</span><h3>Unblocked launches</h3><p>Agent workflows approved through security review using Origin's evidence.</p></article>
+            <article class="card card--tint"><span class="card__k">North star</span><h3>Unblocked launches</h3><p>Agent workflows prepared for security review with Origin evidence, and approved when the customer's reviewer accepts the risk.</p></article>
             <article class="card"><span class="card__k">Guardrail</span><h3>Audit-chain integrity</h3><p>Tamper-verification failures on the chain. Target: zero.</p></article>
             <article class="card"><span class="card__k">Guardrail</span><h3>Unauthorized side effects</h3><p>Side effects not routed through the proxy. Target: zero.</p></article>
             <article class="card"><span class="card__k">Guardrail</span><h3>Evidence completeness</h3><p>Share of actions with a full who / why / what record.</p></article>

@@ -74,7 +74,7 @@ export function AuthPage() {
 
   async function onGoogle() {
     // Hard gate (not just the disabled attribute): no account creation while paused.
-    if (mode === 'signup' && !SIGNUPS_OPEN) { setError('Account creation is paused while we’re in private pilots.'); return }
+    if (mode === 'signup' && !SIGNUPS_OPEN) { setError('Account creation is paused during the closed private pilot.'); return }
     setError(''); setBusy(true)
     const { error } = await auth.signInWithGoogle({ redirectTo: googleRedirect })
     setBusy(false)
@@ -99,7 +99,7 @@ export function AuthPage() {
         return setStep('password')
       }
       // step === 'password'
-      if (!SIGNUPS_OPEN) return setError('Account creation is paused while we’re in private pilots.')
+      if (!SIGNUPS_OPEN) return setError('Account creation is paused during the closed private pilot.')
       if (!pwValid) return setError('Please choose a password that meets all the requirements.')
       if (password !== confirm) return setError('Passwords don’t match.')
       setBusy(true)
@@ -124,8 +124,8 @@ export function AuthPage() {
     : mode === 'signup' ? (step === 'password' ? 'Create a password' : 'Private pilot access')
     : 'Welcome back'
   const sub = step === 'verify' ? note
-    : mode === 'signup' ? (step === 'password' ? 'Set a secure password for your account.' : 'Origin Evidence Console access is invite-only during private pilot. Book an Agent Evidence Review to request access.')
-    : 'Sign in to the Origin Evidence Console.'
+    : mode === 'signup' ? (step === 'password' ? 'Set a secure password for your account.' : 'Origin Evidence Console access is invite-only during private pilot. Account creation is paused during the closed pilot. Book an Agent Evidence Review to request access.')
+    : 'The Console shows policy verdicts, approvals, proxy events, blocked actions, and evidence packages.'
 
   return (
     <div className="ap-shell">
@@ -147,8 +147,8 @@ export function AuthPage() {
               </div>
             ) : mode === 'signup' && !SIGNUPS_OPEN ? (
               <div className="ap-paused" role="note" id="ap-paused-note">
-                🔒 <strong>Private pilot only.</strong> Account creation is paused while we work with design partners.{' '}
-                <a className="ap-link" href="/" data-analytics="auth_return_to_demo">Book an Agent Evidence Review →</a>
+                🔒 <strong>Private pilot only.</strong> Account creation is paused during the closed pilot. The Console shows policy verdicts, approvals, proxy events, blocked actions, and evidence packages.{' '}
+                <a className="ap-link" href="/#offer" data-analytics="auth_return_to_demo">Book an Agent Evidence Review →</a>
               </div>
             ) : (
               <div className="ap-owner-note" role="note">🔒 Owner access only — sign in with the Origin owner Google account.</div>

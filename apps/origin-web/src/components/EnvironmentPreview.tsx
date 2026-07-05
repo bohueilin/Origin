@@ -72,7 +72,7 @@ export function EnvironmentPreview({
         <span className="lbl-refuse">what it must refuse outright</span>.
       </p>
 
-      <StepBridge done="Your floor simulated end to end" next="review the full gym below, then run the license eval — deterministic, no model spend." />
+      <StepBridge done="Your floor simulated end to end" next="review the full gym below, then run the verification — deterministic, no model spend." />
 
       {frozen && (
         <div className="frozen-banner">
@@ -124,7 +124,7 @@ export function EnvironmentPreview({
           </ul>
         </div>
         <div className="preview-card">
-          <div className="panel-kicker">Oracle assumptions</div>
+          <div className="panel-kicker">Verification assumptions</div>
           <ul className="preview-assumptions">
             {plan.oracleAssumptions.map((a) => (
               <li key={a}>{a}</li>
@@ -145,11 +145,11 @@ export function EnvironmentPreview({
       )}
 
       <div className="preview-sim">
-        <div className="panel-kicker">Simulate the license test · your robots in the proving ground</div>
+        <div className="panel-kicker">Simulate the verification · your robots in the supervised run</div>
         <p className="preview-sim-sub">
           Watch your fleet scan, navigate the hazards on your floor, and earn the call —
           finish, escalate, or refuse. A deterministic readiness simulation (not a physics
-          simulator); the oracle decides, no model spend.
+          simulator); evidence-backed verification decides, no model spend.
         </p>
         <div className="sim-chips">
           {drawnTask && drawn && (
@@ -187,7 +187,7 @@ export function EnvironmentPreview({
         <div className="ptask-row ptask-head">
           <span>Task</span>
           <span>Level</span>
-          <span>Oracle</span>
+          <span>Verified</span>
           <span>Battery</span>
           <span>Steps</span>
           <span>Hazards</span>
@@ -214,7 +214,7 @@ export function EnvironmentPreview({
           <div className="panel-kicker">Last step</div>
           <h3>Run the readiness test</h3>
           <p>
-            Scores blind baselines and the calibrated oracle through the deterministic verifier —{' '}
+            Scores blind baselines and the calibrated reference through the deterministic verifier —{' '}
             <strong>no model calls, no spend</strong>. You get the finish / escalate / refuse
             breakdown and the readiness tier for this floor.
           </p>

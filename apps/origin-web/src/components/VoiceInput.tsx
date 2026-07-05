@@ -72,7 +72,7 @@ export function VoiceInput({
 
       <p className="voice-note">
         Your browser does the speech-to-text; the server receives text only. AI proposes; you
-        approve; the deterministic oracle still judges.
+        approve; evidence-backed verification still judges.
       </p>
     </div>
   )

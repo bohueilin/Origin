@@ -1,26 +1,26 @@
 // Landing — the first page. A frontier-lab, proof-first descent:
 // hook → proof → how → moat → personalized brain → breadth → why-now → who → ask.
-// AI proposes; the deterministic oracle judges. Bright, restrained, one signature
-// device (the finish / escalate / refuse decision triad).
+// The autonomy layer runs the Observe → Plan → Act → Verify loop. Bright, restrained,
+// one signature device (the finish / escalate / refuse decision triad).
 
 import { ScrollVideo } from './ScrollVideo'
 
 const FLOW = [
-  { n: '01', t: 'Media intake', d: 'Video, photos, floor plan, SOPs, and Drive links — how the work really happens.' },
-  { n: '02', t: 'Understood workflow', d: 'A site map, storyboard, and finish / escalate / refuse rules you confirm.' },
-  { n: '03', t: 'Deterministic check', d: 'A fixed rulebook (the “oracle”) — not an AI — decides if each move was safe.' },
-  { n: '04', t: 'Autonomy license', d: 'A readiness score (FAR/FRR), cheat-checks, and a portable evidence pack.' },
+  { n: '01', t: 'Observe', d: 'Video, photos, floor plan, SOPs, and Drive links — the live floor context the work happens in.' },
+  { n: '02', t: 'Plan', d: 'Safe task steps and finish / escalate / refuse rules you confirm before anything moves.' },
+  { n: '03', t: 'Act', d: 'Execute through your AMRs, humanoids, or ROS 2 stack — robot-agnostic, under your controls.' },
+  { n: '04', t: 'Verify', d: 'Confirm completion with operator-grade telemetry and a replayable audit log.' },
 ]
 
 const PROOF = [
-  { v: 'Deterministic scoring', l: 'a fixed algorithm decides — not an AI’s opinion' },
+  { v: 'Evidence-backed verification', l: 'every task step is confirmed, not assumed' },
   { v: 'Calibrated per site', l: 'tune safety vs. access live — no blanket accuracy promises' },
-  { v: 'Evidence-backed', l: 'tamper-evident and reproducible' },
+  { v: 'Replayable audit trail', l: 'tamper-evident and reproducible' },
 ]
 
 const WHO = [
   { t: 'Safety & ops leads', d: 'Sign off with evidence, not vendor promises.' },
-  { t: 'Robotics integrators', d: 'Ship faster with a portable readiness report.' },
+  { t: 'Robotics integrators', d: 'Ship faster with a portable verification report.' },
   { t: 'Insurers & risk', d: 'Price autonomy against a measured operating point.' },
 ]
 
@@ -30,18 +30,18 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
       {/* ---------- hero ---------- */}
       <div className="landing-top">
         <div className="landing-hero">
-          <span className="landing-eyebrow">The driving test for Physical AI</span>
-          <h1 className="landing-headline">Turn real-world footage into a robot safety license.</h1>
+          <span className="landing-eyebrow">The Origin operator console</span>
+          <h1 className="landing-headline">See robot work observed, planned, executed, and verified.</h1>
           <p className="landing-sub">
-            Robots are moving into factories, hospitals, and homes faster than anyone can prove
-            they’re safe. Upload how the work really happens, confirm what we understood, and run a
-            deterministic eval that decides when a robot may <strong>finish</strong>, must{' '}
-            <strong>escalate</strong>, or must <strong>refuse</strong> — then issue the readiness
-            license it earned for that exact site, re-checked every time the agent learns.
+            Origin is the robot-agnostic autonomy layer between work orders and robot action.
+            It observes dynamic floor context, plans safe task steps, executes through your AMRs,
+            humanoids, or ROS 2 stack, and verifies completion with evidence — deciding at each step
+            whether to <strong>finish</strong>, <strong>escalate</strong>, or <strong>refuse</strong>,
+            with operator-grade telemetry and replayable audit logs.
           </p>
 
-          {/* Signature device: the three calls we license. */}
-          <div className="decision-triad" role="img" aria-label="The licensed calls: finish, escalate, refuse">
+          {/* Signature device: the three verification decisions. */}
+          <div className="decision-triad" role="img" aria-label="Verification decisions: finish, escalate, refuse">
             <span className="dt-seg dt-finish">Finish</span>
             <span className="dt-seg dt-escalate">Escalate</span>
             <span className="dt-seg dt-refuse">Refuse</span>
@@ -56,9 +56,9 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
             </button>
           </div>
           <p className="landing-trust">
-            An operational readiness gate — re-earned each time the agent learns, not a regulatory
-            certification. A deterministic oracle judges, never an LLM. Demo captures local metadata
-            only; nothing is uploaded or parsed.
+            Enterprise controls throughout — human override, no-go zones, confidence thresholds, and
+            exception handling. Every task step is verified against a deterministic check, never an
+            LLM. Demo captures local metadata only; nothing is uploaded or parsed.
           </p>
         </div>
 
@@ -96,11 +96,10 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
         <summary>How do you handle accuracy?</summary>
         <p>
           No two sites are identical, so we don’t make blanket accuracy claims. For each location we
-          measure two kinds of mistake — acting when it should have stopped (a{' '}
-          <strong>false accept</strong>), and refusing a job it could have safely done (a{' '}
-          <strong>false reject</strong>), together written{' '}
-          <abbr title="False-Accept Rate / False-Reject Rate">FAR / FRR</abbr>. You tune the balance
-          between strict safety and smooth operation to fit the site — measured live, never promised.
+          watch two kinds of mistake — acting when it should have stopped (an{' '}
+          <strong>unsafe action</strong>), and refusing a job it could have safely done (a{' '}
+          <strong>missed action</strong>). You tune the balance between strict safety and smooth
+          operation to fit the site — verified live from telemetry, never promised.
         </p>
       </details>
 
@@ -115,34 +114,34 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
         ))}
       </ol>
 
-      {/* ---------- the moat: how the oracle decides ---------- */}
-      <section className="trust-diagram" aria-label="How the oracle decides">
-        <div className="panel-kicker">How the oracle decides</div>
-        <h2>AI proposes. You approve. A deterministic oracle judges.</h2>
+      {/* ---------- the moat: how verification decides ---------- */}
+      <section className="trust-diagram" aria-label="How verification decides">
+        <div className="panel-kicker">How verification decides</div>
+        <h2>Observe the floor. Plan the step. Act, then verify against evidence.</h2>
         <ol className="td-flow">
           <li className="td-node">
-            <span className="td-step">Declared</span>
-            <p>Your footage, floor plan, SOPs, and safety rules.</p>
+            <span className="td-step">Observe</span>
+            <p>Live floor context — footage, floor plan, SOPs, and safety rules.</p>
           </li>
           <li className="td-arrow" aria-hidden="true">→</li>
           <li className="td-node">
-            <span className="td-step td-ai">AI-interpreted</span>
-            <p>A draft site map and rules — a proposal, never the judge.</p>
+            <span className="td-step td-ai">Plan</span>
+            <p>Draft safe task steps and rules — a proposal you review, never self-approving.</p>
           </li>
           <li className="td-arrow" aria-hidden="true">→</li>
           <li className="td-node">
-            <span className="td-step">You approve</span>
-            <p>Edit, then freeze the workflow into the eval.</p>
+            <span className="td-step">Act</span>
+            <p>Execute through your AMRs, humanoids, or ROS 2 stack, under your controls.</p>
           </li>
           <li className="td-arrow" aria-hidden="true">→</li>
           <li className="td-node">
-            <span className="td-step td-oracle">Safety checker</span>
-            <p>A fixed algorithm (the “oracle”) decides finish / escalate / refuse — the same way every time.</p>
+            <span className="td-step td-oracle">Verify</span>
+            <p>Operator-grade telemetry decides finish / escalate / refuse and logs every step.</p>
           </li>
         </ol>
         <p className="td-note">
-          Uploaded media and AI interpretation never set rewards, labels, or the license. The
-          deterministic oracle is the source of truth.
+          Verification is grounded in operator-grade telemetry and a replayable audit log — the
+          record of what actually happened is the source of truth.
         </p>
       </section>
 
@@ -164,20 +163,20 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
               must escalate, or must refuse on your floor.
             </li>
             <li>
-              <strong>Footage in, eval out.</strong> Describe the site in your words or a quick
+              <strong>Footage in, safe plan out.</strong> Describe the site in your words or a quick
               video — you confirm what we understood. (We don’t parse the footage yet.)
             </li>
             <li>
               <strong>Catch the dangerous error first.</strong> Acting when it should stop is the
-              failure that hurts people; we measure it head-on.
+              failure that hurts people; we verify against it head-on.
             </li>
             <li>
-              <strong>Share proof, not promises.</strong> An auditable readiness report for safety,
+              <strong>Share proof, not promises.</strong> An auditable verification report for safety,
               ops, and insurers.
             </li>
           </ul>
           <button className="btn primary hero-action" onClick={onCreate}>
-            Build your site eval →
+            Set up your site →
           </button>
         </div>
       </section>
@@ -186,9 +185,9 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
       <section className="footage-section" aria-label="Reference footage across human spaces">
         <div className="footage-head">
           <div className="panel-kicker">Reference footage</div>
-          <h2>The same license, across human spaces.</h2>
+          <h2>The same autonomy layer, across human spaces.</h2>
           <p>
-            From the factory floor to the home — the settings Physical AI has to earn its license in.
+            From the factory floor to the home — the settings Physical AI has to work safely in.
             Illustration footage only, never parsed as evidence.
           </p>
         </div>
@@ -211,7 +210,7 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
             <div className="footage-body">
               <div className="panel-kicker">Beyond the factory</div>
               <p>
-                The same eval licenses robots in homes and care settings.{' '}
+                The same autonomy layer runs robots in homes and care settings.{' '}
                 <a href="https://www.youtube.com/shorts/L7i_KE5z_GY" target="_blank" rel="noreferrer">
                   Open the Short
                 </a>
@@ -229,12 +228,12 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
         <p className="origin-lead">
           A founder watched a robot get installed on his dad’s factory floor and realized no one
           could answer the only question that mattered: <em>is it safe to let it work next to him?</em>{' '}
-          Capability is arriving; permission isn’t. This is the layer that earns it.
+          Capability is arriving; control isn’t. This is the layer that supplies it.
         </p>
         <ul className="origin-points">
-          <li>Humanoids and AMRs are shipping into human spaces before sites can license them.</li>
+          <li>Humanoids and AMRs are shipping into human spaces before sites can control them.</li>
           <li>A physical mistake isn’t a bad paragraph — it injures people or halts a line.</li>
-          <li>Capability ≠ permission. Every robot needs proof of when to act, escalate, or refuse.</li>
+          <li>Capability ≠ permission. Every robot needs a verified record of when to act, escalate, or refuse.</li>
         </ul>
       </section>
 
@@ -251,7 +250,7 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
           ))}
         </div>
         <div className="credibility">
-          <span>Designed to map toward AIUC-1</span>
+          <span>Designed to map toward established safety frameworks</span>
           <span>OWASP agentic-risk crosswalk</span>
           <span className="cred-pilot">In pilot — talk to us</span>
         </div>
@@ -265,7 +264,7 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
           <p>
             Start with a small workplace slice: the task outcome, robot type, SOPs, floor plan,
             unsafe examples, and escalation rules. The current demo captures local metadata only; the
-            evaluation stays deterministic.
+            verification stays evidence-backed.
           </p>
         </div>
         <div className="pilot-grid">
@@ -274,24 +273,24 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
             <span>Outcome, video, Drive links, SOPs, floor plan, unsafe examples.</span>
           </div>
           <div>
-            <strong>Eval generated</strong>
-            <span>Tasks, hazards, human-only zones, oracle labels, reward gates.</span>
+            <strong>Workflow mapped</strong>
+            <span>Tasks, hazards, human-only zones, safety rules, escalation gates.</span>
           </div>
           <div>
             <strong>Evidence returned</strong>
-            <span>Operating envelope, FAR/FRR, reward-hack trace, Signal Extractor rows.</span>
+            <span>Operating envelope, telemetry summary, exception trace, replayable audit log.</span>
           </div>
           <div>
             <strong>Next pilot step</strong>
-            <span>Run the actual model/robot and persist its trace as license evidence.</span>
+            <span>Run the actual model/robot and persist its trace as verified audit evidence.</span>
           </div>
         </div>
       </section>
 
       {/* ---------- closing ---------- */}
       <section className="closing" aria-label="Get started">
-        <h2>Prove it before it moves near someone.</h2>
-        <p>Turn your site into the test a robot has to pass.</p>
+        <h2>Verify it before it moves near someone.</h2>
+        <p>Put the autonomy layer between your work orders and robot action.</p>
         <div className="closing-cta">
           <button className="btn primary hero-action" onClick={onCreate}>
             <span aria-hidden="true">↑</span> Upload workflow video
@@ -301,9 +300,9 @@ export function Landing({ onCreate, onSample }: { onCreate: () => void; onSample
           </button>
         </div>
         <p className="landing-disclaimer">
-          Autonomy License is a readiness evidence pack today, not a regulatory certification
-          authority. Certification attests controls; we train and measure the physical behavior
-          underneath.
+          Origin returns an evidence-backed verification record and a replayable audit trail today,
+          not a regulatory certification. Certification attests controls; we run and verify the
+          physical behavior underneath.
         </p>
       </section>
     </section>

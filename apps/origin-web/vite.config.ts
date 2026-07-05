@@ -1,7 +1,58 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { resolve } from 'node:path'
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs'
+import { resolve, join, extname } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+
+// ── Clean-domain / contact cutover, driven by config (see docs/domain-and-inbox-cutover.md).
+// Default host + contact are the current Cloudflare Pages deployment. Set SITE_URL (or
+// PUBLIC_SITE_URL) and/or CONTACT_EMAIL in the build env to rewrite canonical/OG/llms/
+// sitemap/robots + the contact email across the whole dist at build time — no source edits.
+// Unset ⇒ complete no-op (output byte-identical to today).
+const DEFAULT_HOST = 'origin-physical-ai.pages.dev'
+const DEFAULT_EMAIL = 'hello@originphysical.ai'
+
+function siteUrlRewrite(): Plugin {
+  const siteUrl = (process.env.SITE_URL || process.env.PUBLIC_SITE_URL || '').replace(/\/+$/, '')
+  const contactEmail = process.env.CONTACT_EMAIL || ''
+  const newHost = siteUrl.replace(/^https?:\/\//, '')
+  const active = Boolean(siteUrl) || Boolean(contactEmail)
+
+  const rewrite = (s: string): string => {
+    let out = s
+    if (siteUrl) {
+      out = out.split(`https://${DEFAULT_HOST}`).join(siteUrl)
+      out = out.split(`http://${DEFAULT_HOST}`).join(siteUrl)
+      out = out.split(DEFAULT_HOST).join(newHost) // any bare-host references
+    }
+    if (contactEmail) out = out.split(DEFAULT_EMAIL).join(contactEmail)
+    return out
+  }
+
+  const TEXT_EXT = new Set(['.html', '.txt', '.xml', '.json', '.webmanifest', '.js', '.css'])
+  const walk = (dir: string) => {
+    for (const name of readdirSync(dir)) {
+      const p = join(dir, name)
+      if (statSync(p).isDirectory()) { walk(p); continue }
+      if (!TEXT_EXT.has(extname(name))) continue
+      const before = readFileSync(p, 'utf8')
+      const after = rewrite(before)
+      if (after !== before) writeFileSync(p, after)
+    }
+  }
+
+  return {
+    name: 'origin-site-url-rewrite',
+    // rewrites the entry HTMLs (canonical / OG / og:url) during build
+    transformIndexHtml(html) { return active ? rewrite(html) : html },
+    // rewrites the copied public assets (llms.txt, sitemap.xml, robots.txt, legal/*, 404.html)
+    closeBundle() {
+      if (!active) return
+      walk(resolve(__dirname, 'dist'))
+      console.log(`[site-url] rewrote host → ${newHost || DEFAULT_HOST}${contactEmail ? `, contact → ${contactEmail}` : ''}`)
+    },
+  }
+}
 
 // Dev-only clean URLs so the dev server matches production (Cloudflare Pages serves
 // `app.html` at `/app` and `auth.html` at `/auth`). Without this, the OAuth callback to
@@ -35,7 +86,7 @@ export default defineConfig(() => {
     process.env.VITE_BACKEND_ORIGIN || process.env.BACKEND_ORIGIN || 'http://localhost:8787'
 
   return {
-    plugins: [react(), devCleanUrls()],
+    plugins: [react(), devCleanUrls(), siteUrlRewrite()],
     build: {
       // Entries: marketing home (index.html), console app (app.html), auth (auth.html).
       rollupOptions: {

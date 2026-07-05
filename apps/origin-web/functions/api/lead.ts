@@ -43,13 +43,20 @@ export const onRequestPost = async (ctx: { request: Request; env: LeadEnv }): Pr
   if (!name || !EMAIL_RE.test(email)) return json({ ok: false, error: 'invalid' }, 422)
 
   const intent = (data.intent || 'demo').slice(0, 40)
+  const clip = (k: string, n: number) => (data[k] || '').slice(0, n)
   const text = [
     `New Origin lead — ${intent}`,
     `Name: ${name}`,
     `Email: ${email}`,
-    `Company: ${(data.company || '').slice(0, 200)}`,
-    `Role: ${(data.role || '').slice(0, 100)}`,
-    `Floor & robots: ${(data.floor || '').slice(0, 1000)}`,
+    `Company: ${clip('company', 200)}`,
+    `Role: ${clip('role', 100)}`,
+    `Agent: ${clip('agent', 400)}`,
+    `Touches: ${clip('touches', 300)}`,
+    `Blocker: ${clip('blocker', 600)}`,
+    `Signs off: ${clip('signoff', 200)}`,
+    `Workaround: ${clip('workaround', 200)}`,
+    `Urgency: ${clip('urgency', 200)}`,
+    `Source: ${clip('cta_source', 80)} · ${clip('page_path', 120)} · role_path=${clip('role_path', 40)} · ${clip('opened_at', 40)}`,
   ].join('\n')
 
   let delivered = false

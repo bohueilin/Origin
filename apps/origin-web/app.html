@@ -119,6 +119,9 @@
       .scen h2 { font-size: clamp(18px, 2.2vw, 22px); letter-spacing: -0.015em; margin: 0; }
       .scen__meta { font-size: 12.5px; color: var(--steel); }
       .scen__meta code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+      .scen__badge { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+      .scen__badge--live { color: #2f7d57; background: #eaf6f0; border: 1px solid #bfe3d3; }
+      .scen__badge--sim { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
       .scen__sub { font-size: 13.5px; color: var(--ink-soft); margin: 4px 0 0; max-width: 74ch; }
       /* When JS is off, a divider separates the stacked scenarios */
       .scen + .scen { border-top: 1px solid var(--line); padding-top: 6px; }
@@ -175,6 +178,7 @@
       <section class="scen" id="scen-refund" role="tabpanel" aria-labelledby="tab-refund" tabindex="0">
         <div class="scen__head">
           <h2 id="scen-refund-h">Refund exception</h2>
+          <span class="scen__badge scen__badge--live">Machine-emitted trace available</span>
           <span class="scen__meta"><code>payments-ops-agent</code> · <code>payments.refund</code> · policy <code>refund-cap-v0.3</code></span>
         </div>
         <p class="scen__sub">An above-cap refund needs a human; a second refund over the hard ceiling is denied and blocked at the proxy. This mirrors the published machine-emitted <b>sandbox</b> trace TR-A002 (simulated; no live money).</p>
@@ -247,7 +251,7 @@
                 <p class="blocked__req">payments.refund &nbsp;$920.00 &rarr; order_8842</p>
                 <p class="blocked__why">After the approved refund, the agent proposed a <b>second refund of $920.00</b> — over the <b>$500</b> hard ceiling. Verdict <b>deny</b>. The proxy blocked it; the unauthorized refund never ran. One approval covers one action — it does not widen the agent's standing authority.</p>
                 <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
-                <p class="blocked__link"><a href="/proof#tr-a002">See the machine-emitted sandbox trace of this loop &rarr;</a></p>
+                <p class="blocked__link"><a href="/proof#tr-a002">See TR-A002 — the machine-emitted sandbox trace of this exact refund loop &rarr;</a></p>
               </div>
             </section>
           </div>
@@ -324,6 +328,7 @@
       <section class="scen" id="scen-prod" role="tabpanel" aria-labelledby="tab-prod" tabindex="0">
         <div class="scen__head">
           <h2 id="scen-prod-h">Production change</h2>
+          <span class="scen__badge scen__badge--sim">Simulated · same evidence pattern</span>
           <span class="scen__meta"><code>deploy-ops-agent</code> · <code>infra.service.restart</code> · policy <code>prod-change-v0.2</code></span>
         </div>
         <p class="scen__sub">An approved restart runs inside the change window; an unapproved escalation to disable auth is denied and blocked at the proxy.</p>
@@ -395,7 +400,7 @@
                 <p class="blocked__req">infra.service.config &nbsp;disable-auth-middleware &rarr; payments-api</p>
                 <p class="blocked__why">After the restart, the agent tried to <b>disable the auth middleware on payments-api</b> — an <b>unapproved escalation</b> outside the approved change window. Verdict <b>deny</b>. The proxy blocked it; auth was never disabled. Approval for a restart does not authorize a config change.</p>
                 <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
-                <p class="blocked__link"><a href="/proof#tr-a002">See the machine-emitted sandbox trace of this loop &rarr;</a></p>
+                <p class="blocked__link">This scenario is <b>simulated</b>. <a href="/proof#tr-a002">TR-A002</a> shows the same proposal &rarr; gate &rarr; proxy &rarr; block &rarr; digest pattern, machine-emitted, on the refund workflow.</p>
               </div>
             </section>
           </div>
@@ -472,6 +477,7 @@
       <section class="scen" id="scen-pii" role="tabpanel" aria-labelledby="tab-pii" tabindex="0">
         <div class="scen__head">
           <h2 id="scen-pii-h">PII export</h2>
+          <span class="scen__badge scen__badge--sim">Simulated · same evidence pattern</span>
           <span class="scen__meta"><code>support-ops-agent</code> · <code>data.export</code> · policy <code>pii-export-v0.1</code></span>
         </div>
         <p class="scen__sub">A single-record export for a verified ticket has an approval path and runs; a bulk export of 12,480 customer records has no approval path and is denied outright.</p>
@@ -539,7 +545,7 @@
                 <p class="blocked__req">data.export &nbsp;12,480 records &rarr; s3://vendor-bucket</p>
                 <p class="blocked__why">The <b>bulk export of 12,480 customer records</b> to an external bucket was <b>denied</b> — there is no approval path for bulk PII export without a data-protection owner, and none granted it. The proxy blocked it; the unauthorized export <b>never ran</b>. No data left the boundary.</p>
                 <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
-                <p class="blocked__link"><a href="/proof#tr-a002">See the machine-emitted sandbox trace of this loop &rarr;</a></p>
+                <p class="blocked__link">This scenario is <b>simulated</b>. <a href="/proof#tr-a002">TR-A002</a> shows the same proposal &rarr; gate &rarr; proxy &rarr; block &rarr; digest pattern, machine-emitted, on the refund workflow.</p>
               </div>
             </section>
           </div>

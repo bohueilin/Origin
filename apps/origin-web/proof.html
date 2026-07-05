@@ -113,6 +113,13 @@
       .tr2-verify pre { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: #d5dae4; line-height: 1.7; white-space: pre-wrap; }
       .tr2-verify .tr2-verify__c { color: #7fd88f; }
       .tr2-verify .tr2-verify__cap { margin-top: 10px; font-size: 12.5px; color: var(--steel); }
+      .tr2-verify__row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+      .tr2-verify__lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #7fd88f; font-weight: 700; margin: 0; }
+      .tr2-verify__copy { font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: #d5dae4; background: #1b2430; border: 1px solid #2b3644; border-radius: 7px; padding: 5px 11px; cursor: pointer; white-space: nowrap; }
+      .tr2-verify__copy:hover { background: #232f3d; }
+      .tr2-verify__copy:focus-visible { outline: 2px solid #7fd88f; outline-offset: 2px; }
+      .tr2-verify__plain { margin-top: 8px; font-size: 12.5px; color: var(--ink-soft); }
+      .tr2-verify__plain b { color: var(--ink); }
       .tr2-dl { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
 
       /* Footer */
@@ -296,7 +303,7 @@
               <li><b>Not a performance claim</b> — no throughput, latency, reliability, or any measured metric.</li>
               <li><b>No reviewer-acceptance claim</b> — it is review-ready decision-support, not reviewer-accepted or certified.</li>
               <li><b>TR-A001 is authored (illustrative), not a machine-emitted run</b> — the scenario, timestamps, and digest are written to the schema, not recorded from a live agent.</li>
-              <li>The machine-emitted sandbox trace (TR-A002) and the first design-partner trace (TR-A003) are forthcoming — not shown here.</li>
+              <li>TR-A001 is authored, not machine-emitted. The machine-emitted sandbox trace is <a href="#tr-a002" style="text-decoration:underline">TR-A002</a>, now available; the first external design-partner trace is TR-A003, forthcoming when earned.</li>
             </ul>
           </div>
         </div>
@@ -384,11 +391,16 @@
         </div>
 
         <div class="tr2-verify">
-          <pre><span class="tr2-verify__c"># re-derive the hash chain and confirm nothing was tampered with</span>
+          <div class="tr2-verify__row">
+            <p class="tr2-verify__lbl">Verify this artifact yourself</p>
+            <button type="button" class="tr2-verify__copy" data-copy="npm run proof:verify" aria-label="Copy the verify command">Copy command</button>
+          </div>
+          <pre><span class="tr2-verify__c"># clone the repo, then re-derive the hash chain of the published JSON</span>
 npm run proof:verify
 <span class="tr2-verify__c"># → PASS every event hash + prev_hash link verifies</span>
 <span class="tr2-verify__c"># → final_digest == sealing event hash · log_digest recomputes</span></pre>
           <p class="tr2-verify__cap">The verifier recomputes every event hash from its own bytes and checks the links. Edit any field of any event and it exits non-zero — that is what "tamper-evident" means here.</p>
+          <p class="tr2-verify__plain"><b>In plain English:</b> the published JSON commits each event to the next one, and the final digest commits the entire run. Change any byte of any event and re-verification fails.</p>
         </div>
 
         <div class="proof__pair" style="margin-top:24px">
@@ -426,6 +438,19 @@ npm run proof:verify
     <script>
       var y = document.getElementById('yr');
       if (y) y.textContent = new Date().getFullYear();
+      // copy-to-clipboard for the verify command (progressive enhancement)
+      document.querySelectorAll('[data-copy]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var text = btn.getAttribute('data-copy');
+          var done = function () { var o = btn.textContent; btn.textContent = 'Copied ✓'; setTimeout(function () { btn.textContent = o; }, 1600); };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(done);
+          } else {
+            var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done();
+          }
+        });
+      });
     </script>
   </body>
 </html>

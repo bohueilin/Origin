@@ -224,19 +224,17 @@ let lastFocused: HTMLElement | null = null
 const CONTACT_EMAIL = 'hello@originphysical.ai'
 
 const INTENT_COPY: Record<string, { title: string; sub: string; cta: string }> = {
-  demo: { title: 'Book a floor demo', sub: 'Tell us about your floor and robots. We’ll follow up to schedule.', cta: 'Request demo' },
-  pilot: { title: 'Discuss a pilot', sub: 'Start with one workflow on one floor. Tell us where you’d begin.', cta: 'Request pilot' },
-  operator: { title: 'Evaluate a supervised pilot', sub: 'Where are interventions costing you today? Tell us about your floor.', cta: 'Start the conversation' },
-  partner: { title: 'Discuss integration', sub: 'Tell us about your AMR, humanoid, or ROS 2 stack and we’ll map the fit.', cta: 'Discuss integration' },
-  investor: { title: 'Request the company brief', sub: 'Leave your details and we’ll share the deep dive on wedge, timing, and proof.', cta: 'Request brief' },
-  engineer: { title: 'See the technical challenges', sub: 'Tell us about your background and what you’d want to work on.', cta: 'Get in touch' },
+  review: { title: 'Book an Agent Evidence Review', sub: 'Tell us about the agent that’s stuck in review. We follow up to learn — not to pitch.', cta: 'Request review' },
+  blocker: { title: 'Send us the reviewer blocker', sub: 'Tell us what’s blocking approval and who signs off. We’ll say honestly whether Origin can produce the evidence your reviewer needs.', cta: 'Send the blocker' },
+  // default fallback for any CTA without an explicit intent
+  demo: { title: 'Book an Agent Evidence Review', sub: 'Tell us about the high-consequence agent you need through security review.', cta: 'Request review' },
+  investor: { title: 'Read the one-page brief', sub: 'Leave your details and we’ll share the brief on the wedge, the evidence ladder, and where Origin is going.', cta: 'Request brief' },
 }
 
-// Prefill the role field when an audience card opens the modal.
+// Prefill the role field when a CTA opens the modal. Values match the <select> options.
 const INTENT_ROLE: Record<string, string> = {
-  operator: 'Operations',
-  partner: 'Robotics / engineering',
-  engineer: 'Robotics / engineering',
+  review: 'Engineering / platform',
+  blocker: 'Security / review',
   investor: 'Investor',
 }
 
@@ -259,6 +257,14 @@ function openLead(trigger: HTMLElement): void {
   const source = trigger.getAttribute('data-source') || trigger.getAttribute('data-analytics') || 'unknown'
   const srcEl = document.getElementById('lead-source') as HTMLInputElement | null
   if (srcEl) srcEl.value = source
+  // CRM handoff context: role path (from a role card), page path, and open timestamp
+  const audience = trigger.getAttribute('data-audience') || ''
+  const audEl = document.getElementById('lead-audience') as HTMLInputElement | null
+  if (audEl) audEl.value = audience
+  const pageEl = document.getElementById('lead-page') as HTMLInputElement | null
+  if (pageEl) pageEl.value = window.location.pathname + window.location.hash
+  const tsEl = document.getElementById('lead-ts') as HTMLInputElement | null
+  if (tsEl) tsEl.value = new Date().toISOString()
   track('lead_form_open', { intent, source })
   if (typeof dialog.showModal === 'function') dialog.showModal()
   else dialog.setAttribute('open', '')
@@ -330,6 +336,10 @@ form?.addEventListener('submit', async (e) => {
     return el ? el.value.trim() : ''
   }
   const role = val('role')
+  // "What does it touch?" is a checkbox group — collect the checked values.
+  const touches = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="touches"]:checked'))
+    .map((c) => c.value)
+    .join(', ')
 
   // Primary path: POST to the Cloudflare Pages Function (/api/lead), which
   // forwards securely to our team. If it isn't reachable/configured to deliver,
@@ -341,8 +351,11 @@ form?.addEventListener('submit', async (e) => {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        name: val('name'), email: val('email'), company: val('company'),
-        role, floor: val('floor'), intent, company_website: '',
+        name: val('name'), email: val('email'), company: val('company'), role,
+        agent: val('agent'), touches, blocker: val('blocker'), signoff: val('signoff'),
+        workaround: val('workaround'), urgency: val('urgency'), intent,
+        cta_source: val('cta_source'), role_path: val('role_path'),
+        page_path: val('page_path'), opened_at: val('opened_at'), company_website: '',
       }),
     })
     if (res.ok) {
@@ -364,7 +377,12 @@ form?.addEventListener('submit', async (e) => {
       `Email: ${val('email')}`,
       `Company: ${val('company')}`,
       `Role: ${role}`,
-      `Floor & robots: ${val('floor')}`,
+      `Agent: ${val('agent')}`,
+      `Touches: ${touches}`,
+      `Blocker: ${val('blocker')}`,
+      `Signs off: ${val('signoff')}`,
+      `Workaround: ${val('workaround')}`,
+      `Urgency: ${val('urgency')}`,
     ].join('\n')
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }

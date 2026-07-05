@@ -4,6 +4,35 @@
 
 This pass took the already-repositioned site from "coherent copy" to "coherent copy **with a real, verifiable evidence artifact** and a genuinely interactive product surface," and cleaned out the last of the dead robot subsystem.
 
+---
+
+## Iteration 2 (2026-07-04) — proof precision, claim safety, domain/contact readiness, conversion trust
+
+**P0**
+- **/brief overclaim fixed** — "get one blocked agent workflow through review — and hand you the evidence package that does it" → the mapped, non-guaranteeing offer copy.
+- **/proof stale TR-A001 line fixed** — no longer says TR-A002 is "forthcoming"; now "TR-A001 is authored … the machine-emitted sandbox trace is TR-A002, now available; TR-A003 forthcoming when earned."
+- **/app scenario proof-specificity** — the Refund scenario links to TR-A002 as its *exact* machine-emitted mirror; Production change + PII export now read "This scenario is **simulated** — TR-A002 shows the same pattern on the refund workflow." Head badges: "Machine-emitted trace available" (refund) vs "Simulated · same evidence pattern" (others).
+- **/auth value sentence** restored: "Invited teams use the Console to review policy verdicts, approvals, proxy events, blocked actions, and evidence packages" (+ noscript).
+- **Clean-domain migration is now code-configurable** — a `siteUrlRewrite` Vite plugin (`vite.config.ts`) rewrites canonical/OG/llms/sitemap/robots + the contact email across the whole dist from `SITE_URL`/`CONTACT_EMAIL` env; default = byte-identical no-op. Verified: `SITE_URL=… npm run build` leaves zero stale host in dist. Owner runbook: `docs/domain-and-inbox-cutover.md`.
+- **Overclaim + stale-identity sweeps** clean across the funnel + client source.
+- **Live bug caught + fixed (the big one):** the lead-form submit handler was dropping every qualification field (agent, what-it-touches, blocker, sign-off, workaround, urgency) and still referenced a stale robot-era `floor` field — in the client body, the mailto fallback, AND the server (`functions/api/lead.ts`). And the modal's `INTENT_COPY` had **no** entry for the live `review`/`blocker` intents, so it fell back to "**Book a floor demo · tell us about your floor and robots**" — stale robot copy showing on every "Book an Agent Evidence Review" click. All rewritten to agent-evidence; the form now sends the full qualification payload + CRM context (cta_source, role_path, page_path, opened_at).
+
+**P1**
+- **/proof "verify this artifact" module** — added a copy-command button + a plain-English explainer ("the published JSON commits each event to the next; the final digest commits the entire run; change any byte and re-verification fails") on top of the existing digest / event-count / JSON-download / `npm run proof:verify`.
+- **Lead form → CRM readiness** — hidden context fields (role_path, page_path, opened_at) populate on open; full field set documented in `docs/lead-crm-fields.md`.
+- **/brief** already carried the version/date, print styles, shortlink, and "Send this to your security or platform lead" line — verified.
+- `docs/customer-proof-update-playbook.md` — how to publish TR-A003 / a design-partner quote when earned, without overclaiming.
+
+**P2**
+- `docs/discovery-tracker.md` verified/enhanced (11-column internal tracker).
+- Mobile re-checked at 375px: no horizontal scroll on / , /proof (JSON excerpt scrolls internally), or /app (scenario switcher usable).
+
+**Validation:** `npm run gates` green (build · lint · verify:evidence 40/40 · proof:verify · vitest 279/279); real-browser Playwright QA of the verify module, the (fixed) lead modal + hidden fields, the /app switcher + badges, and mobile.
+
+---
+
+## Iteration 1 (2026-07-04)
+
 ## P0 — must-do
 
 ### 1. TR-A002 — a real machine-emitted sandbox trace (the headline)

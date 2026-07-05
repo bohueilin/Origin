@@ -696,6 +696,10 @@
         </div>
         <input type="hidden" name="intent" id="lead-intent" value="review" />
         <input type="hidden" name="cta_source" id="lead-source" value="" />
+        <!-- CRM handoff context (populated on open; see docs/lead-crm-fields.md) -->
+        <input type="hidden" name="role_path" id="lead-audience" value="" />
+        <input type="hidden" name="page_path" id="lead-page" value="" />
+        <input type="hidden" name="opened_at" id="lead-ts" value="" />
         <!-- honeypot: hidden from humans; bots that fill it are silently dropped -->
         <input type="text" name="company_website" id="lead-hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
 

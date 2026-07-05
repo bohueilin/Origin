@@ -125,7 +125,7 @@ export function AuthPage() {
     : 'Welcome back'
   const sub = step === 'verify' ? note
     : mode === 'signup' ? (step === 'password' ? 'Set a secure password for your account.' : 'Origin Evidence Console access is invite-only during private pilot. Account creation is paused during the closed pilot. Book an Agent Evidence Review to request access.')
-    : 'The Console shows policy verdicts, approvals, proxy events, blocked actions, and evidence packages.'
+    : 'Invited teams use the Console to review policy verdicts, approvals, proxy events, blocked actions, and evidence packages.'
 
   return (
     <div className="ap-shell">
@@ -147,7 +147,7 @@ export function AuthPage() {
               </div>
             ) : mode === 'signup' && !SIGNUPS_OPEN ? (
               <div className="ap-paused" role="note" id="ap-paused-note">
-                🔒 <strong>Private pilot only.</strong> Account creation is paused during the closed pilot. The Console shows policy verdicts, approvals, proxy events, blocked actions, and evidence packages.{' '}
+                🔒 <strong>Private pilot only.</strong> Account creation is paused during the closed pilot. Invited teams use the Console to review policy verdicts, approvals, proxy events, blocked actions, and evidence packages.{' '}
                 <a className="ap-link" href="/#offer" data-analytics="auth_return_to_demo">Book an Agent Evidence Review →</a>
               </div>
             ) : (

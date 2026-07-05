@@ -6,6 +6,32 @@ This pass took the already-repositioned site from "coherent copy" to "coherent c
 
 ---
 
+## Iteration 3 (2026-07-04) — ChatGPT design-feedback pass (proof scannability, ladder, block climax, trust cards, copy)
+
+Actioned the buildable items from an A-/B+ external review. Founder/ops items (clean domain, real inbox/CRM, discovery + external proof) were already made code-ready and documented in prior iterations; this pass did the design/copy work.
+
+**P0**
+- **/proof made executive-scannable** — replaced the dense "in one glance" list with (a) a visual **proof-status ladder** (TR-A001 Available / TR-A002 Available / TR-A003 Not earned yet), (b) a **"Why TR-A002 matters in ten seconds"** exec card with three technical-buyer tiles (code-generated? / independently checkable? / real control moment?), and (c) a **tamper-demo** snippet (`node scripts/verify-tr-a002.mjs …` → FAIL) — all without weakening the honesty framing.
+
+**P1**
+- **Visual proof-status ladder** added to Home (evidence section), /proof (top), and /brief — a shared `.proofladder` component so authored vs sandbox vs design-partner status is unmistakable in five seconds.
+- **/app scenario proof-status labels** — a comparison strip (Refund = "Machine-emitted trace available: TR-A002"; Production change + PII export = "Simulated scenario, same evidence pattern") with text pills, plus the existing head badges.
+- **Dominant blocked-action moment** — a red `.blockline` climax ("The agent tried to exceed its scope. Origin blocked it. The block became evidence.") on the Home demo, /proof (event 11), and a per-scenario climax line in /app.
+- **Technical-buyer summary** on /proof (the three tiles above).
+- **/trust packet items → requestable cards** — DPA / subprocessor list / retention schedule / security checklist / incident contact, each keeping its honest status badge and adding a "Request …" button that routes to the Agent Evidence Review form (no certification claims).
+
+**P2**
+- **/brief** — "Forward this to your platform or security reviewer with one question: would this evidence package unblock your review?" cue + prominent live shortlink. (A real QR is deferred until the clean custom domain is live — it should encode the final domain, not the placeholder host; noted in the domain-cutover runbook.)
+- **Founder tone** — heading "Built by someone who has blocked unsafe launches." → **"…who has owned the launch gate."**
+- **Five copy refinements** (all inside the honesty rules): "nothing a reviewer can accept as proof" → "nothing packaged as review-ready evidence"; "The single path to any side effect — the agent can't reach around it" → "The configured path to side effects — designed so the agent can't reach around policy in scoped workflows"; "What that reviewer needs to see to say yes" → "…to evaluate the launch"; north-star "approved when the customer's reviewer accepts the risk" → "with approval remaining the customer reviewer's decision".
+- Mobile re-checked at 375px (fixed a pre-existing `.brief__actions` non-wrapping-buttons overflow; Home/proof/trust/app/brief all clean).
+
+**Not done (founder/ops, by design):** clean custom domain, real `hello@` inbox/CRM, customer discovery + one external proof signal (TR-A003 / quote / LOI / paid review). Code + docs are ready; these need the founder.
+
+**Validation:** `npm run gates` green (build · lint · verify:evidence 40/40 · proof:verify · vitest 279/279); real-browser Playwright QA of the ladder, exec tiles, tamper demo, trust request-cards, /app compare strip + climax + switcher, /brief cue, and mobile no-scroll on all five funnel pages.
+
+---
+
 ## Iteration 2 (2026-07-04) — proof precision, claim safety, domain/contact readiness, conversion trust
 
 **P0**

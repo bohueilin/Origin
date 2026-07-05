@@ -29,7 +29,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/home.css?v=22" />
+    <link rel="stylesheet" href="/home.css?v=23" />
     <title>Origin Evidence Console — private pilot preview</title>
     <style>
       .ec { max-width: 1180px; margin: 0 auto; padding: 26px 24px 72px; }
@@ -139,6 +139,23 @@
 
       /* JS-on: only the active scenario is shown (set by inline script) */
       .scen[hidden] { display: none; }
+
+      /* Proof-status comparison strip — makes proof status impossible to misread */
+      .proofstrip { margin: 14px 0 2px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--paper-2); box-shadow: var(--sh-sm); }
+      .proofstrip__cap { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); padding: 10px 15px 9px; border-bottom: 1px solid var(--line); background: var(--paper-3); }
+      .proofstrip__row { display: grid; grid-template-columns: 200px 1fr; gap: 12px; align-items: center; padding: 11px 15px; border-bottom: 1px solid var(--line); }
+      .proofstrip__row:last-child { border-bottom: 0; }
+      .proofstrip__scen { font-size: 13px; font-weight: 600; color: var(--ink); }
+      .proofstrip__val { font-size: 12.5px; color: var(--ink-soft); display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+      .proofstrip__pill { font-size: 10.5px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+      .proofstrip__pill--ok { color: #2f7d57; background: #eaf6f0; border: 1px solid #bfe3d3; }
+      .proofstrip__pill--sim { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
+      .proofstrip__val a { color: var(--signal-ink); font-weight: 600; }
+      @media (max-width: 560px) { .proofstrip__row { grid-template-columns: 1fr; gap: 4px; } }
+
+      /* Scenario climax — the blocked-over-scope moment, made the visual peak */
+      .scen-climax { margin: 12px 0 2px; border-left: 4px solid var(--danger); background: #fbecea; border-radius: 0 10px 10px 0; padding: 12px 15px; font-size: 14px; font-weight: 600; line-height: 1.5; color: #7a1f16; }
+      .scen-climax b { color: var(--danger); font-weight: 800; }
     </style>
   </head>
   <body>
@@ -171,6 +188,22 @@
           <button type="button" class="tab" role="tab" id="tab-pii" aria-controls="scen-pii" aria-selected="false" tabindex="-1">
             <span class="tab__n">03</span> PII export
           </button>
+        </div>
+
+        <div class="proofstrip" aria-label="Proof-status comparison across scenarios">
+          <p class="proofstrip__cap">Proof status</p>
+          <div class="proofstrip__row">
+            <span class="proofstrip__scen">Refund exception</span>
+            <span class="proofstrip__val"><span class="proofstrip__pill proofstrip__pill--ok">Trace available</span> Machine-emitted trace: <a href="/proof#tr-a002">TR-A002</a></span>
+          </div>
+          <div class="proofstrip__row">
+            <span class="proofstrip__scen">Production change</span>
+            <span class="proofstrip__val"><span class="proofstrip__pill proofstrip__pill--sim">Simulated</span> Simulated scenario, same evidence pattern</span>
+          </div>
+          <div class="proofstrip__row">
+            <span class="proofstrip__scen">PII export</span>
+            <span class="proofstrip__val"><span class="proofstrip__pill proofstrip__pill--sim">Simulated</span> Simulated scenario, same evidence pattern</span>
+          </div>
         </div>
       </div>
 
@@ -254,6 +287,8 @@
                 <p class="blocked__link"><a href="/proof#tr-a002">See TR-A002 — the machine-emitted sandbox trace of this exact refund loop &rarr;</a></p>
               </div>
             </section>
+
+            <p class="scen-climax">The agent tried a second refund over the ceiling. <b>Origin blocked it</b> — and the block is in the audit chain.</p>
           </div>
 
           <!-- Right: approval + side-effect log + audit + export -->
@@ -403,6 +438,8 @@
                 <p class="blocked__link">This scenario is <b>simulated</b>. <a href="/proof#tr-a002">TR-A002</a> shows the same proposal &rarr; gate &rarr; proxy &rarr; block &rarr; digest pattern, machine-emitted, on the refund workflow.</p>
               </div>
             </section>
+
+            <p class="scen-climax">The agent tried to disable auth outside the change window. <b>Origin blocked it</b> — and the block is in the audit chain.</p>
           </div>
 
           <!-- Right -->
@@ -548,6 +585,8 @@
                 <p class="blocked__link">This scenario is <b>simulated</b>. <a href="/proof#tr-a002">TR-A002</a> shows the same proposal &rarr; gate &rarr; proxy &rarr; block &rarr; digest pattern, machine-emitted, on the refund workflow.</p>
               </div>
             </section>
+
+            <p class="scen-climax">The agent tried to bulk-export customer records. <b>Origin blocked it</b> — and the block is in the audit chain.</p>
           </div>
 
           <!-- Right -->

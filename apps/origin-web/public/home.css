@@ -1133,3 +1133,19 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
   .loop-compact .lc-ok { color: #a9e6cd; border-color: #2f6a54; }
   .loop-compact em { color: #7f93b8; font-style: normal; font-weight: 700; }
 }
+
+/* ── Proof-status ladder — shared across home / proof / brief ── */
+.proofladder { margin: 20px 0; border: 1px solid var(--line-2); border-radius: 14px; overflow: hidden; background: var(--paper-2); box-shadow: var(--sh-sm); }
+.proofladder__cap { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--signal-ink); padding: 12px 18px 4px; }
+.proofladder__row { display: grid; grid-template-columns: 84px 1fr auto; gap: 14px; align-items: center; padding: 12px 18px; border-top: 1px solid var(--line); }
+.proofladder__id { font-family: ui-monospace, Menlo, monospace; font-weight: 700; color: var(--ink); font-size: 13.5px; }
+.proofladder__label { font-size: 13.5px; color: var(--ink-soft); }
+.proofladder__status { justify-self: end; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 3px 11px; border-radius: 999px; white-space: nowrap; }
+.proofladder__status--ok { color: #2f7d57; background: #eaf6f0; border: 1px solid #bfe3d3; }
+.proofladder__status--pending { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
+@media (max-width: 520px) { .proofladder__row { grid-template-columns: 74px 1fr; } .proofladder__status { grid-column: 2; justify-self: start; margin-top: 2px; } }
+
+/* ── The blocked-action climax — the memorable product moment ── */
+.blockline { margin: 22px 0; border-left: 4px solid var(--danger); background: #fbecea; border-radius: 0 12px 12px 0; padding: 15px 20px; }
+.blockline__t { margin: 0; font-family: var(--font-display); font-size: clamp(16px,2.3vw,20px); line-height: 1.4; color: var(--ink); letter-spacing: -0.01em; }
+.blockline__t b { color: var(--danger); }

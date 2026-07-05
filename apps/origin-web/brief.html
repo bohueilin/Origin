@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/home.css?v=22" />
+    <link rel="stylesheet" href="/home.css?v=23" />
     <style>
       /* ---- scoped to the brief; never touches home.css ---- */
       .brief { max-width: 940px; margin: 0 auto; padding: 40px 24px 64px; }
@@ -24,7 +24,7 @@
       .brief__brand img { width: 30px; height: 30px; border-radius: 7px; }
       .brief__brand b { font-family: var(--font-display); font-size: 20px; }
       .brief__brand span { color: var(--steel); font-size: 14px; }
-      .brief__actions { display: flex; gap: 10px; }
+      .brief__actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
       .brief__meta { margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 12px; color: var(--steel); }
       .brief__ver { font-weight: 700; letter-spacing: .04em; color: var(--ink); background: var(--paper-3); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px 10px; }
@@ -86,6 +86,19 @@
       .brief__note { margin-top: 18px; font-size: 12.5px; color: var(--steel); font-style: italic; }
       .brief__print-only { display: none; }
 
+      /* ---- forward-internally callout ---- */
+      .brief__forward { margin-top: 26px; display: flex; align-items: flex-start; gap: 14px; background: var(--signal-wash); border: 1px solid #bcccff; border-left: 4px solid var(--signal-ink); border-radius: 12px; padding: 16px 18px; box-shadow: var(--sh-sm); }
+      .brief__forward .fw-ic { flex: none; font-size: 18px; line-height: 1.2; }
+      .brief__forward p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--ink); }
+      .brief__forward b { color: var(--signal-ink); font-weight: 700; }
+      .brief__forward .fw-q { display: block; margin-top: 5px; font-weight: 600; color: var(--ink); }
+
+      /* ---- prominent live shortlink ---- */
+      .brief__link { margin-top: 22px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 12px; text-align: center; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; box-shadow: var(--sh-sm); }
+      .brief__link .ll-cap { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); }
+      .brief__link a { font-family: var(--font-display); font-size: clamp(17px, 2.4vw, 21px); font-weight: 700; letter-spacing: -0.01em; color: var(--signal-ink); text-decoration: none; }
+      .brief__link a:hover { text-decoration: underline; }
+
       @media print {
         @page { margin: 14mm; }
         .brief__actions, .site-header, .skip-link { display: none !important; }
@@ -93,8 +106,10 @@
         .brief { max-width: none; padding: 0; color: #000; }
         .brief h1, .brief__lede, .brief__card p, .brief__card li, .brief__step .t, .brief__step .d, .rung__id, .rung p { color: #000 !important; }
         .brief__eyebrow, .brief__card h2, .rung__id { color: #000 !important; }
-        .brief__card, .brief__step, .brief__flow span { box-shadow: none !important; }
-        .brief__card, .rung, .brief__pipe, .brief__two { break-inside: avoid; page-break-inside: avoid; }
+        .proofladder__cap, .proofladder__id, .proofladder__label, .proofladder__status { color: #000 !important; }
+        .brief__forward p, .brief__forward b, .brief__forward .fw-q, .brief__link .ll-cap, .brief__link a { color: #000 !important; }
+        .brief__card, .brief__step, .brief__flow span, .proofladder, .brief__forward, .brief__link { box-shadow: none !important; }
+        .brief__card, .rung, .brief__pipe, .brief__two, .proofladder, .brief__forward, .brief__link { break-inside: avoid; page-break-inside: avoid; }
         h1, h2 { break-after: avoid; }
         a { color: #000 !important; text-decoration: none; }
         .brief__print-only { display: block; }
@@ -247,6 +262,12 @@
         <div class="brief__card is-wide">
           <h2>The evidence ladder — proof honesty</h2>
           <p>We publish evidence in rungs and never dress one up as another.</p>
+          <div class="proofladder" aria-label="Proof-status ladder">
+            <p class="proofladder__cap">Proof status</p>
+            <div class="proofladder__row"><span class="proofladder__id">TR-A001</span><span class="proofladder__label">Authored specimen — shows the evidence-package format</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+            <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted sandbox trace — real, re-verifiable SHA-256 hash chain</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+            <div class="proofladder__row"><span class="proofladder__id">TR-A003</span><span class="proofladder__label">First external design-partner trace</span><span class="proofladder__status proofladder__status--pending">Not earned yet</span></div>
+          </div>
           <div class="rung">
             <span class="rung__id">TR-A001<span class="rung__tag rung__tag--spec">Authored specimen</span></span>
             <p>An authored evidence specimen that shows the package <em>format</em> only — illustrative, not a machine-emitted run. See <a href="/proof#tr-a001">/proof#tr-a001</a>.</p>
@@ -261,6 +282,17 @@
           </div>
           <p style="margin-top:12px;font-size:12.5px;color:var(--steel)">The prototype runs; it is not production SaaS. Tamper-evident, not tamper-proof. Review-ready, not reviewer-accepted. Decision-support, not a guarantee of approval.</p>
         </div>
+      </div>
+
+      <div class="brief__forward">
+        <span class="fw-ic" aria-hidden="true">↪</span>
+        <p><b>Send this internally.</b> Forward this to your platform or security reviewer with one question:
+          <span class="fw-q">“Would this evidence package unblock your review?”</span></p>
+      </div>
+
+      <div class="brief__link">
+        <span class="ll-cap">See it live</span>
+        <a href="https://origin-physical-ai.pages.dev/">origin-physical-ai.pages.dev</a>
       </div>
 
       <p class="brief__note">Origin is decision-support and evidence infrastructure — not legal or compliance certification. No customers, logos, or metrics are claimed here unless independently verifiable. Send this to your security or platform lead.</p>

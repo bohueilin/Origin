@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=22" />
+    <link rel="stylesheet" href="/home.css?v=23" />
 
     <!-- Structured data for search engines & AI agents. NOTE: PLACEHOLDER domain email
          hello@originphysical.ai — replace with the real MX-backed company inbox. -->
@@ -252,7 +252,7 @@
             <article class="card"><span class="card__k">No boundary</span><h3>No blast-radius bound</h3><p>Nothing limits what the agent can reach or spend before it acts.</p></article>
             <article class="card"><span class="card__k">No owner</span><h3>No approval owner</h3><p>When a risky action needs a human, it's unclear who signs off — or whether they did.</p></article>
             <article class="card"><span class="card__k">No control</span><h3>No side-effect path control</h3><p>The agent can reach tools directly; there's no single checkpoint every action must pass.</p></article>
-            <article class="card"><span class="card__k">No record</span><h3>Scattered logs, no evidence</h3><p>Prompts here, logs there, a screenshot in Slack — nothing a reviewer can accept as proof.</p></article>
+            <article class="card"><span class="card__k">No record</span><h3>Scattered logs, no evidence</h3><p>Prompts here, logs there, a screenshot in Slack — nothing packaged as review-ready evidence.</p></article>
             <article class="card"><span class="card__k">No proof</span><h3>Can't prove what happened</h3><p>After an incident, there's no tamper-evident record of what the agent did and why it was allowed.</p></article>
             <article class="card"><span class="card__k">Cost</span><h3>The launch date slips</h3><p>The workflow is ready; the approval isn't. The team ships spreadsheets and "trust us."</p></article>
           </div>
@@ -367,6 +367,9 @@
               <span class="demo__cap" aria-live="polite" data-demo-cap>Step 1 of 8 · The agent proposes a risky action.</span>
             </div>
           </div>
+          <div class="blockline" role="note">
+            <p class="blockline__t">The agent tried to exceed its scope. <b>Origin blocked it.</b> The block became evidence.</p>
+          </div>
           <div class="cta-row" style="margin-top: 26px;">
             <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="demo_cta_click">Book an Agent Evidence Review</button>
             <a class="btn btn--ghost" href="/proof#tr-a002" data-analytics="demo_proof_link">See the machine-emitted trace</a>
@@ -409,7 +412,7 @@
           <h2 id="product-title">Enforcement and evidence, as one control plane.</h2>
           <div class="cards cards--3">
             <article class="card"><span class="card__k">Decide</span><h3>Policy engine</h3><p>Deterministic allow / cap / require-approval / deny / pause on every proposed action.</p></article>
-            <article class="card"><span class="card__k">Control</span><h3>Tool-call proxy</h3><p>The single path to any side effect — the agent can't reach around it.</p></article>
+            <article class="card"><span class="card__k">Control</span><h3>Tool-call proxy</h3><p>The configured path to side effects — designed so the agent can't reach around policy in scoped workflows.</p></article>
             <article class="card"><span class="card__k">Escalate</span><h3>Human approval</h3><p>Risky actions route to a named risk owner, and the approval is recorded.</p></article>
             <article class="card"><span class="card__k">Bound</span><h3>Budget &amp; blast-radius limits</h3><p>Scope, spend, and reach caps enforced before an action runs.</p></article>
             <article class="card"><span class="card__k">Stop</span><h3>Kill switches</h3><p>Pause a workflow or revoke a scope without redeploying the agent.</p></article>
@@ -433,7 +436,7 @@
                 <li><span class="dl-mark">→</span><span>The agent workflow you're trying to ship</span></li>
                 <li><span class="dl-mark">→</span><span>The tools and systems it touches</span></li>
                 <li><span class="dl-mark">→</span><span>What's blocking approval — and who signs off</span></li>
-                <li><span class="dl-mark">→</span><span>What that reviewer needs to see to say yes</span></li>
+                <li><span class="dl-mark">→</span><span>What that reviewer needs to evaluate the launch</span></li>
               </ul>
             </div>
             <div class="card card--tint">
@@ -459,6 +462,12 @@
           <p class="kicker">Evidence</p>
           <h2 id="evidence-title">Proof lands here — as it's earned.</h2>
           <p class="section__lede leadin">We publish evidence in rungs, and we never dress one rung up as another. Available today: an authored specimen <b>and</b> a machine-emitted sandbox trace with a re-verifiable hash chain. The design-partner trace is forthcoming.</p>
+          <div class="proofladder" aria-label="Proof-status ladder">
+            <p class="proofladder__cap">Proof status</p>
+            <div class="proofladder__row"><span class="proofladder__id">TR-A001</span><span class="proofladder__label">Authored specimen — shows the evidence-package format</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+            <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted sandbox trace — real, re-verifiable SHA-256 hash chain</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+            <div class="proofladder__row"><span class="proofladder__id">TR-A003</span><span class="proofladder__label">First external design-partner trace</span><span class="proofladder__status proofladder__status--pending">Not earned yet</span></div>
+          </div>
           <div class="cards cards--3">
             <article class="card"><span class="card__k">TR-A001 · available</span><h3>Authored evidence specimen</h3><p>Shows the shape of the evidence a reviewer receives — policy verdicts, approvals, proxy events, blocked actions, audit digests. It does not claim a machine-emitted run. <a href="/proof#tr-a001" style="color:var(--signal-ink);font-weight:600">See it →</a></p></article>
             <article class="card"><span class="card__k">TR-A002 · available</span><h3>Machine-emitted sandbox trace</h3><p>Origin's trace engine emitting a real 12-event, hash-chained record over a sandboxed agent action — digest <code>ca1d4690…</code>, re-verifiable with <code>npm run proof:verify</code>. Sandbox only; no live money. <a href="/proof#tr-a002" style="color:var(--signal-ink);font-weight:600">See it →</a></p></article>
@@ -512,7 +521,7 @@
           <h2 id="metrics-title">One north star, and hard guardrails.</h2>
           <p class="section__lede leadin">Our north star is agent workflows <b>prepared for security review with Origin evidence</b> — and approved only when the customer's own reviewer accepts the risk. Around it, guardrails that must hold. We don't publish numbers we haven't earned.</p>
           <div class="cards cards--3">
-            <article class="card card--tint"><span class="card__k">North star</span><h3>Unblocked launches</h3><p>Agent workflows prepared for security review with Origin evidence, and approved when the customer's reviewer accepts the risk.</p></article>
+            <article class="card card--tint"><span class="card__k">North star</span><h3>Unblocked launches</h3><p>Agent workflows prepared for security review with Origin evidence — with approval remaining the customer reviewer's decision.</p></article>
             <article class="card"><span class="card__k">Guardrail</span><h3>Audit-chain integrity</h3><p>Tamper-verification failures on the chain. Target: zero.</p></article>
             <article class="card"><span class="card__k">Guardrail</span><h3>Unauthorized side effects</h3><p>Side effects not routed through the proxy. Target: zero.</p></article>
             <article class="card"><span class="card__k">Guardrail</span><h3>Evidence completeness</h3><p>Share of actions with a full who / why / what record.</p></article>
@@ -546,7 +555,7 @@
       <section class="section section--tint" id="founder" aria-labelledby="founder-title">
         <div class="shell">
           <p class="kicker">Who's building it</p>
-          <h2 id="founder-title">Built by someone who has blocked unsafe launches.</h2>
+          <h2 id="founder-title">Built by someone who has owned the launch gate.</h2>
           <p class="section__lede leadin">
             Origin comes from ~20 years building the "prove it's safe before you ship" layer — payment-grade
             biometric authentication (designing the false-accept / false-reject operating points that let a

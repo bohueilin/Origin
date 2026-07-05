@@ -41,7 +41,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=22" />
+    <link rel="stylesheet" href="/home.css?v=23" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -85,6 +85,18 @@
       .status-legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 18px; padding: 0; list-style: none; }
       .status-legend li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-soft); }
       .status-legend .status { pointer-events: none; }
+
+      /* ---- Requestable procurement-packet cards -------------------------
+         Each security-packet item becomes a small card that keeps its honest
+         status badge AND exposes the next procurement step: a request link
+         that routes to the Agent Evidence Review form. */
+      .packet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 16px; margin-top: 24px; }
+      .packet-card { display: flex; flex-direction: column; gap: 10px; }
+      .packet-card .trust-cardhead { margin-bottom: 2px; }
+      .packet-card .card__k { font-size: 15px; letter-spacing: 0; text-transform: none; color: var(--ink); }
+      .packet-card__desc { color: var(--ink-soft); font-size: 14px; line-height: 1.5; margin: 0; flex: 1 1 auto; }
+      .packet-card__action { margin-top: 4px; }
+      .packet-card__action .btn { width: 100%; justify-content: center; }
 
       @media (prefers-reduced-motion: no-preference) { .status { transition: none; } }
     </style>
@@ -334,25 +346,66 @@
             and the DPA is finalized when the engagement is signed. We do not claim SOC 2, ISO, or any
             compliance certification.
           </p>
-          <div class="card" style="margin-top: 24px;">
-            <div class="trust-scroll">
-              <table class="trust-table">
-                <thead>
-                  <tr><th scope="col">Item</th><th scope="col">What it covers</th><th scope="col">Availability</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td><b>DPA</b></td><td>Data Processing Agreement, including retention terms. Drafted and signed per engagement.</td><td><span class="status status--tbd"><span class="status__txt">Not finalized</span></span></td></tr>
-                  <tr><td><b>Subprocessor list</b></td><td>Infrastructure, hosting, and identity providers under confidentiality &amp; security obligations.</td><td><span class="status status--request"><span class="status__txt">By request</span></span></td></tr>
-                  <tr><td><b>Retention schedule</b></td><td>Per-class retention confirmed for your deployment.</td><td><span class="status status--pilot"><span class="status__txt">Pilot-specific</span></span></td></tr>
-                  <tr><td><b>Security checklist</b></td><td>A written summary of the controls on this page for your review process.</td><td><span class="status status--request"><span class="status__txt">By request</span></span></td></tr>
-                  <tr><td><b>Incident contact</b></td><td>The escalation path and named contact for material incidents.</td><td><span class="status status--request"><span class="status__txt">By request</span></span></td></tr>
-                </tbody>
-              </table>
-            </div>
+          <div class="packet-grid">
+            <article class="card packet-card">
+              <div class="trust-cardhead">
+                <span class="card__k">DPA</span>
+                <span class="status status--tbd"><span class="status__txt">Not finalized</span></span>
+              </div>
+              <p class="packet-card__desc">Data Processing Agreement, including retention terms. Drafted and signed per engagement.</p>
+              <div class="packet-card__action">
+                <a class="btn btn--ghost btn--sm" href="/#offer" data-analytics="trust_packet_request_dpa">Request DPA</a>
+              </div>
+            </article>
+            <article class="card packet-card">
+              <div class="trust-cardhead">
+                <span class="card__k">Subprocessor list</span>
+                <span class="status status--request"><span class="status__txt">By request</span></span>
+              </div>
+              <p class="packet-card__desc">Infrastructure, hosting, and identity providers under confidentiality &amp; security obligations.</p>
+              <div class="packet-card__action">
+                <a class="btn btn--ghost btn--sm" href="/#offer" data-analytics="trust_packet_request_subprocessors">Request subprocessor list</a>
+              </div>
+            </article>
+            <article class="card packet-card">
+              <div class="trust-cardhead">
+                <span class="card__k">Retention schedule</span>
+                <span class="status status--pilot"><span class="status__txt">Pilot-specific</span></span>
+              </div>
+              <p class="packet-card__desc">Per-class retention confirmed for your deployment.</p>
+              <div class="packet-card__action">
+                <a class="btn btn--ghost btn--sm" href="/#offer" data-analytics="trust_packet_request_retention">Request retention schedule</a>
+              </div>
+            </article>
+            <article class="card packet-card">
+              <div class="trust-cardhead">
+                <span class="card__k">Security checklist</span>
+                <span class="status status--request"><span class="status__txt">By request</span></span>
+              </div>
+              <p class="packet-card__desc">A written summary of the controls on this page for your review process.</p>
+              <div class="packet-card__action">
+                <a class="btn btn--ghost btn--sm" href="/#offer" data-analytics="trust_packet_request_checklist">Request security checklist</a>
+              </div>
+            </article>
+            <article class="card packet-card">
+              <div class="trust-cardhead">
+                <span class="card__k">Incident contact</span>
+                <span class="status status--request"><span class="status__txt">By request</span></span>
+              </div>
+              <p class="packet-card__desc">The escalation path and named contact for material incidents.</p>
+              <div class="packet-card__action">
+                <a class="btn btn--ghost btn--sm" href="/#offer" data-analytics="trust_packet_request_incident">Request incident contact</a>
+              </div>
+            </article>
           </div>
-          <div class="cta-row" style="margin-top: 26px;">
+          <p class="mono-note" style="margin-top: 20px;">
+            Each artifact above is provided on request during a private pilot and finalized in the DPA per
+            engagement — none is a finished certification. Origin does not claim SOC 2, ISO, or any
+            compliance certification.
+          </p>
+          <div class="cta-row" style="margin-top: 22px;">
             <a class="btn btn--primary" href="/#offer" data-analytics="trust_review_cta_click">Book an Agent Evidence Review</a>
-            <a class="btn btn--ghost" href="mailto:hello@originphysical.ai?subject=Origin%20security%20packet%20request" data-analytics="trust_packet_request">Request the security packet</a>
+            <a class="btn btn--ghost" href="mailto:hello@originphysical.ai?subject=Origin%20security%20packet%20request" data-analytics="trust_packet_request">Request the full packet</a>
           </div>
         </div>
       </section>

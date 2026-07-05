@@ -26,7 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/home.css?v=22" />
+    <link rel="stylesheet" href="/home.css?v=23" />
     <style>
       /* Standalone page shell — same pattern as brief.html */
       .proof { max-width: 960px; margin: 0 auto; padding: 32px 24px 72px; }
@@ -120,6 +120,16 @@
       .tr2-verify__copy:focus-visible { outline: 2px solid #7fd88f; outline-offset: 2px; }
       .tr2-verify__plain { margin-top: 8px; font-size: 12.5px; color: var(--ink-soft); }
       .tr2-verify__plain b { color: var(--ink); }
+      /* Why TR-A002 matters — executive, non-technical */
+      .tr2why { margin-top: 18px; }
+      .tr2why__lead { font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; margin: 0; }
+      .tr2why__lead b { color: var(--ink); }
+      .tr2why__grid { margin-top: 12px; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+      @media (max-width: 720px) { .tr2why__grid { grid-template-columns: 1fr; } }
+      .tr2why__tile { background: var(--paper-2); border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; box-shadow: var(--sh-sm); }
+      .tr2why__q { font-size: 12.5px; font-weight: 700; color: var(--ink); margin: 0 0 6px; }
+      .tr2why__a { font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.5; }
+      .tr2why__a code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--signal-ink); }
       .tr2-dl { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
 
       /* Footer */
@@ -151,15 +161,23 @@
         and this page will not show it until a design partner has actually run it.
       </p>
 
-      <!-- Executive summary card — scannable before the technical trace -->
-      <div style="margin-top:24px;border:1px solid var(--line-2);border-radius:14px;background:var(--paper-2);box-shadow:var(--sh-sm);padding:20px 22px">
-        <p style="font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--signal-ink);margin:0 0 12px">In one glance</p>
-        <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:14.5px;color:var(--ink-soft)">
-          <li><b style="color:var(--ink)">TR-A001</b> — shows the evidence-package format only. Authored, illustrative; not a machine-emitted run. <a href="#tr-a001" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></li>
-          <li><b style="color:var(--ink)">TR-A002</b> — <b style="color:var(--ink)">available now</b>: a machine-emitted sandbox trace, 12 events, real SHA-256 hash chain, digest <span class="mono" style="font-size:12px">ca1d4690…</span>. Re-verify with <span class="mono" style="font-size:12px">npm run proof:verify</span>. <a href="#tr-a002" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></li>
-          <li><b style="color:var(--ink)">TR-A003</b> — will be the first external design-partner trace. When earned.</li>
-        </ul>
-        <p style="margin:14px 0 0;font-size:12.5px;color:var(--steel)">Plumbing proof is not customer proof. TR-A002 proves the trace engine works; it is not a customer deployment, performance claim, or reviewer acceptance.</p>
+      <!-- Proof-status ladder — scannable in five seconds -->
+      <div class="proofladder" aria-label="Proof-status ladder">
+        <p class="proofladder__cap">Proof status</p>
+        <div class="proofladder__row"><span class="proofladder__id">TR-A001</span><span class="proofladder__label">Authored specimen — shows the evidence-package format. <a href="#tr-a001" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+        <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted sandbox trace — real, re-verifiable SHA-256 hash chain. <a href="#tr-a002" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+        <div class="proofladder__row"><span class="proofladder__id">TR-A003</span><span class="proofladder__label">First external design-partner trace.</span><span class="proofladder__status proofladder__status--pending">Not earned yet</span></div>
+      </div>
+
+      <!-- Why TR-A002 matters — executive, non-technical, 10-second read -->
+      <div class="tr2why">
+        <p class="tr2why__lead"><b>Why TR-A002 matters, in ten seconds:</b> it proves the Origin trace engine can emit a deterministic, tamper-evident sandbox evidence chain that anyone can re-check. It does <b>not</b> prove production readiness or customer approval.</p>
+        <div class="tr2why__grid">
+          <div class="tr2why__tile"><p class="tr2why__q">Is the trace generated by code?</p><p class="tr2why__a">Yes — emitted by <code>scripts/generate-tr-a002.mjs</code>, not hand-written.</p></div>
+          <div class="tr2why__tile"><p class="tr2why__q">Can the chain be independently checked?</p><p class="tr2why__a">Yes — download the JSON and run <code>npm run proof:verify</code>.</p></div>
+          <div class="tr2why__tile"><p class="tr2why__q">Does it capture a real control moment?</p><p class="tr2why__a">Yes — an above-cap action needs approval; an over-scope retry is blocked and recorded.</p></div>
+        </div>
+        <p class="mono-note" style="margin-top:14px">Plumbing proof is not customer proof. TR-A002 proves the trace engine works; it is not a customer deployment, performance claim, or reviewer acceptance.</p>
       </div>
 
       <!-- ═══════════ The ladder — three rungs ═══════════ -->
@@ -361,6 +379,10 @@
           <li class="is-seal"><span class="ev__a">evidence.digest_sealed</span><span class="ev__d">Hash chain over the preceding 11 events is committed to the final digest.</span></li>
         </ol>
 
+        <div class="blockline" role="note" style="margin-top:20px">
+          <p class="blockline__t">Event 11 is the one that matters: the agent tried to exceed its scope. <b>The proxy blocked it — and the block itself is in the chain.</b></p>
+        </div>
+
         <div class="spec-json" style="margin-top:22px">
           <h3>Emitter output — verbatim excerpt (first + sealing event)</h3>
           <pre><code>// machine-emitted — public/proof/tr-a002.json (12 events; excerpt)
@@ -398,8 +420,12 @@
           <pre><span class="tr2-verify__c"># clone the repo, then re-derive the hash chain of the published JSON</span>
 npm run proof:verify
 <span class="tr2-verify__c"># → PASS every event hash + prev_hash link verifies</span>
-<span class="tr2-verify__c"># → final_digest == sealing event hash · log_digest recomputes</span></pre>
-          <p class="tr2-verify__cap">The verifier recomputes every event hash from its own bytes and checks the links. Edit any field of any event and it exits non-zero — that is what "tamper-evident" means here.</p>
+<span class="tr2-verify__c"># → final_digest == sealing event hash · log_digest recomputes</span>
+
+<span class="tr2-verify__c"># prove it's tamper-evident — edit one amount / actor / verdict, then:</span>
+node scripts/verify-tr-a002.mjs public/proof/tr-a002.json
+<span class="tr2-verify__c"># → FAIL (a single changed byte breaks the chain)</span></pre>
+          <p class="tr2-verify__cap">The verifier recomputes every event hash from its own bytes and checks the links. Edit any field of any event and it exits non-zero — that is what "tamper-evident" means here. This demonstrates tamper-evident trace plumbing in sandbox, not production security.</p>
           <p class="tr2-verify__plain"><b>In plain English:</b> the published JSON commits each event to the next one, and the final digest commits the entire run. Change any byte of any event and re-verification fails.</p>
         </div>
 

@@ -6,6 +6,29 @@ This pass took the already-repositioned site from "coherent copy" to "coherent c
 
 ---
 
+## Iteration 4 (2026-07-04) — proof iconography + claim consistency
+
+Second ChatGPT feedback round (A- / B+). Founder/ops P0s (clean domain, real inbox/CRM, discovery + external proof) remain code-ready + documented.
+
+**/proof — make the strongest artifact iconic + legible**
+- **12-event trace rail** — a horizontal, colour-coded (enforce / held / verified / blocked / sealed), scannable rail above the detailed event list.
+- **"What does it not prove?"** 4th tile added to the technical-buyer grid (customer deployment / production readiness / compliance / reviewer acceptance / revenue) — 2×2 layout.
+- **curl verification recipe** — verify the *published* artifact directly (`curl -sO …/proof/tr-a002.json` → `node scripts/verify-tr-a002.mjs` → PASS; edit a byte → FAIL). The URL auto-rewrites on domain cutover via the siteUrlRewrite plugin.
+
+**Blocked-action climax now on all four surfaces** — added the `.blockline` climax to /brief (already on Home, /proof, /app).
+
+**Copy consistency + safety (all inside the honesty rules)**
+- Loop lede: "The model proposes. A deterministic policy engine decides." → "The agent proposes. A policy gate evaluates scope, budget, and approval rules." ("deterministic" kept only in technical/proof contexts.)
+- Softened every "only path / no other path" absolute to "the configured path … in scoped workflows" across Home (hero, loop, console aria, product card, trace node), /app (lede + production scenario), /proof (TR-A001 list), and /brief (pipeline step + loop card) — consistent with the enterprise-safe phrasing already in the product section.
+- North-star lede: "approved only when the customer's own reviewer accepts the risk" → "with any launch decision remaining the customer reviewer's call."
+- Physical-AI arc line de-robot'd: "…pointed at robots acting on real floors" → "The longer arc is any high-consequence system where actions need policy, control, and proof." (reduces brand ambiguity given the placeholder hostname).
+
+**Already shipped in prior iterations (no-op this round):** /trust requestable packet cards; /brief forward cue + shortlink; the "review-ready evidence" phrasing; the exec proof-status ladder. **QR** intentionally deferred until the clean domain is live (it should encode the final domain).
+
+**Validation:** `npm run gates` green (build · lint · verify:evidence 40/40 · proof:verify · vitest 279/279); Playwright QA of the trace rail, 4 tiles, curl recipe, /brief blockline, and mobile no-scroll on all pages.
+
+---
+
 ## Iteration 3 (2026-07-04) — ChatGPT design-feedback pass (proof scannability, ladder, block climax, trust cards, copy)
 
 Actioned the buildable items from an A-/B+ external review. Founder/ops items (clean domain, real inbox/CRM, discovery + external proof) were already made code-ready and documented in prior iterations; this pass did the design/copy work.

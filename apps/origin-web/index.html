@@ -156,14 +156,14 @@
 
             <ul class="hero__assurances" aria-label="How Origin works">
               <li>Policy gate before side effects</li>
-              <li>Tool-call proxy is the only path</li>
+              <li>Every tool call routes through the proxy</li>
               <li>Tamper-evident audit trail</li>
             </ul>
           </div>
 
           <!-- Hero product visual: a simulated Evidence Console. Real text, no image. -->
           <figure class="hero__visual" aria-labelledby="console-cap">
-            <div class="console" role="img" aria-label="Origin Evidence Console: an agent proposes a refund, a policy gate returns a verdict with scope and budget checks, the tool-call proxy is the only path to the side effect, and a hash-chained audit trail records the decision, approver, and result.">
+            <div class="console" role="img" aria-label="Origin Evidence Console: an agent proposes a refund, a policy gate returns a verdict with scope and budget checks, the tool-call proxy is the configured path to the side effect, and a hash-chained audit trail records the decision, approver, and result.">
               <div class="console__bar">
                 <span class="console__dot" aria-hidden="true"></span>
                 <span class="console__title">Origin Evidence Console</span>
@@ -269,9 +269,9 @@
             </div>
           </div>
           <p class="section__lede">
-            The model proposes. A deterministic policy engine decides. A single proxy is the only path to any
-            side effect. A human owns the risky calls. Every step lands in a tamper-evident trace — the proof
-            the work was allowed, and what actually happened.
+            The agent proposes. A policy gate evaluates scope, budget, and approval rules. A single controlled
+            proxy is the configured path to side effects. A human owns the risky calls. Every step lands in a
+            tamper-evident trace — the proof the work was allowed, and what actually happened.
           </p>
 
           <ul class="trace__legend" aria-hidden="true">
@@ -298,7 +298,7 @@
             </div>
             <div class="trace__node trace__node--plan" style="--d:3.15s">
               <span class="trace__dot">04</span>
-              <div class="trace__textwrap"><span class="trace__k">Proxy</span><span class="trace__l">Only path to side effects</span></div>
+              <div class="trace__textwrap"><span class="trace__k">Proxy</span><span class="trace__l">Configured path to side effects</span></div>
             </div>
             <div class="trace__node trace__node--held" style="--d:4.2s">
               <span class="trace__dot">05</span>
@@ -354,7 +354,7 @@
               <div class="demo__panel is-on" data-demo-panel="1"><h3><span class="demo__tag demo__tag--n">Propose</span> Agent proposes</h3><p><code>payments-ops-agent</code> proposes: refund <b>$480.00</b> &rarr; <code>order_8842</code> via <code>payments.refund</code>.</p><p class="demo__readout demo__readout--plan"><b>payments.refund</b> · $480.00 &rarr; order_8842 <span class="rd-state">PROPOSED</span></p></div>
               <div class="demo__panel" data-demo-panel="2"><h3><span class="demo__tag demo__tag--plan">Gate</span> Policy gate evaluates</h3><p>Policy <code>refund-cap-v0.3</code> checks scope, actor, budget, and approval rules — deterministically. Budget $480.00 is over the $250 auto-cap.</p><p class="demo__readout demo__readout--plan"><b>refund-cap-v0.3</b> · $480.00 vs $250 auto-cap <span class="rd-state">OVER CAP</span></p></div>
               <div class="demo__panel" data-demo-panel="3"><h3><span class="demo__tag demo__tag--held">Verdict</span> Verdict: require-approval</h3><p>One of allow / cap / require-approval / deny / pause. Above-cap refunds require a human.</p><p class="demo__readout demo__readout--held"><b>Verdict</b> · risk owner: payments-on-call <span class="rd-state">REQUIRE-APPROVAL</span></p></div>
-              <div class="demo__panel" data-demo-panel="4"><h3><span class="demo__tag demo__tag--held">Proxy</span> The proxy holds</h3><p><code>payments.refund</code> is held at the tool-call proxy — the agent has no other path to the side effect.</p><p class="demo__readout demo__readout--held"><b>proxy</b> · payments.refund not dispatched <span class="rd-state">HELD</span></p></div>
+              <div class="demo__panel" data-demo-panel="4"><h3><span class="demo__tag demo__tag--held">Proxy</span> The proxy holds</h3><p><code>payments.refund</code> is held at the tool-call proxy — in this scoped workflow the proxy is the agent's configured path to the side effect.</p><p class="demo__readout demo__readout--held"><b>proxy</b> · payments.refund not dispatched <span class="rd-state">HELD</span></p></div>
               <div class="demo__panel" data-demo-panel="5"><h3><span class="demo__tag demo__tag--held">Approve</span> Human approves</h3><p>payments on-call approves this one action. Who, when, and scope are recorded.</p><p class="demo__readout demo__readout--ok"><b>approver</b> · payments-on-call · scope: one action <span class="rd-state">APPROVED</span></p></div>
               <div class="demo__panel" data-demo-panel="6"><h3><span class="demo__tag demo__tag--ok">Execute</span> Executed within scope</h3><p>The proxy runs only the approved action — $480.00 &rarr; <code>order_8842</code>. Sandboxed; no live money.</p><p class="demo__readout demo__readout--ok"><b>proxy</b> · $480.00 &rarr; order_8842 · sandbox <span class="rd-state">EXECUTED</span></p></div>
               <div class="demo__panel" data-demo-panel="7"><h3><span class="demo__tag demo__tag--block">Block</span> Over-scope &rarr; blocked</h3><p>A second refund of <b>$920.00</b> — above the approved scope — is blocked at the proxy and recorded. The approval covered one action only; it does not widen standing authority.</p><p class="demo__readout demo__readout--block"><b>payments.refund</b> · $920.00 · over $500 ceiling <span class="rd-state">BLOCKED &amp; RECORDED</span></p></div>
@@ -519,7 +519,7 @@
         <div class="shell">
           <p class="kicker">How we measure it</p>
           <h2 id="metrics-title">One north star, and hard guardrails.</h2>
-          <p class="section__lede leadin">Our north star is agent workflows <b>prepared for security review with Origin evidence</b> — and approved only when the customer's own reviewer accepts the risk. Around it, guardrails that must hold. We don't publish numbers we haven't earned.</p>
+          <p class="section__lede leadin">Our north star is agent workflows <b>prepared for security review with Origin evidence</b> — with any launch decision remaining the customer reviewer's call. Around it, guardrails that must hold. We don't publish numbers we haven't earned.</p>
           <div class="cards cards--3">
             <article class="card card--tint"><span class="card__k">North star</span><h3>Unblocked launches</h3><p>Agent workflows prepared for security review with Origin evidence — with approval remaining the customer reviewer's decision.</p></article>
             <article class="card"><span class="card__k">Guardrail</span><h3>Audit-chain integrity</h3><p>Tamper-verification failures on the chain. Target: zero.</p></article>
@@ -537,7 +537,7 @@
           <p class="kicker">Trust &amp; controls</p>
           <h2 id="trust-title">Built for reviewers, not just builders.</h2>
           <div class="cards cards--3">
-            <article class="card"><h3>Proxy is the only path</h3><p>Side effects can't happen except through the controlled tool-call proxy.</p></article>
+            <article class="card"><h3>Proxy-gated side effects</h3><p>In scoped workflows, side effects route through the controlled tool-call proxy — designed so the agent can't reach around policy.</p></article>
             <article class="card"><h3>Tamper-evident audit chain</h3><p>A hash-chained record of every proposal, verdict, approval, and action.</p></article>
             <article class="card"><h3>Human approvals &amp; risk owner</h3><p>Risky actions require a named approver — and that decision is recorded.</p></article>
             <article class="card"><h3>Scope &amp; budget limits</h3><p>Blast radius and spend are bounded before an action runs.</p></article>
@@ -564,7 +564,7 @@
             because there was no way to bound what a system could do or prove what it did. Origin is that
             missing layer, built for agents.
           </p>
-          <p class="honesty-line" style="max-width:64ch">Origin's longer arc is physical AI — the same enforce-and-prove core, pointed at robots acting on real floors. That's the vision, not today's product.</p>
+          <p class="honesty-line" style="max-width:64ch">Origin starts with software agents. The longer arc is any high-consequence system where actions need policy, control, and proof — that's the vision, not today's product.</p>
         </div>
       </section>
 

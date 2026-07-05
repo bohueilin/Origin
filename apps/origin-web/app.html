@@ -172,7 +172,7 @@
       </div>
 
       <h1>From agent proposal to review-ready evidence.</h1>
-      <p class="ec__lede">An agent proposes an action. The policy gate returns a verdict. The controlled proxy is the only path to the side effect. A human approves when risk crosses a threshold. An over-scope retry is blocked. Every step lands in a tamper-evident, hash-chained audit trail — exported as a review-ready evidence package.</p>
+      <p class="ec__lede">An agent proposes an action. The policy gate returns a verdict. The controlled proxy is the configured path to the side effect. A human approves when risk crosses a threshold. An over-scope retry is blocked. Every step lands in a tamper-evident, hash-chained audit trail — exported as a review-ready evidence package.</p>
       <p class="ec__flow" aria-hidden="true"><b>Propose</b><em>&rarr;</em><b>Gate</b><em>&rarr;</em><b>Proxy</b><em>&rarr;</em><b>Approve</b><em>&rarr;</em><b>Prove</b></p>
 
       <!-- Scenario switcher. With JS off, this is inert and all three scenarios below are stacked & readable. -->
@@ -425,7 +425,7 @@
             <section class="p" aria-labelledby="d-px-h">
               <div class="p__h" id="d-px-h">Tool-call proxy</div>
               <div class="p__b">
-                <p>Tool <code>infra.service.restart</code> is <b class="proxy--held">held pending approval</b>. The controlled proxy is the only path to the production side effect — nothing restarts while the verdict is <code>require-approval</code>.</p>
+                <p>Tool <code>infra.service.restart</code> is <b class="proxy--held">held pending approval</b>. The controlled proxy is the configured path to the production side effect — nothing restarts while the verdict is <code>require-approval</code>.</p>
               </div>
             </section>
 

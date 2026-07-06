@@ -1,0 +1,11 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="14" fill="#0e1622"/>
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="13.25" fill="none" stroke="#21314a" stroke-width="1.5"/>
+  <!-- repair loop: an open ring that closes back on itself -->
+  <path d="M45 21 A16 16 0 1 0 48.5 33.5" fill="none" stroke="#3b82f6" stroke-width="6" stroke-linecap="round"/>
+  <!-- arrowhead closing the loop -->
+  <path d="M40.5 13.5 L47.5 21 L38 23 Z" fill="#5fa0ff"/>
+  <!-- the verified fix at the center -->
+  <circle cx="32" cy="32" r="7" fill="#34d8a0"/>
+  <path d="M28.6 32 l2.6 2.6 L36 29.4" fill="none" stroke="#08110c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

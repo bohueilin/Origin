@@ -1,0 +1,22 @@
+{
+  "measuredAt": "2026-06-29",
+  "prompt": "Identical ~450-900 word enterprise incident-runbook prompt; output tokens/sec, end-to-end.",
+  "models": [
+    { "model": "GPT-OSS 120B", "provider": "Cerebras", "tokPerSec": 1473, "source": "measured", "cerebras": true },
+    { "model": "Gemma 4 31B", "provider": "Cerebras", "tokPerSec": 1299, "source": "measured", "cerebras": true, "ours": true },
+    { "model": "GLM 4.7", "provider": "Cerebras", "tokPerSec": 360, "source": "measured", "cerebras": true },
+    { "model": "GPT-OSS 120B", "provider": "Fireworks · GPU", "tokPerSec": 230, "source": "measured" },
+    { "model": "Claude Haiku 4.5", "provider": "Anthropic API", "tokPerSec": 130, "source": "published" },
+    { "model": "GPT-4o", "provider": "OpenAI API", "tokPerSec": 110, "source": "published" },
+    { "model": "Gemma 3 27B", "provider": "GPU", "tokPerSec": 95, "source": "published" },
+    { "model": "Claude Sonnet 4.6", "provider": "Anthropic API", "tokPerSec": 85, "source": "published" },
+    { "model": "GPT-5.5", "provider": "OpenAI API", "tokPerSec": 75, "source": "published" },
+    { "model": "Gemini 2.5 Flash", "provider": "Google API", "tokPerSec": 65, "source": "published" },
+    { "model": "GLM 5.2", "provider": "Fireworks · GPU", "tokPerSec": 58, "source": "measured" },
+    { "model": "Llama 3.3 70B", "provider": "GPU", "tokPerSec": 55, "source": "published" },
+    { "model": "Claude Opus 4.8", "provider": "Anthropic API", "tokPerSec": 50, "source": "published" },
+    { "model": "Qwen3-235B", "provider": "GPU", "tokPerSec": 45, "source": "published" },
+    { "model": "MiniMax-Text-01", "provider": "GPU", "tokPerSec": 45, "source": "published" },
+    { "model": "DeepSeek V4 Pro", "provider": "Fireworks · GPU", "tokPerSec": 20, "source": "measured" }
+  ]
+}

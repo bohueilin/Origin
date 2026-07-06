@@ -1,0 +1,113 @@
+:root {
+  /* The Repair Console — a deep-slate canvas where blue = Cerebras speed and
+     red→green = the repair itself (the product's signature). */
+  --paper: #080b12;
+  --panel: #0e1622;
+  --panel-strong: #15212f;
+  --ink: #e9f1fa;
+  --muted: #93a7bf;
+  --quiet: #7a8ca2;
+  --line: #1d2a3a;
+  --line-strong: #2c3d52;
+  --graphite: #15212f;
+  --graphite-2: #1b2a3b;
+  --copper: #e0975a;
+  --copper-soft: rgba(224, 151, 90, 0.16);
+  --teal: #2dd4bf;
+  --teal-soft: rgba(45, 212, 191, 0.14);
+  --green: #34d8a0;
+  --green-soft: rgba(52, 216, 160, 0.13);
+  --blue: #3b82f6;
+  --blue-bright: #5fa0ff;
+  --blue-soft: rgba(59, 130, 246, 0.15);
+  --red: #f8736a;
+  --red-soft: rgba(248, 115, 106, 0.14);
+  --shadow: 0 24px 60px rgba(2, 5, 12, 0.55);
+  --radius: 10px;
+  --font-display: Avenir Next Condensed, Bahnschrift, Aptos Display, system-ui, sans-serif;
+  --font-body: Inter, Aptos, Segoe UI, system-ui, sans-serif;
+  --font-data: SFMono-Regular, ui-monospace, Consolas, monospace;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background:
+    radial-gradient(1100px 520px at 50% -8%, rgba(59, 130, 246, 0.08), transparent 60%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    var(--paper);
+  background-size: auto, 46px 46px, 46px 46px;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+h3 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  color: var(--quiet);
+  letter-spacing: 0;
+}
+
+strong,
+span,
+p,
+small,
+em {
+  overflow-wrap: anywhere;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--copper);
+  outline-offset: 3px;
+}

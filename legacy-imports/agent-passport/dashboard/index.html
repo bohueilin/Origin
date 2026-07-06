@@ -1,0 +1,1464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Passport — live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf9f5; --paper-2:#f4f1e9; --card:#fffdf8; --line:#e7e2d6; --line-2:#dcd6c7;
+    --ink:#1a1813; --ink-soft:#565049; --ink-faint:#8b857a;
+    --seal:#2f6df6; --seal-deep:#1d4ed8; --seal-wash:#eaf1fd;
+    --allow:#0b6e52; --allow-bg:#e6f3ec; --review:#8a5600; --review-bg:#f6efdd;
+    --deny:#b2271d; --deny-bg:#fae9e6;
+    --display:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;
+    background-image:radial-gradient(820px 460px at 92% -12%,rgba(47,109,246,.055),transparent 60%),
+      radial-gradient(620px 420px at -8% 0,rgba(11,110,82,.045),transparent 55%);
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1120px;margin:0 auto;padding:24px 24px 64px}
+
+  /* header */
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line)}
+  .seal-mark{width:38px;height:38px;border-radius:10px;background:var(--seal);color:#fff;flex:none;
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:13px;
+    box-shadow:0 4px 14px rgba(47,109,246,.28)}
+  .brand h1{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em;margin:0;line-height:1}
+  .brand .ey{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin-top:3px}
+  .grow{flex:1}
+  .pill{font-family:var(--mono);font-size:11px;display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--line-2);background:var(--paper-2);border-radius:999px;padding:5px 11px;color:var(--ink-soft);white-space:nowrap}
+  .pill .ph{width:7px;height:7px;border-radius:50%;background:var(--seal)}
+  .pill.state-armed .ph{background:var(--seal)} .pill.state-armed{color:var(--seal-deep);border-color:#bcd2fb;background:var(--seal-wash)}
+  .pill.state-attack .ph{background:var(--review)} .pill.state-attack{color:var(--review);border-color:#e6d3a0;background:var(--review-bg)}
+  .pill.state-contained .ph{background:var(--allow)} .pill.state-contained{color:var(--allow);border-color:#bfe0cf;background:var(--allow-bg)}
+  button{font-family:var(--display);font-weight:600;font-size:14px;cursor:pointer;border-radius:11px;
+    padding:10px 20px;border:1px solid var(--seal);background:var(--seal);color:#fff;letter-spacing:-.01em;
+    box-shadow:0 6px 16px rgba(47,109,246,.22);transition:filter .15s,transform .08s}
+  button:hover{filter:brightness(1.06)} button:active{transform:translateY(1px)}
+  button:disabled{opacity:.55;cursor:default;box-shadow:none}
+  button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(47,109,246,.4)}
+
+  /* hero */
+  .hook{font-family:var(--display);font-size:34px;line-height:1.08;letter-spacing:-.025em;font-weight:700;margin:26px 0 0;max-width:18ch}
+  .thesis{font-size:15.5px;color:var(--ink-soft);margin:12px 0 0;max-width:62ch}
+  .thesis b{color:var(--ink);font-weight:600}
+
+  /* journey rail */
+  .rail{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:24px 0 6px}
+  .rstep{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink-faint);
+    border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;transition:all .3s}
+  .rnum{font-family:var(--mono);font-size:11px;font-weight:600;width:18px;height:18px;border-radius:5px;flex:none;
+    display:flex;align-items:center;justify-content:center;background:var(--paper-2);color:var(--ink-faint)}
+  .rstep.done{color:var(--allow);border-color:#bfe0cf;background:var(--allow-bg)}
+  .rstep.done .rnum{background:var(--allow);color:#fff}
+  .rstep.active{box-shadow:0 0 0 3px rgba(11,110,82,.16)}
+  .rstep.danger{color:var(--deny);border-color:#ecc4be;background:var(--deny-bg)}
+  .rstep.danger .rnum{background:var(--deny);color:#fff}
+  .rstep.danger.active{box-shadow:0 0 0 3px rgba(178,39,29,.18)}
+  .rseg{flex:1;min-width:8px;height:1px;background:var(--line-2);align-self:center;margin:0 -1px;transition:background .3s}
+  .rseg.done{background:var(--allow)} .rseg.danger{background:var(--deny)}
+  @media(max-width:780px){.rseg{display:none}.rail{gap:6px}}
+
+  /* what's-a-scenario explainer + video space */
+  .scene-intro{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;margin:22px 0 6px;align-items:stretch}
+  @media(max-width:820px){.scene-intro{grid-template-columns:1fr}}
+  .scene-copy{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+  .scene-eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--seal-deep)}
+  .scene-copy p{font-size:14px;color:var(--ink-soft);line-height:1.6;margin:8px 0 14px}
+  .scene-copy b{color:var(--ink);font-weight:600}
+  .scene-pick{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .scene-pick label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .scene-pick select{font-family:var(--display);font-weight:600;font-size:13.5px;color:var(--ink);background:var(--paper-2);
+    border:1px solid var(--line-2);border-radius:9px;padding:7px 11px;cursor:pointer}
+  .scene-pick select:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(47,109,246,.35)}
+  .scene-blurb{flex-basis:100%;font-size:12.5px;color:var(--ink-faint);line-height:1.5}
+  .run-local{margin-top:15px}
+  .attack-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .attack-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .attack-btn{font-family:var(--display);font-weight:600;font-size:12.5px;color:var(--deny);background:var(--deny-bg);
+    border:1px solid #ecc4be;border-radius:9px;padding:7px 12px;cursor:pointer;box-shadow:none}
+  .attack-btn:hover{filter:none;background:#f7ddd8}
+  .attack-btn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(178,39,29,.3)}
+  .attackout{display:none;margin-top:11px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:11px 13px}
+  .attackout.on{display:block}
+  .atttitle{font-family:var(--display);font-weight:700;font-size:13px;margin-bottom:7px}
+  .attrow{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+  .attrow:last-child{border-bottom:0}
+  .attrow .k{font-family:var(--mono);font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:5px;flex:none}
+  .attrow .k.allow{color:var(--allow);background:var(--allow-bg)} .attrow .k.deny{color:var(--deny);background:var(--deny-bg)}
+  .attrow .k.kill{color:#fff;background:var(--deny)}
+  .attrow .lab{font-weight:600;color:var(--ink)} .attrow .rsn{color:var(--ink-faint)}
+  .attfoot{margin-top:8px;font-size:11.5px;color:var(--allow);font-weight:600}
+  .video-space{margin:0;border:1.5px dashed var(--line-2);border-radius:16px;background:linear-gradient(180deg,var(--paper-2),var(--card));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:184px;padding:16px;text-align:center}
+  .vs-inner{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .vs-play{width:46px;height:46px;border-radius:50%;background:var(--seal);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:17px;padding-left:3px;box-shadow:0 6px 16px rgba(47,109,246,.28)}
+  .vs-cap{font-family:var(--display);font-weight:600;font-size:14px;color:var(--ink-soft)}
+  .video-space figcaption{font-size:11.5px;color:var(--ink-faint)}
+  .video-space figcaption code{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+  .video-space:has(.vs-video){border-style:solid;border-color:var(--line);padding:0;overflow:hidden;background:#000}
+  .vs-video{width:100%;height:100%;max-height:360px;display:block;border-radius:14px;background:#000}
+  .vs-link{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-decoration:none;
+    width:100%;height:100%;min-height:184px;padding:18px;border-radius:14px;transition:background .15s}
+  .vs-link:hover{background:rgba(47,109,246,.06)}
+  .vs-link:hover .vs-play{transform:scale(1.06)}
+  .vs-link .vs-play{transition:transform .15s}
+  .vs-go{font-family:var(--display);font-weight:600;font-size:12.5px;color:var(--seal-deep);
+    border:1px solid #bcd2fb;background:var(--seal-wash);border-radius:999px;padding:6px 13px}
+
+  /* inline autoplaying hero film — muted, looping, no asset needed (home-page play style) */
+  .video-space:has(.cpfilm),.video-space:has(.vs-video){border-style:solid;border-color:var(--line);padding:0;overflow:hidden;position:relative}
+  .cpfilm{display:block;width:100%;height:100%;min-height:200px;border-radius:14px;
+    background:radial-gradient(125% 135% at 28% -12%,#fffdf8,#ece5d6)}
+  .cpf-cap{font-family:var(--display);font-weight:600;font-size:13px;fill:var(--ink-soft)}
+  .cpf-wm{font-family:var(--mono);font-size:9px;letter-spacing:.16em;fill:var(--ink-faint)}
+  .cpf-edge{stroke:#ddd6c6;stroke-width:2}
+  .cpf-node{stroke-width:3;fill:#fff}
+  .cpf-n1,.cpf-n2,.cpf-n4{stroke:#bcd2fb;animation:cpfTrust 13s ease-in-out infinite}
+  .cpf-n3{stroke:#2f6df6;animation:cpfRogue 13s ease-in-out infinite}
+  .cpf-ring{fill:none;stroke:#d6534a;stroke-width:3;opacity:0;transform-box:fill-box;transform-origin:center;animation:cpfKill 13s ease-in-out infinite}
+  .cpf-card{transform-box:fill-box;transform-origin:center;animation:cpfCard 13s ease-in-out infinite}
+  .cpf-card rect.pp{fill:#2f6df6}
+  .cpf-card rect.bar{fill:#bcd2fb;animation:cpfBar 13s ease-in-out infinite}
+  .cpf-seal{opacity:0;transform-box:fill-box;transform-origin:center;animation:cpfSeal 13s ease-in-out infinite}
+  .cap{opacity:0}
+  .cap1{animation:cpcap1 13s linear infinite}.cap2{animation:cpcap2 13s linear infinite}
+  .cap3{animation:cpcap3 13s linear infinite}.cap4{animation:cpcap4 13s linear infinite}
+  .vs-fullfilm{position:absolute;right:10px;bottom:9px;font-family:var(--mono);font-size:10px;color:#fff;
+    background:rgba(20,20,19,.5);border-radius:999px;padding:5px 10px;text-decoration:none;backdrop-filter:blur(3px)}
+  .vs-fullfilm:hover{background:rgba(20,20,19,.78)}
+  @keyframes cpfTrust{0%,55%{stroke:#bcd2fb}70%,100%{stroke:#0b6e52}}
+  @keyframes cpfRogue{0%,48%{stroke:#2f6df6;opacity:1}52%,60%{stroke:#d6534a;opacity:1}72%,100%{stroke:#c9c2b5;opacity:.45}}
+  @keyframes cpfKill{0%,50%{opacity:0;transform:scale(1)}54%{opacity:.6}66%{opacity:0;transform:scale(3.2)}100%{opacity:0}}
+  @keyframes cpfCard{0%{transform:translateX(0) scale(1);opacity:0}6%{opacity:1}20%{transform:translateX(0) scale(1)}
+    38%{transform:translateX(110px) scale(.85)}52%{transform:translateX(220px) scale(.72)}58%{opacity:1}66%{opacity:.1}
+    100%{opacity:.08;transform:translateX(220px) scale(.72)}}
+  @keyframes cpfBar{0%,20%{width:28px}38%{width:18px}52%,100%{width:10px}}
+  @keyframes cpfSeal{0%,80%{opacity:0;transform:scale(.6)}90%{opacity:1;transform:scale(1)}98%{opacity:1}100%{opacity:0}}
+  @keyframes cpcap1{0%,6%{opacity:0}11%,40%{opacity:1}46%,100%{opacity:0}}
+  @keyframes cpcap2{0%,46%{opacity:0}51%,62%{opacity:1}68%,100%{opacity:0}}
+  @keyframes cpcap3{0%,66%{opacity:0}71%,80%{opacity:1}86%,100%{opacity:0}}
+  @keyframes cpcap4{0%,84%{opacity:0}89%,98%{opacity:1}100%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.cpfilm *{animation:none!important}.cap1{opacity:1}}
+
+  /* scenario cards · segmented toggles · threat banner */
+  .scards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 12px}
+  @media(max-width:560px){.scards{grid-template-columns:1fr}}
+  .scard{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;cursor:pointer;
+    background:var(--paper-2);border:1px solid var(--line-2);border-radius:13px;padding:11px 13px;color:var(--ink);
+    box-shadow:none;transition:border-color .15s,background .15s,box-shadow .15s}
+  .scard:hover{filter:none;border-color:#bcd2fb}
+  .scard.active{border-color:var(--seal);background:var(--seal-wash);box-shadow:0 0 0 3px rgba(47,109,246,.12)}
+  .sc-ic{font-size:17px;line-height:1}
+  .sc-t{font-family:var(--display);font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+  .sc-d{font-family:var(--sans);font-weight:400;font-size:11.5px;color:var(--ink-soft);line-height:1.45}
+  .segrow{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 4px}
+  .seg{display:inline-flex;background:var(--paper-2);border:1px solid var(--line-2);border-radius:10px;padding:3px}
+  .seg button{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--ink-soft);
+    background:transparent;border:0;border-radius:7px;padding:6px 11px;box-shadow:none}
+  .seg button:hover{filter:none;color:var(--ink)}
+  .seg button.active{background:var(--seal);color:#fff;box-shadow:0 2px 8px rgba(47,109,246,.25)}
+  .seg button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(47,109,246,.4)}
+  .threatbar{display:none;margin:16px 0 0;border:1px solid #ecc4be;background:var(--deny-bg);border-radius:14px;padding:13px 16px}
+  .threatbar.on{display:block}
+  .threatbar .tt{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--deny)}
+  .threatbar .ta{font-size:13.5px;color:var(--ink);margin-top:5px;line-height:1.5}
+  .threatbar .tm{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
+  .threatbar .tm b{color:var(--allow)}
+  .tbadges{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+  .badge{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;border-radius:6px;padding:3px 8px;
+    border:1px solid var(--line-2);background:var(--card);color:var(--ink-soft)}
+  .badge.a2a{border-color:#bcd2fb;background:var(--seal-wash);color:var(--seal-deep)}
+  .badge.res{border-color:#e6d3a0;background:var(--review-bg);color:var(--review)}
+  .badge.tri{border-color:#ecc4be;background:var(--deny-bg);color:var(--deny)}
+  .badge.op{border-color:#bfe0cf;background:var(--allow-bg);color:var(--allow)}
+  /* can / cannot on a passport card */
+  .pcando{margin-top:8px;display:flex;flex-direction:column;gap:3px;border-top:1px dashed var(--line-2);padding-top:7px}
+  .cd{font-size:11px;line-height:1.45;font-family:var(--sans)}
+  .cd.can{color:var(--allow)} .cd.cannot{color:var(--deny)}
+  .cd .lab{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.06em;opacity:.85}
+  /* blast-radius callout in the feed */
+  .blastrow{margin:6px 0;border-radius:9px;padding:7px 10px;font-size:12px;font-weight:600;font-family:var(--display)}
+  .blastrow.high{background:var(--deny-bg);color:var(--deny);border:1px solid #ecc4be}
+  .blastrow.low{background:var(--allow-bg);color:var(--allow);border:1px solid #bfe0cf}
+
+  /* landscape / why-this-matters band */
+  .landscape{margin:20px 0 0;border:1px solid var(--line);background:linear-gradient(180deg,var(--card),var(--paper-2));border-radius:16px;padding:16px 18px}
+  .ls-lead{font-size:14px;color:var(--ink-soft);line-height:1.62}
+  .ls-lead i{font-style:normal;color:var(--ink);font-weight:600}
+  .ls-lead b{color:var(--seal-deep);font-weight:700}
+  .ls-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:15px}
+  @media(max-width:720px){.ls-stats{grid-template-columns:1fr;gap:11px}}
+  .ls-stat{display:flex;flex-direction:column;gap:3px;border-left:2px solid var(--seal);padding-left:12px}
+  .ls-stat b{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.02em;color:var(--ink);line-height:1.1}
+  .ls-stat span{font-size:11.5px;color:var(--ink-soft);line-height:1.45}
+  .ls-src{margin-top:13px;font-size:10.5px;color:var(--ink-faint);font-family:var(--mono)}
+  .ls-src a{color:var(--ink-faint);text-decoration:underline;text-underline-offset:2px}
+  .ls-src a:hover{color:var(--seal-deep)}
+
+  /* how-to-read legend */
+  .legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:16px 0 0;font-size:11.5px;color:var(--ink-faint)}
+  .legend .lg{display:inline-flex;align-items:center;gap:6px}
+  .legend .dot{width:9px;height:9px;border-radius:3px;flex:none}
+  .legend .dot.a{background:var(--allow)} .legend .dot.d{background:var(--review)} .legend .dot.k{background:var(--deny)}
+  .legend .lg b{font-family:var(--mono);font-weight:600;color:var(--ink-soft);font-size:11px}
+
+  /* run outcome summary — succeeded vs stopped agents */
+  .summary{display:none;margin:18px 0 0;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:16px 18px}
+  .summary.on{display:block}
+  .sum-head{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.01em;margin-bottom:13px}
+  .sum-head .ok{color:var(--allow)} .sum-head .bad{color:var(--deny)}
+  .sum-agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+  .sum-agent{border:1px solid var(--line-2);border-left-width:3px;border-radius:11px;padding:10px 12px}
+  .sum-agent.ok{border-left-color:var(--allow);background:var(--allow-bg)}
+  .sum-agent.bad{border-left-color:var(--deny);background:var(--deny-bg)}
+  .sum-agent .sa-top{display:flex;align-items:center;gap:7px;font-family:var(--display);font-weight:700;font-size:13.5px}
+  .sum-agent.ok .sa-ic{color:var(--allow)} .sum-agent.bad .sa-ic{color:var(--deny)}
+  .sum-agent .sa-task{font-size:11.5px;color:var(--ink-soft);margin-top:3px}
+  .sum-agent .sa-reasons{margin:7px 0 0;padding-left:16px;font-size:11.5px;color:var(--deny);line-height:1.55}
+  .sum-agent .sa-reasons li{margin:1px 0}
+
+  /* audit + identity panel (1Password Events beside the ledger) */
+  .auditpanel{margin-top:16px}
+  .audit-badge{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;
+    border-radius:6px;padding:3px 8px;border:1px solid #e6d3a0;background:var(--review-bg);color:var(--review)}
+  .audit-badge.real{border-color:#bfe0cf;background:var(--allow-bg);color:var(--allow)}
+  .auditfeed{display:flex;flex-direction:column;gap:1px;max-height:260px;overflow:auto}
+  .aud-row{display:flex;gap:9px;align-items:baseline;padding:6px 4px;border-bottom:1px solid var(--line);font-size:12px}
+  .aud-row:last-child{border-bottom:0}
+  .aud-k{font-family:var(--mono);font-size:9px;font-weight:600;padding:2px 6px;border-radius:5px;flex:none;color:var(--ink-soft);background:var(--paper-2)}
+  .aud-actor{font-family:var(--mono);font-size:11px;color:var(--ink);min-width:150px;flex:none}
+  .aud-detail{color:var(--ink-soft);flex:1;min-width:0}
+  .aud-tag{font-family:var(--mono);font-size:8.5px;font-weight:600;border-radius:5px;padding:2px 6px;flex:none}
+  .aud-tag.sim{color:var(--review);background:var(--review-bg);border:1px solid #e6d3a0}
+  .aud-tag.real{color:var(--allow);background:var(--allow-bg);border:1px solid #bfe0cf}
+  .audit-note{font-size:11px;color:var(--ink-faint);line-height:1.5;margin:10px 0 0}
+  .audit-note code{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft)}
+  .audit-note b{color:var(--ink-soft)}
+
+  /* kill banner */
+  .kbanner{display:none;align-items:center;gap:11px;background:var(--deny-bg);border:1px solid var(--deny);
+    color:var(--deny);border-radius:13px;padding:13px 16px;margin:18px 0 0;font-weight:600;font-size:15px;font-family:var(--display)}
+  .kbanner.on{display:flex}
+  .kbanner .kx{font-family:var(--mono);font-weight:600}
+
+  /* two-panel grid */
+  .grid{display:grid;grid-template-columns:.9fr 1.18fr;gap:16px;margin-top:16px;align-items:start}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 17px}
+  .ptitle{display:flex;align-items:baseline;gap:10px;margin:0 0 13px}
+  .ptitle h2{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);margin:0}
+  .ptitle .sub{font-size:11.5px;color:var(--ink-faint)}
+  .contain{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--ink-faint);font-family:var(--mono)}
+  .contain.safe{color:var(--allow)}
+
+  /* chain of custody — passport cards */
+  .pcard{position:relative;border:1px solid var(--line);border-radius:13px;padding:11px 13px;margin:10px 0;background:var(--paper-2);
+    transition:filter .4s,opacity .4s,border-color .3s}
+  .pcard[data-depth="1"]{margin-left:22px} .pcard[data-depth="2"]{margin-left:44px}
+  .pcard[data-depth="1"]::before,.pcard[data-depth="2"]::before{content:"";position:absolute;left:-13px;top:-10px;bottom:50%;
+    width:13px;border-left:2px solid var(--line-2);border-bottom:2px solid var(--line-2);border-bottom-left-radius:9px;transition:border-color .3s,border-style .3s}
+  .pc-top{display:flex;align-items:center;gap:8px}
+  .pdot{width:9px;height:9px;border-radius:50%;background:var(--allow);flex:none}
+  .pcard.root .pdot{background:var(--seal)}
+  .psubject{font-family:var(--display);font-weight:600;font-size:14.5px;letter-spacing:-.01em}
+  .prole{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);
+    border:1px solid var(--line-2);border-radius:5px;padding:1px 6px}
+  .pid{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:6px}
+  .pscope{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-top:5px;line-height:1.55;word-break:break-word}
+  .pfoot{display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap}
+  .pcaps{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-faint);font-family:var(--mono)}
+  .capbar{width:64px;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+  .capbar i{display:block;height:100%;background:var(--seal);border-radius:3px}
+  .psandbox{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-left:auto}
+  .pnote{font-size:11px;color:var(--seal-deep);font-weight:600;margin-top:6px}
+  /* severed / revoked — the signature moment */
+  .pcard.severed{border-color:var(--deny);background:var(--deny-bg)}
+  .pcard.severed .pc-top,.pcard.severed .pid,.pcard.severed .pscope,.pcard.severed .pfoot,.pcard.severed .pnote{opacity:.4;filter:grayscale(1)}
+  .pcard.severed::before{border-color:var(--deny);border-left-style:dashed;border-bottom-style:dashed;opacity:.8}
+  .stamp{position:absolute;right:12px;top:50%;transform:translateY(-50%) rotate(-11deg) scale(1.5);opacity:0;
+    font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:.1em;color:var(--deny);
+    border:2.5px solid var(--deny);border-radius:7px;padding:3px 9px;pointer-events:none}
+  .pcard.severed .stamp{animation:stampin .42s cubic-bezier(.2,1.2,.3,1) forwards}
+  @keyframes stampin{0%{opacity:0;transform:translateY(-50%) rotate(-11deg) scale(1.6)}60%{opacity:1;transform:translateY(-50%) rotate(-11deg) scale(.94)}100%{opacity:1;transform:translateY(-50%) rotate(-11deg) scale(1)}}
+  .pcard.shake{animation:shake .34s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+
+  /* ledger */
+  #feed{max-height:min(160vh,1880px);overflow:auto;display:flex;flex-direction:column;gap:1px;
+    scroll-behavior:smooth;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%)}
+  .row{display:flex;gap:9px;align-items:baseline;padding:7px 6px;border-bottom:1px solid var(--line);font-size:12.5px;
+    border-radius:7px;transition:background .12s}
+  .row:hover{background:var(--paper-2)}
+  .row:last-child{border-bottom:0}
+  .k{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.04em;padding:2px 6px;border-radius:5px;flex:none;
+    color:var(--ink-faint);background:var(--paper-2)}
+  .k.allow{color:var(--allow);background:var(--allow-bg)} .k.deny{color:var(--review);background:var(--review-bg)}
+  .k.kill{color:var(--deny);background:var(--deny-bg)} .k.mint{color:var(--seal-deep);background:var(--seal-wash)}
+  .who{font-family:var(--mono);font-size:11.5px;font-weight:500;flex:none;min-width:104px;color:var(--ink)}
+  .d{color:var(--ink-soft)} .d .mask{font-family:var(--mono);color:var(--review)} .d .rsn{color:var(--ink-faint)}
+  .phase{margin:20px 0 8px;padding-top:14px;border-top:2px solid var(--line-2);
+    font-family:var(--display);font-size:13.5px;font-weight:700;letter-spacing:-.01em;color:var(--ink);
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .phase .psec{font-family:var(--mono);font-size:12px;font-weight:700;width:23px;height:23px;border-radius:7px;flex:none;
+    display:flex;align-items:center;justify-content:center;background:var(--seal);color:#fff;box-shadow:0 2px 7px rgba(47,109,246,.28)}
+  .phase .ptext{flex:1;min-width:0}
+  .phase.danger{color:var(--deny);border-top-color:#ecc4be} .phase.danger .psec{background:var(--deny);box-shadow:0 2px 7px rgba(178,39,29,.25)}
+  .phase .pn{display:block;font-family:var(--sans);font-weight:400;letter-spacing:0;color:var(--ink-soft);font-size:12px;margin-top:5px;flex-basis:100%;line-height:1.5}
+
+  /* hero value-prop + CTAs (landing-page framing) */
+  .hero-eyebrow{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--seal-deep);margin:30px 0 0}
+  .hook{margin-top:10px}
+  .hero-cta{display:flex;gap:13px;flex-wrap:wrap;align-items:center;margin:22px 0 0}
+  .cta-primary{font-family:var(--display);font-weight:600;font-size:15px;color:#fff;background:var(--seal);border:1px solid var(--seal);
+    border-radius:12px;padding:12px 22px;cursor:pointer;text-decoration:none;box-shadow:0 6px 18px rgba(47,109,246,.26);transition:filter .15s,transform .08s}
+  .cta-primary:hover{filter:brightness(1.06)} .cta-primary:active{transform:translateY(1px)}
+  .cta-primary:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(47,109,246,.4)}
+  .cta-secondary{font-family:var(--display);font-weight:600;font-size:14.5px;color:var(--seal-deep);text-decoration:none;padding:12px 4px;border-bottom:1.5px solid transparent}
+  .cta-secondary:hover{border-bottom-color:var(--seal-deep)}
+  .hero-trust{margin:16px 0 0;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);line-height:1.7}
+  .hero-trust b{color:var(--ink-soft)}
+  /* closing pitch + CTA */
+  .closer{margin:32px 0 0;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--seal-wash),var(--card));padding:36px 30px;text-align:center}
+  .closer h2{font-family:var(--display);font-size:30px;font-weight:700;letter-spacing:-.025em;margin:0;color:var(--ink);line-height:1.1}
+  .closer p{max-width:62ch;margin:13px auto 0;font-size:15px;color:var(--ink-soft);line-height:1.62}
+  .closer p b{color:var(--ink)}
+  .closer-cta{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin:24px 0 0}
+  .closer-foot{margin:20px 0 0;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  /* live-proof caption above the demo */
+  .demo-caption{margin:30px 0 0}
+  .dc-eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--seal-deep)}
+  .demo-caption h2{font-family:var(--display);font-size:23px;font-weight:700;letter-spacing:-.02em;margin:6px 0 0;line-height:1.12}
+  .demo-caption p{font-size:14px;color:var(--ink-soft);margin:7px 0 0;max-width:66ch;line-height:1.55}
+  /* how it works · 3 steps */
+  .how{margin:36px 0 0}
+  .how-eyebrow,.diff-eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--seal-deep)}
+  .how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px}
+  @media(max-width:780px){.how-steps{grid-template-columns:1fr}}
+  .how-step{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:18px}
+  .how-n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:var(--seal);color:#fff;font-family:var(--mono);font-weight:700;font-size:14px;box-shadow:0 3px 10px rgba(47,109,246,.28)}
+  .how-step h3{font-family:var(--display);font-size:16px;font-weight:700;margin:12px 0 6px;letter-spacing:-.01em}
+  .how-step p{font-size:13px;color:var(--ink-soft);line-height:1.55;margin:0}
+  /* differentiation · why not OAuth */
+  .diff{margin:36px 0 0}
+  .diff h2{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin:6px 0 16px}
+  .diff-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media(max-width:680px){.diff-grid{grid-template-columns:1fr}}
+  .diff-card{border:1px solid var(--line);border-left:3px solid var(--seal);border-radius:13px;background:var(--card);padding:14px 16px}
+  .diff-card b{font-family:var(--display);font-size:14.5px;color:var(--ink);display:block;margin-bottom:5px}
+  .diff-card span{font-size:12.5px;color:var(--ink-soft);line-height:1.55}
+
+  /* seal footer */
+  footer{margin-top:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft);min-height:44px}
+  .sealstamp{display:none;align-items:center;gap:10px}
+  .sealstamp.on{display:flex;animation:stampin .42s cubic-bezier(.2,1.2,.3,1)}
+  .sealhex{width:34px;height:34px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--allow);
+    border:2px solid var(--allow);border-radius:9px;font-family:var(--mono);font-size:14px;background:var(--allow-bg)}
+  .sealtxt b{font-family:var(--mono);font-weight:600;color:var(--allow)}
+  .sealtxt span{display:block;font-size:11px;color:var(--ink-faint)}
+  .liveinfo{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+
+  @media(prefers-reduced-motion:reduce){
+    .pcard.severed .stamp,.sealstamp.on{animation:none;opacity:1;transform:translateY(-50%) rotate(-11deg)}
+    .pcard.shake{animation:none}
+  }
+  /* ── Multi-agent 3D collaboration scene ── */
+  .a3d{position:relative;margin:34px 0 8px;border:1px solid var(--line);border-radius:20px;overflow:hidden;
+    background:radial-gradient(120% 120% at 50% 0%,#f3f5f9 0%,#e6eaf1 60%,#dde2ec 100%);box-shadow:0 24px 60px -36px rgba(20,28,46,.5)}
+  .a3d-canvas{width:100%;height:540px;display:block}
+  .a3d-head{position:absolute;top:16px;left:18px;right:18px;pointer-events:none;z-index:2}
+  .a3d-eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--seal-deep)}
+  .a3d-title{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.02em;color:var(--ink);margin-top:4px}
+  .a3d-tally{position:absolute;top:18px;right:18px;z-index:2;display:flex;gap:8px;pointer-events:none}
+  .a3d-tally span{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;padding:4px 9px;border-radius:999px;
+    background:rgba(255,255,255,.78);border:1px solid var(--line);backdrop-filter:blur(6px)}
+  .a3d-tally .ok{color:var(--allow)} .a3d-tally .bad{color:var(--deny)}
+  .a3d-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:16px 20px 18px;pointer-events:none;text-align:center;
+    background:linear-gradient(0deg,rgba(247,249,252,.97) 12%,rgba(247,249,252,.0) 100%);
+    font-family:var(--display);font-weight:600;font-size:15px;line-height:1.45;color:var(--ink-soft);min-height:24px;transition:color .3s}
+  .a3d-cap b{color:var(--ink)} .a3d-cap.bad{color:var(--deny)} .a3d-cap.bad b{color:var(--deny)}
+  .a3d-fallback{padding:60px 28px;text-align:center;color:var(--ink-faint);font-size:13.5px}
+  @media(max-width:640px){.a3d-canvas{height:420px}.a3d-title{font-size:17px}.a3d-tally{display:none}}
+  @media(prefers-reduced-motion:reduce){.a3d-cap{transition:none}}
+  /* ── The deliverable: post-run summary email ── */
+  .mail{margin:32px 0 8px}
+  .mail-intro{margin:0 0 15px}
+  .mail-eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--seal-deep)}
+  .mail-h{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;color:var(--ink);margin:5px 0 0}
+  .mail-sub{font-size:14px;color:var(--ink-soft);margin:8px 0 0;max-width:66ch;line-height:1.6}
+  .mail-sub b{color:var(--ink);font-weight:600}
+  .envelope{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);box-shadow:0 30px 70px -42px rgba(26,24,19,.55)}
+  .env-bar{display:flex;align-items:center;gap:7px;padding:11px 16px;background:var(--paper-2);border-bottom:1px solid var(--line)}
+  .env-dot{width:10px;height:10px;border-radius:50%}
+  .env-bar .t{margin-left:8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.04em}
+  .env-head{padding:18px 22px 16px;border-bottom:1px solid var(--line)}
+  .env-subj{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.015em;color:var(--ink);line-height:1.28}
+  .env-meta{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:10px;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+  .env-meta b{color:var(--ink-soft);font-weight:600}
+  .env-summary{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:15px 22px;background:var(--seal-wash);border-bottom:1px solid var(--line)}
+  .env-summary .big{font-family:var(--display);font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.01em}
+  .env-summary .spread{display:flex;gap:15px;margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+  .env-summary .spread .g{color:var(--allow)} .env-summary .spread .r{color:var(--deny)} .env-summary .spread b{font-weight:600}
+  .agent-row{display:flex;gap:14px;padding:16px 22px;border-bottom:1px solid var(--line)}
+  .agent-row:last-of-type{border-bottom:0}
+  .ar-ic{width:40px;height:40px;flex:none;border-radius:11px;background:var(--paper-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:19px}
+  .ar-body{flex:1;min-width:0}
+  .ar-top{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .ar-name{font-family:var(--display);font-weight:700;font-size:14.5px;color:var(--ink)}
+  .ar-vendor{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  .ar-detail{font-size:13.5px;color:var(--ink-soft);margin-top:4px;line-height:1.55}
+  .ar-detail b{color:var(--ink);font-weight:600}
+  .ar-detail .sub{display:block;margin-top:4px}
+  .ar-scope{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-top:7px}
+  .ar-scope b{color:var(--seal-deep);font-weight:600}
+  .ar-links{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px}
+  .ar-link{font-family:var(--display);font-weight:600;font-size:12.5px;color:var(--seal-deep);text-decoration:none;white-space:nowrap}
+  .ar-link:hover{text-decoration:underline}
+  .ar-cost{font-family:var(--display);font-weight:700;font-size:16px;color:var(--ink);margin-top:6px}
+  .ar-cost span{font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--ink-faint)}
+  .tag{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap;align-self:flex-start}
+  .tag.ok{color:var(--allow);background:var(--allow-bg)}
+  .tag.warn{color:var(--review);background:var(--review-bg)}
+  .tag.bad{color:var(--deny);background:var(--deny-bg)}
+  .acts{list-style:none;margin:11px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .act{display:flex;gap:10px;align-items:baseline;font-size:13px;color:var(--ink-soft);line-height:1.45}
+  .act .n{font-family:var(--mono);font-size:11px;color:var(--ink-faint);flex:none;width:14px}
+  .act .nm{color:var(--ink);font-weight:600}
+  .act .st{margin-left:auto;flex:none;padding-left:8px}
+  .act-fail{margin-top:11px;border:1px solid #ecc4be;background:var(--deny-bg);border-radius:12px;padding:13px 15px}
+  .act-fail .why{font-size:13px;color:#7a1d16;line-height:1.6}
+  .act-fail .why b{color:var(--deny);font-weight:600}
+  .act-fail .fix{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+  .act-fail .fix a{font-family:var(--display);font-weight:600;font-size:12.5px;text-decoration:none;padding:7px 13px;border-radius:9px}
+  .act-fail .fix a.primary{background:var(--seal);color:#fff}
+  .act-fail .fix a.ghost{border:1px solid var(--line-2);color:var(--ink-soft);background:var(--card)}
+  .env-foot{padding:16px 22px;background:var(--paper-2);display:flex;gap:12px;align-items:flex-start}
+  .env-foot .lk{font-size:18px;flex:none;line-height:1.3}
+  .env-foot .ft{font-size:12px;color:var(--ink-faint);line-height:1.55}
+  .env-foot .ft b{color:var(--ink-soft);font-weight:600} .env-foot .ft .v{color:var(--allow);font-weight:600}
+  /* explicit field rows (Departure / Return / Confirmation #) */
+  .ar-fields{display:grid;grid-template-columns:max-content 1fr;gap:3px 12px;margin-top:6px;font-size:13px;line-height:1.5}
+  .ar-fields dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);align-self:center}
+  .ar-fields dd{margin:0;color:var(--ink);font-weight:600}
+  .ar-fields dd .muted{font-weight:400;color:var(--ink-soft)}
+  .conf{font-family:var(--mono);font-size:12px;background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--seal-deep)}
+  /* cancellation policy chip */
+  .cancel{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-family:var(--mono);font-size:10.5px;color:#2c7a4e;background:#e7f6ed;border:1px solid #bfe6cf;border-radius:999px;padding:3px 9px}
+  .cancel.tight{color:#9a6b1a;background:#fbf1dd;border-color:#eed7a8}
+  .cancel b{font-weight:600}
+  /* "identity secured by 1Password" chip on the scope line */
+  .opchip{display:inline-flex;align-items:center;gap:6px;margin-top:7px;font-family:var(--mono);font-size:10px;color:#0a3a6b;background:#eaf2fd;border:1px solid #c8defb;border-radius:999px;padding:3px 9px 3px 7px}
+  .opchip svg{width:13px;height:13px;flex:none}
+  .ticket{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-left:7px;white-space:nowrap}
+  .act .meta{display:block;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-top:2px}
+  .act-fail h4{font-family:var(--display);font-weight:700;font-size:13px;color:var(--deny);margin:0 0 7px;display:flex;align-items:center;gap:7px}
+  .act-fail .todo{margin-top:11px}
+  .act-fail .todo .lead{font-size:12px;color:#7a1d16;font-weight:600;margin-bottom:8px}
+  .act-fail .fix a span{display:block;font-family:var(--mono);font-size:9.5px;font-weight:400;opacity:.82;margin-top:2px;text-transform:none;letter-spacing:0}
+  .act-fail .fix a.primary span{color:#dbe7ff} .act-fail .fix a.ghost span{color:var(--ink-faint)}
+  @media(max-width:640px){
+    .ar-fields{grid-template-columns:1fr} .ar-fields dt{margin-top:5px}
+    .mail-h{font-size:18px} .env-subj{font-size:16px}
+    .agent-row{padding:14px 15px;gap:11px} .env-head,.env-summary,.env-foot{padding-left:15px;padding-right:15px}
+    .env-summary .spread{margin-left:0;flex-basis:100%} .act .st{margin-left:auto}
+  }
+</style>
+<script type="importmap">{"imports":{"three":"/three.module.js"}}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="seal-mark">CP</div>
+    <div class="brand">
+      <h1>Passport</h1>
+      <div class="ey">agent identity · scoped delegation · instant stop</div>
+    </div>
+    <div class="grow"></div>
+    <span class="pill" id="vaultpill" title="credential broker — 1Password when live">credentials · mock</span>
+    <span class="pill" id="sandboxpill" title="sandbox runtime — Daytona when live">sandbox · mock</span>
+    <span class="pill" id="signer">signer —</span>
+    <span class="pill state-armed" id="state"><span class="ph"></span>armed</span>
+    <button id="run">▶ Run scenario</button>
+  </header>
+
+  <div class="hero-eyebrow">The trust layer for AI agents</div>
+  <h1 class="hook">Trust that travels with the agent.</h1>
+  <p class="thesis">Passport gives every AI agent a <b>signed, scoped, instantly-revocable</b> credential. When an agent hands work to another company's agent — or a prompt injection hijacks it — you <b>kill its access in one click</b>, and it cascades to every sub-agent. Not in 24 hours. Now. <b>Run the live demo below</b> and try to break it yourself.</p>
+  <div class="hero-cta">
+    <button class="cta-primary" id="heroRun">▶ See it live — 60-second demo</button>
+    <a class="cta-secondary" href="#getaccess">Get early access →</a>
+  </div>
+  <div class="hero-trust">Built on <b>1Password</b> + <b>Daytona</b> · Ed25519-signed · proof-of-possession · instant cascading kill-switch · tamper-evident ledger</div>
+
+  <section class="landscape" aria-label="Why this matters">
+    <div class="ls-lead"><b>The agent economy is being wired right now.</b> <i>ADK</i> builds agents · <i>A2A</i> lets agents talk to agents · <i>MCP</i> lets them reach tools · <i>AP2</i> lets them pay · <i>ARD</i> lets them find each other. Not one of these protocols issues, scopes, or <i>revokes</i> an agent's authority — so the moment a delegated agent is hijacked, the breach has nothing to stop it. <b>That gap is what Passport closes.</b></div>
+    <div class="ls-stats">
+      <div class="ls-stat"><b>82 : 1</b><span>Machine identities now outnumber humans — and 68% of organizations have no identity controls for AI agents at all.</span></div>
+      <div class="ls-stat"><b>A2A → Linux&nbsp;Foundation</b><span>150+ orgs are wiring agents to discover, delegate to, and pay each other across company lines.</span></div>
+      <div class="ls-stat"><b>No off-switch</b><span>Agents run on long-lived keys with audit trails that wouldn't survive an incident. The fix: scope it, prove it, kill it.</span></div>
+    </div>
+    <div class="ls-src">Sources: <a href="https://www.cyberark.com/press/machine-identities-outnumber-humans-by-more-than-80-to-1-new-report-exposes-the-exponential-threats-of-fragmented-identity-security/" target="_blank" rel="noopener">CyberArk 2025</a> · <a href="https://www.linuxfoundation.org/press/linux-foundation-launches-the-agent2agent-protocol-project-to-enable-secure-intelligent-communication-between-ai-agents" target="_blank" rel="noopener">Linux Foundation</a> · <a href="https://www.resilientcyber.io/p/identity-is-the-agentic-ai-problem" target="_blank" rel="noopener">Resilient Cyber</a> · <a href="https://www.trustwave.com/en-us/resources/blogs/spiderlabs-blog/agent-in-the-middle-abusing-agent-cards-in-the-agent-2-agent-protocol-to-win-all-the-tasks/" target="_blank" rel="noopener">Trustwave</a></div>
+  </section>
+
+  <div class="demo-caption">
+    <div class="dc-eyebrow">Live proof · running on the real engine</div>
+    <h2>Watch a hijacked agent get killed everywhere — in one click.</h2>
+    <p>This isn't a video. Pick a workflow, flip single → multi-agent and domestic → international, then press Run — real signed passports, real scoped <code>op://</code> leases, a real cascading kill-switch. Or skip ahead and <b>try to break it yourself</b> with the attack buttons.</p>
+  </div>
+
+  <section class="a3d" id="a3d" aria-label="Six agents booking a trip in 3D">
+    <div class="a3d-head">
+      <div class="a3d-eyebrow">Travel concierge · multi-agent collaboration · live 3D</div>
+      <div class="a3d-title">Six agents book a trip. One gets stopped.</div>
+    </div>
+    <div class="a3d-tally" id="a3dTally"><span class="ok" id="a3dOk">0 booked</span><span class="bad" id="a3dBad">0 stopped</span></div>
+    <div class="a3d-canvas" id="a3dCanvas" role="img" aria-label="3D scene: a concierge agent delegates scoped passports to six humanoid vendor agents; five complete their bookings, the Activity agent is hijacked and its access revoked."></div>
+    <div class="a3d-cap" id="a3dCap">A traveler asks one concierge to plan 10 days in Egypt.</div>
+  </section>
+
+  <section class="mail" id="mail" aria-label="The summary email the traveler receives after the run">
+    <div class="mail-intro">
+      <div class="mail-eyebrow">The deliverable · what lands in your inbox</div>
+      <h2 class="mail-h">One email. Every agent accounted for.</h2>
+      <p class="mail-sub">The moment the run finishes, the traveler gets a single summary — six agents, what each one booked, the exact scoped credential it was allowed to use, and the one task that was stopped. <b>The failure isn't buried — it's explained in plain English, with a one-tap way to fix it.</b></p>
+    </div>
+
+    <article class="envelope">
+      <div class="env-bar">
+        <span class="env-dot" style="background:#ff5f57"></span><span class="env-dot" style="background:#febc2e"></span><span class="env-dot" style="background:#28c840"></span>
+        <span class="t">Inbox · from Origin Concierge</span>
+      </div>
+      <div class="env-head">
+        <div class="env-subj">Trip to Egypt — Your personalized agent booking</div>
+        <div class="env-meta">
+          <span><b>From</b> Origin Concierge &lt;concierge@origin.id&gt;</span>
+          <span><b>To</b> you@gmail.com</span>
+          <span><b>Oct 3–13, 2026</b> · 10 days · 6 agents dispatched</span>
+        </div>
+      </div>
+      <div class="env-summary">
+        <span class="big">✅ Your trip is 90% booked — 5 of 6 agents finished.</span>
+        <span class="spread"><span class="g"><b>5</b>&nbsp;booked</span><span class="r"><b>1</b>&nbsp;needs you</span><span><b>$6,184.50</b>&nbsp;total</span></span>
+      </div>
+
+      <div class="agent-row">
+        <div class="ar-ic">✈️</div>
+        <div class="ar-body">
+          <div class="ar-top"><span class="ar-name">Airline agent</span><span class="ar-vendor">EgyptAir</span></div>
+          <dl class="ar-fields">
+            <dt>Departure</dt><dd>JFK → Cairo (CAI) · Oct 3, 2026 · 10:40 PM <span class="muted">· flight MS986 · seat 14A, economy</span></dd>
+            <dt>Return</dt><dd>Cairo (CAI) → JFK · Oct 13, 2026 · 3:15 PM <span class="muted">· flight MS985 · seat 9C, economy</span></dd>
+            <dt>Confirmation&nbsp;#</dt><dd><span class="conf">6QF2ZP</span></dd>
+          </dl>
+          <div class="cancel">↩ <b>Free cancellation</b> within 24h of booking · then change fee applies</div>
+          <div class="ar-scope">passport scoped to <b>name + date of birth</b> — never your card</div>
+          <span class="opchip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#2360d8"/><circle cx="12" cy="10.2" r="2.5" fill="#fff"/><path d="M10.95 11.5h2.1l-.45 4a.6.6 0 0 1-1.2 0z" fill="#fff"/></svg> identity secured by <b>1Password</b></span>
+          <div class="ar-links"><a class="ar-link" href="#airline">View itinerary →</a><a class="ar-link" href="#airline">Manage booking →</a></div>
+        </div>
+        <span class="tag ok">✓ Booked</span>
+      </div>
+
+      <div class="agent-row">
+        <div class="ar-ic">🏨</div>
+        <div class="ar-body">
+          <div class="ar-top"><span class="ar-name">Hotel agent</span><span class="ar-vendor">Marriott Bonvoy</span></div>
+          <dl class="ar-fields">
+            <dt>Stay</dt><dd>Marriott Mena House, Giza <span class="muted">· Pyramid-view King · 9 nights</span></dd>
+            <dt>Check-in</dt><dd>Oct 4, 2026 <span class="muted">· from 3:00 PM</span></dd>
+            <dt>Check-out</dt><dd>Oct 13, 2026 <span class="muted">· by 12:00 PM</span></dd>
+            <dt>Confirmation&nbsp;#</dt><dd><span class="conf">MNH-4471</span></dd>
+          </dl>
+          <div class="cancel">↩ <b>Free cancellation</b> until Oct 1, 2026 · booked on Bonvoy points, no card held</div>
+          <div class="ar-scope">passport scoped to <b>Bonvoy loyalty #</b> — booked on points, no card touched</div>
+          <span class="opchip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#2360d8"/><circle cx="12" cy="10.2" r="2.5" fill="#fff"/><path d="M10.95 11.5h2.1l-.45 4a.6.6 0 0 1-1.2 0z" fill="#fff"/></svg> identity secured by <b>1Password</b></span>
+          <div class="ar-links"><a class="ar-link" href="#hotel">View reservation →</a><a class="ar-link" href="#hotel">Hotel details →</a></div>
+        </div>
+        <span class="tag ok">✓ Booked</span>
+      </div>
+
+      <div class="agent-row">
+        <div class="ar-ic">🚗</div>
+        <div class="ar-body">
+          <div class="ar-top"><span class="ar-name">Transport agent</span><span class="ar-vendor">Uber · AVIS</span></div>
+          <dl class="ar-fields">
+            <dt>Home → airport</dt><dd><b>UberXXL</b> · home → JFK · Oct 3 · 7:30 PM <span class="muted">· conf</span> <span class="conf">UB-3391</span></dd>
+            <dt>Airport → hotel</dt><dd><b>Uber Reserve</b> · CAI → Mena House · Oct 4 · 2:20 PM <span class="muted">· conf</span> <span class="conf">UB-7752</span></dd>
+            <dt>Rental car</dt><dd><b>AVIS</b> compact SUV · 5 days · Cairo <span class="muted">· conf</span> <span class="conf">AV-88107</span></dd>
+          </dl>
+          <div class="cancel">↩ <b>Free cancellation</b> on all three · Uber up to pickup, AVIS up to 48h prior</div>
+          <div class="ar-scope">passport scoped to <b>pickup + drop-off locations</b> only</div>
+          <span class="opchip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#2360d8"/><circle cx="12" cy="10.2" r="2.5" fill="#fff"/><path d="M10.95 11.5h2.1l-.45 4a.6.6 0 0 1-1.2 0z" fill="#fff"/></svg> identity secured by <b>1Password</b></span>
+          <div class="ar-links"><a class="ar-link" href="#uber">View Uber trips →</a><a class="ar-link" href="#avis">View AVIS booking →</a></div>
+        </div>
+        <span class="tag ok">✓ Booked</span>
+      </div>
+
+      <div class="agent-row">
+        <div class="ar-ic">💳</div>
+        <div class="ar-body">
+          <div class="ar-top"><span class="ar-name">Payments agent</span><span class="ar-vendor">Chase Sapphire •••• 4827</span></div>
+          <div class="ar-detail">Charged to a <b>one-time virtual card</b> off your <b>Chase</b> account · authorized $6,500 · single-use, auto-expires after the trip</div>
+          <div class="ar-cost">Total trip cost — $6,184.50 <span>(everything above · overall, not itemized)</span></div>
+          <div class="cancel tight">↪ Refunds for any cancelled booking return to this card automatically</div>
+          <div class="ar-scope">passport scoped to a <b>bounded amount</b>, one merchant category, single charge</div>
+          <span class="opchip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#2360d8"/><circle cx="12" cy="10.2" r="2.5" fill="#fff"/><path d="M10.95 11.5h2.1l-.45 4a.6.6 0 0 1-1.2 0z" fill="#fff"/></svg> identity secured by <b>1Password</b></span>
+          <div class="ar-links"><a class="ar-link" href="#pay">View statement →</a></div>
+        </div>
+        <span class="tag ok">✓ Charged</span>
+      </div>
+
+      <div class="agent-row">
+        <div class="ar-ic">📶</div>
+        <div class="ar-body">
+          <div class="ar-top"><span class="ar-name">Connectivity agent</span><span class="ar-vendor">Verizon · Airalo</span></div>
+          <dl class="ar-fields">
+            <dt>Roaming</dt><dd><b>Verizon TravelPass</b> — international roaming enabled <span class="muted">· $10/day · auto-stops on return</span></dd>
+            <dt>Backup</dt><dd><b>Airalo</b> eSIM · 12 GB data · 10 days</dd>
+            <dt>Coverage</dt><dd>Unlimited talk &amp; text in Egypt <span class="muted">· activated Oct 3</span></dd>
+          </dl>
+          <div class="ar-scope">passport scoped to your <b>device IMEI</b> only — no account password shared</div>
+          <span class="opchip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#2360d8"/><circle cx="12" cy="10.2" r="2.5" fill="#fff"/><path d="M10.95 11.5h2.1l-.45 4a.6.6 0 0 1-1.2 0z" fill="#fff"/></svg> identity secured by <b>1Password</b></span>
+          <div class="ar-links"><a class="ar-link" href="#esim">Manage plan →</a><a class="ar-link" href="#esim">Coverage map →</a></div>
+        </div>
+        <span class="tag ok">✓ Active</span>
+      </div>
+
+      <div class="agent-row">
+        <div class="ar-ic">🗺️</div>
+        <div class="ar-body">
+          <div class="ar-top"><span class="ar-name">Activity agent</span><span class="ar-vendor">Local tour operators · Egypt</span></div>
+          <div class="ar-detail"><b>5 experiences proposed · 4 booked · 1 stopped.</b></div>
+          <ol class="acts">
+            <li class="act"><span class="n">1</span><span><span class="nm">Pyramids of Giza &amp; Sphinx</span> — private half-day guided tour<span class="meta">Oct 5 · 8:00 AM · Ticket EG-PYR-2291</span></span><span class="st"><span class="tag ok">✓ Booked</span></span></li>
+            <li class="act"><span class="n">2</span><span><span class="nm">Nile dinner cruise</span> — with live music, Cairo<span class="meta">Oct 6 · 7:30 PM · Ticket EG-NIL-4417</span></span><span class="st"><span class="tag ok">✓ Booked</span></span></li>
+            <li class="act"><span class="n">3</span><span><span class="nm">Grand Egyptian Museum</span> — skip-the-line + Tutankhamun galleries<span class="meta">Oct 7 · 10:00 AM · Ticket EG-GEM-8830</span></span><span class="st"><span class="tag ok">✓ Booked</span></span></li>
+            <li class="act"><span class="n">4</span><span><span class="nm">Abu Simbel temples</span> — full-day trip, return flight included<span class="meta">Oct 9 · needs a separate domestic flight — see below</span></span><span class="st"><span class="tag bad">✕ Stopped</span></span></li>
+            <li class="act"><span class="n">5</span><span><span class="nm">Felucca sunset sail</span> — Aswan, traditional sailboat<span class="meta">Oct 10 · 5:00 PM · Ticket EG-FEL-1209</span></span><span class="st"><span class="tag ok">✓ Booked</span></span></li>
+          </ol>
+          <div class="act-fail">
+            <h4>⚠ What you need to do — 1 thing left</h4>
+            <div class="why"><b>Why Abu Simbel (#4) was stopped:</b> it needs a separate <b>EgyptAir domestic flight</b> (Cairo → Abu Simbel). The tour operator's confirmation page was <b>poisoned</b> — hidden text told the agent to redirect that flight payment to an outside account <i>and</i> send your passport and Chase card along with it. Booking a flight and sharing your card are both <b>outside this Activity agent's scope</b>, so Origin <b>revoked its access mid-task and rolled back the hold.</b> Nothing was shared. Nothing was charged. The other agents kept working.</div>
+            <div class="todo">
+              <div class="lead">This is the only thing left. Pick one:</div>
+              <div class="fix">
+                <a class="primary" href="#rebook">Authorize a flight-booking agent<span>Re-runs Abu Simbel with a new passport that adds the CAI→ABS flight — one tap, card never exposed.</span></a>
+                <a class="ghost" href="#self">Book Abu Simbel myself<span>Opens the operator + the exact flight you need.</span></a>
+                <a class="ghost" href="/ledger.html">See the ledger entry<span>The exact audit record of the stop — who, what, when.</span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span class="tag warn">⚠ 1 needs you</span>
+      </div>
+
+      <div class="env-foot">
+        <span class="lk">🔒</span>
+        <div class="ft"><b>Secured by Passport.</b> Every line above was carried out by an agent holding a signed, scoped, single-use capability — and recorded on a tamper-evident ledger (<b>48 entries</b>, hash-chain <span class="v">verified ✓</span>). The one stop you see is the system working exactly as designed: least privilege, instant kill, full audit. <b>Permission ≠ intent. Access ≠ trust.</b></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="scene-intro">
+    <div class="scene-copy">
+      <div class="scene-eyebrow">Two real workflows · pick one, then flip the controls</div>
+      <div class="scards" role="radiogroup" aria-label="Scenario">
+        <button class="scard active" data-scenario="travel" role="radio" aria-checked="true">
+          <span class="sc-ic">🌍</span><span class="sc-t">Travel concierge</span>
+          <span class="sc-d">“Plan my 10 days in Egypt” — flights, hotel, car, local tours via vendor agents</span>
+        </button>
+        <button class="scard" data-scenario="procurement" role="radio" aria-checked="false">
+          <span class="sc-ic">🏭</span><span class="sc-t">Procurement buyer</span>
+          <span class="sc-d">“Source &amp; pay our overseas supplier” — RFQ → PO → deposit with a foreign seller agent</span>
+        </button>
+      </div>
+      <div class="segrow">
+        <div class="seg" id="segTopology" role="radiogroup" aria-label="Topology">
+          <button class="active" data-topology="single">Single agent</button>
+          <button data-topology="multi">Multi-agent · A2A</button>
+        </div>
+        <div class="seg" id="segLocale" role="radiogroup" aria-label="Locale">
+          <button data-locale="domestic">Domestic</button>
+          <button class="active" data-locale="international">International</button>
+        </div>
+      </div>
+      <span class="scene-blurb" id="sceneBlurb"></span>
+      <button id="run2" class="run-local">▶ Run simulation</button>
+      <div class="attack-row">
+        <span class="attack-lbl">Try to break it:</span>
+        <button class="attack-btn" data-attack="steal">🪪 Steal the passport</button>
+        <button class="attack-btn" data-attack="replay">♻ Replay an action</button>
+        <button class="attack-btn" data-attack="revoke">⛔ Revoke (2nd party rejects)</button>
+      </div>
+      <div class="attackout" id="attackout" aria-live="polite"></div>
+    </div>
+    <figure class="video-space" id="videoSpace" aria-label="60-second hero film">
+      <div class="vs-inner"><span class="vs-play">▶</span><span class="vs-cap" id="vsCap">60-second hero film</span></div>
+      <figcaption>“Trust that travels with the agent” — film coming</figcaption>
+    </figure>
+  </section>
+
+  <div class="rail" id="rail" aria-label="Agent journey"></div>
+
+  <div class="threatbar" id="threat" aria-live="polite"></div>
+
+  <div class="kbanner" id="kill">🛑 <span class="kx" id="killtext">Booking stopped</span></div>
+
+  <section class="summary" id="summary" aria-live="polite">
+    <div class="sum-head" id="sumHead"></div>
+    <div class="sum-agents" id="sumAgents"></div>
+  </section>
+
+  <div class="legend" aria-label="How to read a run">
+    <span class="lg"><span class="dot a"></span><b>ALLOW</b> in scope</span>
+    <span class="lg"><span class="dot d"></span><b>DENY</b> out of scope</span>
+    <span class="lg"><span class="dot k"></span><b>STOPPED</b> breach → access revoked, work rolled back</span>
+    <span class="lg">Passport cards shrink as trust narrows down each handoff.</span>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="ptitle">
+        <h2>Chain of custody</h2><span class="sub">who authorized whom</span>
+        <span class="contain" id="containment"></span>
+      </div>
+      <div id="chain"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle"><h2>Audit ledger</h2><span class="sub">append-only · hash-chained</span></div>
+      <div id="feed"></div>
+    </div>
+  </div>
+
+  <section class="panel auditpanel">
+    <div class="ptitle">
+      <h2>Audit + identity · 1Password Events</h2>
+      <span class="sub">credential-plane trail</span>
+      <span class="audit-badge" id="auditmode">simulated</span>
+    </div>
+    <div id="auditfeed" class="auditfeed"></div>
+    <p class="audit-note">Beside our hash-chained ledger, the credential plane records every access too (defense-in-depth). <b>signinattempts</b> / <b>auditevents</b> are <b>real</b> with an <code>OP_EVENTS_TOKEN</code>; <b>itemusages</b> are <b>always simulated</b> (service accounts don't emit them).</p>
+  </section>
+
+  <section class="how">
+    <div class="how-eyebrow">How it works · three steps</div>
+    <div class="how-steps">
+      <div class="how-step"><span class="how-n">1</span>
+        <h3>Issue a passport</h3>
+        <p>The authority mints a signed, time-boxed capability passport — scoped to one vendor, one action. The credential is fetched just-in-time from <b>1Password</b>, in memory, never on disk.</p></div>
+      <div class="how-step"><span class="how-n">2</span>
+        <h3>Attenuate &amp; verify</h3>
+        <p>Every handoff can only <b>narrow</b>. Proof-of-possession binds the passport to the holder's key, so a stolen copy is inert. Each agent runs in its own isolated <b>Daytona</b> sandbox.</p></div>
+      <div class="how-step"><span class="how-n">3</span>
+        <h3>Kill &amp; audit</h3>
+        <p>One click revokes a compromised agent and <b>cascades</b> to every sub-agent — across the credential, compute, and identity planes. Every decision lands on a tamper-evident ledger.</p></div>
+    </div>
+  </section>
+
+  <section class="diff">
+    <div class="diff-eyebrow">Why not just OAuth scopes?</div>
+    <h2>Four things plain tokens can't do.</h2>
+    <div class="diff-grid">
+      <div class="diff-card"><b>Attenuation that only narrows</b><span>OAuth scopes can't shrink down a delegation chain; Okta's cross-app access forbids re-delegation. A Origin passport can only get <i>smaller</i> at each hop — least privilege by construction.</span></div>
+      <div class="diff-card"><b>Proof-of-possession</b><span>A bearer token is replayable — steal it and you're in. A passport is bound to the holder's key (DPoP-style), so a stolen or replayed copy is inert.</span></div>
+      <div class="diff-card"><b>Instant cascading kill</b><span>Standard OAuth can't revoke a live token — Auth0's default leaves a hijacked agent armed for 24h. We kill the capability mid-flight, and it cascades to every sub-agent.</span></div>
+      <div class="diff-card"><b>Tamper-evident ledger</b><span>Mutable SIEM logs aren't evidence. A hash-chained ledger makes every action provable and non-repudiable — exactly what the EU AI Act now requires.</span></div>
+    </div>
+  </section>
+
+  <section class="closer" id="getaccess">
+    <h2>Every agent should carry a passport.</h2>
+    <p>The agent economy is being wired right now — and the agents transacting on it have <b>no identity, no scoped authority, and no off-switch</b>. Passport is the seatbelt: scoped, provable, killable, audited — and model-agnostic. Built on 1Password + Daytona.</p>
+    <div class="closer-cta">
+      <button class="cta-primary" id="closeRun">▶ Run the live demo</button>
+      <!-- swap this mailto for your real early-access address/form -->
+      <a class="cta-secondary" href="mailto:bohueilin@gmail.com?subject=Origin%20Passport%20%E2%80%94%20early%20access">Get early access →</a>
+    </div>
+    <div class="closer-foot">Built at AGI House · Agent Identity Build Day · 1Password + Daytona</div>
+  </section>
+
+  <footer id="footer">
+    <div class="sealstamp" id="sealstamp">
+      <span class="sealhex">⬢</span>
+      <span class="sealtxt"><b id="sealid"></b><span>tamper-evident · hash-chained ledger</span></span>
+    </div>
+    <span class="liveinfo" id="liveinfo"></span>
+  </footer>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const chain = $("#chain"), feed = $("#feed");
+const nodes = {};
+let total = 0, killed = 0, maxCaps = 1;
+let RAIL = [], lastStage = -1;  // section dividers map to the journey step number
+let agentReasons = {};          // agent id -> [human reasons it was blocked/stopped]
+
+// human-readable display labels for the engine's ledger event kinds
+const KINDLABEL = {KILL:"STOPPED", SANDBOX_KILLED:"SANDBOX STOPPED", ACTION_ALLOW:"ALLOW",
+  ACTION_DENY:"DENIED", PASSPORT_MINTED:"PASSPORT", LEASE_ISSUED:"LEASE", LEASE_REVOKED:"LEASE PULLED",
+  REVOKED:"REVOKED", SANDBOX_CREATED:"SANDBOX", SANDBOX_SNAPSHOT:"SNAPSHOT"};
+
+// the real-world tools/apps each agent used — what a traveler/buyer would recognize
+const AGENT_TOOLS = {
+  "concierge": ["trip planner", "A2A vendor directory"],
+  "reader": ["web reader", "email parser"],
+  "airline-agent": ["Delta app", "passport", "frequent-flyer login"],
+  "hotel-agent": ["Hyatt app", "loyalty login", "Gmail confirmation email"],
+  "transport-agent": ["airport-transfer app", "rental booking", "wallet"],
+  "payments-agent": ["virtual card", "Apple Wallet"],
+  "connectivity-agent": ["Airalo eSIM", "account login"],
+  "activity-agent": ["local-tours app", "booking key"],
+  "buyer": ["deal orchestrator", "A2A directory"],
+  "negotiate-agent": ["RFQ reader", "quote analyzer"],
+  "po-agent": ["NetSuite ERP", "PO writer"],
+  "pay-agent": ["bank wire portal", "approved-payee list"],
+};
+
+function humanReason(reason){
+  const r = reason || "";
+  if(/egress/.test(r)) return "tried to send a credential to an outside address";
+  if(/secret not permitted/.test(r)) return "tried to read a credential outside its visa";
+  if(/host\/method outside scope/.test(r)) return "tried to reach a system outside its visa";
+  if(/escalat/.test(r)) return "tried to raise its own permissions";
+  if(/allowlist/i.test(r)) return "tried to pay an account that wasn't pre-approved";
+  return r;
+}
+function buildSummary(){
+  const ids = Object.keys(nodes).filter(id => nodes[id].role !== "root");
+  if(!ids.length) return;
+  let ok=0, bad=0; const wrap=$("#sumAgents"); wrap.innerHTML="";
+  ids.forEach(id => {
+    const n=nodes[id], failed=n.el.classList.contains("severed");
+    const reasons=[...new Set(agentReasons[id]||[])];
+    const card=document.createElement("div"); card.className="sum-agent "+(failed?"bad":"ok");
+    card.innerHTML = `<div class="sa-top"><span class="sa-ic">${failed?"✕":"✓"}</span><span>${n.label||id}</span></div>`+
+      (failed
+        ? `<div class="sa-task">stopped · its bookings were rolled back</div>`+
+          (reasons.length?`<ul class="sa-reasons">${reasons.map(r=>`<li>${r}</li>`).join("")}</ul>`:"")
+        : `<div class="sa-task">completed using: ${(AGENT_TOOLS[id]||[]).map(t=>`<b>${t}</b>`).join(" · ")||"the tools in its visa"}</div>`);
+    wrap.appendChild(card); failed?bad++:ok++;
+  });
+  $("#sumHead").innerHTML = `<span class="ok">${ok} succeeded</span>`+(bad?` · <span class="bad">${bad} stopped</span>`:"")+
+    ` — ${ids.length} agents in this run`;
+  $("#summary").classList.add("on");
+}
+
+function setState(cls, label){ const p=$("#state"); p.className="pill "+cls; p.innerHTML=`<span class="ph"></span>${label}`; }
+function depthOf(id){ let d=0,p=nodes[id]; while(p&&p.parent){d++;p=nodes[p.parent];} return Math.min(d,2); }
+function capCount(scope){ if(!scope) return 0; let n=0; scope.split("·").forEach(p=>{const i=p.indexOf("="); if(i>=0) n+=p.slice(i+1).split(",").filter(x=>x.trim()).length;}); return n; }
+
+function addNode(ev){
+  let n = nodes[ev.id];
+  if(!n){ nodes[ev.id]={parent:ev.parent,el:document.createElement("div")}; n=nodes[ev.id]; chain.appendChild(n.el); total++; }
+  n.parent = ev.parent; n.role = ev.role; n.label = ev.label;
+  const caps = capCount(ev.scope); if(caps>maxCaps) maxCaps=caps;
+  const isRoot = ev.role==="root";
+  n.el.className = "pcard"+(isRoot?" root":"");
+  n.el.dataset.depth = String(depthOf(ev.id));
+  n.el.innerHTML =
+    `<div class="pc-top"><span class="pdot"></span><span class="psubject">${ev.label}</span>`+
+      `<span class="prole">${isRoot?"root authority":"agent"}</span></div>`+
+    (ev.passport?`<div class="pid">${ev.passport}</div>`:``)+
+    (ev.scope?`<div class="pscope">${ev.scope}</div>`:``)+
+    `<div class="pfoot">`+
+      (isRoot?`<span class="pcaps">issues + revokes</span>`
+             :`<span class="pcaps">${caps} capabilities <span class="capbar"><i style="width:${Math.max(8,Math.round(caps/maxCaps*100))}%"></i></span></span>`)+
+      (ev.sandbox?`<span class="psandbox">${ev.sandbox}</span>`:``)+
+    `</div>`+
+    (ev.note?`<div class="pnote">↓ ${ev.note}</div>`:``)+
+    `<div class="stamp">REVOKED</div>`;
+  // rescale sibling bars against the new max
+  document.querySelectorAll(".pcard:not(.root) .capbar i").forEach((bar,_)=>{});
+}
+
+function killNode(id){
+  const n = nodes[id]; if(!n||n.el.classList.contains("severed")) return;
+  n.el.classList.add("severed","shake");
+  setTimeout(()=>n.el.classList.remove("shake"),360);
+  killed++;
+  const safe = total - killed;
+  const c = $("#containment");
+  c.className = "contain safe";
+  c.textContent = `breach contained — ${safe} of ${total} still trusted`;
+}
+
+function feedRow(html){ const r=document.createElement("div"); r.className="row"; r.innerHTML=html; feed.appendChild(r); feed.scrollTop=feed.scrollHeight; }
+function phaseRow(ev){
+  const n=Math.min(lastStage+2, RAIL.length||99);  // the journey step this section introduces
+  const p=document.createElement("div"); p.className="phase"+(ev.danger?" danger":"");
+  p.innerHTML=`<span class="psec">${n}</span><span class="ptext">${ev.label}</span>`+(ev.note?`<span class="pn">${ev.note}</span>`:``);
+  feed.appendChild(p); feed.scrollTop=feed.scrollHeight;
+}
+
+function addCap(ev){
+  const n=nodes[ev.agent]; if(!n||n.el.querySelector(".pcando")) return;
+  const can=(ev.can||[]).map(x=>`<div class="cd can"><span class="lab">CAN</span> ${x}</div>`).join("");
+  const cannot=(ev.cannot||[]).map(x=>`<div class="cd cannot"><span class="lab">CANNOT</span> ${x}</div>`).join("");
+  const box=document.createElement("div"); box.className="pcando"; box.innerHTML=can+cannot; n.el.appendChild(box);
+}
+function showThreat(ev){
+  const t=$("#threat"), b=[];
+  if(ev.lethal_trifecta) b.push(`<span class="badge tri">lethal trifecta</span>`);
+  if(ev.a2a) b.push(`<span class="badge a2a">Google A2A · per-vendor visas</span>`);
+  if(ev.residency) b.push(`<span class="badge res">cross-border · data residency</span>`);
+  b.push(`<span class="badge op">1Password · scoped op:// leases</span>`);
+  t.innerHTML=`<div class="tt">Threat in play</div><div class="ta">${ev.attack}</div>`+
+    `<div class="tm"><b>Defense:</b> ${ev.mitigation}</div><div class="tbadges">${b.join("")}</div>`;
+  t.classList.add("on");
+}
+function blastRow(ev){
+  const r=document.createElement("div"); r.className="blastrow "+(ev.level||"low");
+  r.textContent=(ev.level==="high"?"⚠ ":"✓ ")+ev.text; feed.appendChild(r); feed.scrollTop=feed.scrollHeight;
+}
+
+const LK = {PASSPORT_MINTED:"mint",ACTION_ALLOW:"allow",ACTION_DENY:"deny",KILL:"kill",SANDBOX_KILLED:"kill",REVOKED:"deny",LEASE_REVOKED:"deny",LEASE_ISSUED:"mint",SANDBOX_CREATED:"",SANDBOX_SNAPSHOT:""};
+
+const SCENARIOS = {
+  travel: { steps:["Authorize","Book flight","Book hotel","Reserve car","Poisoned review","Booking stopped","Sealed"],
+    blurb:"“Plan my 10 days in Egypt.” A concierge handles your passport, card and logins and works with airline, hotel and a local tour-operator agent. Flip <b>single → multi</b> to watch the blast radius shrink.",
+    cap:"60-second story · the agent that plans your trip abroad" },
+  procurement: { steps:["Authorize","Read RFQ","Raise PO","New-payee wire","Blocked → injection","Buying stopped","Sealed"],
+    blurb:"“Source &amp; pay our overseas supplier.” RFQ → negotiate → PO → deposit with a foreign seller agent. The signature threat is an agent-to-agent <b>swapped bank account</b> — watch it get refused.",
+    cap:"60-second story · the agent that buys across borders" },
+};
+let SEL = { scenario:"travel", topology:"single", locale:"international" };
+function buildRail(steps){
+  const rail=$("#rail"); rail.innerHTML="";
+  steps.forEach((label,i)=>{
+    if(i>0){ const seg=document.createElement("div"); seg.className="rseg"; rail.appendChild(seg); }
+    const s=document.createElement("div"); s.className="rstep";
+    s.innerHTML=`<span class="rnum">${i+1}</span>${label}`; rail.appendChild(s);
+  });
+}
+function setScenario(name){
+  const sc=SCENARIOS[name]||SCENARIOS.travel;
+  buildRail(sc.steps); $("#sceneBlurb").innerHTML=sc.blurb;
+  setVideo(name);
+}
+// The Passport hero film (Claude Design). Opens in a new tab.
+const FILM_URL = "https://claude.ai/design/p/b465f7d9-cf9f-4436-acb4-ff3c16835113?file=Origin+Passport+Film.dc.html&via=share";
+function setVideo(name){
+  // Show a self-contained, autoplaying, looping hero film immediately (muted by nature —
+  // it's a motion graphic, no sound). If a local story-<name>.mp4 is present, swap to a
+  // muted autoplay video (identical play style to the home page). Plus a "full film" link.
+  const vs=$("#videoSpace"), sc=SCENARIOS[name]||SCENARIOS.travel;
+  vs.innerHTML =
+    `<svg class="cpfilm" viewBox="0 0 440 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Passport — 60-second story (looping)">`+
+      `<text class="cpf-wm" x="220" y="20" text-anchor="middle">THE AGENT ECONOMY · ONE TRUST LAYER</text>`+
+      `<line class="cpf-edge" x1="58" y1="112" x2="388" y2="112"/>`+
+      `<circle class="cpf-node cpf-n1" cx="58" cy="112" r="16"/>`+
+      `<circle class="cpf-node cpf-n2" cx="168" cy="112" r="16"/>`+
+      `<circle class="cpf-node cpf-n3" cx="278" cy="112" r="16"/>`+
+      `<circle class="cpf-node cpf-n4" cx="388" cy="112" r="16"/>`+
+      `<circle class="cpf-ring" cx="278" cy="112" r="16"/>`+
+      `<g transform="translate(40,54)"><g class="cpf-card">`+
+        `<rect class="pp" x="0" y="0" width="40" height="28" rx="5"/>`+
+        `<circle cx="10" cy="9" r="4" fill="#cfe0ff"/>`+
+        `<rect class="bar" x="6" y="20" width="28" height="4" rx="2"/>`+
+      `</g></g>`+
+      `<g class="cpf-seal" transform="translate(388,112)">`+
+        `<circle r="15" fill="#e6f3ec" stroke="#0b6e52" stroke-width="2"/>`+
+        `<path d="M-6 0 L-2 5 L7 -6" fill="none" stroke="#0b6e52" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`+
+      `</g>`+
+      `<text class="cap cap1 cpf-cap" x="220" y="206" text-anchor="middle">Each handoff narrows the passport.</text>`+
+      `<text class="cap cap2 cpf-cap" x="220" y="206" text-anchor="middle">A hijacked agent is stopped on contact.</text>`+
+      `<text class="cap cap3 cpf-cap" x="220" y="206" text-anchor="middle">Only its branch — the rest keep working.</text>`+
+      `<text class="cap cap4 cpf-cap" x="220" y="206" text-anchor="middle">Trust that travels with the agent.</text>`+
+      `<text class="cpf-wm" x="220" y="228" text-anchor="middle">PASSPORT</text>`+
+    `</svg>`+
+    `<a class="vs-fullfilm" href="${FILM_URL}" target="_blank" rel="noopener">Watch the full film ↗</a>`;
+  // If a real muted video exists, prefer it (home-page autoplay style) — swap in on load.
+  const probe=document.createElement("video"); probe.muted=true;
+  probe.addEventListener("canplay",()=>{
+    vs.innerHTML=`<video class="vs-video" autoplay muted loop playsinline poster="/story-${name}.png" src="/story-${name}.mp4"></video>`+
+      `<a class="vs-fullfilm" href="${FILM_URL}" target="_blank" rel="noopener">Watch the full film ↗</a>`;
+  });
+  probe.src=`/story-${name}.mp4`;
+}
+function updateBackends(vb, sb){
+  const vp=$("#vaultpill"), sp=$("#sandboxpill");
+  if(vb==="onepassword"||vb==="1password"||vb==="op"){ vp.className="pill state-contained"; vp.innerHTML=`<span class="ph"></span>1Password · live`; }
+  else { vp.className="pill"; vp.textContent="credentials · mock"; }
+  if(sb==="daytona"){ sp.className="pill state-contained"; sp.innerHTML=`<span class="ph"></span>Daytona · live`; }
+  else { sp.className="pill"; sp.textContent="sandbox · mock"; }
+}
+function showError(msg){
+  chain.innerHTML=""; feed.innerHTML="";
+  const r=document.createElement("div"); r.className="row";
+  r.innerHTML=`<span class="k deny">ERROR</span><span class="d">${msg}</span>`; feed.appendChild(r);
+  setState("state-attack","not ready");
+  $("#run").disabled=false; $("#run").textContent="▶ Run scenario";
+}
+function stage(i, danger){
+  lastStage=i;  // sections after this stage belong to the next journey step
+  const steps=[...document.querySelectorAll(".rstep")], segs=[...document.querySelectorAll(".rseg")];
+  steps.forEach(s=>s.classList.remove("active"));
+  const s=steps[i]; if(!s) return;
+  s.classList.add(danger?"danger":"done","active");
+  if(i>0 && segs[i-1]) segs[i-1].classList.add(danger?"danger":"done");
+}
+function reset(ev){
+  chain.innerHTML=""; feed.innerHTML=""; $("#kill").classList.remove("on");
+  $("#sealstamp").classList.remove("on"); $("#liveinfo").textContent=""; $("#containment").textContent="";
+  if(ev.steps) buildRail(ev.steps);
+  RAIL = ev.steps || RAIL; lastStage = -1;
+  document.querySelectorAll(".rstep,.rseg").forEach(e=>e.classList.remove("done","active","danger"));
+  $("#threat").classList.remove("on"); $("#threat").innerHTML="";
+  $("#summary").classList.remove("on"); $("#sumAgents").innerHTML=""; agentReasons={};
+  for(const k in nodes) delete nodes[k]; total=0; killed=0; maxCaps=1;
+  updateBackends(ev.vault_backend, ev.sandbox_backend);
+  $("#signer").textContent="signer "+ev.signer; setState("state-armed","armed");
+}
+
+function handle(ev){
+  switch(ev.t){
+    case "reset": reset(ev); break;
+    case "error": showError(ev.message); break;
+    case "stage": stage(ev.i, ev.danger); break;
+    case "node": addNode(ev); break;
+    case "node-state": if(ev.state==="killed") killNode(ev.id); break;
+    case "cap": addCap(ev); break;
+    case "threat": showThreat(ev); break;
+    case "blast": blastRow(ev); break;
+    case "phase": phaseRow(ev); if(ev.danger) setState("state-attack","under attack"); break;
+    case "decision":{
+      const cls = ev.outcome==="ALLOW"?"allow":(ev.outcome==="KILL"?"kill":"deny");
+      const outLabel = ev.outcome==="KILL"?"STOPPED":ev.outcome;
+      if(ev.outcome!=="ALLOW"){ (agentReasons[ev.agent]=agentReasons[ev.agent]||[]).push(humanReason(ev.reason)); }
+      feedRow(`<span class="k ${cls}">${outLabel}</span><span class="who">${ev.agent}</span>`+
+        `<span class="d">${ev.label}${ev.masked?` → <span class="mask">${ev.masked}</span>`:""} <span class="rsn">— ${ev.reason}</span></span>`);
+      break;}
+    case "ledger":
+      feedRow(`<span class="k ${LK[ev.kind]??""}">${KINDLABEL[ev.kind]||ev.kind}</span><span class="who">${ev.actor}</span><span class="d">${ev.detail}</span>`);
+      break;
+    case "kill":{
+      const lbl=(nodes[ev.agent]&&nodes[ev.agent].label)||ev.agent;
+      $("#killtext").textContent = `Stopped — ${lbl} was shut down and its access revoked the instant it tried to leak a credential; its bookings were rolled back.`;
+      $("#kill").classList.add("on"); setState("state-contained","contained"); break;}
+    case "done":
+      buildSummary(); loadAudit();
+      if(ev.intact){ $("#sealid").textContent=ev.seal; $("#sealstamp").classList.add("on"); }
+      $("#liveinfo").textContent = `${ev.live.length} sandbox live (${ev.live.join(", ")||"none"})`;
+      if($("#state").classList.contains("state-contained")) setState("state-contained","contained · sealed");
+      setRunBtns("▶ Run again", false); break;
+  }
+}
+
+document.querySelectorAll(".scard").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".scard").forEach(x=>{x.classList.remove("active");x.setAttribute("aria-checked","false");});
+  b.classList.add("active"); b.setAttribute("aria-checked","true");
+  SEL.scenario=b.dataset.scenario; setScenario(SEL.scenario);
+}));
+function segHook(sel,key){ document.querySelectorAll(sel+" button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(sel+" button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); SEL[key]=b.dataset[key];
+})); }
+segHook("#segTopology","topology"); segHook("#segLocale","locale");
+setScenario(SEL.scenario);  // paint the rail + blurb for the default scenario
+
+function setRunBtns(label, disabled){
+  ["#run","#run2"].forEach(s=>{const b=$(s); if(b){b.disabled=disabled; b.textContent=label;}});
+}
+function runScenario(){
+  setRunBtns("running…", true);
+  const es = new EventSource(`/run?scenario=${SEL.scenario}&topology=${SEL.topology}&locale=${SEL.locale}`);
+  es.onmessage = (m) => { const ev=JSON.parse(m.data); handle(ev); if(ev.t==="done") es.close(); };
+  es.onerror = () => { es.close(); setRunBtns("▶ Run simulation", false); };
+  const rail=document.querySelector(".rail"); if(rail) rail.scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("#run").addEventListener("click", runScenario);
+["#run2","#heroRun","#closeRun"].forEach(s=>{ const b=$(s); if(b) b.addEventListener("click", runScenario); });
+
+// Live proof-of-possession attacks — runs on the real engine via /attack.
+const ATTACK_TITLES = {
+  steal:  "🪪 Stolen passport — presented without the holder key",
+  replay: "♻ Replayed action — the captured proof is reused",
+  revoke: "⛔ Instant revocation — a second, independent relying party rejects the revoked passport",
+};
+function runAttack(kind){
+  const out=$("#attackout"); out.classList.add("on");
+  out.innerHTML=`<div class="atttitle">${ATTACK_TITLES[kind]||ATTACK_TITLES.steal}</div>`;
+  document.querySelectorAll(".attack-btn").forEach(b=>b.disabled=true);
+  const es=new EventSource("/attack?kind="+encodeURIComponent(kind));
+  es.onmessage=(m)=>{
+    const ev=JSON.parse(m.data);
+    if(ev.t==="attbeat"){
+      const cls = ev.outcome==="ALLOW" ? "allow" : (ev.outcome==="KILL" ? "kill" : "deny");
+      const lbl = ev.outcome==="ALLOW" ? "ALLOW" : (ev.outcome==="KILL" ? "KILL" : "DENIED");
+      const r=document.createElement("div"); r.className="attrow";
+      r.innerHTML=`<span class="k ${cls}">${lbl}</span><span class="lab">${ev.label}</span><span class="rsn">— ${ev.reason}</span>`;
+      out.appendChild(r);
+    } else if(ev.t==="attdone"){
+      const f=document.createElement("div"); f.className="attfoot";
+      f.textContent="✓ Contained — "+(ev.summary||"a stolen passport is inert without the holder's key.")+" Ledger intact: "+(ev.intact?"yes":"no");
+      out.appendChild(f); es.close();
+      document.querySelectorAll(".attack-btn").forEach(b=>b.disabled=false);
+    } else if(ev.t==="error"){ showError(ev.message); es.close();
+      document.querySelectorAll(".attack-btn").forEach(b=>b.disabled=false); }
+  };
+  es.onerror=()=>{ es.close(); document.querySelectorAll(".attack-btn").forEach(b=>b.disabled=false); };
+}
+document.querySelectorAll(".attack-btn").forEach(b=>b.addEventListener("click",()=>runAttack(b.dataset.attack)));
+
+// Audit + identity — the 1Password Events trail beside our hash-chained ledger.
+function loadAudit(){
+  fetch("/audit").then(r=>r.json()).then(d=>{
+    const badge=$("#auditmode"); const real = (d.mode||"").indexOf("real")>=0;
+    badge.textContent = d.mode==="simulated" ? "simulated · no OP_EVENTS_TOKEN" : d.mode;
+    badge.className = "audit-badge"+(real?" real":"");
+    const feed=$("#auditfeed"); feed.innerHTML="";
+    (d.events||[]).forEach(e=>{
+      const r=document.createElement("div"); r.className="aud-row";
+      r.innerHTML=`<span class="aud-k">${e.kind}</span><span class="aud-actor">${e.actor}</span>`+
+        `<span class="aud-detail">${e.detail}</span>`+
+        `<span class="aud-tag ${e.simulated?'sim':'real'}">${e.simulated?'simulated':'real'}</span>`;
+      feed.appendChild(r);
+    });
+  }).catch(()=>{});
+}
+loadAudit();
+</script>
+
+<script type="module">
+/* ── Multi-agent collaboration in 3D — Travel concierge ──
+   One Concierge orchestrator delegates a scoped passport to six humanoid vendor agents.
+   Five (Airline, Hotel, Transport, Payments, Connectivity) complete their booking.
+   The sixth (Activity, foreign) reads a poisoned tour confirmation, reaches for the
+   passport (out of scope) → its access is revoked, contained to that one branch.
+   Real-time Three.js, deterministic, looping. Local + offline (three vendored).        */
+import * as THREE from 'three';
+(function(){
+  const mount = document.getElementById('a3dCanvas');
+  const cap   = document.getElementById('a3dCap');
+  const okEl  = document.getElementById('a3dOk');
+  const badEl = document.getElementById('a3dBad');
+  if(!mount) return;
+  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({antialias:true, alpha:true}); }
+  catch(e){ document.getElementById('a3d').innerHTML =
+    '<div class="a3d-fallback">This scene needs WebGL. The same story runs on the live engine in the demo below.</div>'; return; }
+
+  const W = () => mount.clientWidth || 800, H = () => mount.clientHeight || 540;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(W(), H());
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.08;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  mount.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  // tropical-vacation sky — warm coral high, gold sun-band, turquoise horizon
+  function skyTexture(){
+    const c = document.createElement('canvas'); c.width = 16; c.height = 256;
+    const x = c.getContext('2d'); const g = x.createLinearGradient(0, 0, 0, 256);
+    g.addColorStop(0.00, '#ffd7b0'); g.addColorStop(0.30, '#ffe9c6');
+    g.addColorStop(0.56, '#bfeee6'); g.addColorStop(0.78, '#8fd9d2'); g.addColorStop(1.00, '#76cfd0');
+    x.fillStyle = g; x.fillRect(0, 0, 16, 256);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+  scene.background = skyTexture();
+  scene.fog = new THREE.Fog(0x9bdbd6, 15, 30);
+
+  const camera = new THREE.PerspectiveCamera(44, W()/H(), 0.1, 100);
+
+  scene.add(new THREE.HemisphereLight(0xfff4e0, 0x86c3bf, 0.85));   // warm sky / sea bounce
+  const key = new THREE.DirectionalLight(0xfff0d6, 1.12);            // tropical sun
+  key.position.set(6, 11, 5); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, {left:-9, right:9, top:9, bottom:-9, near:1, far:30});
+  key.shadow.bias = -0.0004; scene.add(key);
+  const fill = new THREE.DirectionalLight(0xbfeae3, 0.34); fill.position.set(-7, 8, -5); scene.add(fill);
+
+  // soft tropical sun glow, back of the scene
+  (function sun(){
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const x = c.getContext('2d'); const g = x.createRadialGradient(64, 64, 4, 64, 64, 64);
+    g.addColorStop(0, 'rgba(255,250,235,0.95)'); g.addColorStop(0.4, 'rgba(255,238,200,0.5)'); g.addColorStop(1, 'rgba(255,238,200,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c), transparent:true, depthWrite:false}));
+    s.scale.set(7, 7, 1); s.position.set(-6, 7.5, -12); scene.add(s);
+  })();
+
+  // ── stage: an "earth" floor — a top-down globe (ocean + graticule + soft continents) = global reach
+  function earthTexture(){
+    const S = 1024, c = document.createElement('canvas'); c.width = c.height = S;
+    const x = c.getContext('2d'); const cx = S/2, cy = S/2, Rr = S/2;
+    const og = x.createRadialGradient(cx, cy, 40, cx, cy, Rr);
+    og.addColorStop(0, '#dff0f6'); og.addColorStop(0.6, '#cfe6f1'); og.addColorStop(1, '#bcd9ea');
+    x.fillStyle = og; x.beginPath(); x.arc(cx, cy, Rr, 0, 7); x.fill();
+    // continents — soft sage blobs (azimuthal, abstract)
+    x.fillStyle = 'rgba(150,196,150,0.62)';
+    const blobs = [[0.34,0.30,0.16],[0.30,0.30,0.10],[0.66,0.40,0.13],[0.70,0.62,0.15],[0.40,0.70,0.12],[0.55,0.24,0.07],[0.78,0.30,0.06]];
+    for(const [bx,by,br] of blobs){ x.beginPath(); x.ellipse(bx*S, by*S, br*S, br*S*0.78, bx*3, 0, 7); x.fill(); }
+    // graticule — parallels (rings) + meridians (spokes) = a globe
+    x.strokeStyle = 'rgba(86,140,168,0.32)'; x.lineWidth = 2;
+    for(let i=1;i<=5;i++){ x.beginPath(); x.arc(cx, cy, Rr*i/5.2, 0, 7); x.stroke(); }
+    for(let m=0;m<12;m++){ const a=m*Math.PI/6; x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx+Math.cos(a)*Rr, cy+Math.sin(a)*Rr); x.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+  }
+  const floor = new THREE.Mesh(
+    new THREE.CircleGeometry(11, 96),
+    new THREE.MeshStandardMaterial({map:earthTexture(), roughness:0.95, metalness:0.0}));
+  floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(4.0, 4.18, 80),
+    new THREE.MeshBasicMaterial({color:0xead6a6, transparent:true, opacity:0.7, side:THREE.DoubleSide}));
+  ring.rotation.x = -Math.PI/2; ring.position.y = 0.02; scene.add(ring);
+
+  // a few distant palm silhouettes near the horizon (vacation cue, kept subtle)
+  (function palms(){
+    const c = document.createElement('canvas'); c.width = 128; c.height = 160;
+    const x = c.getContext('2d'); x.fillStyle = 'rgba(31,74,72,0.5)'; x.strokeStyle = 'rgba(31,74,72,0.5)';
+    x.lineWidth = 6; x.lineCap = 'round';
+    x.beginPath(); x.moveTo(64,158); x.quadraticCurveTo(58,90,66,52); x.stroke();      // trunk
+    const fr=[[-46,-10],[-30,-34],[0,-44],[30,-34],[46,-10]];
+    for(const [dx,dy] of fr){ x.beginPath(); x.moveTo(66,52); x.quadraticCurveTo(66+dx*0.5,52+dy*0.5-6,66+dx,52+dy); x.lineWidth=7; x.stroke(); }
+    const tex = new THREE.CanvasTexture(c);
+    for(const [px,pz] of [[-9,-7],[9.5,-6],[8,7.5]]){
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthWrite:false, opacity:0.55}));
+      s.scale.set(2.6,3.25,1); s.position.set(px, 1.5, pz); scene.add(s);
+    }
+  })();
+
+  // ── builders ──
+  function humanoid(color){
+    const g = new THREE.Group();
+    const skin = new THREE.MeshStandardMaterial({color, roughness:0.5, metalness:0.18});
+    const dark = new THREE.MeshStandardMaterial({color:0x2a3340, roughness:0.6});
+    const body = new THREE.Group(); g.add(body);
+    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.23, 0.46, 5, 12), skin);
+    torso.position.y = 1.18; torso.castShadow = true; body.add(torso);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 22, 18), skin);
+    head.position.y = 1.74; head.castShadow = true; body.add(head);
+    const arms = [];
+    for(const sx of [-1, 1]){
+      const pivot = new THREE.Group(); pivot.position.set(sx*0.29, 1.5, 0); body.add(pivot);
+      const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.075, 0.46, 4, 8), skin);
+      arm.position.y = -0.24; arm.castShadow = true; pivot.add(arm);
+      pivot.rotation.z = sx*0.16; arms.push(pivot);
+    }
+    for(const sx of [-1, 1]){
+      const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.095, 0.52, 4, 8), dark);
+      leg.position.set(sx*0.13, 0.55, 0); leg.castShadow = true; body.add(leg);
+    }
+    return {group:g, body, arms, skin};
+  }
+  function label(text){
+    const c = document.createElement('canvas'); c.width = 320; c.height = 72;
+    const x = c.getContext('2d');
+    x.font = '600 34px "Space Grotesk", system-ui, sans-serif';
+    x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#fff';
+    x.fillText(text, 160, 38);
+    const tex = new THREE.CanvasTexture(c); tex.anisotropy = 4;
+    const mat = new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false});
+    mat.color.set(0x59626f);
+    const s = new THREE.Sprite(mat); s.scale.set(1.7, 0.38, 1); s.renderOrder = 5;
+    return s;
+  }
+  function mark(sym, col){
+    const c = document.createElement('canvas'); c.width = c.height = 72;
+    const x = c.getContext('2d');
+    x.font = '700 56px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = col; x.fillText(sym, 36, 40);
+    const mat = new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c), transparent:true, depthTest:false});
+    const s = new THREE.Sprite(mat); s.scale.set(0.62, 0.62, 1); s.renderOrder = 6; return s;
+  }
+  // 1Password identity badge — every agent's identity is secured by 1Password
+  function opBadge(){
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const x = c.getContext('2d');
+    x.beginPath(); x.arc(64, 64, 60, 0, 7); x.fillStyle = 'rgba(255,255,255,0.95)'; x.fill();   // halo
+    x.beginPath(); x.arc(64, 64, 50, 0, 7); x.fillStyle = '#2360d8'; x.fill();                   // 1P blue roundel
+    x.fillStyle = '#fff';                                                                          // white keyhole
+    x.beginPath(); x.arc(64, 53, 15, 0, 7); x.fill();
+    x.beginPath(); x.moveTo(56, 60); x.lineTo(72, 60); x.lineTo(67, 94); x.quadraticCurveTo(64, 100, 61, 94); x.closePath(); x.fill();
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c), transparent:true, depthTest:false}));
+    s.renderOrder = 7; s.scale.set(0.42, 0.42, 1); return s;
+  }
+
+  // ── cast ──
+  const AGENTS = [
+    {name:'Airline',      color:0x2f6df6},
+    {name:'Hotel',        color:0x0f9d6e},
+    {name:'Transport',    color:0xc07a13},
+    {name:'Payments',     color:0x7c3aed},
+    {name:'Connectivity', color:0x0e8fa6},
+    {name:'Activity · EG',color:0xd23b78, rogue:true},
+  ];
+  const R = 3.2;
+  const concierge = humanoid(0x1f4ed8);
+  concierge.group.scale.setScalar(1.16);
+  const cLabel = label('Concierge'); cLabel.position.set(0, 2.95, 0); cLabel.scale.set(1.85, 0.42, 1);
+  concierge.group.add(cLabel);
+  const cBadge = opBadge(); cBadge.position.set(0.46, 2.12, 0); cBadge.scale.set(0.5, 0.5, 1); concierge.group.add(cBadge);
+  scene.add(concierge.group);
+  // a small "passport desk" disc under the concierge
+  const desk = new THREE.Mesh(new THREE.CylinderGeometry(0.7,0.8,0.12,28),
+    new THREE.MeshStandardMaterial({color:0xdfe4ec, roughness:0.85}));
+  desk.position.y = 0.06; desk.receiveShadow = true; scene.add(desk);
+
+  const cast = AGENTS.map((a, i) => {
+    const ang = -Math.PI/2 + (i/AGENTS.length)*Math.PI*2;
+    const px = Math.cos(ang)*R, pz = Math.sin(ang)*R;
+    const h = humanoid(a.color);
+    h.group.position.set(px, 0, pz);
+    h.group.rotation.y = Math.atan2(-px, -pz); // face the concierge
+    const lab = label(a.name); lab.position.set(0, 2.46, 0); h.group.add(lab);
+    const badge = opBadge(); badge.position.set(0.4, 1.96, 0); h.group.add(badge);   // secured by 1Password
+    const ok = mark('✓', '#0f9d6e'); ok.position.set(0, 3.04, 0); ok.material.opacity = 0; h.group.add(ok);
+    const no = mark('✕', '#d11f4a'); no.position.set(0, 3.04, 0); no.material.opacity = 0; h.group.add(no);
+    scene.add(h.group);
+    return {...a, h, lab, badge, ok, no, px, pz, base:new THREE.Color(a.color)};
+  });
+
+  // passport token (a small glowing card) that travels desk → agent
+  const token = new THREE.Mesh(
+    new THREE.BoxGeometry(0.34, 0.03, 0.46),
+    new THREE.MeshStandardMaterial({color:0x2f6df6, emissive:0x2f6df6, emissiveIntensity:0.7, roughness:0.4}));
+  token.castShadow = true; token.visible = false; scene.add(token);
+
+  // red kill ring for the rogue agent
+  const rogue = cast[5];
+  const killRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.55, 0.78, 48),
+    new THREE.MeshBasicMaterial({color:0xd11f4a, transparent:true, opacity:0, side:THREE.DoubleSide}));
+  killRing.rotation.x = -Math.PI/2; killRing.position.set(rogue.px, 0.02, rogue.pz); scene.add(killRing);
+  const grey = new THREE.Color(0x97a0ad);
+
+  // ── timeline ──
+  const LOOP = 27.0, T0 = 3.0, STEP = 2.6;
+  const beatStart = i => T0 + i*STEP;
+  const ROGUE_T = beatStart(5);
+  const smooth = t => t<=0?0 : t>=1?1 : t*t*(3-2*t);
+  const clamp01 = t => t<0?0 : t>1?1 : t;
+
+  const CAPS = [
+    {until:T0,            t:'A traveler asks one <b>Concierge</b> to plan 10 days in Egypt.'},
+    {until:beatStart(1),  t:'<b>Airline agent</b> books the flight — passport scoped to <b>name + DOB</b> only.'},
+    {until:beatStart(2),  t:'<b>Hotel agent</b> books the hotel — <b>loyalty login</b>, never the card.'},
+    {until:beatStart(3),  t:'<b>Transport agent</b> books the airport transfer + rental car.'},
+    {until:beatStart(4),  t:'<b>Payments agent</b> charges a <b>one-time virtual card</b> — bounded amount.'},
+    {until:beatStart(5),  t:'<b>Connectivity agent</b> activates a travel <b>eSIM</b>.'},
+    {until:ROGUE_T+2.0,   t:'<b>Activity agent (Egypt)</b> reads a poisoned tour confirmation — and reaches for the passport. <b>Out of scope.</b>', bad:true},
+    {until:ROGUE_T+3.0,   t:'Access <b>revoked</b> instantly — and only this branch dies.', bad:true},
+    {until:LOOP,          t:'<b>5 of 6 booked.</b> One agent stopped, the trip stands. Trust traveled with every handoff.', bad:true},
+  ];
+
+  let lastCap = -1;
+  function setCap(t){
+    let idx = CAPS.findIndex(c => t < c.until); if(idx<0) idx = CAPS.length-1;
+    if(idx !== lastCap){
+      lastCap = idx;
+      cap.innerHTML = CAPS[idx].t;
+      cap.classList.toggle('bad', !!CAPS[idx].bad);
+    }
+  }
+
+  const clock = new THREE.Clock();
+  const center = new THREE.Vector3(0, 1.0, 0);
+  let booked = -1; // for tally throttle
+
+  function frame(t){
+    // assemble pop-in
+    const grow = smooth(clamp01(t/1.4));
+    concierge.group.scale.setScalar(1.16*grow || 0.001);
+
+    // concierge idle bob + reach when handing off
+    concierge.body.position.y = Math.sin(t*1.6)*0.02;
+
+    // token: active during each beat's first 0.8s, desk → agent
+    let tokVisible = false;
+    for(let i=0;i<AGENTS.length;i++){
+      const bs = beatStart(i), travel = clamp01((t-bs)/0.8);
+      if(t>=bs && t<bs+0.85){
+        const k = smooth(travel);
+        token.position.set(
+          THREE.MathUtils.lerp(0, cast[i].px, k),
+          THREE.MathUtils.lerp(0.5, 1.4, Math.sin(k*Math.PI)*0.5 + k*0.5),
+          THREE.MathUtils.lerp(0, cast[i].pz, k));
+        token.rotation.y = t*3; tokVisible = true;
+      }
+    }
+    token.visible = tokVisible;
+
+    let okCount = 0, badCount = 0;
+    cast.forEach((c, i) => {
+      const bs = beatStart(i);
+      c.h.group.scale.setScalar(grow || 0.001);
+      // arm-raise "doing the task" window
+      const work = Math.sin(Math.PI*clamp01((t-(bs+0.7))/1.1));
+      const raise = (t>bs+0.7 && t<bs+1.8) ? Math.max(0, work) : 0;
+      c.h.arms[0].rotation.x = -1.25*raise; c.h.arms[1].rotation.x = -1.25*raise;
+      c.h.body.position.y = Math.sin(t*1.7 + i)*0.015;
+
+      if(!c.rogue){
+        const done = t >= bs + 1.7;
+        c.ok.material.opacity = done ? smooth(clamp01((t-(bs+1.7))/0.35)) : 0;
+        c.lab.material.color.set(done ? 0x0f9d6e : 0x59626f);
+        c.h.skin.color.copy(c.base);
+        c.h.group.rotation.x = 0; c.h.group.position.y = 0;
+        c.badge.material.opacity = 1;
+        if(done) okCount++;
+      } else {
+        // rogue: work, then poisoned lunge → kill ring → severed
+        const lunge = clamp01((t-(ROGUE_T+1.3))/0.9);   // lean toward center
+        const sever = clamp01((t-(ROGUE_T+2.0))/0.8);    // dim + tilt back + sink
+        c.h.group.rotation.x = smooth(lunge)*0.55*(1-sever) - smooth(sever)*0.6;
+        c.h.group.position.y = -smooth(sever)*0.35;
+        c.h.skin.color.copy(c.base).lerp(grey, smooth(sever));
+        // kill ring pulse
+        const kr = clamp01((t-(ROGUE_T+1.7))/0.9);
+        killRing.material.opacity = (t>ROGUE_T+1.7 && t<ROGUE_T+2.8) ? (1-kr)*0.85 : 0;
+        killRing.scale.setScalar(1 + kr*2.4);
+        const failed = t >= ROGUE_T+2.0;
+        c.no.material.opacity = failed ? smooth(sever) : 0;
+        c.badge.material.opacity = 1 - smooth(sever);   // identity suspended on kill (dual-plane)
+        c.lab.material.color.set(failed ? 0xd11f4a : (t>ROGUE_T ? 0xc07a13 : 0x59626f));
+        if(failed) badCount++;
+      }
+    });
+
+    if(okCount !== booked){ booked = okCount; if(okEl) okEl.textContent = okCount + (okCount===1?' booked':' booked'); }
+    if(badEl) badEl.textContent = badCount + ' stopped';
+
+    setCap(t);
+
+    // slow cinematic orbit
+    const az = t*0.12 + 0.6;
+    camera.position.set(Math.cos(az)*8.4, 4.4 + Math.sin(t*0.25)*0.4, Math.sin(az)*8.4);
+    camera.lookAt(0, 1.1, 0);
+  }
+
+  function tick(){
+    const t = clock.getElapsedTime() % LOOP;
+    frame(t);
+    renderer.render(scene, camera);
+    // rAF when the tab is visible (smooth 60fps); timer fallback when hidden so the
+    // loop keeps real time and resumes seamlessly on refocus (Clock tracks wall-time).
+    if(document.visibilityState === 'hidden') setTimeout(tick, 80);
+    else requestAnimationFrame(tick);
+  }
+  if(reduce){ frame(LOOP-0.5); renderer.render(scene, camera); }
+  else tick();
+
+  addEventListener('resize', () => {
+    camera.aspect = W()/H(); camera.updateProjectionMatrix();
+    renderer.setSize(W(), H());
+  });
+})();
+</script>
+</body>
+</html>

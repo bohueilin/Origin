@@ -60,7 +60,8 @@ Safety is **loop-bound**: every extra proposal-per-minute is one more unsafe com
 | **Chronos UI** | `apps/chronos-ui` | Front-end for the reward-hack discovery / verifier-hardening engine. |
 | **FactoryCEO-TRM** | `services/factoryceo-trm` | Verifiable planner + repair for the readiness layer. |
 | **Cobra / Chronos** | `services/{cobra,chronos}` | Auto-harden RL verifiers against reward hacking (red-team → patch → measure). |
-| **RSI Gym** | `Floor design/` *(sibling repo)* | Floor → oracle-labeled gym → oracle-verified preference pairs → safety policy. |
+| **Site-to-Gym / RSI** | `site-to-gym/` *(now integrated)* | Floor → oracle-labeled gym → oracle-verified preference pairs → safety policy. Formerly the `Floor design` sibling repo; consolidated 2026-07-05 (see `MIGRATION_INVENTORY.md`). |
+| **Training Evidence** | `apps/origin-web/rlkit` | Reproducible **ScoreReceipts** — the nine-pillar RL-evidence layer (`env:verify`); design doc `apps/origin-web/docs/rl-platform-architecture.md`. |
 
 ## Quickstart
 

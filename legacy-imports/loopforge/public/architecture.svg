@@ -1,0 +1,83 @@
+<svg viewBox="0 0 1120 470" xmlns="http://www.w3.org/2000/svg" font-family="Inter, Segoe UI, system-ui, sans-serif" role="img" aria-labelledby="lf-title lf-desc">
+  <title id="lf-title">LoopForge architecture</title>
+  <desc id="lf-desc">A support-console screenshot is read by Gemma-4 vision, clustered and diagnosed, patched and simulated, judged by a 10-gate deterministic Guardian that auto-repairs red to green, and emitted as a fail-closed Evidence Pack — all on gemma-4-31b on Cerebras at 1299 tokens per second.</desc>
+  <rect x="0" y="0" width="1120" height="470" rx="14" fill="#eef2ed"/>
+
+  <!-- Title -->
+  <text x="34" y="52" font-size="32" font-weight="700" fill="#121613">LoopForge</text>
+  <text x="200" y="52" font-size="16" fill="#5c675f">— Enterprise Agent Repair OS</text>
+  <text x="34" y="78" font-size="13" fill="#5c675f">The model proposes; deterministic gates dispose.</text>
+  <!-- Model badge -->
+  <rect x="848" y="30" width="238" height="32" rx="16" fill="#ffffff" stroke="#cad4cc"/>
+  <circle cx="868" cy="46" r="4" fill="#0d9488"/>
+  <text x="880" y="50" font-size="13" fill="#202721" font-family="ui-monospace, monospace">gemma-4-31b · Cerebras</text>
+
+  <!-- Repair loop arc: Guardian -> Patch -->
+  <path d="M 781 196 C 781 150, 613 150, 613 196" fill="none" stroke="#b64e45" stroke-width="2" stroke-dasharray="5 4"/>
+  <polygon points="613,198 607,188 619,188" fill="#b64e45"/>
+  <rect x="612" y="132" width="170" height="24" rx="12" fill="#fdf6f4" stroke="#f0d2cd"/>
+  <text x="697" y="148" font-size="11.5" fill="#b64e45" text-anchor="middle" font-family="ui-monospace, monospace">auto-repair · RED → GREEN</text>
+
+  <!-- Pipeline arrows -->
+  <g stroke="#9eaba3" stroke-width="2" fill="#9eaba3">
+    <line x1="186" y1="246" x2="200" y2="246"/><polygon points="202,246 194,242 194,250"/>
+    <line x1="354" y1="246" x2="368" y2="246"/><polygon points="370,246 362,242 362,250"/>
+    <line x1="522" y1="246" x2="536" y2="246"/><polygon points="538,246 530,242 530,250"/>
+    <line x1="690" y1="246" x2="704" y2="246"/><polygon points="706,246 698,242 698,250"/>
+    <line x1="858" y1="246" x2="872" y2="246"/><polygon points="874,246 866,242 866,250"/>
+  </g>
+
+  <!-- Nodes -->
+  <!-- 1 Input -->
+  <g>
+    <rect x="34" y="200" width="152" height="92" rx="9" fill="#ffffff" stroke="#e3b48a"/>
+    <text x="50" y="228" font-size="14" font-weight="700" fill="#121613">Support console</text>
+    <text x="50" y="250" font-size="11.5" fill="#5c675f" font-family="ui-monospace, monospace">screenshot in</text>
+    <text x="50" y="276" font-size="11" fill="#c86f2e" font-family="ui-monospace, monospace">enterprise input</text>
+  </g>
+  <!-- 2 Vision -->
+  <g>
+    <rect x="202" y="200" width="152" height="92" rx="9" fill="#ffffff" stroke="#0d9488"/>
+    <text x="218" y="228" font-size="14" font-weight="700" fill="#121613">Gemma-4 Vision</text>
+    <text x="218" y="250" font-size="11.5" fill="#5c675f" font-family="ui-monospace, monospace">image → JSON</text>
+    <text x="218" y="276" font-size="11" fill="#0d9488" font-family="ui-monospace, monospace">270 img tok · 195ms</text>
+  </g>
+  <!-- 3 Diagnose -->
+  <g>
+    <rect x="370" y="200" width="152" height="92" rx="9" fill="#ffffff" stroke="#cad4cc"/>
+    <text x="386" y="228" font-size="14" font-weight="700" fill="#121613">Cluster + Diagnose</text>
+    <text x="386" y="250" font-size="11.5" fill="#5c675f" font-family="ui-monospace, monospace">root cause</text>
+    <text x="386" y="276" font-size="11" fill="#5c675f" font-family="ui-monospace, monospace">AOP logic gap</text>
+  </g>
+  <!-- 4 Patch -->
+  <g>
+    <rect x="538" y="200" width="152" height="92" rx="9" fill="#ffffff" stroke="#cad4cc"/>
+    <text x="554" y="228" font-size="14" font-weight="700" fill="#121613">Patch + Simulate</text>
+    <text x="554" y="250" font-size="11.5" fill="#5c675f" font-family="ui-monospace, monospace">semantic diff</text>
+    <text x="554" y="276" font-size="11" fill="#5c675f" font-family="ui-monospace, monospace">adversarial sims</text>
+  </g>
+  <!-- 5 Guardian (emphasized) -->
+  <g>
+    <rect x="706" y="194" width="152" height="104" rx="9" fill="#ccece6" stroke="#0d9488" stroke-width="2"/>
+    <text x="722" y="224" font-size="14.5" font-weight="700" fill="#06584f">Guardian</text>
+    <text x="722" y="246" font-size="11.5" fill="#06584f" font-family="ui-monospace, monospace">10 fact-based gates</text>
+    <text x="722" y="270" font-size="11" fill="#06584f" font-family="ui-monospace, monospace">asserts on the action</text>
+    <text x="722" y="288" font-size="11" fill="#06584f" font-family="ui-monospace, monospace">not the model label</text>
+  </g>
+  <!-- 6 Evidence -->
+  <g>
+    <rect x="874" y="200" width="150" height="92" rx="9" fill="#ffffff" stroke="#2f8f5b"/>
+    <text x="890" y="228" font-size="14" font-weight="700" fill="#121613">Evidence Pack</text>
+    <text x="890" y="250" font-size="11.5" fill="#5c675f" font-family="ui-monospace, monospace">approval-ready</text>
+    <text x="890" y="276" font-size="11" fill="#2f8f5b" font-family="ui-monospace, monospace">fail-closed</text>
+  </g>
+
+  <!-- Speed band -->
+  <rect x="34" y="338" width="990" height="92" rx="11" fill="#ffffff" stroke="#0d9488"/>
+  <text x="56" y="372" font-size="17" font-weight="700" fill="#121613">Why Cerebras: verification is free.</text>
+  <text x="56" y="398" font-size="13.5" fill="#5c675f">The full diagnose → patch → simulate → verify → repair loop runs in <tspan fill="#0d9488" font-weight="700">1.38s</tspan> vs <tspan fill="#b64e45" font-weight="700">9.0s</tspan> on a GPU baseline — so the Guardian runs every cycle.</text>
+  <text x="56" y="419" font-size="12" fill="#5c675f" font-family="ui-monospace, monospace">1,299 tok/s vs OpenAI gpt-oss-120b ~200 (6.5×) · DeepSeek-V4 ~20 (65×) — gemma-4-31b is Cerebras-only; speed is silicon, not model</text>
+  <rect x="846" y="358" width="156" height="54" rx="9" fill="#ccece6"/>
+  <text x="924" y="386" font-size="26" font-weight="700" fill="#06584f" text-anchor="middle">6.5×</text>
+  <text x="924" y="404" font-size="11" fill="#06584f" text-anchor="middle" font-family="ui-monospace, monospace">faster</text>
+</svg>

@@ -1,0 +1,70 @@
+[
+  {
+    "incidentId": "INC-1027",
+    "trace": [
+      {
+        "step": "classify",
+        "tool": "intent.classify",
+        "status": "ok",
+        "note": "Mapped to generic refund request."
+      },
+      {
+        "step": "route",
+        "tool": "workflow.escalate",
+        "status": "ok",
+        "note": "Escalated because no refund was found."
+      }
+    ]
+  },
+  {
+    "incidentId": "INC-1031",
+    "trace": [
+      {
+        "step": "identity",
+        "tool": "identity.verify",
+        "status": "ok",
+        "note": "Customer verified."
+      },
+      {
+        "step": "route",
+        "tool": "workflow.escalate",
+        "status": "ok",
+        "note": "Dispute eligibility tool was never selected."
+      }
+    ]
+  },
+  {
+    "incidentId": "INC-1038",
+    "trace": [
+      {
+        "step": "ledger",
+        "tool": "ledger.lookupTransaction",
+        "status": "ok",
+        "note": "Returned pending authorization."
+      },
+      {
+        "step": "case",
+        "tool": "workflow.escalate",
+        "status": "ok",
+        "note": "Escalated instead of explaining pending status."
+      }
+    ]
+  },
+  {
+    "incidentId": "INC-1044",
+    "trace": [
+      {
+        "step": "classify",
+        "tool": "intent.classify",
+        "status": "ok",
+        "note": "Fraud language present but not routed."
+      },
+      {
+        "step": "route",
+        "tool": "refund.lookup",
+        "status": "ok",
+        "note": "Stayed in refund workflow."
+      }
+    ]
+  }
+]

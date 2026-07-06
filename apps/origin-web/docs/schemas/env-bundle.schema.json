@@ -12,6 +12,7 @@
     "seed_data",
     "tools",
     "tools_digest",
+    "registry_digest",
     "policies",
     "policies_digest",
     "verifier",
@@ -60,14 +61,15 @@
       "description": "Each tool's input schema, content-addressed by schema_digest. Full schemas live in the committed sidecar docs/examples/warehouse.tools.schema.json. scope + rate_limit are added by the MCP tool registry (P3) onto these same entries.",
       "items": {
         "type": "object",
-        "required": ["name", "schema_digest"],
+        "required": ["name", "schema_digest", "scope", "rate_limit"],
         "properties": {
           "name": { "type": "string" },
           "schema_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
           "version": { "type": "string" },
-          "scope": { "type": "string" },
+          "scope": { "type": "string", "description": "P3 authorization scope (warehouse.sense|actuate|terminal)." },
           "rate_limit": {
             "type": "object",
+            "required": ["capacity", "refill_per_step"],
             "properties": { "capacity": { "type": "integer" }, "refill_per_step": { "type": "number" } }
           }
         }
@@ -76,7 +78,12 @@
     "tools_digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
-      "description": "sha256(canonical(tools sorted by name)) — the tool-surface rollup, folded into env_bundle_digest."
+      "description": "sha256(canonical(tools sorted by name)) — the full tool-surface rollup, folded into env_bundle_digest."
+    },
+    "registry_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "P3: sha256(canonical of the (name, scope, rate_limit) authz projection) — the MCP tool-registry authorization, bound to TOOL_REGISTRY_VERSION."
     },
     "policies": {
       "type": "array",

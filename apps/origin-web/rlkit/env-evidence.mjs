@@ -15,7 +15,7 @@
 // =============================================================================
 
 import { createHash } from 'node:crypto'
-import { toolsDigest, policiesDigest } from './env-manifest.mjs'
+import { toolsDigest, policiesDigest, registryDigest } from './env-manifest.mjs'
 
 export const GENESIS = '0'.repeat(64) // null hash — chain anchor
 
@@ -136,8 +136,13 @@ export function verifyChain(trace) {
 }
 
 // ── the recorded actions, extracted from action.applied events (in order).
+//    ONLY action.applied enters the score-authoritative trace — tool.call/tool.result
+//    (P3) and cost events (P6) are evidence, never score inputs (Goodhart guard).
 export const recordedActions = (trace) =>
   (trace.events || []).filter((e) => e.event_type === 'action.applied').map((e) => e.payload.action)
+
+// ── the recorded tool calls (P3 evidence): every authorized-or-denied MCP call.
+export const recordedToolCalls = (trace) => (trace.events || []).filter((e) => e.event_type === 'tool.call')
 
 // ── build a ScoreReceipt from a scoring result. `rollout` is a WarehouseRollout-
 //    shaped object: { reward, passed, category, falseAccept, falseReject }.
@@ -210,6 +215,12 @@ export function verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn }) 
       if (policiesDigest(bundle.policies || []) !== bundle.policies_digest)
         return bad(4, 'policies_digest inconsistent with the pinned policies[]')
       ok(`policies_digest recomputes from the pinned policy set (${(bundle.policies || []).length} policies)`)
+    }
+    // P3 — the MCP tool-registry authorization (scopes + rate limits) is pinned.
+    if (bundle.registry_digest != null) {
+      if (registryDigest(bundle.tools || []) !== bundle.registry_digest)
+        return bad(4, 'registry_digest inconsistent with the pinned tool authorization (scope/rate_limit)')
+      ok('registry_digest recomputes from the pinned tool authorization')
     }
   }
 

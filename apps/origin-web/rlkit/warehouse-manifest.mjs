@@ -14,7 +14,8 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { WAREHOUSE_TOOLS, WAREHOUSE_ACTIONS } from '../src/warehouse.ts'
-import { buildToolSchemas, toBundleTools, toolsDigest, buildPolicies, policiesDigest } from './env-manifest.mjs'
+import { buildToolSchemas, toBundleTools, toolsDigest, buildPolicies, policiesDigest, registryDigest } from './env-manifest.mjs'
+import { warehouseToolAuthz } from './warehouse-tools.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const readSrc = (rel) => readFileSync(resolve(HERE, rel), 'utf8')
@@ -35,13 +36,19 @@ export function warehouseToolSchemas() {
   return buildToolSchemas(warehouseToolSpecs())
 }
 
-// Bundle-shaped tool entries (digest, not payload) — what goes into bundle.tools[].
+// Bundle-shaped tool entries — {name, schema_digest, version} (P1) + {scope, rate_limit}
+// (P3) on the SAME entries. This one array is both the P1 tool pin and the P3 registry.
 export function warehouseBundleTools() {
-  return toBundleTools(warehouseToolSchemas())
+  return toBundleTools(warehouseToolSchemas()).map((t) => ({ ...t, ...warehouseToolAuthz(t.name) }))
 }
 
 export function warehouseToolsDigest() {
   return toolsDigest(warehouseBundleTools())
+}
+
+// The authorization-projection rollup (P3), pinned as bundle.registry_digest.
+export function warehouseRegistryDigest() {
+  return registryDigest(warehouseBundleTools())
 }
 
 export function warehousePolicies() {

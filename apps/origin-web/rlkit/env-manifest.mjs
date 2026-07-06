@@ -70,3 +70,15 @@ export function policiesDigest(policies) {
   const sorted = [...policies].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
   return sha256(canonical(sorted))
 }
+
+// ── registry_digest (P3): the AUTHORIZATION projection of the tool surface —
+//    (name, scope, rate_limit) only, sorted by name. Pinned SEPARATELY from
+//    tools_digest (which covers the full surface incl. schema) and bound to
+//    TOOL_REGISTRY_VERSION, so a change to the scope map / rate limits is a
+//    governance event, not a silent code change.
+export function registryDigest(tools) {
+  const authz = tools
+    .map((t) => ({ name: t.name, scope: t.scope, rate_limit: t.rate_limit }))
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+  return sha256(canonical(authz))
+}

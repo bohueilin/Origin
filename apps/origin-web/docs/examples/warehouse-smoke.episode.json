@@ -1,7 +1,7 @@
 {
   "trace_schema_version": "1.0.0",
   "episode_id": "ep_warehouse-smoke_wh-l1-01",
-  "env_bundle_digest": "32f5dcd2978dc5e3ce87a2c3ac932d83fd315a127cbaa8f48e0543ffa873be07",
+  "env_bundle_digest": "4a3b2110d624a487a817e6624a42e6db682575c84cb63a4325c3ba72e6e6bd1a",
   "policy_version": "reference-oracle@warehouse-2026-06-20.1",
   "verifier_version": "1.0.0",
   "seed": 1101,

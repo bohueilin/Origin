@@ -20,6 +20,13 @@ export const REWARD_MODEL_VERSION = '1.0.0'
 /** Behavior version of the license ladder + gate (src/license.ts). */
 export const LICENSE_POLICY_VERSION = '1.0.0'
 
+/** Behavior version of the MCP tool registry authorization (scope map + token bucket) — rlkit/tool-registry.mjs (P3). */
+export const TOOL_REGISTRY_VERSION = '1.0.0'
+/** Behavior version of the curriculum band registry + frontier sampler + promotion policy — src/curriculum.ts (P8). */
+export const CURRICULUM_POLICY_VERSION = '1.0.0'
+/** Behavior version of the sandbox rate model (cost_model rates for the Daytona/in-process tiers) — rlkit/cost-ledger.mjs (P4/P6). */
+export const DAYTONA_RATE_VERSION = '1.0.0'
+
 /** Schema version of the persisted audit row (bump when columns change). */
 export const ROW_SCHEMA_VERSION = '1.0.0'
 

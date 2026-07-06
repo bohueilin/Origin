@@ -46,10 +46,20 @@ export const recordedActionsDigest = (actions) => sha256(canonical(actions))
 // ── EpisodeTrace: hash-chain a list of step payloads and append a sealing event.
 //    header: { trace_schema_version, episode_id, env_bundle_digest, policy_version,
 //              verifier_version, seed, task }
-//    steps:  [{ event_type, step_index?, payload? }]
-export function chainEpisode(header, steps) {
+//    step:   { event_type, step_index?, payload? }
+//
+// openEpisode is the ONE hashing implementation. `chainEpisode` (one-shot) and the
+// resumable checkpoint path (rlkit/checkpoint.mjs, P7) both fold through it, so an
+// interrupted-then-resumed episode reproduces the byte-identical final_digest of the
+// uninterrupted run. Do not duplicate this hashing anywhere.
+export function openEpisode(header) {
   let prev = GENESIS
-  const events = steps.map((s, i) => {
+  const events = []
+  let sealed = false
+
+  function appendStep(s) {
+    if (sealed) throw new Error('openEpisode: cannot appendStep after seal()')
+    const i = events.length
     const payload = {
       seq: i + 1,
       event_id: `evt_${String(i + 1).padStart(3, '0')}`,
@@ -61,27 +71,49 @@ export function chainEpisode(header, steps) {
     const event_hash = sha256(canonical({ ...payload, prev_hash: prev }))
     const out = { ...payload, prev_hash: prev, event_hash }
     prev = event_hash
+    events.push(out)
     return out
-  })
-  // sealing event — commits the chain root (like TR-A002's evidence.digest_sealed)
-  const sealPayload = {
-    seq: events.length + 1,
-    event_id: `evt_${String(events.length + 1).padStart(3, '0')}`,
-    event_type: 'episode.sealed',
-    step_index: null,
-    payload: null,
-    payload_digest: null,
-    chain_root: prev,
   }
-  const seal_hash = sha256(canonical({ ...sealPayload, prev_hash: prev }))
-  events.push({ ...sealPayload, prev_hash: prev, event_hash: seal_hash })
+
+  function seal() {
+    if (sealed) throw new Error('openEpisode: already sealed')
+    // sealing event — commits the chain root (like TR-A002's evidence.digest_sealed)
+    const sealPayload = {
+      seq: events.length + 1,
+      event_id: `evt_${String(events.length + 1).padStart(3, '0')}`,
+      event_type: 'episode.sealed',
+      step_index: null,
+      payload: null,
+      payload_digest: null,
+      chain_root: prev,
+    }
+    const seal_hash = sha256(canonical({ ...sealPayload, prev_hash: prev }))
+    events.push({ ...sealPayload, prev_hash: prev, event_hash: seal_hash })
+    sealed = true
+    return {
+      ...header,
+      event_count: events.length,
+      final_digest: seal_hash,
+      log_digest: sha256(canonical(events.map((e) => e.event_hash))),
+      events,
+    }
+  }
+
   return {
-    ...header,
-    event_count: events.length,
-    final_digest: seal_hash,
-    log_digest: sha256(canonical(events.map((e) => e.event_hash))),
-    events,
+    appendStep,
+    seal,
+    // chain tip event_hash after the last appended step (the resume anchor, P7)
+    get tip() { return prev },
+    // number of appended (non-seal) events so far
+    get length() { return events.length },
+    get sealed() { return sealed },
   }
+}
+
+export function chainEpisode(header, steps) {
+  const b = openEpisode(header)
+  for (const s of steps) b.appendStep(s)
+  return b.seal()
 }
 
 // ── verify the chain: re-derive every event_hash + prev_hash link + the seal.

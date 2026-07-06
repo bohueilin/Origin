@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { bfsOracle, verifyWarehouseRollout, warehouseTasks, WAREHOUSE_VERSION } from '../src/warehouse.ts'
 import { computeLicenseFromVerdicts } from '../src/license.ts'
 import { VERIFIER_VERSION, REWARD_MODEL_VERSION } from '../server/evalVersions.ts'
-import { bundleDigest, chainEpisode, buildScoreReceipt, verifyEpisode } from './env-evidence.mjs'
+import { bundleDigest, chainEpisode, openEpisode, buildScoreReceipt, verifyEpisode } from './env-evidence.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const scoreFn = (task, actions) => verifyWarehouseRollout(task, actions, 'test')
@@ -120,5 +120,57 @@ describe('committed example artifacts', () => {
     for (const key of schema.required) expect(bundle, `missing required: ${key}`).toHaveProperty(key)
     expect(bundle.env_bundle_digest).toMatch(/^[0-9a-f]{64}$/)
     expect(bundleDigest(bundle)).toBe(bundle.env_bundle_digest) // content identity holds
+  })
+})
+
+// ── Step 0: the chainEpisode → openEpisode/appendStep/seal refactor must not move a
+//    single byte. These are the characterization guard for the shared hashing fold.
+describe('openEpisode fold — byte-identical to chainEpisode + the committed episode', () => {
+  const load = (p: string) => JSON.parse(readFileSync(resolve(HERE, '../docs/examples', p), 'utf8'))
+  // reconstruct the input steps from a recorded episode (drop the sealing event).
+  // `ep` is JSON-loaded (any), so the inline callbacks type as any exactly like the
+  // committed-artifact tests above — no explicit annotations needed.
+  const stepsOf = (ep) =>
+    ep.events
+      .filter((e) => e.event_type !== 'episode.sealed')
+      .map((e) => ({ event_type: e.event_type, step_index: e.step_index ?? undefined, payload: e.payload ?? undefined }))
+  const headerOf = (ep) => ({
+    trace_schema_version: ep.trace_schema_version,
+    episode_id: ep.episode_id,
+    env_bundle_digest: ep.env_bundle_digest,
+    policy_version: ep.policy_version,
+    verifier_version: ep.verifier_version,
+    seed: ep.seed,
+    task: ep.task,
+  })
+
+  it('chainEpisode reproduces the committed episode byte-for-byte', () => {
+    const committed = load('warehouse-smoke.episode.json')
+    const rebuilt = chainEpisode(headerOf(committed), stepsOf(committed))
+    expect(rebuilt.final_digest).toBe(committed.final_digest)
+    expect(rebuilt.log_digest).toBe(committed.log_digest)
+    expect(rebuilt.event_count).toBe(committed.event_count)
+    expect(rebuilt.events).toEqual(committed.events)
+  })
+
+  it('the openEpisode builder equals the chainEpisode one-shot for the same steps', () => {
+    const committed = load('warehouse-smoke.episode.json')
+    const header = headerOf(committed)
+    const steps = stepsOf(committed)
+    const b = openEpisode(header)
+    for (const s of steps) b.appendStep(s)
+    expect(b.seal()).toEqual(chainEpisode(header, steps))
+  })
+
+  it('the builder exposes a usable tip + length and refuses append-after-seal', () => {
+    const b = openEpisode({ episode_id: 'ep_x' })
+    expect(b.length).toBe(0)
+    const e1 = b.appendStep({ event_type: 'episode.started', payload: { a: 1 } })
+    expect(b.length).toBe(1)
+    expect(b.tip).toBe(e1.event_hash) // tip == last appended event_hash (the resume anchor, P7)
+    b.seal()
+    expect(b.sealed).toBe(true)
+    expect(() => b.appendStep({ event_type: 'action.applied' })).toThrow()
+    expect(() => b.seal()).toThrow()
   })
 })

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://origin-physical-ai.pages.dev/docs/schemas/env-promotion-receipt.schema.json",
+  "title": "Origin Training Evidence — EnvironmentPromotionReceipt (P9)",
+  "description": "Promotes an ENVIRONMENT (env_bundle_digest) through authoring → validation → production. Distinct from policy promotion. EnvStatus lives here, NEVER in env_bundle_digest. 'production' is not a correctness or safety blessing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_schema_version",
+    "kind",
+    "env_bundle_digest",
+    "from_status",
+    "to_status",
+    "gate_results",
+    "approver",
+    "capability",
+    "frozen",
+    "receipt_digest"
+  ],
+  "properties": {
+    "receipt_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "kind": { "const": "environment_promotion" },
+    "env_bundle_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "from_status": { "enum": ["authoring", "validation", "production"] },
+    "to_status": { "enum": ["authoring", "validation", "production"] },
+    "gate_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "ok"],
+        "properties": {
+          "id": { "type": "string" },
+          "ok": { "type": "boolean" },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "approver": { "type": "string" },
+    "capability": { "const": "env.promote" },
+    "rollback_target": { "type": ["string", "null"] },
+    "frozen": { "type": "boolean" },
+    "frozen_note": { "type": "string" },
+    "receipt_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

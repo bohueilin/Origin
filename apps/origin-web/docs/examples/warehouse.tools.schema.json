@@ -1,0 +1,161 @@
+{
+  "schema_version": "1.0.0",
+  "name": "warehouse-gym",
+  "tools": [
+    {
+      "name": "observe",
+      "version": "1.0.0",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "observe"
+            ]
+          }
+        }
+      },
+      "schema_digest": "953e5e3f394f9e1a94e4897d694142e2e2af87e74c7b0de8cddc280f51220981"
+    },
+    {
+      "name": "scan",
+      "version": "1.0.0",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "scan"
+            ]
+          }
+        }
+      },
+      "schema_digest": "7a7edb6fd87acc5fdd0f0b0b9ab3016aed49f0ebc273e622d5c94d4668c5d5f1"
+    },
+    {
+      "name": "move",
+      "version": "1.0.0",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "move:north",
+              "move:east",
+              "move:south",
+              "move:west"
+            ]
+          }
+        }
+      },
+      "schema_digest": "c4cafccb852474adc40baa0e3d0a86746c794563ccb545dc31dc9189471dd8d5"
+    },
+    {
+      "name": "pick",
+      "version": "1.0.0",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "pick"
+            ]
+          }
+        }
+      },
+      "schema_digest": "7f25d01ab66e0afec03a6a46a2acfce1852227676263611dc0cf4690b9816045"
+    },
+    {
+      "name": "drop",
+      "version": "1.0.0",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "drop"
+            ]
+          }
+        }
+      },
+      "schema_digest": "aa421e44f4565d617c834db548820c01590da5bdc5dd02b5f6b720c664a15c96"
+    },
+    {
+      "name": "finish",
+      "version": "1.0.0",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "finish"
+            ]
+          }
+        }
+      },
+      "schema_digest": "30e5f5d36f27a614633258735a9087ec5b25402236fa8826b6e74602a7e08951"
+    },
+    {
+      "name": "escalate",
+      "version": "1.0.0",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "escalate"
+            ]
+          }
+        }
+      },
+      "schema_digest": "be0709d0fc96faa334322da60d62be4e8b3aa25d682c748a8f1e10c2662160be"
+    },
+    {
+      "name": "refuse",
+      "version": "1.0.0",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "refuse"
+            ]
+          }
+        }
+      },
+      "schema_digest": "0a25db23cf9c851857a68a4c44549fe250d74b99f465c90f051f5a22828f94aa"
+    }
+  ]
+}

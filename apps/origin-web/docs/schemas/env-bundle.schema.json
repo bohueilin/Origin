@@ -10,6 +10,10 @@
     "name",
     "runtime",
     "seed_data",
+    "tools",
+    "tools_digest",
+    "policies",
+    "policies_digest",
     "verifier",
     "scenario_registry_version",
     "license_policy_version",
@@ -44,23 +48,47 @@
     },
     "tools": {
       "type": "array",
+      "description": "Each tool's input schema, content-addressed by schema_digest. Full schemas live in the committed sidecar docs/examples/warehouse.tools.schema.json. scope + rate_limit are added by the MCP tool registry (P3) onto these same entries.",
       "items": {
         "type": "object",
-        "required": ["name", "schema"],
+        "required": ["name", "schema_digest"],
         "properties": {
           "name": { "type": "string" },
-          "schema": { "type": "string" },
-          "version": { "type": "string" }
+          "schema_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "version": { "type": "string" },
+          "scope": { "type": "string" },
+          "rate_limit": {
+            "type": "object",
+            "properties": { "capacity": { "type": "integer" }, "refill_per_step": { "type": "number" } }
+          }
         }
       }
     },
+    "tools_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "sha256(canonical(tools sorted by name)) — the tool-surface rollup, folded into env_bundle_digest."
+    },
     "policies": {
       "type": "array",
+      "description": "Content-addressed policies (safety gate, license ladder). Each digest binds a human-readable statement to the sha256 of the source code that implements it.",
       "items": {
         "type": "object",
-        "required": ["id", "digest"],
-        "properties": { "id": { "type": "string" }, "digest": { "type": "string" } }
+        "required": ["id", "kind", "digest"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "type": "string" },
+          "statement": { "type": "string" },
+          "source_ref": { "type": "string" },
+          "source_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
       }
+    },
+    "policies_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "sha256(canonical(policies sorted by id)) — the policy-set rollup, folded into env_bundle_digest."
     },
     "verifier": {
       "type": "object",

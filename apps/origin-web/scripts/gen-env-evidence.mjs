@@ -21,6 +21,8 @@ import {
   LICENSE_POLICY_VERSION, ROW_SCHEMA_VERSION,
 } from '../server/evalVersions.ts'
 import { canonical, sha256, bundleDigest, chainEpisode, buildScoreReceipt } from '../rlkit/env-evidence.mjs'
+import { toolsDigest, policiesDigest } from '../rlkit/env-manifest.mjs'
+import { warehouseToolSchemas, warehouseBundleTools, warehousePolicies } from '../rlkit/warehouse-manifest.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = resolve(HERE, '../docs/examples')
@@ -39,14 +41,20 @@ const license = computeLicenseFromVerdicts([
 //     is added at the OCI/ORAS boundary in P1). reward_spec = hash of the verifier
 //     source → "reward as code, code as artifact".
 const verifierSrc = readFileSync(resolve(HERE, '../src/warehouse.ts'), 'utf8')
+// P1 — content-address the env surface: tool schemas + safety/license policies.
+const toolSchemas = warehouseToolSchemas() // full schemas → written to the sidecar
+const tools = warehouseBundleTools() // {name, schema_digest, version} → into the bundle
+const policies = warehousePolicies() // {id, kind, statement, source_ref, source_digest, digest}
 const bundle = {
   schema_version: '1.0.0',
   name: 'warehouse-gym',
   created_at: FIXED_TS,
   runtime: { kind: 'in_process', code_ref: `src/warehouse.ts@warehouse-${WAREHOUSE_VERSION}` },
   seed_data: { dataset: sha256(canonical(task)), seed_policy: 'fixed:task.seed' },
-  tools: [],
-  policies: [],
+  tools,
+  tools_digest: toolsDigest(tools),
+  policies,
+  policies_digest: policiesDigest(policies),
   verifier: {
     verifier_version: VERIFIER_VERSION,
     reward_model_version: REWARD_MODEL_VERSION,
@@ -98,13 +106,17 @@ const receipt = buildScoreReceipt({
 })
 
 mkdirSync(OUT, { recursive: true })
+// The full tool schemas (sidecar): each tools[].schema_digest = sha256(canonical(schema here)).
+const toolsSidecar = { schema_version: '1.0.0', name: 'warehouse-gym', tools: toolSchemas }
+writeFileSync(resolve(OUT, 'warehouse.tools.schema.json'), JSON.stringify(toolsSidecar, null, 2) + '\n')
 writeFileSync(resolve(OUT, 'warehouse.env-bundle.lock.json'), JSON.stringify(bundle, null, 2) + '\n')
 writeFileSync(resolve(OUT, 'warehouse-smoke.episode.json'), JSON.stringify(episode, null, 2) + '\n')
 writeFileSync(resolve(OUT, 'warehouse-smoke.score-receipt.json'), JSON.stringify(receipt, null, 2) + '\n')
 
-console.log('wrote docs/examples/{warehouse.env-bundle.lock,warehouse-smoke.episode,warehouse-smoke.score-receipt}.json')
+console.log('wrote docs/examples/{warehouse.tools.schema,warehouse.env-bundle.lock,warehouse-smoke.episode,warehouse-smoke.score-receipt}.json')
 console.log(`  task           : ${task.id} (${task.level}, oracle=${oracle.label})`)
 console.log(`  actions        : ${actions.length}`)
+console.log(`  tools/policies : ${tools.length} tools · ${policies.length} policies`)
 console.log(`  reward         : ${rollout.reward} · license ${license.level.id} · category ${rollout.category}`)
 console.log(`  env_bundle_dig : ${bundle.env_bundle_digest.slice(0, 16)}…`)
 console.log(`  episode digest : ${episode.final_digest.slice(0, 16)}…`)

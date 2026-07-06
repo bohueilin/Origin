@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url'
 import { verifyWarehouseRollout } from '../src/warehouse.ts'
 import { computeLicenseFromVerdicts } from '../src/license.ts'
 import { verifyEpisode } from '../rlkit/env-evidence.mjs'
+import { warehouseToolsDigest, warehousePoliciesDigest } from '../rlkit/warehouse-manifest.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')
@@ -44,12 +45,31 @@ const licenseFn = (verdicts) => computeLicenseFromVerdicts(verdicts).level.id
 const { code, checks } = verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn })
 for (const [status, msg] of checks) console.log(`${status}  ${msg}`)
 
+// P1 — manifest-vs-code drift: re-derive the tool surface + policy set from the LIVE
+// warehouse code and compare to what the bundle pinned. This catches the case the
+// env_bundle_digest alone cannot: the environment code changed but the bundle wasn't
+// regenerated (the pinned manifest is stale relative to what would actually run).
+let driftCode = code
+if (code === 0 && bundle.tools_digest != null) {
+  const liveTools = warehouseToolsDigest()
+  const livePolicies = warehousePoliciesDigest()
+  if (liveTools !== bundle.tools_digest) {
+    console.log('FAIL  tool surface drifted — the live warehouse tools do not match the pinned tools_digest')
+    driftCode = 4
+  } else if (livePolicies !== bundle.policies_digest) {
+    console.log('FAIL  policy set drifted — the live safety/license policies do not match the pinned policies_digest')
+    driftCode = 4
+  } else {
+    console.log('PASS  tools + policies re-derive from the live environment code (no manifest drift)')
+  }
+}
+
 console.log(
-  code === 0
+  driftCode === 0
     ? `\nVERIFIED — the score is reproducible under verifier ${receipt.verifier_version} ` +
         `(reward ${receipt.reward}, digest ${receipt.receipt_digest.slice(0, 12)}…). ` +
         `This is reproducibility under this verifier, not a claim the score is "correct".`
-    : `\nFAILED (exit ${code}) — ` +
-        { 2: 'episode chain tampered.', 3: 'reward / receipt mismatch → reward-definition review.', 4: 'verifier / bundle drift → re-generate + review.' }[code],
+    : `\nFAILED (exit ${driftCode}) — ` +
+        { 2: 'episode chain tampered.', 3: 'reward / receipt mismatch → reward-definition review.', 4: 'verifier / bundle / manifest drift → re-generate + review.' }[driftCode],
 )
-process.exit(code)
+process.exit(driftCode)

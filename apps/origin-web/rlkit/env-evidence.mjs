@@ -15,6 +15,7 @@
 // =============================================================================
 
 import { createHash } from 'node:crypto'
+import { toolsDigest, policiesDigest } from './env-manifest.mjs'
 
 export const GENESIS = '0'.repeat(64) // null hash — chain anchor
 
@@ -187,6 +188,20 @@ export function verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn }) 
     if (bundle.verifier?.verifier_version !== receipt.verifier_version)
       return bad(4, `verifier_version drift (bundle ${bundle.verifier?.verifier_version} != receipt ${receipt.verifier_version})`)
     ok(`verifier_version pinned (${receipt.verifier_version})`)
+    // P1 — the pinned tool surface + policy set are content-addressed sub-artifacts.
+    // Recompute their rollups from the bundle entries; a rollup that disagrees with
+    // its own tools[]/policies[] is drift (exit 4). (Any edit to tools[]/policies[]
+    // also moves env_bundle_digest above; this is the more specific diagnostic.)
+    if (bundle.tools_digest != null) {
+      if (toolsDigest(bundle.tools || []) !== bundle.tools_digest)
+        return bad(4, 'tools_digest inconsistent with the pinned tools[]')
+      ok(`tools_digest recomputes from the pinned tool set (${(bundle.tools || []).length} tools)`)
+    }
+    if (bundle.policies_digest != null) {
+      if (policiesDigest(bundle.policies || []) !== bundle.policies_digest)
+        return bad(4, 'policies_digest inconsistent with the pinned policies[]')
+      ok(`policies_digest recomputes from the pinned policy set (${(bundle.policies || []).length} policies)`)
+    }
   }
 
   // 3 — recorded actions bind the receipt

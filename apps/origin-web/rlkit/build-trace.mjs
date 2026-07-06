@@ -9,7 +9,8 @@
 // the ScoreReceipt (evidence), and only action.applied events enter recordedActions().
 // =============================================================================
 
-import { chainEpisode, buildScoreReceipt } from './env-evidence.mjs'
+import { chainEpisode, buildScoreReceipt, canonical } from './env-evidence.mjs'
+import { buildCostLedger } from './cost-ledger.mjs'
 
 export function buildEpisodeAndReceipt({
   idPrefix,
@@ -22,6 +23,8 @@ export function buildEpisodeAndReceipt({
   verifierVersion,
   rewardModelVersion,
   licenseLevel,
+  costModel, // P6: when present, a CostLedger is folded into the receipt
+  sandboxSeconds, // = executor.meter().sandbox_seconds; defaults to the applied step count
 }) {
   const steps = [
     { event_type: 'episode.started', payload: { task_id: task.id, level: task.level, seed: task.seed, oracle_label: oracleLabel } },
@@ -41,12 +44,27 @@ export function buildEpisodeAndReceipt({
     },
     steps,
   )
+  // P6 — the cost ledger (deterministic: sandbox_seconds = applied steps, tokens = 0
+  // for the deterministic gym, storage = canonical({task,actions}) byte length).
+  let cost
+  if (costModel) {
+    const storage_bytes = Buffer.byteLength(canonical({ task, actions }), 'utf8')
+    cost = buildCostLedger({
+      sandbox_seconds: sandboxSeconds ?? actions.length,
+      tokens: { in: 0, out: 0 },
+      storage_bytes,
+      verifier_ms: 0,
+      reward: rollout.reward,
+      costModel,
+    })
+  }
   const receipt = buildScoreReceipt({
     episode,
     envBundleDigest,
     rollout,
     versions: { verifier_version: verifierVersion, reward_model_version: rewardModelVersion },
     licenseLevel,
+    cost,
   })
   return { episode, receipt }
 }

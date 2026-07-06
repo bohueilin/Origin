@@ -15,6 +15,8 @@
     "registry_digest",
     "policies",
     "policies_digest",
+    "cost_model",
+    "rate_digest",
     "verifier",
     "scenario_registry_version",
     "license_policy_version",
@@ -105,6 +107,24 @@
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
       "description": "sha256(canonical(policies sorted by id)) — the policy-set rollup, folded into env_bundle_digest."
+    },
+    "cost_model": {
+      "type": "object",
+      "description": "P6: pinned cost rates (per the DAYTONA_RATE_VERSION). reward_per_dollar is attribution-only and never feeds the license/safety gate.",
+      "required": ["token_in_per_m", "token_out_per_m", "sandbox_usd_per_second", "storage_usd_per_byte"],
+      "properties": {
+        "rate_version": { "type": "string" },
+        "token_in_per_m": { "type": "number" },
+        "token_out_per_m": { "type": "number" },
+        "sandbox_usd_per_second": { "type": "number" },
+        "verifier_usd_per_ms": { "type": "number" },
+        "storage_usd_per_byte": { "type": "number" }
+      }
+    },
+    "rate_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "P6: sha256(canonical(cost_model)) — a rate change is a governance event (drift → exit 4)."
     },
     "verifier": {
       "type": "object",

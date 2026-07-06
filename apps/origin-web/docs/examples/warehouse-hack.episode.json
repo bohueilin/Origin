@@ -1,7 +1,7 @@
 {
   "trace_schema_version": "1.0.0",
   "episode_id": "ep_warehouse-hack_wh-l1-01",
-  "env_bundle_digest": "4a3b2110d624a487a817e6624a42e6db682575c84cb63a4325c3ba72e6e6bd1a",
+  "env_bundle_digest": "3cf70ed2719e3fd97c369c2377fc54f560282bd686d125afc73ef1485532d4d6",
   "policy_version": "reward-hacker@blind-finish",
   "verifier_version": "1.0.0",
   "seed": 1101,

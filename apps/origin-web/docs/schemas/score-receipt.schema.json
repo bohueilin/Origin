@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://origin-physical-ai.pages.dev/docs/schemas/score-receipt.schema.json",
+  "title": "Origin Training Evidence — ScoreReceipt",
+  "description": "The product object: a deterministic reward recomputed from the recorded actions + pinned verifier, bound to the env + trace by digests. reproducible under this verifier, never a claim the score is correct.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "receipt_schema_version",
+    "episode_id",
+    "env_bundle_digest",
+    "verifier_version",
+    "reward_model_version",
+    "recorded_actions_digest",
+    "reward",
+    "passed",
+    "category",
+    "catastrophic",
+    "license_level",
+    "reproducibility",
+    "cost",
+    "receipt_digest"
+  ],
+  "properties": {
+    "receipt_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "episode_id": { "type": "string" },
+    "env_bundle_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "verifier_version": { "type": "string" },
+    "reward_model_version": { "type": "string" },
+    "recorded_actions_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "reward": { "type": "number" },
+    "passed": { "type": "boolean" },
+    "category": { "type": "string" },
+    "catastrophic": { "type": "boolean" },
+    "false_accept": { "type": "boolean" },
+    "false_reject": { "type": "boolean" },
+    "license_level": { "type": "string" },
+    "reproducibility": { "const": "deterministic-from-recorded-actions" },
+    "raw_reward": { "type": "number", "description": "P5: the ungated claim reward a hacker games." },
+    "patched_reward": { "type": "number", "description": "P5: the hard-gated reward (the authority)." },
+    "is_hack": { "type": "boolean", "description": "P5: raw > patched → reward was claimed but denied by the gate." },
+    "exploit_cluster": { "type": "string" },
+    "cost": {
+      "type": "object",
+      "description": "P6: the CostLedger. tokens are RECORDED; sandbox_seconds/verifier_ms/storage_bytes are derivable + recomputed. reward_per_dollar is attribution-only.",
+      "required": ["sandbox_seconds", "total_usd", "rate_digest"],
+      "properties": {
+        "tokens": { "type": "object" },
+        "token_cost_usd": { "type": "number" },
+        "sandbox_seconds": { "type": "number" },
+        "sandbox_cost_usd": { "type": "number" },
+        "verifier_ms": { "type": "number" },
+        "verifier_cost_usd": { "type": "number" },
+        "storage_bytes": { "type": "number" },
+        "storage_cost_usd": { "type": "number" },
+        "total_usd": { "type": "number" },
+        "reward_per_dollar": { "type": ["number", "null"] },
+        "rate_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "receipt_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

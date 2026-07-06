@@ -1,0 +1,12 @@
+{
+  "adjudication_schema_version": "1.0.0",
+  "dispute_class": "Computation",
+  "outcome": "RESOLVED_FOR",
+  "exit_code": 0,
+  "env_bundle_digest": "3cf70ed2719e3fd97c369c2377fc54f560282bd686d125afc73ef1485532d4d6",
+  "receipt_digest": "55abc08bbd187141b5a0c0249dcbc5c93758b8d164f6baf6af5b3db505107109",
+  "verifier_version": "1.0.0",
+  "settles": "Computation only",
+  "note": "A green replay means the stored score + cost reproduced under the pinned verifier. This does NOT settle Definition (is this the right verifier/reward?) or Governance (who approved this version?). A reproducible score is not thereby correct, legitimate, or approved.",
+  "adjudication_digest": "1e22fafeece07d301fcbe8f5e91ddb596d07ebf7744529fbfaf8c0731b51c1de"
+}

@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { computeLicenseFromVerdicts } from '../src/license.ts'
-import { verifyEpisode } from '../rlkit/env-evidence.mjs'
+import { verifyEpisode, adjudicate } from '../rlkit/env-evidence.mjs'
 import { warehouseToolsDigest, warehousePoliciesDigest } from '../rlkit/warehouse-manifest.mjs'
 import { scoreReward } from '../rlkit/reward-module.ts'
 
@@ -21,6 +21,7 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')
 const argv = process.argv.slice(2)
 const flag = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : null }
+const has = (name) => argv.includes(name)
 const positional = argv.filter((a, i) => !a.startsWith('--') && argv[i - 1] !== '--bundle' && argv[i - 1] !== '--mode')
 
 const episodePath = positional[0] || resolve(EX, 'warehouse-smoke.episode.json')
@@ -74,4 +75,14 @@ console.log(
     : `\nFAILED (exit ${driftCode}) — ` +
         { 2: 'episode chain tampered.', 3: 'reward / receipt mismatch → reward-definition review.', 4: 'verifier / bundle / manifest drift → re-generate + review.' }[driftCode],
 )
+
+// P6 — --dispute: emit a signed Adjudication for the Computation dispute class only.
+if (has('--dispute')) {
+  const adj = adjudicate({ code: driftCode, bundle, receipt })
+  console.log('\n— dispute adjudication (Computation class only) —')
+  console.log(`  outcome        : ${adj.outcome} (exit ${adj.exit_code})`)
+  console.log(`  receipt_digest : ${adj.receipt_digest?.slice(0, 16)}…`)
+  console.log(`  adjudication   : ${adj.adjudication_digest.slice(0, 16)}…`)
+  console.log(`  settles        : ${adj.settles} — NOT Definition (right reward?) or Governance (approved?).`)
+}
 process.exit(driftCode)

@@ -18,9 +18,9 @@ import { bfsOracle, warehouseTasks, WAREHOUSE_VERSION } from '../src/warehouse.t
 import { computeLicenseFromVerdicts } from '../src/license.ts'
 import {
   ENVIRONMENT_NAME, SCENARIO_REGISTRY_VERSION, VERIFIER_VERSION, REWARD_MODEL_VERSION,
-  LICENSE_POLICY_VERSION, ROW_SCHEMA_VERSION,
+  LICENSE_POLICY_VERSION, ROW_SCHEMA_VERSION, DAYTONA_RATE_VERSION,
 } from '../server/evalVersions.ts'
-import { canonical, sha256, bundleDigest, chainEpisode, buildScoreReceipt, recordedActions } from '../rlkit/env-evidence.mjs'
+import { canonical, sha256, bundleDigest, chainEpisode, buildScoreReceipt, recordedActions, adjudicate } from '../rlkit/env-evidence.mjs'
 import { toolsDigest, policiesDigest, registryDigest } from '../rlkit/env-manifest.mjs'
 import { warehouseToolSchemas, warehouseBundleTools, warehousePolicies } from '../rlkit/warehouse-manifest.mjs'
 import { scoreReward } from '../rlkit/reward-module.ts'
@@ -29,6 +29,7 @@ import { buildEpisodeAndReceipt } from '../rlkit/build-trace.mjs'
 import { buildRegistry } from '../rlkit/tool-registry.mjs'
 import { createMcpAdapter } from '../rlkit/mcp-adapter.mjs'
 import { WAREHOUSE_GRANT, actionToCall } from '../rlkit/warehouse-tools.mjs'
+import { buildCostLedger, rateDigest } from '../rlkit/cost-ledger.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = resolve(HERE, '../docs/examples')
@@ -51,6 +52,15 @@ const verifierSrc = readFileSync(resolve(HERE, '../src/warehouse.ts'), 'utf8')
 const toolSchemas = warehouseToolSchemas() // full schemas → written to the sidecar
 const tools = warehouseBundleTools() // {name, schema_digest, version} → into the bundle
 const policies = warehousePolicies() // {id, kind, statement, source_ref, source_digest, digest}
+// P6 — the pinned cost rate model (rates live here, not in code). rate_digest folds in.
+const cost_model = {
+  rate_version: DAYTONA_RATE_VERSION,
+  token_in_per_m: 0.5,
+  token_out_per_m: 1.5,
+  sandbox_usd_per_second: 0.0001,
+  verifier_usd_per_ms: 0,
+  storage_usd_per_byte: 5e-10,
+}
 const bundle = {
   schema_version: '1.0.0',
   name: 'warehouse-gym',
@@ -62,6 +72,8 @@ const bundle = {
   registry_digest: registryDigest(tools), // P3 — the scope/rate-limit authz projection
   policies,
   policies_digest: policiesDigest(policies),
+  cost_model, // P6 — pinned rate model
+  rate_digest: rateDigest(cost_model),
   verifier: {
     verifier_version: VERIFIER_VERSION,
     reward_model_version: REWARD_MODEL_VERSION,
@@ -94,6 +106,7 @@ function buildTrace({ idPrefix, task, actions, rollout, oracleLabel, policyName 
     envBundleDigest: bundle.env_bundle_digest,
     verifierVersion: VERIFIER_VERSION, rewardModelVersion: REWARD_MODEL_VERSION,
     licenseLevel: lic.level.id,
+    costModel: cost_model, // P6
   })
   return { episode, receipt, license: lic }
 }
@@ -144,7 +157,12 @@ function buildToolGatedTrace() {
   const applied = recordedActions(episode)
   const trollout = scoreReward(task, applied, { policy: 'reference-oracle' })
   const tlic = computeLicenseFromVerdicts([{ passed: trollout.passed, reward: trollout.reward, catastrophic: trollout.falseAccept }])
-  const receipt = buildScoreReceipt({ episode, envBundleDigest: bundle.env_bundle_digest, rollout: trollout, versions: { verifier_version: VERIFIER_VERSION, reward_model_version: REWARD_MODEL_VERSION }, licenseLevel: tlic.level.id })
+  const tcost = buildCostLedger({
+    sandbox_seconds: applied.length, tokens: { in: 0, out: 0 },
+    storage_bytes: Buffer.byteLength(canonical({ task, actions: applied }), 'utf8'),
+    verifier_ms: 0, reward: trollout.reward, costModel: cost_model,
+  })
+  const receipt = buildScoreReceipt({ episode, envBundleDigest: bundle.env_bundle_digest, rollout: trollout, versions: { verifier_version: VERIFIER_VERSION, reward_model_version: REWARD_MODEL_VERSION }, licenseLevel: tlic.level.id, cost: tcost })
   return { episode, receipt, denies: steps.filter((s) => s.event_type === 'tool.result' && !s.payload.allow).length }
 }
 const tooled = buildToolGatedTrace()
@@ -160,9 +178,13 @@ writeFileSync(resolve(OUT, 'warehouse-hack.episode.json'), JSON.stringify(hack.e
 writeFileSync(resolve(OUT, 'warehouse-hack.score-receipt.json'), JSON.stringify(hack.receipt, null, 2) + '\n')
 writeFileSync(resolve(OUT, 'warehouse-tooled.episode.json'), JSON.stringify(tooled.episode, null, 2) + '\n')
 writeFileSync(resolve(OUT, 'warehouse-tooled.score-receipt.json'), JSON.stringify(tooled.receipt, null, 2) + '\n')
+// P6 — a committed, digest-valid Adjudication: the RESOLVED-FOR Computation verdict for the gold.
+const adjudication = adjudicate({ code: 0, bundle, receipt: gold.receipt })
+writeFileSync(resolve(OUT, 'warehouse-smoke.adjudication.json'), JSON.stringify(adjudication, null, 2) + '\n')
 
 console.log('wrote docs/examples/{warehouse.tools.schema,warehouse.env-bundle.lock,warehouse-smoke.*,warehouse-hack.*,warehouse-tooled.*}.json')
 console.log(`  env            : ${task.id} (${task.level}) · ${tools.length} tools · ${policies.length} policies · env_bundle_dig ${bundle.env_bundle_digest.slice(0, 16)}…`)
 console.log(`  gold           : reward ${gold.receipt.reward} · license ${gold.license.level.id} · is_hack ${gold.receipt.is_hack} · digest ${gold.receipt.receipt_digest.slice(0, 12)}…`)
 console.log(`  reward-hacker  : reward ${hack.receipt.reward} · license ${hack.license.level.id} · is_hack ${hack.receipt.is_hack} (${hack.receipt.exploit_cluster}) · category ${hackRollout.category}`)
 console.log(`  tooled (MCP)   : reward ${tooled.receipt.reward} · ${tooled.denies} denied tool call(s) recorded, not scored · digest ${tooled.receipt.receipt_digest.slice(0, 12)}…`)
+console.log(`  cost (gold)    : total $${gold.receipt.cost.total_usd} · sandbox ${gold.receipt.cost.sandbox_seconds}s · reward/$ ${gold.receipt.cost.reward_per_dollar} · adjudication ${adjudication.outcome}`)

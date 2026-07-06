@@ -1,7 +1,7 @@
 {
   "receipt_schema_version": "1.0.0",
   "episode_id": "ep_warehouse-smoke_wh-l1-01",
-  "env_bundle_digest": "4a3b2110d624a487a817e6624a42e6db682575c84cb63a4325c3ba72e6e6bd1a",
+  "env_bundle_digest": "3cf70ed2719e3fd97c369c2377fc54f560282bd686d125afc73ef1485532d4d6",
   "verifier_version": "1.0.0",
   "reward_model_version": "1.0.0",
   "recorded_actions_digest": "1d2a06f152af1e4fae878a214e955134e18f095cb503077f47f64c9899933d6a",
@@ -17,5 +17,21 @@
   "patched_reward": 1,
   "is_hack": false,
   "exploit_cluster": "none",
-  "receipt_digest": "1cce40e90b130320395d64511420e0a2c9bcfae392ecd4f7b9289cc01f3f1f04"
+  "cost": {
+    "tokens": {
+      "in": 0,
+      "out": 0
+    },
+    "token_cost_usd": 0,
+    "sandbox_seconds": 14,
+    "sandbox_cost_usd": 0.0014,
+    "verifier_ms": 0,
+    "verifier_cost_usd": 0,
+    "storage_bytes": 487,
+    "storage_cost_usd": 0,
+    "total_usd": 0.0014,
+    "reward_per_dollar": 714.285714,
+    "rate_digest": "5e4c5547b2655a76632811978e4fc6e83d79e33d6d342ec5af79b6c08e5ef1d6"
+  },
+  "receipt_digest": "55abc08bbd187141b5a0c0249dcbc5c93758b8d164f6baf6af5b3db505107109"
 }

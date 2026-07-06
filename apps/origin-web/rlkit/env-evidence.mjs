@@ -16,6 +16,7 @@
 
 import { createHash } from 'node:crypto'
 import { toolsDigest, policiesDigest, registryDigest } from './env-manifest.mjs'
+import { buildCostLedger, rateDigest } from './cost-ledger.mjs'
 
 export const GENESIS = '0'.repeat(64) // null hash — chain anchor
 
@@ -146,7 +147,7 @@ export const recordedToolCalls = (trace) => (trace.events || []).filter((e) => e
 
 // ── build a ScoreReceipt from a scoring result. `rollout` is a WarehouseRollout-
 //    shaped object: { reward, passed, category, falseAccept, falseReject }.
-export function buildScoreReceipt({ episode, envBundleDigest, rollout, versions, licenseLevel }) {
+export function buildScoreReceipt({ episode, envBundleDigest, rollout, versions, licenseLevel, cost }) {
   const receipt = {
     receipt_schema_version: '1.0.0',
     episode_id: episode.episode_id,
@@ -172,8 +173,30 @@ export function buildScoreReceipt({ episode, envBundleDigest, rollout, versions,
     receipt.is_hack = rollout.is_hack
     receipt.exploit_cluster = rollout.exploit_cluster
   }
+  // P6 — the cost ledger, folded in BEFORE the digest (so tampering cost → digest drift).
+  if (cost != null) receipt.cost = cost
   receipt.receipt_digest = sha256(canonical(receipt))
   return receipt
+}
+
+// ── P6: a signed adjudication for a disputed score. Settles ONLY the Computation
+//    class — a green replay means the stored score/cost reproduced under the pinned
+//    verifier. It does NOT settle Definition (right reward?) or Governance (approved?).
+export function adjudicate({ code, bundle, receipt }) {
+  const outcome = code === 0 ? 'RESOLVED_FOR' : code === 3 ? 'RESOLVED_AGAINST' : 'UNRESOLVED'
+  const adj = {
+    adjudication_schema_version: '1.0.0',
+    dispute_class: 'Computation',
+    outcome, // RESOLVED_FOR (reproduced) · RESOLVED_AGAINST (score/cost mismatch) · UNRESOLVED (chain/bundle drift)
+    exit_code: code,
+    env_bundle_digest: bundle?.env_bundle_digest ?? null,
+    receipt_digest: receipt?.receipt_digest ?? null,
+    verifier_version: receipt?.verifier_version ?? null,
+    settles: 'Computation only',
+    note: 'A green replay means the stored score + cost reproduced under the pinned verifier. This does NOT settle Definition (is this the right verifier/reward?) or Governance (who approved this version?). A reproducible score is not thereby correct, legitimate, or approved.',
+  }
+  adj.adjudication_digest = sha256(canonical(adj))
+  return adj
 }
 
 // ── env:verify core. Re-derives everything from the recorded trace + pinned
@@ -222,6 +245,12 @@ export function verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn }) 
         return bad(4, 'registry_digest inconsistent with the pinned tool authorization (scope/rate_limit)')
       ok('registry_digest recomputes from the pinned tool authorization')
     }
+    // P6 — the cost rate model is pinned; a rate change is drift (governance event).
+    if (bundle.rate_digest != null) {
+      if (rateDigest(bundle.cost_model) !== bundle.rate_digest)
+        return bad(4, 'rate_digest inconsistent with the pinned cost_model')
+      ok('rate_digest recomputes from the pinned cost model')
+    }
   }
 
   // 3 — recorded actions bind the receipt
@@ -236,20 +265,47 @@ export function verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn }) 
     return bad(3, `reward mismatch (re-scored ${rollout.reward} != receipt ${receipt.reward})`)
   ok(`reward reproduces under the pinned verifier (${rollout.reward})`)
 
-  // 5 — recompute the whole receipt digest from the fresh score (catches any field tamper)
+  // 5a — the receipt is SELF-CONSISTENT: its digest matches its own contents. Catches a
+  //      field tampered without re-sealing the digest (e.g. a forged cost or is_hack),
+  //      which the from-scratch recompute below would otherwise silently override.
+  {
+    const { receipt_digest: storedDigest, ...restReceipt } = receipt
+    if (sha256(canonical(restReceipt)) !== storedDigest)
+      return bad(3, 'receipt_digest does not match the receipt contents — a receipt field was tampered')
+  }
+  ok('receipt is self-consistent (digest matches its contents)')
+
+  // 5 — recompute the whole receipt digest from the fresh score (catches any field tamper).
+  //     P6: rebuild the cost ledger deterministically (sandbox_seconds = applied steps,
+  //     storage = canonical({task,actions}) bytes, tokens = 0 for the deterministic gym)
+  //     so a tampered cost surfaces here as a receipt_digest drift → exit 3.
   const licenseLevel = licenseFn([
     { passed: rollout.passed, reward: rollout.reward, catastrophic: rollout.falseAccept },
   ])
+  let cost
+  if (receipt.cost != null && bundle?.cost_model != null) {
+    const storage_bytes = Buffer.byteLength(canonical({ task: episode.task, actions }), 'utf8')
+    cost = buildCostLedger({
+      sandbox_seconds: actions.length,
+      tokens: { in: 0, out: 0 },
+      storage_bytes,
+      verifier_ms: 0,
+      reward: rollout.reward,
+      costModel: bundle.cost_model,
+    })
+  }
   const recomputed = buildScoreReceipt({
     episode,
     envBundleDigest: receipt.env_bundle_digest,
     rollout,
     versions: { verifier_version: receipt.verifier_version, reward_model_version: receipt.reward_model_version },
     licenseLevel,
+    cost,
   })
   if (recomputed.receipt_digest !== receipt.receipt_digest)
-    return bad(3, `receipt_digest mismatch (a receipt field was tampered)`)
+    return bad(3, `receipt_digest mismatch (a receipt field — reward, license, or cost — was tampered)`)
   ok('receipt_digest recomputes — score is reproducible under this verifier')
+  if (cost) ok(`cost ledger reproduces (total $${cost.total_usd} · reward/$ ${cost.reward_per_dollar})`)
 
   return { code: 0, checks }
 }

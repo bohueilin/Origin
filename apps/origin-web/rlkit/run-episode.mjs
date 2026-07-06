@@ -42,6 +42,8 @@ export function runEpisode(executor, { bundle, task, actions, seed, idPrefix = '
     verifierVersion: VERIFIER_VERSION,
     rewardModelVersion: REWARD_MODEL_VERSION,
     licenseLevel: lic.level.id,
+    costModel: bundle.cost_model, // P6 — reproduces the committed cost ledger
+    sandboxSeconds: meter.sandbox_seconds, // from the executor's meter()
   })
   return { episode, receipt, meter, rollout, license: lic.level.id, tier: executor.kind }
 }

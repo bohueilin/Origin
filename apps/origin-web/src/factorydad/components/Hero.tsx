@@ -67,7 +67,7 @@ export function Hero({ bundle }: { bundle: Bundle }) {
             <h2>Build a robot your floor can trust.</h2>
             <p>Submit your site and watch it earn its license — then climb.</p>
           </div>
-          <a className="fd-hero-submit-btn" href="/app.html?start=submit">Submit your site →</a>
+          <a className="fd-hero-submit-btn" href="/capture.html?start=submit">Submit your site →</a>
         </div>
 
         <p className="fd-hero-note">{bundle.disclaimer}</p>

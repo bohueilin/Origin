@@ -44,7 +44,7 @@ export function HowItWorks() {
       </ol>
 
       <div className="fd-how-cta">
-        <a className="fd-btn fd-btn-primary" href="/app.html?start=submit">Submit your site</a>
+        <a className="fd-btn fd-btn-primary" href="/capture.html?start=submit">Submit your site</a>
         <a className="fd-btn fd-btn-ghost" href="#cases">Or watch a robot earn it first</a>
       </div>
     </section>

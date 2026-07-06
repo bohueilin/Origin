@@ -41,7 +41,7 @@
 ## Honest status
 - The prototype runs; Origin is not production SaaS.
 - No customers, logos, metrics, or reviewer acceptances are claimed unless independently verifiable.
-- Language is precise: "tamper-evident" (not tamper-proof), "review-ready" (not reviewer-accepted). Origin is decision-support and evidence infrastructure, not legal or compliance certification.
+- Language is precise: "tamper-evident" means alteration is detectable by replay and digest checks; "review-ready" does not mean reviewer-accepted. Origin is decision-support and evidence infrastructure, not legal or compliance certification.
 - Physical AI is a longer-term arc and founder-depth note, not the current product.
 
 ## Evidence ladder (current truth)

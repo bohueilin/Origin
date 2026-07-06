@@ -28,7 +28,7 @@ export function SiteFooter({ bundle }: { bundle: Bundle }) {
             <a className="fd-btn fd-btn-primary" href={`mailto:${SALES_EMAIL}?subject=Origin%20demo`}>
               Book a demo
             </a>
-            <a className="fd-btn fd-btn-ghost" href="/app.html?start=submit">Submit your site</a>
+            <a className="fd-btn fd-btn-ghost" href="/capture.html?start=submit">Submit your site</a>
           </div>
         </div>
         <div className="fd-foot-contact-card" aria-label="Customer support">
@@ -84,7 +84,7 @@ export function SiteFooter({ bundle }: { bundle: Bundle }) {
           <a href="#rsi">Improvement</a>
           <a href="#cost">Cost vs readiness</a>
           <a href="/passport">Try Passport</a>
-          <a href="/app.html?start=submit">Submit your site</a>
+          <a href="/capture.html?start=submit">Submit your site</a>
           <a href="/app.html">Open the console</a>
         </nav>
 
@@ -93,7 +93,7 @@ export function SiteFooter({ bundle }: { bundle: Bundle }) {
           <a href="#models">Model scorecards</a>
           <a href="#rsl">The RSL curve</a>
           <a href="#trust">Trust &amp; scope</a>
-          <a href="/app.html?sample=1">Sample report</a>
+          <a href="/capture.html?sample=1">Sample report</a>
           <a href={`mailto:${SALES_EMAIL}?subject=Origin%20benchmark`}>Benchmark access</a>
         </nav>
 

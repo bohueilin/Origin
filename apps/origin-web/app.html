@@ -31,6 +31,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/home.css?v=23" />
     <title>Origin Evidence Console — private pilot preview</title>
+    <script>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        const start = params.get('start');
+        if (start === 'capture' || start === 'submit' || params.has('sample')) {
+          window.location.replace(`/capture.html${window.location.search}${window.location.hash}`);
+        }
+      })();
+    </script>
     <style>
       .ec { max-width: 1180px; margin: 0 auto; padding: 26px 24px 72px; }
       .ec__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -230,7 +239,7 @@
                 <li>
                   <span class="q__t">Refund $920.00 · order_8842</span>
                   <span class="q__m"><code>payments-ops-agent</code> · payments.refund</span>
-                  <span class="st st--blocked">Blocked</span>
+                  <span class="st st--blocked">BLOCKED</span>
                 </li>
                 <li>
                   <span class="q__t">Refund $42.10 · order_8790</span>
@@ -279,7 +288,7 @@
             </section>
 
             <section class="p blocked" aria-labelledby="r-bl-h">
-              <div class="p__h" id="r-bl-h"><span class="blocked__tag">Blocked at the proxy · recorded</span></div>
+              <div class="p__h" id="r-bl-h"><span class="blocked__tag">BLOCKED at the proxy · recorded</span></div>
               <div class="p__b">
                 <p class="blocked__req">payments.refund &nbsp;$920.00 &rarr; order_8842</p>
                 <p class="blocked__why">After the approved refund, the agent proposed a <b>second refund of $920.00</b> — over the <b>$500</b> hard ceiling. Verdict <b>deny</b>. The proxy blocked it; the unauthorized refund never ran. One approval covers one action — it does not widen the agent's standing authority.</p>
@@ -382,7 +391,7 @@
                 <li>
                   <span class="q__t">Disable auth middleware · payments-api</span>
                   <span class="q__m"><code>deploy-ops-agent</code> · infra.service.config</span>
-                  <span class="st st--blocked">Blocked</span>
+                  <span class="st st--blocked">BLOCKED</span>
                 </li>
                 <li>
                   <span class="q__t">Restart service · reports-worker (staging)</span>
@@ -430,7 +439,7 @@
             </section>
 
             <section class="p blocked" aria-labelledby="d-bl-h">
-              <div class="p__h" id="d-bl-h"><span class="blocked__tag">Blocked at the proxy · recorded</span></div>
+              <div class="p__h" id="d-bl-h"><span class="blocked__tag">BLOCKED at the proxy · recorded</span></div>
               <div class="p__b">
                 <p class="blocked__req">infra.service.config &nbsp;disable-auth-middleware &rarr; payments-api</p>
                 <p class="blocked__why">After the restart, the agent tried to <b>disable the auth middleware on payments-api</b> — an <b>unapproved escalation</b> outside the approved change window. Verdict <b>deny</b>. The proxy blocked it; auth was never disabled. Approval for a restart does not authorize a config change.</p>
@@ -528,7 +537,7 @@
                 <li class="is-sel">
                   <span class="q__t">Export 12,480 records &rarr; s3://vendor-bucket</span>
                   <span class="q__m"><code>support-ops-agent</code> · data.export (bulk PII)</span>
-                  <span class="st st--blocked">Blocked</span>
+                  <span class="st st--blocked">BLOCKED</span>
                 </li>
                 <li>
                   <span class="q__t">Export 1 record · ticket_3391</span>
@@ -577,7 +586,7 @@
             </section>
 
             <section class="p blocked" aria-labelledby="s-bl-h">
-              <div class="p__h" id="s-bl-h"><span class="blocked__tag">Blocked at the proxy · recorded</span></div>
+              <div class="p__h" id="s-bl-h"><span class="blocked__tag">BLOCKED at the proxy · recorded</span></div>
               <div class="p__b">
                 <p class="blocked__req">data.export &nbsp;12,480 records &rarr; s3://vendor-bucket</p>
                 <p class="blocked__why">The <b>bulk export of 12,480 customer records</b> to an external bucket was <b>denied</b> — there is no approval path for bulk PII export without a data-protection owner, and none granted it. The proxy blocked it; the unauthorized export <b>never ran</b>. No data left the boundary.</p>

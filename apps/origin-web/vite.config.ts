@@ -59,7 +59,7 @@ function siteUrlRewrite(): Plugin {
 // `${origin}/app` 404s locally and the `insforge_code` is never exchanged — i.e. "Continue
 // with Google" appears to do nothing in local dev.
 function devCleanUrls(): Plugin {
-  const map: Record<string, string> = { '/app': '/app.html', '/auth': '/auth.html', '/passport': '/passport.html', '/foundry': '/foundry.html', '/soc': '/soc.html', '/clip': '/clip.html', '/brief': '/brief.html', '/proof': '/proof.html', '/trust': '/trust.html' }
+  const map: Record<string, string> = { '/app': '/app.html', '/capture': '/capture.html', '/auth': '/auth.html', '/passport': '/passport.html', '/foundry': '/foundry.html', '/soc': '/soc.html', '/clip': '/clip.html', '/brief': '/brief.html', '/proof': '/proof.html', '/trust': '/trust.html' }
   return {
     name: 'dev-clean-urls',
     configureServer(server) {
@@ -88,11 +88,12 @@ export default defineConfig(() => {
   return {
     plugins: [react(), devCleanUrls(), siteUrlRewrite()],
     build: {
-      // Entries: marketing home (index.html), console app (app.html), auth (auth.html).
+      // Entries: marketing home (index.html), evidence console (app.html), capture preview (capture.html), auth (auth.html).
       rollupOptions: {
         input: {
           main: resolve(__dirname, 'index.html'),
           app: resolve(__dirname, 'app.html'),
+          capture: resolve(__dirname, 'capture.html'),
           auth: resolve(__dirname, 'auth.html'),
           passport: resolve(__dirname, 'passport.html'),
           foundry: resolve(__dirname, 'foundry.html'),

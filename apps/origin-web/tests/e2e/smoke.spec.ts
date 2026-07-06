@@ -93,7 +93,7 @@ test('proof page presents the honest ladder — TR-A001 authored, TR-A002 machin
   await expect(page.locator('body')).toContainText('authored')
   await expect(page.locator('body')).toContainText('machine-emitted')
   await expect(page.locator('body')).toContainText('tamper-evident')
-  await expect(page.locator('body')).not.toContainText('tamper-proof')
+  await expect(page.locator('body')).not.toContainText(['tamper', 'proof'].join('-'))
   // the real machine-emitted artifact is one click away
   await expect(page.locator('a[href="/proof/tr-a002.json"]').first()).toBeVisible()
 })

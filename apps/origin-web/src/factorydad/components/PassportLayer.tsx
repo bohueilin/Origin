@@ -115,7 +115,7 @@ export function PassportLayer() {
             <b className="fd-t-warn">escalate</b>, or <b className="fd-t-neg">refuse</b> on the
             floor you drew — the same spine, one body over.
           </p>
-          <a className="fd-btn" href="/app.html?start=submit">
+          <a className="fd-btn" href="/capture.html?start=submit">
             Submit your site →
           </a>
         </div>

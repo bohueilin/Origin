@@ -113,7 +113,7 @@ export function Dashboard() {
         <section className="fd-close fd-shell">
           <h2>Build a robot your floor can trust.</h2>
           <p>Submit your site and watch it earn its license — then climb.</p>
-          <a className="fd-btn fd-btn-primary" href="/app.html?start=submit">Submit your site</a>
+          <a className="fd-btn fd-btn-primary" href="/capture.html?start=submit">Submit your site</a>
         </section>
 
       </main>

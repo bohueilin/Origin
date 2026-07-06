@@ -363,7 +363,7 @@ async function quoteOrder(body: Record<string, unknown>, cfg: SnapliiConfig, sec
     /* keep estimate */
   }
 
-  // A quote carries NO spend authority — it is a tamper-proof price, exchanged for a token only at authorize.
+  // A quote carries NO spend authority — it is digest-bound and replay-checkable, exchanged for a token only at authorize.
   const quote_claim = mintToken(secret, QUOTE_LABEL, { amount, currency, item: brand.id || 'doordash', intent, exp: Date.now() + TOKEN_TTL_MS } satisfies QuoteClaim)
   return { ok: true, amount, currency, cashback, brand: brand.name, quote_claim }
 }

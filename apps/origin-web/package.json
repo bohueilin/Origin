@@ -20,6 +20,8 @@
     "env:run": "node scripts/env-run.mjs",
     "env:dispute": "node scripts/env-verify.mjs --dispute",
     "env:checkpoint": "node scripts/gen-checkpoint-evidence.mjs",
+    "curriculum:generate": "node scripts/gen-curriculum.mjs",
+    "curriculum:verify": "node scripts/curriculum-verify.mjs",
     "reward:diff": "node scripts/reward-diff.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",

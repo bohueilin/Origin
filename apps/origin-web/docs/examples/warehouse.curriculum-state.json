@@ -1,0 +1,42 @@
+{
+  "curriculum_schema_version": "1.0.0",
+  "curriculum_version": "2026-07-05.1",
+  "band_registry_digest": "e57c886c29356387e48cc5b9244f0a0fa57f3bc401c2002305f31e45126b77d9",
+  "policy": "reckless-baseline",
+  "active_band": "B2",
+  "competence": {
+    "B0": {
+      "pass": 0,
+      "total": 3,
+      "rate": 0
+    },
+    "B1": {
+      "pass": 0,
+      "total": 5,
+      "rate": 0
+    },
+    "B2": {
+      "pass": 4,
+      "total": 5,
+      "rate": 0.8
+    },
+    "B3": {
+      "pass": 0,
+      "total": 2,
+      "rate": 0
+    },
+    "B4": {
+      "pass": 1,
+      "total": 3,
+      "rate": 0.33
+    }
+  },
+  "promotion": {
+    "from": "B2",
+    "to": "B2",
+    "promoted": false,
+    "mastery": 0.9,
+    "rate": 0.8
+  },
+  "evidence_digest": "95bd4052f7e96348a740716dab4c779887fdc0c5f0f7ca124db9de5ed7aa3037"
+}

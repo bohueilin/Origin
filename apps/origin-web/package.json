@@ -19,6 +19,7 @@
     "env:rollout": "node scripts/env-rollout.mjs",
     "env:run": "node scripts/env-run.mjs",
     "env:dispute": "node scripts/env-verify.mjs --dispute",
+    "env:checkpoint": "node scripts/gen-checkpoint-evidence.mjs",
     "reward:diff": "node scripts/reward-diff.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",

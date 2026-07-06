@@ -16,13 +16,15 @@ import { computeLicenseFromVerdicts } from '../src/license.ts'
 import { verifyEpisode, adjudicate } from '../rlkit/env-evidence.mjs'
 import { warehouseToolsDigest, warehousePoliciesDigest } from '../rlkit/warehouse-manifest.mjs'
 import { scoreReward } from '../rlkit/reward-module.ts'
+import { checkpointBindsEpisode } from '../rlkit/checkpoint.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')
 const argv = process.argv.slice(2)
 const flag = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : null }
 const has = (name) => argv.includes(name)
-const positional = argv.filter((a, i) => !a.startsWith('--') && argv[i - 1] !== '--bundle' && argv[i - 1] !== '--mode')
+const VALUE_FLAGS = new Set(['--bundle', '--mode', '--checkpoint']) // flags that consume the next arg
+const positional = argv.filter((a, i) => !a.startsWith('--') && !VALUE_FLAGS.has(argv[i - 1]))
 
 const episodePath = positional[0] || resolve(EX, 'warehouse-smoke.episode.json')
 const receiptPath = positional[1] || resolve(EX, 'warehouse-smoke.score-receipt.json')
@@ -75,6 +77,19 @@ console.log(
     : `\nFAILED (exit ${driftCode}) — ` +
         { 2: 'episode chain tampered.', 3: 'reward / receipt mismatch → reward-definition review.', 4: 'verifier / bundle / manifest drift → re-generate + review.' }[driftCode],
 )
+
+// P7 — --checkpoint: verify a Checkpoint side-artifact binds to a real point in this
+// episode's chain (self-consistent digest + prev_hash == the event hash at at_seq).
+// ADD-only: a bad checkpoint surfaces as exit 3, never relaxing the main codes.
+const checkpointPath = flag('--checkpoint')
+if (checkpointPath) {
+  const cp = load(checkpointPath)
+  const bound = checkpointBindsEpisode(cp, episode)
+  console.log(bound
+    ? `PASS  checkpoint binds this episode @ seq ${cp.at_seq} (resume-safe; a side-artifact, not a chain event)`
+    : 'FAIL  checkpoint does not bind this episode (self-digest / prev_hash / at_seq mismatch)')
+  if (!bound && driftCode === 0) driftCode = 3
+}
 
 // P6 — --dispute: emit a signed Adjudication for the Computation dispute class only.
 if (has('--dispute')) {

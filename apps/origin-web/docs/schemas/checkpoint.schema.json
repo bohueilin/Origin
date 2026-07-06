@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://origin-physical-ai.pages.dev/docs/schemas/checkpoint.schema.json",
+  "title": "Origin Training Evidence — Checkpoint (P7)",
+  "description": "A SIDE artifact (never a chain event) that lets a long-horizon rollout resume to the byte-identical final_digest. Binds to a real point in the episode chain via prev_hash at at_seq.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checkpoint_schema_version",
+    "episode_id",
+    "env_bundle_digest",
+    "at_seq",
+    "prev_hash",
+    "recorded_actions_so_far_digest",
+    "state_digest",
+    "checkpoint_digest"
+  ],
+  "properties": {
+    "checkpoint_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "episode_id": { "type": "string" },
+    "env_bundle_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "at_seq": { "type": "integer", "minimum": 1, "description": "# events sealed into the chain before the pause." },
+    "prev_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "chain tip event_hash at at_seq — the resume continuity anchor." },
+    "recorded_actions_so_far_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "state_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "checkpoint_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

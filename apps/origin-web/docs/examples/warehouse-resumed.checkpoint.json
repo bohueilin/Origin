@@ -1,0 +1,10 @@
+{
+  "checkpoint_schema_version": "1.0.0",
+  "episode_id": "ep_warehouse-smoke_wh-l1-01",
+  "env_bundle_digest": "3cf70ed2719e3fd97c369c2377fc54f560282bd686d125afc73ef1485532d4d6",
+  "at_seq": 8,
+  "prev_hash": "6a7ec776267ac0a7e9cc4635a47d4d65c9a8757b42e4e10bd1dd4c0c97d673b7",
+  "recorded_actions_so_far_digest": "c66d4aff31bc787ea6cbd7c1dce2f87eccf9611f3d614ecdd0f8448fb4b8d980",
+  "state_digest": "ac47acd98deeb89d6ec889a385c2923db365dad0e95940118bda1ebed9f792eb",
+  "checkpoint_digest": "a3e41fa4207f2550aa646b67092bb185e19dad9e344bc9e1506ef6b8f99c5986"
+}

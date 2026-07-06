@@ -13,5 +13,9 @@
   "false_reject": false,
   "license_level": "L4",
   "reproducibility": "deterministic-from-recorded-actions",
-  "receipt_digest": "682754823c49d123e370590e27695c3314a6b21545089c09d3b1904e8acd6a91"
+  "raw_reward": 1,
+  "patched_reward": 1,
+  "is_hack": false,
+  "exploit_cluster": "none",
+  "receipt_digest": "70267f2510b879005dd1c95e9fb2a1e4098853afac7800e1a58bd3871a234ed6"
 }

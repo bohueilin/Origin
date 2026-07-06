@@ -2,15 +2,15 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { verifyWarehouseRollout } from '../src/warehouse.ts'
 import { computeLicenseFromVerdicts } from '../src/license.ts'
 import { canonical, sha256, verifyEpisode } from './env-evidence.mjs'
 import { buildToolSchemas, toolInputSchema, toBundleTools, toolsDigest, buildPolicies, policiesDigest } from './env-manifest.mjs'
 import { warehouseToolSchemas, warehouseBundleTools, warehouseToolsDigest, warehousePolicies, warehousePoliciesDigest } from './warehouse-manifest.mjs'
+import { scoreReward } from './reward-module.ts'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const load = (p: string) => JSON.parse(readFileSync(resolve(HERE, '../docs/examples', p), 'utf8'))
-const scoreFn = (task, actions) => verifyWarehouseRollout(task, actions, 'test')
+const scoreFn = (task, actions) => scoreReward(task, actions, { policy: 'test' })
 const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
 
 describe('env-manifest — pure sub-artifact content-addressing (P1)', () => {

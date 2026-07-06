@@ -158,6 +158,15 @@ export function buildScoreReceipt({ episode, envBundleDigest, rollout, versions,
     license_level: licenseLevel,
     reproducibility: 'deterministic-from-recorded-actions',
   }
+  // P5 — when the reward module classified reward-hacking, carry it on the receipt.
+  // Evidence only; the license already reflects `catastrophic`. These reproduce because
+  // the scoreFn (rlkit/reward-module.ts scoreReward) returns them deterministically.
+  if (rollout.is_hack !== undefined) {
+    receipt.raw_reward = rollout.raw_reward
+    receipt.patched_reward = rollout.patched_reward
+    receipt.is_hack = rollout.is_hack
+    receipt.exploit_cluster = rollout.exploit_cluster
+  }
   receipt.receipt_digest = sha256(canonical(receipt))
   return receipt
 }

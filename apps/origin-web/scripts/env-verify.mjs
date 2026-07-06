@@ -12,10 +12,10 @@
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { verifyWarehouseRollout } from '../src/warehouse.ts'
 import { computeLicenseFromVerdicts } from '../src/license.ts'
 import { verifyEpisode } from '../rlkit/env-evidence.mjs'
 import { warehouseToolsDigest, warehousePoliciesDigest } from '../rlkit/warehouse-manifest.mjs'
+import { scoreReward } from '../rlkit/reward-module.ts'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')
@@ -38,8 +38,10 @@ if (mode === 'full') {
   console.log('score mode is the guarantee: the recorded actions are authoritative. Running score mode.\n')
 }
 
-// The pinned verifier + license policy, injected so the core stays verifier-agnostic.
-const scoreFn = (task, actions) => verifyWarehouseRollout(task, actions, 'env-verify')
+// The pinned verifier + reward module + license policy, injected so the core stays
+// verifier-agnostic. scoreReward (no judge) = the deterministic core + reward-hack
+// classification, so the recomputed receipt carries is_hack/raw/patched and reproduces.
+const scoreFn = (task, actions) => scoreReward(task, actions, { policy: 'env-verify' })
 const licenseFn = (verdicts) => computeLicenseFromVerdicts(verdicts).level.id
 
 const { code, checks } = verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn })

@@ -16,9 +16,10 @@
     "proof:verify": "node scripts/verify-tr-a002.mjs",
     "env:generate": "node scripts/gen-env-evidence.mjs",
     "env:verify": "node scripts/env-verify.mjs",
+    "reward:diff": "node scripts/reward-diff.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm test",
+    "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm run reward:diff && npm test",
     "gates:full": "npm run gates && npm run test:e2e"
   },
   "dependencies": {

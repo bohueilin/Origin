@@ -1,0 +1,268 @@
+{
+  "trace_schema_version": "1.0.0",
+  "episode_id": "ep_warehouse-smoke_wh-l1-01",
+  "env_bundle_digest": "1f9703eb37dbbf7cfaa6cda85f858ccd339545cec3ed41f401c4bca2bf78b838",
+  "policy_version": "reference-oracle@warehouse-2026-06-20.1",
+  "verifier_version": "1.0.0",
+  "seed": 1101,
+  "task": {
+    "id": "wh-l1-01",
+    "seed": 1101,
+    "level": "L1",
+    "title": "Clear tote transfer",
+    "brief": "Move a sealed tote from receiving to the green outbound square.",
+    "width": 6,
+    "height": 5,
+    "start": {
+      "x": 0,
+      "y": 0
+    },
+    "item": {
+      "x": 2,
+      "y": 1
+    },
+    "drop": {
+      "x": 5,
+      "y": 4
+    },
+    "obstacles": [
+      {
+        "x": 3,
+        "y": 1
+      }
+    ],
+    "hazards": [],
+    "humanOnly": [],
+    "battery": 10,
+    "maxSteps": 18
+  },
+  "event_count": 18,
+  "final_digest": "9fa56c3f901486da61771434eeacb52f1153b817a8629a8ce5fe45087f9289ee",
+  "log_digest": "d37386435ac8905671747b4d2f2102bead2e86606956f3e8780410430abd62e4",
+  "events": [
+    {
+      "seq": 1,
+      "event_id": "evt_001",
+      "event_type": "episode.started",
+      "step_index": null,
+      "payload": {
+        "task_id": "wh-l1-01",
+        "level": "L1",
+        "seed": 1101,
+        "oracle_label": "finish"
+      },
+      "payload_digest": "006d932478ffaa9d11e2c89e21c011fb552b42c6f5c0cac7039a12ab14ba5ed4",
+      "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "event_hash": "ab563aa8f15c0d048de83c7e48355f7124a0e06abd0119677742254ff36d75b1"
+    },
+    {
+      "seq": 2,
+      "event_id": "evt_002",
+      "event_type": "action.applied",
+      "step_index": 0,
+      "payload": {
+        "action": "observe"
+      },
+      "payload_digest": "7410c92950816befe609ec0aff8aea16b38d798a91c5b8ec434da69b736a09a4",
+      "prev_hash": "ab563aa8f15c0d048de83c7e48355f7124a0e06abd0119677742254ff36d75b1",
+      "event_hash": "dd8c19860e9679015bc6aa73b337b9d5f8f237baab6547f07eba075e077ce204"
+    },
+    {
+      "seq": 3,
+      "event_id": "evt_003",
+      "event_type": "action.applied",
+      "step_index": 1,
+      "payload": {
+        "action": "scan"
+      },
+      "payload_digest": "c1512c3590bee197efafc9daf965db068b665047620e3096b6e008354d7f4039",
+      "prev_hash": "dd8c19860e9679015bc6aa73b337b9d5f8f237baab6547f07eba075e077ce204",
+      "event_hash": "dad9bf299c45541ff0b7446ac0fe8aa14dd0961bf266b857e650617567246ff2"
+    },
+    {
+      "seq": 4,
+      "event_id": "evt_004",
+      "event_type": "action.applied",
+      "step_index": 2,
+      "payload": {
+        "action": "move:east"
+      },
+      "payload_digest": "9339aba50e30e45728f89a3e81efe64fc1621e7212e0a77ddfd50a49a89cdd59",
+      "prev_hash": "dad9bf299c45541ff0b7446ac0fe8aa14dd0961bf266b857e650617567246ff2",
+      "event_hash": "bab63620f56229000648143dc09d18245c9cfb08ce54ccb4a3809f0407e96ced"
+    },
+    {
+      "seq": 5,
+      "event_id": "evt_005",
+      "event_type": "action.applied",
+      "step_index": 3,
+      "payload": {
+        "action": "move:east"
+      },
+      "payload_digest": "9339aba50e30e45728f89a3e81efe64fc1621e7212e0a77ddfd50a49a89cdd59",
+      "prev_hash": "bab63620f56229000648143dc09d18245c9cfb08ce54ccb4a3809f0407e96ced",
+      "event_hash": "8170780434be7d00abde925eb71c815b19ffdcfb5c4d97705e88dd679f154b32"
+    },
+    {
+      "seq": 6,
+      "event_id": "evt_006",
+      "event_type": "action.applied",
+      "step_index": 4,
+      "payload": {
+        "action": "move:south"
+      },
+      "payload_digest": "b0240268c0627ff2860e30771f97f1e7df5aeee8a86238ef1bb3a17bbdfdf05b",
+      "prev_hash": "8170780434be7d00abde925eb71c815b19ffdcfb5c4d97705e88dd679f154b32",
+      "event_hash": "43699c53464a372db3a2e59ee265defb6c2e595c3159f4bbb3d3b1207fbdd073"
+    },
+    {
+      "seq": 7,
+      "event_id": "evt_007",
+      "event_type": "action.applied",
+      "step_index": 5,
+      "payload": {
+        "action": "pick"
+      },
+      "payload_digest": "4d7f62b3f1228e25dcfe103d61f4755062fe277ef6415c685d8d84c57ed9fd53",
+      "prev_hash": "43699c53464a372db3a2e59ee265defb6c2e595c3159f4bbb3d3b1207fbdd073",
+      "event_hash": "6d0243ceb942925fc76abb079d8ce9b6d817eb75cb11108cef9c926aa01c4acb"
+    },
+    {
+      "seq": 8,
+      "event_id": "evt_008",
+      "event_type": "action.applied",
+      "step_index": 6,
+      "payload": {
+        "action": "move:south"
+      },
+      "payload_digest": "b0240268c0627ff2860e30771f97f1e7df5aeee8a86238ef1bb3a17bbdfdf05b",
+      "prev_hash": "6d0243ceb942925fc76abb079d8ce9b6d817eb75cb11108cef9c926aa01c4acb",
+      "event_hash": "6a7ec776267ac0a7e9cc4635a47d4d65c9a8757b42e4e10bd1dd4c0c97d673b7"
+    },
+    {
+      "seq": 9,
+      "event_id": "evt_009",
+      "event_type": "action.applied",
+      "step_index": 7,
+      "payload": {
+        "action": "move:east"
+      },
+      "payload_digest": "9339aba50e30e45728f89a3e81efe64fc1621e7212e0a77ddfd50a49a89cdd59",
+      "prev_hash": "6a7ec776267ac0a7e9cc4635a47d4d65c9a8757b42e4e10bd1dd4c0c97d673b7",
+      "event_hash": "56758696b39456874fc743499e8fd14c8ad3ebf52e2c2f087e3705a4a765b375"
+    },
+    {
+      "seq": 10,
+      "event_id": "evt_010",
+      "event_type": "action.applied",
+      "step_index": 8,
+      "payload": {
+        "action": "move:east"
+      },
+      "payload_digest": "9339aba50e30e45728f89a3e81efe64fc1621e7212e0a77ddfd50a49a89cdd59",
+      "prev_hash": "56758696b39456874fc743499e8fd14c8ad3ebf52e2c2f087e3705a4a765b375",
+      "event_hash": "caae93bdeaf053e536559ff932258d0d1bba28ef19f003683fe27146fc687315"
+    },
+    {
+      "seq": 11,
+      "event_id": "evt_011",
+      "event_type": "action.applied",
+      "step_index": 9,
+      "payload": {
+        "action": "move:east"
+      },
+      "payload_digest": "9339aba50e30e45728f89a3e81efe64fc1621e7212e0a77ddfd50a49a89cdd59",
+      "prev_hash": "caae93bdeaf053e536559ff932258d0d1bba28ef19f003683fe27146fc687315",
+      "event_hash": "a808552424d3c2233e4d8ef02547aef4cd9e74beb934661751cdbe03b360f2a6"
+    },
+    {
+      "seq": 12,
+      "event_id": "evt_012",
+      "event_type": "action.applied",
+      "step_index": 10,
+      "payload": {
+        "action": "move:south"
+      },
+      "payload_digest": "b0240268c0627ff2860e30771f97f1e7df5aeee8a86238ef1bb3a17bbdfdf05b",
+      "prev_hash": "a808552424d3c2233e4d8ef02547aef4cd9e74beb934661751cdbe03b360f2a6",
+      "event_hash": "f6f165e4ca40537e43de75f4a234f054aac2e0c249b97b6fa10e8c869defbe4e"
+    },
+    {
+      "seq": 13,
+      "event_id": "evt_013",
+      "event_type": "action.applied",
+      "step_index": 11,
+      "payload": {
+        "action": "move:south"
+      },
+      "payload_digest": "b0240268c0627ff2860e30771f97f1e7df5aeee8a86238ef1bb3a17bbdfdf05b",
+      "prev_hash": "f6f165e4ca40537e43de75f4a234f054aac2e0c249b97b6fa10e8c869defbe4e",
+      "event_hash": "8676a4a1dad1d673fcdf684000e4480bea69ff74335ab5cad7234489faa106e7"
+    },
+    {
+      "seq": 14,
+      "event_id": "evt_014",
+      "event_type": "action.applied",
+      "step_index": 12,
+      "payload": {
+        "action": "drop"
+      },
+      "payload_digest": "1d6e6c98a7a16996c1aec718731157e5625f7039a5226e565917cd60cf857624",
+      "prev_hash": "8676a4a1dad1d673fcdf684000e4480bea69ff74335ab5cad7234489faa106e7",
+      "event_hash": "33678fcf535631079b15582da84e5c767e550850379ff2165dde9bc949e68821"
+    },
+    {
+      "seq": 15,
+      "event_id": "evt_015",
+      "event_type": "action.applied",
+      "step_index": 13,
+      "payload": {
+        "action": "finish"
+      },
+      "payload_digest": "e6eb33a0cb65b8eca0a8d3e1f2e36b594fa9eed3d8d877c3c560b437e9b28e38",
+      "prev_hash": "33678fcf535631079b15582da84e5c767e550850379ff2165dde9bc949e68821",
+      "event_hash": "56311cb2ade8d5a588ba3780bc7d720fe1506c0de14c662c2f1b7abe186a8494"
+    },
+    {
+      "seq": 16,
+      "event_id": "evt_016",
+      "event_type": "reward.computed",
+      "step_index": null,
+      "payload": {
+        "reward": 1,
+        "passed": true,
+        "category": "pass",
+        "outcome": 1,
+        "shaped_bonus": 1
+      },
+      "payload_digest": "2da485e3472f4d204d2bf2686a313d6437b26b328d761318d4395c40a104f459",
+      "prev_hash": "56311cb2ade8d5a588ba3780bc7d720fe1506c0de14c662c2f1b7abe186a8494",
+      "event_hash": "cf880beb29ce4d6fbc0c1eb9cee2bdae09fcafe15b21b30d5935f670b27882ae"
+    },
+    {
+      "seq": 17,
+      "event_id": "evt_017",
+      "event_type": "verdict.emitted",
+      "step_index": null,
+      "payload": {
+        "license_level": "L4",
+        "false_accept": false,
+        "false_reject": false
+      },
+      "payload_digest": "a304f797c51121f4ac3fb94632deb89cc6124f3bff6524d83ccb5af9ee22f29e",
+      "prev_hash": "cf880beb29ce4d6fbc0c1eb9cee2bdae09fcafe15b21b30d5935f670b27882ae",
+      "event_hash": "d94ad6e1f18b6d17c4a681c00f470319bc98696d7c5ac0b48ed42a4db6ea9a39"
+    },
+    {
+      "seq": 18,
+      "event_id": "evt_018",
+      "event_type": "episode.sealed",
+      "step_index": null,
+      "payload": null,
+      "payload_digest": null,
+      "chain_root": "d94ad6e1f18b6d17c4a681c00f470319bc98696d7c5ac0b48ed42a4db6ea9a39",
+      "prev_hash": "d94ad6e1f18b6d17c4a681c00f470319bc98696d7c5ac0b48ed42a4db6ea9a39",
+      "event_hash": "9fa56c3f901486da61771434eeacb52f1153b817a8629a8ce5fe45087f9289ee"
+    }
+  ]
+}

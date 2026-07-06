@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://origin-physical-ai.pages.dev/docs/schemas/env-bundle.schema.json",
+  "title": "Origin Training Evidence — EnvironmentBundle",
+  "description": "A content-addressed lockfile pinning everything that can move a score. env_bundle_digest = sha256(canonical(manifest \\ {created_at, env_bundle_digest})).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "name",
+    "runtime",
+    "seed_data",
+    "verifier",
+    "scenario_registry_version",
+    "license_policy_version",
+    "row_schema_version",
+    "reproducibility",
+    "env_bundle_digest"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "name": { "type": "string", "minLength": 1 },
+    "created_at": {
+      "type": "string",
+      "description": "Deterministic timestamp. EXCLUDED from env_bundle_digest to avoid round-trip false-mismatch."
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["in_process", "oci"] },
+        "code_ref": { "type": "string", "description": "P0 in-process runtime pin (e.g. src/warehouse.ts@warehouse-2026-06-20.1)." },
+        "image": { "type": "string", "description": "P1 OCI image digest (sha256:…)." },
+        "openenv_spec": { "type": "string", "description": "P1 pinned OpenEnv release." }
+      }
+    },
+    "seed_data": {
+      "type": "object",
+      "required": ["dataset", "seed_policy"],
+      "properties": {
+        "dataset": { "type": "string", "description": "sha256 hex of the task/scenario set." },
+        "seed_policy": { "type": "string" }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "schema"],
+        "properties": {
+          "name": { "type": "string" },
+          "schema": { "type": "string" },
+          "version": { "type": "string" }
+        }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "digest"],
+        "properties": { "id": { "type": "string" }, "digest": { "type": "string" } }
+      }
+    },
+    "verifier": {
+      "type": "object",
+      "required": ["verifier_version", "reward_model_version", "oracle", "reward_spec"],
+      "properties": {
+        "verifier_version": { "type": "string" },
+        "reward_model_version": { "type": "string" },
+        "oracle": { "type": "string" },
+        "reward_spec": { "type": "string", "description": "sha256 hex of the reward-as-code artifact." }
+      }
+    },
+    "environment_name": { "type": "string" },
+    "scenario_registry_version": { "type": "string" },
+    "license_policy_version": { "type": "string" },
+    "row_schema_version": { "type": "string" },
+    "reproducibility": {
+      "type": "object",
+      "required": ["score", "generation", "recorded_actions_are_authoritative"],
+      "properties": {
+        "score": { "const": "deterministic-from-recorded-actions" },
+        "generation": { "enum": ["best-effort", "pinned"] },
+        "recorded_actions_are_authoritative": { "type": "boolean" },
+        "canonicalization": { "type": "string" }
+      }
+    },
+    "env_bundle_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Bare sha256 hex. OCI-style sha256: prefix is added at the OCI/ORAS boundary (P1)."
+    }
+  }
+}

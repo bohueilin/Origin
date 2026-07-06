@@ -1,0 +1,17 @@
+{
+  "receipt_schema_version": "1.0.0",
+  "episode_id": "ep_warehouse-smoke_wh-l1-01",
+  "env_bundle_digest": "1f9703eb37dbbf7cfaa6cda85f858ccd339545cec3ed41f401c4bca2bf78b838",
+  "verifier_version": "1.0.0",
+  "reward_model_version": "1.0.0",
+  "recorded_actions_digest": "1d2a06f152af1e4fae878a214e955134e18f095cb503077f47f64c9899933d6a",
+  "reward": 1,
+  "passed": true,
+  "category": "pass",
+  "catastrophic": false,
+  "false_accept": false,
+  "false_reject": false,
+  "license_level": "L4",
+  "reproducibility": "deterministic-from-recorded-actions",
+  "receipt_digest": "94daaa23d96748f29d2a69508c056706749ee6df42bb642461af655cd4a010ba"
+}

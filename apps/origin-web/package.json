@@ -14,6 +14,8 @@
     "verify:evidence": "node scripts/verifyServerEvidence.mjs",
     "proof:generate": "node scripts/generate-tr-a002.mjs",
     "proof:verify": "node scripts/verify-tr-a002.mjs",
+    "env:generate": "node scripts/gen-env-evidence.mjs",
+    "env:verify": "node scripts/env-verify.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm test",

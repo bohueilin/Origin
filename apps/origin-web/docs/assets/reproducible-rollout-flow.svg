@@ -1,0 +1,82 @@
+<svg viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/>
+    </marker>
+    <style>
+      .box{fill:#ffffff;stroke:#e6e3dc;stroke-width:1.5;rx:12}
+      .lbl{font-size:12.5px;font-weight:700;fill:#14161a}
+      .sub{font-size:10.5px;fill:#6b7280}
+      .mono{font-family:ui-monospace,Menlo,monospace;font-size:10px;fill:#2f6df6}
+      .k{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;fill:#6b7280}
+      .flow{stroke:#6b7280;stroke-width:1.5;fill:none}
+      .chip{font-size:10px;font-weight:600}
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="580" fill="#faf9f5"/>
+  <text x="28" y="34" font-size="17" font-weight="700" fill="#14161a">Reproducible rollout → score receipt</text>
+  <text x="28" y="52" class="sub">A score receipt is reproducible from a pinned bundle, a recorded action trace, and a pinned verifier.</text>
+
+  <!-- 1 · EnvironmentBundle -->
+  <rect x="28" y="70" width="844" height="66" rx="12" fill="#f2f6ff" stroke="#bcccff" stroke-width="1.5"/>
+  <text x="44" y="90" class="k">① EnvironmentBundle</text>
+  <text x="792" y="90" text-anchor="end" class="mono">env_bundle_digest 1f9703eb…</text>
+  <g>
+    <rect x="44" y="98" width="150" height="28" rx="8" fill="#fff" stroke="#e6e3dc"/><text x="119" y="116" text-anchor="middle" class="chip" fill="#14161a">runtime pin</text>
+    <rect x="204" y="98" width="150" height="28" rx="8" fill="#fff" stroke="#e6e3dc"/><text x="279" y="116" text-anchor="middle" class="chip" fill="#14161a">verifier v1.0.0</text>
+    <rect x="364" y="98" width="150" height="28" rx="8" fill="#fff" stroke="#e6e3dc"/><text x="439" y="116" text-anchor="middle" class="chip" fill="#14161a">reward-as-code</text>
+    <rect x="524" y="98" width="150" height="28" rx="8" fill="#fff" stroke="#e6e3dc"/><text x="599" y="116" text-anchor="middle" class="chip" fill="#14161a">seed / task set</text>
+    <rect x="684" y="98" width="172" height="28" rx="8" fill="#fff" stroke="#e6e3dc"/><text x="770" y="116" text-anchor="middle" class="chip" fill="#14161a">tools · policies</text>
+  </g>
+  <path class="flow" d="M450,136 L450,158" marker-end="url(#ah)"/>
+
+  <!-- 2 · Rollout (left→right) -->
+  <text x="44" y="176" class="k">② Rollout — every step emits a hash-chained event</text>
+  <g>
+    <rect x="28"  y="186" width="150" height="52" rx="10" fill="#f2f6ff" stroke="#bcccff" stroke-width="1.5"/><text x="103" y="208" text-anchor="middle" class="lbl">Policy</text><text x="103" y="224" text-anchor="middle" class="sub">proposes action</text>
+    <rect x="202" y="186" width="150" height="52" rx="10" fill="#fbf4e3" stroke="#ecd9ad" stroke-width="1.5"/><text x="277" y="208" text-anchor="middle" class="lbl" fill="#a5741a">Policy gate</text><text x="277" y="224" text-anchor="middle" class="sub">Guardian ratify / veto</text>
+    <rect x="376" y="186" width="150" height="52" rx="10" fill="#f2f6ff" stroke="#bcccff" stroke-width="1.5"/><text x="451" y="208" text-anchor="middle" class="lbl">Controlled proxy</text><text x="451" y="224" text-anchor="middle" class="sub">configured path</text>
+    <rect x="550" y="186" width="164" height="52" rx="10" fill="#eaf6f0" stroke="#bfe3d3" stroke-width="1.5"/><text x="632" y="205" text-anchor="middle" class="lbl" fill="#2f7d57">Deterministic verifier</text><text x="632" y="222" text-anchor="middle" class="sub">bfsOracle · reward = f(actions)</text>
+    <rect x="738" y="186" width="118" height="52" rx="10" fill="#eaf6f0" stroke="#bfe3d3" stroke-width="1.5"/><text x="797" y="208" text-anchor="middle" class="lbl" fill="#2f7d57">Reward</text><text x="797" y="224" text-anchor="middle" class="sub">outcome × bonus</text>
+  </g>
+  <path class="flow" d="M178,212 L200,212" marker-end="url(#ah)"/>
+  <path class="flow" d="M352,212 L374,212" marker-end="url(#ah)"/>
+  <path class="flow" d="M526,212 L548,212" marker-end="url(#ah)"/>
+  <path class="flow" d="M714,212 L736,212" marker-end="url(#ah)"/>
+  <path class="flow" d="M450,238 L450,266" marker-end="url(#ah)"/>
+
+  <!-- 3 · EpisodeTrace hash chain -->
+  <rect x="28" y="278" width="844" height="70" rx="12" fill="#fff" stroke="#e6e3dc" stroke-width="1.5"/>
+  <text x="44" y="298" class="k">③ EpisodeTrace — append-only hash chain</text>
+  <g font-family="ui-monospace,Menlo,monospace" font-size="10">
+    <rect x="44"  y="308" width="120" height="28" rx="14" fill="#f2f6ff" stroke="#bcccff"/><text x="104" y="326" text-anchor="middle" fill="#123b7a">started</text>
+    <rect x="176" y="308" width="130" height="28" rx="14" fill="#f2f6ff" stroke="#bcccff"/><text x="241" y="326" text-anchor="middle" fill="#123b7a">action.applied</text>
+    <rect x="318" y="308" width="120" height="28" rx="14" fill="#eaf6f0" stroke="#bfe3d3"/><text x="378" y="326" text-anchor="middle" fill="#2f7d57">reward</text>
+    <rect x="450" y="308" width="120" height="28" rx="14" fill="#fbf4e3" stroke="#ecd9ad"/><text x="510" y="326" text-anchor="middle" fill="#a5741a">verdict</text>
+    <rect x="582" y="308" width="150" height="28" rx="14" fill="#14161a"/><text x="657" y="326" text-anchor="middle" fill="#fff">episode.sealed</text>
+    <path class="flow" d="M164,322 L174,322"/><path class="flow" d="M306,322 L316,322"/><path class="flow" d="M438,322 L448,322"/><path class="flow" d="M570,322 L580,322"/>
+    <text x="856" y="326" text-anchor="end" fill="#2f9e6f" font-weight="700">final_digest</text>
+  </g>
+  <path class="flow" d="M657,348 L657,372" marker-end="url(#ah)"/>
+
+  <!-- 4 · ScoreReceipt -->
+  <rect x="470" y="384" width="402" height="66" rx="12" fill="#eaf6f0" stroke="#bfe3d3" stroke-width="1.5"/>
+  <text x="486" y="404" class="k">④ ScoreReceipt · the product object</text>
+  <text x="486" y="424" class="sub">reward · recorded_actions_digest · verifier_version · license_level</text>
+  <text x="856" y="440" text-anchor="end" class="mono" fill="#2f7d57">receipt_digest 94daaa23…</text>
+
+  <!-- 5 · env:verify loop -->
+  <rect x="28" y="384" width="404" height="66" rx="12" fill="#fff" stroke="#14161a" stroke-width="1.5"/>
+  <text x="44" y="404" class="k" fill="#14161a">⑤ env:verify — re-derive under the pinned verifier</text>
+  <text x="44" y="424" class="sub">chain ✓ · bundle digest ✓ · re-score recorded actions → reward + receipt_digest ✓</text>
+  <text x="44" y="440" font-family="ui-monospace,Menlo,monospace" font-size="9.5" fill="#6b7280">exit 0 verified · 2 chain tamper · 3 reward mismatch · 4 verifier drift</text>
+  <path class="flow" d="M470,417 L434,417" marker-end="url(#ah)"/>
+  <path class="flow" d="M230,384 C230,360 632,360 632,352" marker-end="url(#ah)" stroke-dasharray="4 3"/>
+
+  <!-- footer · dispute classes -->
+  <text x="28" y="486" class="k">Dispute model</text>
+  <rect x="28"  y="494" width="270" height="60" rx="10" fill="#fff" stroke="#e6e3dc"/><text x="44" y="514" class="lbl">Computation</text><text x="44" y="532" class="sub">chain + verifier recompute?</text><text x="44" y="547" class="sub" fill="#2f7d57">provable by env:verify</text>
+  <rect x="314" y="494" width="270" height="60" rx="10" fill="#fff" stroke="#e6e3dc"/><text x="330" y="514" class="lbl">Definition</text><text x="330" y="532" class="sub">does the reward measure</text><text x="330" y="547" class="sub" fill="#a5741a">the right behavior? → review</text>
+  <rect x="600" y="494" width="272" height="60" rx="10" fill="#fff" stroke="#e6e3dc"/><text x="616" y="514" class="lbl">Governance</text><text x="616" y="532" class="sub">who approved the reward /</text><text x="616" y="547" class="sub" fill="#6b7280">promotion / curriculum? → audit</text>
+</svg>

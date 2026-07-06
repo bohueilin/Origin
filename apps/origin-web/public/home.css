@@ -580,12 +580,18 @@ a:hover { text-decoration: underline; }
 .field { margin-top: 16px; display: grid; gap: 6px; }
 .field label { font-size: 13.5px; font-weight: 600; color: var(--ink); }
 .field label span { color: var(--danger); }
-.field input, .field select, .field textarea {
+.field input:not([type="checkbox"]):not([type="radio"]), .field select, .field textarea {
   font: inherit; font-size: 15px; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--line-2);
   background: #fff; color: var(--ink); width: 100%;
 }
-.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--signal); outline: none; box-shadow: 0 0 0 3px rgba(42,86,232,.18); }
+.field input:not([type="checkbox"]):not([type="radio"]):focus, .field select:focus, .field textarea:focus { border-color: var(--signal); outline: none; box-shadow: 0 0 0 3px rgba(42,86,232,.18); }
 .field input[aria-invalid="true"], .field select[aria-invalid="true"] { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(178,58,48,.15); }
+/* "What does it touch?" checkbox group — chip pills (not stretched text inputs) */
+.field__checks { display: flex; flex-wrap: wrap; gap: 8px; }
+.field__checks label { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 500; color: var(--ink-soft); background: #fff; border: 1px solid var(--line-2); border-radius: 999px; padding: 7px 13px; cursor: pointer; user-select: none; transition: border-color .12s, background .12s, color .12s; }
+.field__checks label:hover { border-color: #bcccff; }
+.field__checks input[type="checkbox"] { appearance: auto; -webkit-appearance: checkbox; width: 15px; height: 15px; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; accent-color: var(--signal); cursor: pointer; flex: none; }
+.field__checks label:has(input:checked) { border-color: #bcccff; background: var(--signal-wash); color: var(--signal-ink); font-weight: 600; }
 .field__error { color: var(--danger); font-size: 13.5px; margin-top: 10px; font-weight: 600; }
 .modal__actions { margin-top: 22px; display: flex; gap: 10px; }
 .modal__note { margin-top: 14px; font-size: 12.5px; color: var(--steel); }
@@ -1081,7 +1087,7 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .honesty-line { font-size: 13px; color: var(--steel); margin-top: 12px; }
 
 /* Interactive 90-second demo (progressive enhancement: 8 panels readable with JS off) */
-.demo { margin-top: 30px; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; background: var(--paper-2); box-shadow: var(--sh-md); }
+.demo { margin-top: 30px; display: block; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; background: var(--paper-2); box-shadow: var(--sh-md); }
 .demo__rail { display: none; }
 .demo.is-enhanced .demo__rail { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; background: var(--paper-3); border-bottom: 1px solid var(--line); }
 .demo__dot { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-family: var(--font-sans); transition: color .12s, background .12s, border-color .12s; }

@@ -100,10 +100,10 @@
       .tr2-digest .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--ink); word-break: break-all; }
       /* the 12-event flow, policy-state coloured */
       .tr2-flow { margin-top: 20px; list-style: none; padding: 0; display: grid; gap: 7px; counter-reset: ev; }
-      .tr2-flow li { display: grid; grid-template-columns: 26px 1fr; align-items: baseline; gap: 12px; background: var(--paper-2); border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 9px; padding: 10px 14px; }
-      .tr2-flow li::before { counter-increment: ev; content: counter(ev); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-soft); text-align: right; }
-      .tr2-flow .ev__a { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--ink); font-weight: 600; }
-      .tr2-flow .ev__d { font-size: 13.5px; color: var(--ink-soft); }
+      .tr2-flow li { display: grid; grid-template-columns: 26px 1fr; align-items: baseline; column-gap: 12px; row-gap: 3px; background: var(--paper-2); border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 9px; padding: 10px 14px; }
+      .tr2-flow li::before { counter-increment: ev; content: counter(ev); grid-column: 1; grid-row: 1; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-soft); text-align: right; }
+      .tr2-flow .ev__a { grid-column: 2; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--ink); font-weight: 600; }
+      .tr2-flow .ev__d { grid-column: 2; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); }
       .tr2-flow li.is-plan { border-left-color: var(--signal); }
       .tr2-flow li.is-held { border-left-color: #d9a441; }
       .tr2-flow li.is-ok { border-left-color: #2f9e6f; }

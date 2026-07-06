@@ -20,11 +20,12 @@ import {
   ENVIRONMENT_NAME, SCENARIO_REGISTRY_VERSION, VERIFIER_VERSION, REWARD_MODEL_VERSION,
   LICENSE_POLICY_VERSION, ROW_SCHEMA_VERSION,
 } from '../server/evalVersions.ts'
-import { canonical, sha256, bundleDigest, chainEpisode, buildScoreReceipt } from '../rlkit/env-evidence.mjs'
+import { canonical, sha256, bundleDigest } from '../rlkit/env-evidence.mjs'
 import { toolsDigest, policiesDigest } from '../rlkit/env-manifest.mjs'
 import { warehouseToolSchemas, warehouseBundleTools, warehousePolicies } from '../rlkit/warehouse-manifest.mjs'
 import { scoreReward } from '../rlkit/reward-module.ts'
 import { exploitSuite } from '../rlkit/exploit-suite.ts'
+import { buildEpisodeAndReceipt } from '../rlkit/build-trace.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = resolve(HERE, '../docs/examples')
@@ -84,29 +85,10 @@ function buildTrace({ idPrefix, task, actions, rollout, oracleLabel, policyName 
   const lic = computeLicenseFromVerdicts([
     { passed: rollout.passed, reward: rollout.reward, catastrophic: rollout.falseAccept },
   ])
-  const steps = [
-    { event_type: 'episode.started', payload: { task_id: task.id, level: task.level, seed: task.seed, oracle_label: oracleLabel } },
-    ...actions.map((action, i) => ({ event_type: 'action.applied', step_index: i, payload: { action } })),
-    { event_type: 'reward.computed', payload: { reward: rollout.reward, passed: rollout.passed, category: rollout.category, outcome: rollout.outcome, shaped_bonus: rollout.shapedBonus } },
-    { event_type: 'verdict.emitted', payload: { license_level: lic.level.id, false_accept: rollout.falseAccept, false_reject: rollout.falseReject } },
-  ]
-  const episode = chainEpisode(
-    {
-      trace_schema_version: '1.0.0',
-      episode_id: `ep_${idPrefix}_${task.id}`,
-      env_bundle_digest: bundle.env_bundle_digest,
-      policy_version: policyName,
-      verifier_version: VERIFIER_VERSION,
-      seed: task.seed,
-      task, // embedded so re-scoring is self-contained; committed by seed_data.dataset in the bundle
-    },
-    steps,
-  )
-  const receipt = buildScoreReceipt({
-    episode,
+  const { episode, receipt } = buildEpisodeAndReceipt({
+    idPrefix, task, actions, rollout, oracleLabel, policyName,
     envBundleDigest: bundle.env_bundle_digest,
-    rollout,
-    versions: { verifier_version: VERIFIER_VERSION, reward_model_version: REWARD_MODEL_VERSION },
+    verifierVersion: VERIFIER_VERSION, rewardModelVersion: REWARD_MODEL_VERSION,
     licenseLevel: lic.level.id,
   })
   return { episode, receipt, license: lic }

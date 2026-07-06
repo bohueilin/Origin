@@ -32,10 +32,19 @@
       "type": "object",
       "required": ["kind"],
       "properties": {
-        "kind": { "enum": ["in_process", "oci"] },
+        "kind": { "enum": ["in_process", "oci", "daytona"], "description": "Execution tier. in_process = Tier-1 gym; oci/daytona = Tier-2 sandboxed (P1)." },
         "code_ref": { "type": "string", "description": "P0 in-process runtime pin (e.g. src/warehouse.ts@warehouse-2026-06-20.1)." },
         "image": { "type": "string", "description": "P1 OCI image digest (sha256:…)." },
-        "openenv_spec": { "type": "string", "description": "P1 pinned OpenEnv release." }
+        "openenv_spec": { "type": "string", "description": "P1 pinned OpenEnv release." },
+        "provider": {
+          "type": "object",
+          "description": "P4 Tier-2 execution provider (Daytona snapshot/fork/reset). `proven=false` labels a fake whose contract is real but whose container/network isolation is NOT proven (real Daytona is P1).",
+          "properties": {
+            "name": { "type": "string" },
+            "isolation": { "type": "string" },
+            "proven": { "type": "boolean" }
+          }
+        }
       }
     },
     "seed_data": {

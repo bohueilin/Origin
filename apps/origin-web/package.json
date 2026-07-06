@@ -16,6 +16,8 @@
     "proof:verify": "node scripts/verify-tr-a002.mjs",
     "env:generate": "node scripts/gen-env-evidence.mjs",
     "env:verify": "node scripts/env-verify.mjs",
+    "env:rollout": "node scripts/env-rollout.mjs",
+    "env:run": "node scripts/env-run.mjs",
     "reward:diff": "node scripts/reward-diff.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",

@@ -774,3 +774,33 @@
 /* focus visibility */
 .pp-app button:focus-visible, .pp-app input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .pp-app *, .pp-app *::before, .pp-app *::after { animation: none !important; transition: none !important; } }
+
+/* ── Cordon × Tell containment panel ─────────────────────────────────────── */
+.pp-verify { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.pp-verify-ok { background: var(--good-bg); color: var(--good-ink); border: 1px solid rgba(18, 165, 103, 0.3); }
+.pp-verify-bad { background: var(--bad-bg); color: var(--bad-ink); border: 1px solid rgba(224, 72, 63, 0.3); }
+.pp-cd-intro { color: var(--text-soft); font-size: 14px; line-height: 1.55; margin: 2px 0 16px; }
+.pp-cd-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pp-cd-step { position: relative; display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start;
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); }
+.pp-cd-ok { border-left: 3px solid var(--good); }
+.pp-cd-denied { border-left: 3px solid var(--bad); }
+.pp-cd-error { border-left: 3px solid var(--warn); }
+.pp-cd-idx { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--mono); font-size: 13px; font-weight: 700; background: var(--bg-2); color: var(--text-soft); border: 1px solid var(--line-2); }
+.pp-cd-body { min-width: 0; }
+.pp-cd-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pp-cd-tool { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--text); background: var(--bg-2); padding: 2px 7px; border-radius: 6px; }
+.pp-cd-pill { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; }
+.pp-cd-pill-ok { background: var(--good-bg); color: var(--good-ink); }
+.pp-cd-pill-denied { background: var(--bad-bg); color: var(--bad-ink); }
+.pp-cd-pill-error { background: var(--warn-bg); color: var(--warn-ink); }
+.pp-cd-who { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); margin-left: auto; }
+.pp-cd-meaning { margin: 6px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--text-soft); }
+.pp-cd-freeze { grid-column: 1 / -1; margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+  background: rgba(47, 109, 246, 0.06); border: 1px dashed rgba(47, 109, 246, 0.3); color: var(--text-soft); font-size: 13px; line-height: 1.5; }
+.pp-cd-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+.pp-cd-stat { text-align: center; padding: 14px 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.pp-cd-num { display: block; font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+.pp-cd-lbl { display: block; margin-top: 6px; font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+@media (max-width: 560px) { .pp-cd-stats { grid-template-columns: 1fr; } .pp-cd-who { margin-left: 0; } }

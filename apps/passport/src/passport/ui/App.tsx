@@ -18,6 +18,7 @@ import { ApprovalCard } from './components/ApprovalCard'
 import { ItineraryPanel } from './components/ItineraryPanel'
 import { AuditTraceViewer } from './components/AuditTraceViewer'
 import { PreventedPanel } from './components/PreventedPanel'
+import { ContainmentPanel } from './components/ContainmentPanel'
 import { Section } from './bits'
 import type { SessionStatus } from '../engine/session'
 import type { ScenarioSpec } from '../scenarios/types'
@@ -159,6 +160,8 @@ export function App() {
         <ToolActivityFeed snap={snap} />
 
         {snap.itinerary && <ItineraryPanel itinerary={snap.itinerary} />}
+
+        <ContainmentPanel />
 
         <details className="pp-report">
           <summary className="pp-report-summary">

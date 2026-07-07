@@ -804,3 +804,48 @@
 .pp-cd-num { display: block; font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
 .pp-cd-lbl { display: block; margin-top: 6px; font-size: 11.5px; color: var(--muted); line-height: 1.35; }
 @media (max-width: 560px) { .pp-cd-stats { grid-template-columns: 1fr; } .pp-cd-who { margin-left: 0; } }
+
+/* ── Leak-vs-hold panel ──────────────────────────────────────────────────── */
+.pp-lh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+.pp-lh-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--panel-2); }
+.pp-lh-leak { border-left: 3px solid var(--bad); }
+.pp-lh-hold { border-left: 3px solid var(--good); }
+.pp-lh-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pp-lh-title { font-weight: 700; font-size: 14px; color: var(--text); }
+.pp-lh-badge { font-size: 11px; font-weight: 800; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 999px; }
+.pp-lh-badge-leak { background: var(--bad-bg); color: var(--bad-ink); }
+.pp-lh-badge-hold { background: var(--good-bg); color: var(--good-ink); }
+.pp-lh-posture { margin: 8px 0; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.pp-lh-out { margin: 0; padding: 10px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px;
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.5; color: var(--text-soft); white-space: pre-wrap; word-break: break-word; overflow-x: auto; }
+@media (max-width: 620px) { .pp-lh-grid { grid-template-columns: 1fr; } }
+
+/* ── Control Room panel ──────────────────────────────────────────────────── */
+.pp-cr-counts { font-size: 12px; font-weight: 700; color: var(--text-soft); font-family: var(--mono); }
+.pp-cr { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.pp-cr-tree { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pp-cr-node { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); cursor: pointer; transition: border-color 0.12s; }
+.pp-cr-node:hover { border-color: var(--line-2); }
+.pp-cr-sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.pp-cr-name { font-weight: 600; font-size: 13.5px; color: var(--text); }
+.pp-cr-frozen { opacity: 0.75; background: rgba(47, 109, 246, 0.05); }
+.pp-cr-paused { background: var(--warn-bg); }
+.pp-cr-denied { opacity: 0.7; }
+.pp-cr-pill { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pp-cr-pill-running { background: var(--good-bg); color: var(--good-ink); }
+.pp-cr-pill-paused { background: var(--warn-bg); color: var(--warn-ink); }
+.pp-cr-pill-awaiting_approval { background: rgba(47, 109, 246, 0.1); color: var(--accent-ink); }
+.pp-cr-pill-denied { background: var(--bad-bg); color: var(--bad-ink); }
+.pp-cr-pill-frozen { background: rgba(47, 109, 246, 0.12); color: var(--accent-deep); }
+.pp-cr-controls { border-top: 1px dashed var(--line); padding-top: 12px; }
+.pp-cr-sel-label { font-size: 13px; color: var(--text-soft); margin-bottom: 8px; }
+.pp-cr-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.pp-cr-btn { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--line-2);
+  background: var(--panel); color: var(--text); cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.pp-cr-btn:hover { border-color: var(--accent); }
+.pp-cr-approve { border-color: rgba(18, 165, 103, 0.4); color: var(--good-ink); }
+.pp-cr-deny { border-color: rgba(224, 72, 63, 0.4); color: var(--bad-ink); }
+.pp-cr-freeze { border-color: rgba(47, 109, 246, 0.4); color: var(--accent-deep); }
+.pp-cr-reset { margin-left: auto; color: var(--muted); }
+.pp-cr-hint { margin: 10px 0 0; font-size: 12px; color: var(--muted); line-height: 1.45; }

@@ -19,6 +19,8 @@ import { ItineraryPanel } from './components/ItineraryPanel'
 import { AuditTraceViewer } from './components/AuditTraceViewer'
 import { PreventedPanel } from './components/PreventedPanel'
 import { ContainmentPanel } from './components/ContainmentPanel'
+import { LeakVsHoldPanel } from './components/LeakVsHoldPanel'
+import { ControlRoomPanel } from './components/ControlRoomPanel'
 import { Section } from './bits'
 import type { SessionStatus } from '../engine/session'
 import type { ScenarioSpec } from '../scenarios/types'
@@ -162,6 +164,10 @@ export function App() {
         {snap.itinerary && <ItineraryPanel itinerary={snap.itinerary} />}
 
         <ContainmentPanel />
+
+        <LeakVsHoldPanel />
+
+        <ControlRoomPanel />
 
         <details className="pp-report">
           <summary className="pp-report-summary">

@@ -23,6 +23,8 @@ import { GrantManager } from './grantManager'
 import { assertNoSecret, redact } from '../secrets/redact'
 import type { AuditLogger } from './auditLogger'
 import type { IdFactory } from './ids'
+import { tellGate, type DeclaredPlan, type ProbeSignal } from './tell'
+import type { Cordon } from './cordon'
 
 export interface RouteResult {
   call: ToolCall
@@ -30,17 +32,32 @@ export interface RouteResult {
   denialReason?: string
 }
 
+/**
+ * Optional Janus guard layer: Tell (measured-intent conformance) + Cordon (containment) run at
+ * the gate, BEFORE authorization. Additive — a router built without a guard behaves exactly as
+ * before, so existing callers are unaffected.
+ */
+export interface RouterGuard {
+  cordon: Cordon
+  agentId: string
+  plan?: DeclaredPlan
+  probes?: ProbeSignal[]
+}
+
 export class ToolRouter {
   private grant: CapabilityGrant
   private audit: AuditLogger
   private idf: IdFactory
   private now: () => number
+  private guard?: RouterGuard
+  private stepIndex = 0
 
-  constructor(grant: CapabilityGrant, audit: AuditLogger, idf: IdFactory, now: () => number) {
+  constructor(grant: CapabilityGrant, audit: AuditLogger, idf: IdFactory, now: () => number, guard?: RouterGuard) {
     this.grant = grant
     this.audit = audit
     this.idf = idf
     this.now = now
+    this.guard = guard
   }
 
   async route(
@@ -74,6 +91,22 @@ export class ToolRouter {
     const liveness = GrantManager.liveness(this.grant, this.now())
     if (liveness !== 'ok') {
       return deny(`grant is ${liveness}`, 'tool.denied')
+    }
+
+    // 1.5) Janus guard — Tell (measured intent) + Cordon (containment), BEFORE authorization.
+    if (this.guard) {
+      const g = this.guard
+      // Cordon: a quarantined agent can do nothing further.
+      if (g.cordon.isFrozen(g.agentId)) return deny('agent is quarantined (Cordon)', 'tool.quarantined')
+      // Tell: the action must conform to the declared plan — declared vs. measured vs. action.
+      if (g.plan) {
+        const verdict = tellGate({ tool_name: adapter.name, capability: cap, step_index: this.stepIndex++ }, g.plan, g.probes)
+        if (verdict.decision === 'block') {
+          // A goal-hijack means the agent ingested a poisoning instruction → taint it (Cordon).
+          g.cordon.markExposed(g.agentId, 'goal-hijack', verdict.reason)
+          return deny(verdict.reason, 'tool.hijack_blocked')
+        }
+      }
     }
 
     // 2) Authorization path.

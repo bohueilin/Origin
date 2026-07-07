@@ -32,8 +32,8 @@ Per-step verification = two model calls per action. On GPU latency a verify-on-e
 Before *what* is allowed, **who** is allowed: `apps/passport` issues delegated agent identity + scoped, revocable authority (identity → authority → verified action → trace). A spatial example: a human-only zone is passable **only** with a live, scoped grant — so REFUSE can fire on *policy*, not just hazard.
 
 ## Two instantiations, one spine
-- **Physical:** `site-to-gym/` (floor → gym → oracle verdict → readiness evidence).
-- **Digital:** `apps/origin-web/rlkit` (EnvironmentBundle → trace → ScoreReceipt). Nine pillars; see `apps/origin-web/docs/rl-platform-architecture.md`.
+- **Physical:** `apps/origin-web` (floor → readiness evidence under a deterministic oracle verdict).
+- **Digital:** `apps/origin-web/rlkit` (EnvironmentBundle → trace → ScoreReceipt). Nine pillars.
 
 ## Boundaries
 Bounded gym evidence, not certification · oracle-only authority · lanes separated (synthetic/counterfactual/fixture/real) · readiness + training fail-closed · no production-autonomy claim.

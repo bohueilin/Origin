@@ -3,16 +3,13 @@
 > **Start from `/Users/bohueilin/hackathons/Origin`. Do not inspect the old hackathon folders** (`0619`, `0620`, `0620-test`, `Cerebras-0628`, `Cerebras-enterprise-0628`, `Chronos`, `Cobra`, `Floor design`) unless Bo-Huei explicitly asks. As of 2026-07-05 the consolidation is complete; those folders are historical references only and their copies are older than Origin.
 
 ## Read first
-`README.md` → `PROJECT_OVERVIEW.md` → `REPO_STRUCTURE.md` → `docs/CONSOLIDATION_STATUS.md`. For the RL-evidence layer: `apps/origin-web/docs/rl-platform-architecture.md`. For Site-to-Gym: `site-to-gym/README.md` + `site-to-gym/ORIGIN_IMPORT.md`.
+`README.md` → `PROJECT_OVERVIEW.md` → `REPO_STRUCTURE.md`.
 
 ## Active commands
 ```bash
 make install && make gates                         # TS monorepo build+test
 cd apps/origin-web && npm run build && npm run lint && npm run verify:evidence && npm test
 cd apps/origin-web && npm run env:verify            # a reproducible ScoreReceipt (exit 0)
-cd site-to-gym && npm run demo                      # floor → gym → verify → dashboard (mock)
-cd site-to-gym && node scripts/validate_trust_boundaries.mjs   # 9/9 boundaries
-cd site-to-gym && npm run train:customer-policy     # MUST fail closed: TRAINING_NOT_AUTHORIZED
 ```
 
 ## Hard rules (do not violate without explicit Bo-Huei authorization)
@@ -27,6 +24,3 @@ cd site-to-gym && npm run train:customer-policy     # MUST fail closed: TRAINING
 
 ## Claim boundaries to preserve in all docs/copy
 Bounded Robot-Readiness Gym evidence, not certification · deterministic oracle authority · tamper-evident = alteration is *detectable* (not "impossible") · synthetic ≠ real · counterfactual ≠ customer-owned · fixture ≠ real customer data · readiness blocked by default · training authorization required · external APIs blocked.
-
-## Naming caution
-`services/foundry-train` (RFT reward-bridge) is a different project from `site-to-gym/services/foundry-train` (gym/dataset builders). Do not merge or overwrite either.

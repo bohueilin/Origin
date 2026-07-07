@@ -1,10 +1,10 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Origin Physical AI — monorepo front door.
 # TS apps: native npm workspaces (apps/*, packages/*).  Python services: per-service uv.
-# (pnpm + Turborepo can be layered on later for dedup/caching — see docs/MIGRATION.md.)
+# (pnpm + Turborepo can be layered on later for dedup/caching.)
 # ─────────────────────────────────────────────────────────────────────────────
 SHELL := /bin/bash
-PY_SERVICES := services/cobra services/chronos services/factoryceo-trm
+PY_SERVICES := services/cobra services/chronos
 
 .PHONY: help install install-js install-py build test gates \
         dev-web dev-passport dev-chronos-ui py-sync py-test clean

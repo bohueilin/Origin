@@ -2,8 +2,7 @@
 
 One system, three planes, one invariant: **a deterministic, auditable control plane decides what an
 agent or robot may do — capability is never permission.** The same trust spine runs from the physical
-(robot readiness) to the digital (agent autonomy) to the research loop that hardens the reward signals
-RSI depends on.
+(robot readiness) to the digital (agent autonomy) to the research loop that hardens the reward signals.
 
 ## Layered view
 
@@ -29,16 +28,13 @@ RSI depends on.
 └───────────────┬─────────────────────────┘ └────────────────────────────────────┘
                 │ brokered call (secret never in model)
 ┌───────────────▼──────────────────────────────────────────────────────────────┐
-│  ④ WORLD — payments, messaging, calendars, robots, deployed RL environments     │
+│  ④ WORLD — payments, messaging, calendars, robots                               │
 │     Snaplii · Discord · ntfy · InsForge · (future) robot fleets                 │
 └────────────────────────────────────────────────────────────────────────────────┘
 
-   RESEARCH LOOP that protects the control plane's judgments (so RSI can't game them):
+   RESEARCH LOOP that protects the control plane's judgments (so the graders can't be gamed):
    services/cobra  (red-team → patch verifiers)  ⇄  services/chronos (find reward hacks → freeze
-   as regression tests → harden grader)  →  hardened verifiers feed back into ② and into RL training.
-
-   services/factoryceo-trm = the planning/repair brain for ②.
-   factory/ (EnvForge) = intake/calibration/export for customer-submitted RL environments → ③/research.
+   as regression tests → harden grader)  →  hardened verifiers feed back into ②.
 ```
 
 ## Trust boundaries (the lines that must never be crossed)
@@ -50,8 +46,7 @@ RSI depends on.
 ## Request lifecycle (one real action, end to end)
 intent → plan → capability check → scoped grant → (side-effect?) human approval → brokered call (secret JIT) → redacted result → audit/license.
 
-## Why the research loop matters for RSI
-Recursive self-improvement is only safe if the **reward/verifier signal can't be gamed.** Cobra and
-Chronos continuously stress-test and patch the very graders the control plane and any RL training rely
+## Why the research loop matters
+The control plane is only safe if the **reward/verifier signal can't be gamed.** Cobra and
+Chronos continuously stress-test and patch the very graders the control plane relies
 on — turning "the agent learned to cheat the metric" into a caught, frozen, regression-tested failure.
-That hardened-verifier output is the substrate the next phase of RL-environment + RSI work builds on.

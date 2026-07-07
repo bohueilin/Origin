@@ -31,18 +31,15 @@ Safety is **loop-bound**: every extra proposal-per-minute is one more unsafe com
 | Criterion | What it is | Proof |
 |---|---|---|
 | **Agent collaboration** | 3-agent SOC loop (Perceiver→Planner→Guardian), each `gemma-4-31b`; a fail-closed deterministic floor is the only judge. | route `/soc`, `src/foundry/soc/` |
-| **Agent collaboration (2nd loop)** | Gemma-proposer → Origin-verifier Gym: a **real `gemma-4-31b`/Cerebras run** turned one building map into **40 scenarios from 120 samples**; the oracle **overrode the proposer 17×**, **0 determinism-inconsistent groups**, **869 tok/s**. | `services/foundry-train/`, `outputs/OUTCOME_SUMMARY.md` |
 | **Multimodal** | Upload a floor-plan **image** → `gemma-4-31b` vision reads it into a structured site map a deterministic pass repairs. **Image in, text out — stills, not video.** | route `/foundry`, `/api/foundry/parse-floor` |
 | **Speed in action** | Loop-race: Cerebras fully triages + verifies ~6–8 incidents in the wall-time a GPU baseline does **one**; live tok/s from the API's `time_info`. | route `/soc`, `/foundry` speed race |
-| **Innovation / physical-AI** | Robot-readiness Gym + **spatial Passport authority edge**: a human-only zone is passable **only** with a live, scoped grant → REFUSE fires on *policy*, not just hazard. | `src/siteEval.ts`, `src/foundry/soc/passport.ts` |
+| **Innovation / physical-AI** | **Spatial Passport authority edge**: a human-only zone is passable **only** with a live, scoped grant → REFUSE fires on *policy*, not just hazard. | `src/siteEval.ts`, `src/foundry/soc/passport.ts` |
 
 **Live-verified safety beat:** Gemma was fooled by **2 prompt injections; the deterministic floor blocked both — 0 destructive actions executed.**
 
-**The Gym, by the numbers:** 4,704 oracle-labeled floors (**finish 1009 / escalate 2947 / refuse 748**) → 4,704 oracle-verified preference pairs at **0 divergence** → a finish/escalate/refuse safety policy at **~93% balanced accuracy on raw geometry** (5-seed mean 0.932, range 0.917–0.941; refuse recall 0.986 mean). *(The full-feature 1.0 is an oracle-recovery **upper bound**, not a learned-safety claim. The policy trains locally in numpy — off-Cerebras.)*
-
 ## Honest by design (the lines we don't cross)
 
-- **Inference only.** `gemma-4-31b` on Cerebras is **image+text in / text out**. No training on Cerebras, no video generation. The safety policy trains locally.
+- **Inference only.** `gemma-4-31b` on Cerebras is **image+text in / text out**. No training on Cerebras, no video generation.
 - **The deterministic oracle is the only judge** — never an LLM grading an LLM. We *contain* prompt injection; we don't claim to *prevent* it — the destructive action just never executes at the floor.
 - **Multimodal = stills** (floor-plan images, alert screenshots), never video.
 - **Speed = platform comparison** (same/peer `gemma-4-31b`, Cerebras WSE vs a GPU baseline) — not "our model is smarter." On-screen tok/s is real `time_info`.
@@ -58,10 +55,8 @@ Safety is **loop-bound**: every extra proposal-per-minute is one more unsafe com
 | **Origin Web** | `apps/origin-web` | The live site + the Foundry (`/foundry`) and AI-SOC (`/soc`) consoles. Deploys to `origin-physical-ai.pages.dev`. |
 | **Origin Passport** | `apps/passport` | Agentic credential broker + Autonomy Trace Console — delegated authority you can trust. |
 | **Chronos UI** | `apps/chronos-ui` | Front-end for the reward-hack discovery / verifier-hardening engine. |
-| **FactoryCEO-TRM** | `services/factoryceo-trm` | Verifiable planner + repair for the readiness layer. |
 | **Cobra / Chronos** | `services/{cobra,chronos}` | Auto-harden RL verifiers against reward hacking (red-team → patch → measure). |
-| **Site-to-Gym / RSI** | `site-to-gym/` *(now integrated)* | Floor → oracle-labeled gym → oracle-verified preference pairs → safety policy. Formerly the `Floor design` sibling repo; consolidated 2026-07-05 (see `MIGRATION_INVENTORY.md`). |
-| **Training Evidence** | `apps/origin-web/rlkit` | Reproducible **ScoreReceipts** — the nine-pillar RL-evidence layer (`env:verify`); design doc `apps/origin-web/docs/rl-platform-architecture.md`. |
+| **Training Evidence** | `apps/origin-web/rlkit` | Reproducible **ScoreReceipts** — the nine-pillar RL-evidence layer (`env:verify`). |
 
 ## Quickstart
 
@@ -77,9 +72,8 @@ The interactive loop needs a Cerebras key (server-side only). Without one, every
 
 ## Where to look
 
-- **Routes:** `/` (landing) · `/foundry` (floor → gym → license) · `/soc` (AI-SOC loop-race) · `/passport` (identity → authority → veto) · `/rsi/rsi_dashboard.html` (Gemma-proposes / Origin-verifies)
+- **Routes:** `/` (landing) · `/foundry` (floor → gym → license) · `/soc` (AI-SOC loop-race) · `/passport` (identity → authority → veto)
 - **The oracle (the only judge):** `apps/origin-web/src/warehouse.ts` → `verifyWarehouseRollout` + `bfsOracle`
-- **Docs:** [`docs/foundry/`](docs/foundry/) — the demo runbook, recording scripts, and the Track-1 submission playbook.
 
 ---
 

@@ -21,13 +21,29 @@ export const GENESIS = '0'.repeat(64) // null hash — chain anchor
 
 // ── canonical JSON: keys sorted at every level, no whitespace, UTF-8. Same as
 //    generate-tr-a002.mjs `canonical` and evidence/digest.ts `stableStringify`.
+//
+// `undefined` handling matches JSON.stringify (DET-1 fix): an object key whose
+// value is undefined (or a function/symbol) is OMITTED, and an undefined array
+// element (or hole/function/symbol) serializes to null. The old fall-through
+// emitted the literal token `undefined` — not valid JSON, not round-trippable,
+// and unreproducible by any independent JSON implementation. Only previously
+// INVALID inputs change; every JSON-safe value serializes byte-identically to
+// before, so committed digests do not move (asserted by env-evidence.test.ts).
 export function canonical(value) {
-  if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']'
+  if (Array.isArray(value)) {
+    // Array.from (not .map) so sparse holes are visited and serialize as null too.
+    return '[' + Array.from(value, (v) => canonical(v) ?? 'null').join(',') + ']'
+  }
   if (value && typeof value === 'object') {
     const keys = Object.keys(value).sort()
-    return '{' + keys.map((k) => JSON.stringify(k) + ':' + canonical(value[k])).join(',') + '}'
+    const parts = []
+    for (const k of keys) {
+      const piece = canonical(value[k])
+      if (piece !== undefined) parts.push(JSON.stringify(k) + ':' + piece) // omit undefined-valued keys
+    }
+    return '{' + parts.join(',') + '}'
   }
-  return JSON.stringify(value) // strings / numbers / booleans / null
+  return JSON.stringify(value) // strings / numbers / booleans / null; undefined/function/symbol → undefined
 }
 
 // ── SHA-256 (synchronous, isomorphic) ────────────────────────────────────────

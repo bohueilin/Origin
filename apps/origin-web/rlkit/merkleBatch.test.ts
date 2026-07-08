@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { batchReceipts, verifyReceiptInBatch, buildMerkleTree, receiptLeaf } from './merkleBatch.mjs'
+import { batchReceipts, verifyReceiptInBatch, buildMerkleTree, receiptLeaf, batchRoot, verifyInclusion } from './merkleBatch.mjs'
 import { generateSigningKey, signSigil, verifySigil } from './sigil.mjs'
 
 const entries = [
@@ -53,5 +53,57 @@ describe('Merkle-batched receipts — one root, O(log N) inclusion proofs', () =
     // one signature covers all N receipts; anyone verifies the root, then any receipt's inclusion.
     expect((await verifySigil(sigil)).ok).toBe(true)
     expect(verifyReceiptInBatch(entries[3], batch.proofs[3], sigil.payload.merkle_root).ok).toBe(true)
+  })
+})
+
+// SEC-1 fix — the CVE-2012-2459 shape: the old construction hashed a lone odd node with
+// ITSELF, so a batch and the same batch with its last leaf duplicated shared one root.
+// Mitigated twice: carry-up (odd node promoted unchanged — nothing is ever duplicated)
+// and count binding (published root = sha256('merkle-root:v2:' + count + ':' + treeRoot)).
+describe('Merkle root is a unique commitment to the leaf set (second-preimage resistance)', () => {
+  const leaves = entries.map(receiptLeaf)
+
+  it('duplicating the last leaf changes the RAW tree root (carry-up kills CVE-2012-2459)', () => {
+    // odd count vs odd count + duplicated last — the exact ambiguity shape
+    expect(buildMerkleTree(leaves.slice(0, 3)).root).not.toBe(
+      buildMerkleTree([...leaves.slice(0, 3), leaves[2]]).root,
+    )
+    expect(buildMerkleTree(leaves).root).not.toBe(buildMerkleTree([...leaves, leaves[4]]).root)
+  })
+
+  it('duplicating the last entry changes the PUBLISHED batch root at every size', () => {
+    for (const n of [1, 2, 3, 4, 5]) {
+      const base = entries.slice(0, n)
+      expect(batchReceipts(base).root).not.toBe(batchReceipts([...base, base[n - 1]]).root)
+    }
+  })
+
+  it('the published root binds the leaf count: batchRoot(count, treeRoot)', () => {
+    const batch = batchReceipts(entries)
+    const treeRoot = buildMerkleTree(leaves).root
+    expect(batch.root).toBe(batchRoot(entries.length, treeRoot))
+    expect(batch.root).not.toBe(treeRoot) // the bare tree root is never the signed commitment
+  })
+
+  it('lying about the count inside a proof breaks verification', () => {
+    const batch = batchReceipts(entries)
+    const lied = { ...batch.proofs[0], count: entries.length + 1 }
+    expect(verifyReceiptInBatch(entries[0], lied, batch.root).ok).toBe(false)
+  })
+
+  it('verifyInclusion fails closed when the count is omitted', () => {
+    const batch = batchReceipts(entries)
+    const p = batch.proofs[2]
+    expect(verifyInclusion(p.leaf, p.proof, batch.root, batch.count)).toBe(true)
+    // @ts-expect-error — count is required; an unbound check must not pass
+    expect(verifyInclusion(p.leaf, p.proof, batch.root)).toBe(false)
+  })
+
+  it('a proof from a carried-up (odd) leaf still verifies and is shorter, not self-hashed', () => {
+    const batch = batchReceipts(entries) // 5 entries — erin (index 4) is carried up twice
+    const erin = batch.proofs[4]
+    expect(erin.proof.length).toBeLessThan(batch.proofs[0].proof.length)
+    expect(erin.proof.every((step) => step.hash !== erin.leaf)).toBe(true) // no self-sibling
+    expect(verifyReceiptInBatch(entries[4], erin, batch.root).ok).toBe(true)
   })
 })

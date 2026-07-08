@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { bfsOracle, warehouseTasks, WAREHOUSE_VERSION } from '../src/warehouse.ts'
 import { computeLicenseFromVerdicts } from '../src/license.ts'
 import { VERIFIER_VERSION, REWARD_MODEL_VERSION } from '../server/evalVersions.ts'
-import { bundleDigest, chainEpisode, openEpisode, buildScoreReceipt, verifyEpisode } from './env-evidence.mjs'
+import { bundleDigest, chainEpisode, openEpisode, buildScoreReceipt, verifyEpisode, canonical, sha256 } from './env-evidence.mjs'
 import { scoreReward } from './reward-module.ts'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -173,5 +173,96 @@ describe('openEpisode fold — byte-identical to chainEpisode + the committed ep
     expect(b.sealed).toBe(true)
     expect(() => b.appendStep({ event_type: 'action.applied' })).toThrow()
     expect(() => b.seal()).toThrow()
+  })
+})
+
+// DET-1 fix — canonical() must emit VALID JSON with JSON.stringify semantics for
+// undefined: an undefined-valued object key is OMITTED; an undefined array element
+// serializes to null. The old fall-through emitted the literal token `undefined`
+// (not JSON, not round-trippable, unreproducible by any independent JSON impl).
+// Everything JSON-safe must serialize byte-identically to before — committed
+// digests must not move (the pinned-digest guards at the bottom enforce that).
+describe('canonical() — JSON.stringify semantics, valid JSON always', () => {
+  // deep-sort keys, then let JSON.stringify do the serialization — an independent
+  // reference for "sorted-key JSON.stringify" (corpus keys are non-integer-like so
+  // the rebuilt object's key order is exactly the sorted order).
+  const sortDeep = (v: unknown): unknown =>
+    Array.isArray(v)
+      ? v.map(sortDeep)
+      : v && typeof v === 'object'
+        ? Object.fromEntries(
+            Object.keys(v as Record<string, unknown>)
+              .sort()
+              .map((k) => [k, sortDeep((v as Record<string, unknown>)[k])]),
+          )
+        : v
+  const ref = (v: unknown) => JSON.stringify(sortDeep(v))
+
+  it('is byte-identical to JSON.stringify-with-sorted-keys on JSON-safe inputs', () => {
+    const corpus: unknown[] = [
+      { b: 1, a: [2, { d: null, c: 'x' }] },
+      { z: 'é€😀', a: ' \\"quote', nested: { deep: { deeper: [true, false, null] } } },
+      [1, 'two', [3, [4, { e: 5 }]], null, true],
+      { num: 0.1, neg: -3.14, big: 9007199254740991, exp: 1e21, tiny: 1e-7, zero: 0 },
+      {},
+      [],
+      'plain string',
+      42,
+      null,
+      true,
+      { 'key with space': [{ ü: 'ß' }, '世界'], empty_obj: {}, empty_arr: [] },
+    ]
+    for (const x of corpus) {
+      expect(canonical(x)).toBe(ref(x)) // byte-identical serialization
+      expect(canonical(JSON.parse(canonical(x)))).toBe(canonical(x)) // round-trip fixpoint
+    }
+  })
+
+  it('omits undefined-valued object keys, exactly like JSON.stringify', () => {
+    expect(canonical({ a: undefined, b: 1 })).toBe('{"b":1}')
+    expect(canonical({ a: undefined, b: 1 })).toBe(JSON.stringify({ a: undefined, b: 1 }))
+    expect(canonical({ a: undefined })).toBe('{}')
+    // functions + symbols are omitted from objects too (JSON.stringify parity)
+    expect(canonical({ f() {}, s: Symbol('x'), b: 1 })).toBe('{"b":1}')
+  })
+
+  it('serializes undefined array elements (and holes/functions/symbols) as null', () => {
+    expect(canonical([1, undefined, 2])).toBe('[1,null,2]')
+    expect(canonical([1, undefined, 2])).toBe(JSON.stringify([1, undefined, 2]))
+    // eslint-disable-next-line no-sparse-arrays
+    const sparse = [1, , 3]
+    expect(canonical(sparse)).toBe(JSON.stringify(sparse)) // '[1,null,3]'
+    expect(canonical([() => 1, Symbol('x')])).toBe('[null,null]')
+  })
+
+  it('always emits parseable JSON for object/array inputs carrying undefined', () => {
+    const out = canonical({ a: [{ u: undefined, k: 1 }, undefined], b: undefined })
+    expect(out).toBe('{"a":[{"k":1},null]}')
+    expect(() => JSON.parse(out)).not.toThrow()
+  })
+
+  it('REGRESSION GUARD — pinned digests captured before the DET-1 fix are unchanged', () => {
+    // Captured by running the PRE-fix code (2026-07-07). If canonical() ever moves a
+    // byte for JSON-safe input, these digests move and this test fails the build.
+    expect(sha256(canonical({ b: 1, a: [2, { d: null, c: 'x' }] }))).toBe(
+      '41f05899d3459a3ecc94ff088afcd290b9ae4f51dc9ddaa35a82a642ddb55070',
+    )
+    const t = chainEpisode(
+      {
+        trace_schema_version: '1.0.0',
+        episode_id: 'ep_iso',
+        env_bundle_digest: 'd'.repeat(64),
+        policy_version: 'p1',
+        verifier_version: 'v1',
+        seed: 7,
+        task: { goal: 'g' },
+      },
+      [
+        { event_type: 'action.applied', step_index: 0, payload: { action: 'N' } },
+        { event_type: 'action.applied', step_index: 1, payload: { action: 'finish' } },
+      ],
+    )
+    expect(t.final_digest).toBe('a718a27715d782e7d925a79da68fef302ba7f8c9bc90b8247d85043573b52ad2')
+    expect(t.log_digest).toBe('612fdb42abc2a1b4e8ee376400b2f8da3d7e1adbe58631a0dd4b1756f25c1b9c')
   })
 })

@@ -59,7 +59,7 @@ function siteUrlRewrite(): Plugin {
 // `${origin}/app` 404s locally and the `insforge_code` is never exchanged — i.e. "Continue
 // with Google" appears to do nothing in local dev.
 function devCleanUrls(): Plugin {
-  const map: Record<string, string> = { '/app': '/app.html', '/capture': '/capture.html', '/auth': '/auth.html', '/passport': '/passport.html', '/foundry': '/foundry.html', '/soc': '/soc.html', '/clip': '/clip.html', '/brief': '/brief.html', '/proof': '/proof.html', '/trust': '/trust.html', '/security': '/security.html' }
+  const map: Record<string, string> = { '/app': '/app.html', '/capture': '/capture.html', '/auth': '/auth.html', '/passport': '/passport.html', '/foundry': '/foundry.html', '/soc': '/soc.html', '/clip': '/clip.html', '/brief': '/brief.html', '/proof': '/proof.html', '/trust': '/trust.html', '/security': '/security.html', '/verify': '/verify.html' }
   return {
     name: 'dev-clean-urls',
     configureServer(server) {
@@ -103,6 +103,7 @@ export default defineConfig(() => {
           proof: resolve(__dirname, 'proof.html'),
           trust: resolve(__dirname, 'trust.html'),
           security: resolve(__dirname, 'security.html'),
+          verify: resolve(__dirname, 'verify.html'),
         },
       },
     },

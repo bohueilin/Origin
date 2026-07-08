@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Analytics with Consent Mode v2 — analytics_storage denied by default,
+         so no cookies are set until (optional) consent is granted. This keeps the
+         privacy policy's "no non-essential tracking cookies" statement true. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-75QBVCL212"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied'
+      });
+      gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
+    </script>
+
+    <title>Verify a credential — offline, in your browser | Origin</title>
+    <meta
+      name="description"
+      content="Paste any Origin evidence artifact — a Sigil signed receipt, a config-bound Crucible credential, a ScoreReceipt, a hash-chained episode trace, or a Merkle inclusion proof — and re-verify it offline in your browser. The page auto-detects the artifact kind, recomputes digests and signatures client-side with the same verifier SDK the test suite gates, and states exactly what each verdict does and does not prove. Nothing you paste is uploaded."
+    />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/verify" />
+    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/home.css?v=23" />
+
+    <style>
+      /* Local helpers for the verifier panels, layered on the shared design system. */
+      .vfy-grid { display: grid; gap: 22px; margin-top: 26px; }
+      .vfy-actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 14px 0 4px; }
+      .vfy-log { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+      .vfy-log li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
+      .vfy-log li > b { color: var(--ink); }
+      .vfy-pill {
+        flex: 0 0 auto; display: inline-flex; align-items: center;
+        font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+        padding: 2.5px 8px; border-radius: 999px; border: 1px solid currentColor;
+        margin-top: 1.5px; text-transform: uppercase;
+      }
+      .vfy-pill--ok   { color: #1d7a4c; background: #e6f4ec; }
+      .vfy-pill--bad  { color: #a03123; background: #fbe9e6; }
+      .vfy-pill--info { color: #55606e; background: #eef0f3; }
+      .field textarea.vfy-input {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+        font-size: 12.5px; line-height: 1.6; min-height: 240px; resize: vertical;
+      }
+      .vfy-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+      .vfy-toggle input { accent-color: var(--signal); width: 15px; height: 15px; margin: 0; cursor: pointer; flex: none; }
+      .vfy-examples { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; margin-top: 14px; }
+      .vfy-examples > span { font-size: 12.5px; color: var(--ink-soft); font-weight: 600; }
+      .vfy-verdict {
+        display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+        margin-top: 18px; padding: 14px 18px; border-radius: 12px;
+        border: 1.5px solid currentColor; font-size: 15px;
+      }
+      .vfy-verdict b { font-size: 22px; letter-spacing: .02em; }
+      .vfy-verdict--ok   { color: #1d7a4c; background: #e6f4ec; }
+      .vfy-verdict--bad  { color: #a03123; background: #fbe9e6; }
+      .vfy-verdict--info { color: #55606e; background: #eef0f3; }
+      .vfy-note { font-size: 12.5px; color: var(--ink-soft); margin-top: 10px; }
+      .vfy-note b { color: var(--ink); }
+      .vfy-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .vfy-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13.5px; }
+      .vfy-table th, .vfy-table td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+      .vfy-table th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--signal-ink); font-weight: 700; white-space: nowrap; }
+      .vfy-table td { color: var(--ink-soft); }
+      .vfy-table td b { color: var(--ink); font-weight: 600; }
+      .vfy-table td code { font-size: 11.5px; }
+      .vfy-table tr:last-child td { border-bottom: none; }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- ===================== SiteHeader ===================== -->
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/" aria-label="Origin — home">
+          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <span class="brand__name">Origin</span>
+        </a>
+
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="/#demo">Demo</a>
+          <a href="/#product">Product</a>
+          <a href="/#evidence">Evidence</a>
+          <a href="/#offer">Review</a>
+          <a href="/trust">Trust</a>
+          <a href="/brief">Brief</a>
+          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
+        </nav>
+
+        <div class="site-header__cta">
+          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
+          <a class="btn btn--primary btn--sm" href="/#offer" data-analytics="nav_cta_click">
+            Book an Agent Evidence Review
+          </a>
+          <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ===================== Intro ===================== -->
+      <section class="section" aria-labelledby="verify-title">
+        <div class="shell">
+          <p class="kicker">Verifier · offline</p>
+          <h1 id="verify-title">Got an Origin credential? Check it yourself.</h1>
+          <p class="section__lede leadin">
+            Paste any Origin evidence artifact — a <b>Sigil</b> signed receipt, a config-bound
+            <b>Crucible credential</b>, a <b>ScoreReceipt</b>, a hash-chained <b>episode trace</b>, or a
+            <b>Merkle inclusion proof</b> — and re-verify it right here. The page auto-detects the
+            artifact kind from its shape and runs the same <b>@origin/verifier-core</b> code the test
+            suite gates: digests recomputed, signatures checked, chains re-derived, in your browser.
+          </p>
+          <p class="mono-note" style="margin-top: 14px;">
+            Model proposes. Environment verifies. Gate decides. Trace proves. — Verification is
+            <b>client-side and offline</b>: nothing you paste is uploaded, and nothing is stored. A green
+            verdict means "reproducible under this verifier," never "safe" or "correct." The loadable
+            examples are <b>synthetic demo data and labeled as such</b>.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== Paste + verify (React) ===================== -->
+      <section class="section section--tint" aria-label="Paste and verify an artifact">
+        <div class="shell">
+          <div id="verify-root"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== Footer ===================== -->
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <div class="site-footer__brand">
+          <a class="brand" href="/" aria-label="Origin — home">
+            <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
+            <span class="brand__name">Origin</span>
+          </a>
+          <p>The evidence layer for AI agents.</p>
+        </div>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <div>
+            <p class="site-footer__h">Product</p>
+            <a href="/#demo">Demo</a>
+            <a href="/#product">Product</a>
+            <a href="/proof">Evidence · traces</a>
+            <a href="/app">Evidence Console (preview)</a>
+            <a href="/trust">Trust center</a>
+          </div>
+          <div>
+            <p class="site-footer__h">Company</p>
+            <a href="/#offer">Agent Evidence Review</a>
+            <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
+            <a href="/llms.txt">For AI agents</a>
+            <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a>
+          </div>
+        </nav>
+      </div>
+      <div class="shell site-footer__legal">
+        <span>© <span data-year>2026</span> Origin</span>
+        <span class="site-footer__legal-links">
+          <a href="/legal/privacy-policy.html">Privacy</a>
+          <a href="/legal/terms-of-service.html">Terms</a>
+          <a href="/#offer">Contact</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/home/enhance.ts"></script>
+    <script type="module" src="/src/verifyMain.tsx"></script>
+  </body>
+</html>

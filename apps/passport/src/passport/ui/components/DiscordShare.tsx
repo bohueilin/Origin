@@ -60,7 +60,7 @@ export function DiscordShare({
             <span className="pp-dc-avatar" aria-hidden="true">
               SQ
             </span>
-            <b>Passport · Concierge</b>
+            <b>Janus · Concierge</b>
             <span className="pp-dc-chan">#game-night</span>
           </div>
           <p className="pp-dc-text">{preview}</p>

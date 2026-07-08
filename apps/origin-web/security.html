@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Analytics with Consent Mode v2 — analytics_storage denied by default,
+         so no cookies are set until (optional) consent is granted. Same posture as
+         every other entry on this site. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-75QBVCL212"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied'
+      });
+      gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
+    </script>
+
+    <title>Security cores — run the evidence engines in your browser | Origin</title>
+    <meta
+      name="description"
+      content="Run Origin's evidence engines live in your browser: sign and verify a portable Sigil receipt (and watch a tampered byte void it), prove a receipt's inclusion in a Merkle-batched signed root, bind decisions to hash-chained policy versions (no retroactive compliance), and issue a config-bound IAM reference check from the deterministic oracle. Everything on this page is synthetic demo data, verified client-side."
+    />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/security" />
+    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/home.css?v=23" />
+
+    <style>
+      /* Local helpers for the live demo panels, layered on the shared design system. */
+      .sec-grid { display: grid; gap: 22px; margin-top: 26px; }
+      .sec-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 4px; }
+      .sec-log { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+      .sec-log li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
+      .sec-log li > b { color: var(--ink); }
+      .sec-pill {
+        flex: 0 0 auto; display: inline-flex; align-items: center;
+        font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+        padding: 2.5px 8px; border-radius: 999px; border: 1px solid currentColor;
+        margin-top: 1.5px; text-transform: uppercase;
+      }
+      .sec-pill--ok   { color: #1d7a4c; background: #e6f4ec; }
+      .sec-pill--bad  { color: #a03123; background: #fbe9e6; }
+      .sec-pill--info { color: #55606e; background: #eef0f3; }
+      .sec-peek { margin-top: 12px; }
+      .sec-peek summary { cursor: pointer; font-size: 13px; color: var(--signal-ink); font-weight: 600; }
+      .sec-peek pre {
+        margin-top: 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px;
+        background: var(--paper-deep, rgba(0,0,0,.04)); overflow-x: auto;
+        font-size: 11.5px; line-height: 1.55; max-height: 300px;
+      }
+      .sec-badge-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+      .sec-rsl {
+        display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 14px;
+        border: 1.5px solid var(--ink); border-radius: 12px; font-weight: 700; font-size: 18px;
+      }
+      .sec-rsl small { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); }
+      .sec-note { font-size: 12.5px; color: var(--ink-soft); margin-top: 10px; }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- ===================== SiteHeader ===================== -->
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/" aria-label="Origin — home">
+          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <span class="brand__name">Origin</span>
+        </a>
+
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="/#demo">Demo</a>
+          <a href="/#product">Product</a>
+          <a href="/#evidence">Evidence</a>
+          <a href="/#offer">Review</a>
+          <a href="/trust">Trust</a>
+          <a href="/brief">Brief</a>
+          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
+        </nav>
+
+        <div class="site-header__cta">
+          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
+          <a class="btn btn--primary btn--sm" href="/#offer" data-analytics="nav_cta_click">
+            Book an Agent Evidence Review
+          </a>
+          <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ===================== Intro ===================== -->
+      <section class="section" aria-labelledby="security-title">
+        <div class="shell">
+          <p class="kicker">Security cores · live</p>
+          <h1 id="security-title">Don't take our word for it. Run the verifiers.</h1>
+          <p class="section__lede leadin">
+            Every panel below runs Origin's real evidence engines <b>in your browser</b> — the same
+            code the test suite gates. Sign a portable receipt and watch one flipped byte void it.
+            Prove a receipt sits inside a signed Merkle batch. Bind a decision to the exact policy
+            version it ran under. Issue a config-bound reference check from the deterministic oracle.
+          </p>
+          <p class="mono-note" style="margin-top: 14px;">
+            Model proposes. Environment verifies. Gate decides. Trace proves. — All data on this page
+            is <b>synthetic demo data and labeled as such</b>. A green check means "reproducible under
+            this verifier," never "safe" or "correct." Verification is client-side; nothing is uploaded.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== Live demos (React) ===================== -->
+      <section class="section section--tint" aria-label="Live verification demos">
+        <div class="shell">
+          <div id="security-root"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== Footer ===================== -->
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <div class="site-footer__brand">
+          <a class="brand" href="/" aria-label="Origin — home">
+            <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
+            <span class="brand__name">Origin</span>
+          </a>
+          <p>The evidence layer for AI agents.</p>
+        </div>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <div>
+            <p class="site-footer__h">Product</p>
+            <a href="/#demo">Demo</a>
+            <a href="/#product">Product</a>
+            <a href="/proof">Evidence · traces</a>
+            <a href="/app">Evidence Console (preview)</a>
+            <a href="/trust">Trust center</a>
+          </div>
+          <div>
+            <p class="site-footer__h">Company</p>
+            <a href="/#offer">Agent Evidence Review</a>
+            <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
+            <a href="/llms.txt">For AI agents</a>
+            <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a>
+          </div>
+        </nav>
+      </div>
+      <div class="shell site-footer__legal">
+        <span>© <span data-year>2026</span> Origin</span>
+        <span class="site-footer__legal-links">
+          <a href="/legal/privacy-policy.html">Privacy</a>
+          <a href="/legal/terms-of-service.html">Terms</a>
+          <a href="/#offer">Contact</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/home/enhance.ts"></script>
+    <script type="module" src="/src/securityMain.tsx"></script>
+  </body>
+</html>

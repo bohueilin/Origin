@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Approval-to-phone — turns a pending Passport approval into a REAL notification on
+// Approval-to-phone — turns a pending Janus approval into a REAL notification on
 // the user's phone (ntfy push, free + no account; Twilio SMS optional) carrying an
 // "Approve" action. A phone tap flips an in-process pending record; the web client
 // polls it and advances the run. The user can equally approve in-app.
@@ -115,7 +115,7 @@ async function pushNtfy(cfg: NotifyConfig, m: { title: string; summary: string; 
 async function sendSms(cfg: NotifyConfig, m: { title: string; amount: number | null; approveUrl: string }): Promise<boolean> {
   if (!(cfg.twilioAccountSid && cfg.twilioAuthToken && cfg.twilioFrom && cfg.approvalPhone)) return false
   try {
-    const tail = m.approveUrl ? ` Approve: ${m.approveUrl}` : ' Open Passport to approve.'
+    const tail = m.approveUrl ? ` Approve: ${m.approveUrl}` : ' Open Janus to approve.'
     const body = `${m.title}${m.amount ? ` ($${m.amount.toFixed(2)})` : ''}.${tail}`
     const auth = Buffer.from(`${cfg.twilioAccountSid}:${cfg.twilioAuthToken}`).toString('base64')
     const params = new URLSearchParams({ To: cfg.approvalPhone, From: cfg.twilioFrom, Body: body })
@@ -197,10 +197,10 @@ export function phoneApprove(id: string): PhoneApproveResult {
   sweep(Date.now())
   const rec = id ? pending.get(id) : undefined
   if (!rec) {
-    return { ok: false, status: 'expired', html: page('Link expired', 'This approval link is no longer valid. Approve in the Passport app instead.') }
+    return { ok: false, status: 'expired', html: page('Link expired', 'This approval link is no longer valid. Approve in the Janus app instead.') }
   }
   if (rec.status === 'pending') rec.status = 'approved' // one-shot: a second tap is a no-op
-  return { ok: true, status: rec.status, html: page('Approved ✓', `“${rec.title}” is approved. Head back to Passport — it’s continuing now.`) }
+  return { ok: true, status: rec.status, html: page('Approved ✓', `“${rec.title}” is approved. Head back to Janus — it’s continuing now.`) }
 }
 
 /**
@@ -213,8 +213,8 @@ export function phoneApprove(id: string): PhoneApproveResult {
 export function phoneApproveViaGet(id: string, ua: string): { ok: boolean; status?: PendingStatus; html: string } {
   sweep(Date.now())
   const rec = id ? pending.get(id) : undefined
-  if (!rec) return { ok: false, html: page('Link expired', 'This approval link is no longer valid. Approve in the Passport app instead.') }
-  if (rec.status === 'approved') return { ok: true, status: 'approved', html: page('Approved ✓', `“${rec.title}” is already approved. Head back to Passport — it’s continuing now.`) }
+  if (!rec) return { ok: false, html: page('Link expired', 'This approval link is no longer valid. Approve in the Janus app instead.') }
+  if (rec.status === 'approved') return { ok: true, status: 'approved', html: page('Approved ✓', `“${rec.title}” is already approved. Head back to Janus — it’s continuing now.`) }
   if (looksLikeRealBrowser(ua)) {
     if (rec.status === 'pending') rec.status = 'approved'
     return { ok: true, status: 'approved', html: page('Approved ✓', `“${rec.title}” is approved — your agent is completing the purchase now. You can close this tab.`) }
@@ -224,10 +224,10 @@ export function phoneApproveViaGet(id: string, ua: string): { ok: boolean; statu
 
 // The confirm page: a button that POSTs to the same URL (form action="" preserves ?id=).
 function confirmPage(title: string): string {
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Passport</title><style>body{font:16px -apple-system,system-ui,sans-serif;background:#0b0d12;color:#fff;display:grid;place-items:center;min-height:100vh;margin:0}.c{max-width:340px;text-align:center;padding:28px}.m{width:46px;height:46px;border-radius:13px;margin:0 auto 18px;background:linear-gradient(150deg,#7aa2ff,#3b62d6 60%,#2bd49b)}.h{font-size:22px;font-weight:700;margin:0 0 6px}.t{font-size:17px;color:#fff;margin:0 0 22px}.b{font:700 16px -apple-system,system-ui,sans-serif;background:#2bd49b;color:#06251a;border:0;border-radius:12px;padding:15px 0;width:100%;cursor:pointer}.p{color:#7e8794;margin:18px 0 0;font-size:13px}</style></head><body><div class="c"><div class="m"></div><p class="h">Approve this action?</p><p class="t">${esc(title)}</p><form method="post" action=""><button class="b" type="submit">Approve</button></form><p class="p">Passport · expires in 10 min</p></div></body></html>`
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Janus</title><style>body{font:16px -apple-system,system-ui,sans-serif;background:#0b0d12;color:#fff;display:grid;place-items:center;min-height:100vh;margin:0}.c{max-width:340px;text-align:center;padding:28px}.m{width:46px;height:46px;border-radius:13px;margin:0 auto 18px;background:linear-gradient(150deg,#7aa2ff,#3b62d6 60%,#2bd49b)}.h{font-size:22px;font-weight:700;margin:0 0 6px}.t{font-size:17px;color:#fff;margin:0 0 22px}.b{font:700 16px -apple-system,system-ui,sans-serif;background:#2bd49b;color:#06251a;border:0;border-radius:12px;padding:15px 0;width:100%;cursor:pointer}.p{color:#7e8794;margin:18px 0 0;font-size:13px}</style></head><body><div class="c"><div class="m"></div><p class="h">Approve this action?</p><p class="t">${esc(title)}</p><form method="post" action=""><button class="b" type="submit">Approve</button></form><p class="p">Janus · expires in 10 min</p></div></body></html>`
 }
 
 // Both interpolations are escaped — no caller can ever inject markup into this page.
 function page(heading: string, body: string): string {
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Passport</title><style>body{font:16px -apple-system,system-ui,sans-serif;background:#0b0d12;color:#fff;display:grid;place-items:center;min-height:100vh;margin:0}.c{max-width:340px;text-align:center;padding:28px}.m{width:46px;height:46px;border-radius:13px;margin:0 auto 18px;background:linear-gradient(150deg,#7aa2ff,#3b62d6 60%,#2bd49b)}.h{font-size:26px;font-weight:700;margin:0 0 10px}.p{color:#aeb6c2;margin:0;line-height:1.5}</style></head><body><div class="c"><div class="m"></div><p class="h">${esc(heading)}</p><p class="p">${esc(body)}</p></div></body></html>`
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Janus</title><style>body{font:16px -apple-system,system-ui,sans-serif;background:#0b0d12;color:#fff;display:grid;place-items:center;min-height:100vh;margin:0}.c{max-width:340px;text-align:center;padding:28px}.m{width:46px;height:46px;border-radius:13px;margin:0 auto 18px;background:linear-gradient(150deg,#7aa2ff,#3b62d6 60%,#2bd49b)}.h{font-size:26px;font-weight:700;margin:0 0 10px}.p{color:#aeb6c2;margin:0;line-height:1.5}</style></head><body><div class="c"><div class="m"></div><p class="h">${esc(heading)}</p><p class="p">${esc(body)}</p></div></body></html>`
 }

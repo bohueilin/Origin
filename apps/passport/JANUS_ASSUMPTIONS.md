@@ -1,4 +1,4 @@
-# Passport — Build Assumptions & Decisions
+# Janus (formerly Passport) — Build Assumptions & Decisions
 
 > Local-first agentic **identity + intent-authorization** layer for personal agents and
 > multi-agent workflows. "1Password for agentic intent, credentials, and delegated action."
@@ -7,7 +7,7 @@
 
 ## North star
 **Capability is not permission.** The user declares *intent*. The agent proposes a *plan*.
-Passport authorizes *scoped capabilities*. Tools execute *only within granted bounds*. Every
+Janus authorizes *scoped capabilities*. Tools execute *only within granted bounds*. Every
 action leaves a *trace*. Risky actions require *explicit approval*. Authority is *revocable* and
 *expires*.
 
@@ -17,11 +17,11 @@ action leaves a *trace*. Risky actions require *explicit approval*. Authority is
   The existing "Autonomy Trace Console" app (`index.html` → `src/App.tsx`) is left untouched.
 - **Why here:** this session is rooted here; it is already React + TypeScript + Vite + vitest +
   ESLint with strict TS — the ideal substrate for the spec's TS interfaces and a polished React
-  UI. Keeps Passport cleanly separate from both the gym app (here) and the Origin Physical AI robot site
+  UI. Keeps Janus cleanly separate from both the gym app (here) and the Origin Physical AI robot site
   (the sibling `0620-test/physical-ai-demo-test` repo).
 - **Relationship to prior work:** the Origin Physical AI repo already has a production-grade *credential
   broker* (`src/credentials/` — fail-closed authz pipeline, `SecretBroker` mock + 1Password
-  scaffold, Rule-of-Two, append-only audit). Passport is the **broader consumer-agent product**
+  scaffold, Rule-of-Two, append-only audit). Janus is the **broader consumer-agent product**
   that broker enables. I re-implement the proven patterns (fail-closed gating, redaction,
   mock-only secrets, append-only audit) against *this* spec's interfaces, in this repo, so the
   demo is self-contained.
@@ -68,7 +68,7 @@ explicit, per-action human approval — and is *simulated regardless*. A judge s
 
 ## Assumptions made (documented, not blocking)
 1. **No live 1Password locally.** `OnePasswordSecretBroker.isAvailable()` returns `false` (no
-   `OP_CONNECT_*` env), so Passport uses `MockSecretBroker`. The mock holds a fake secret in
+   `OP_CONNECT_*` env), so Janus uses `MockSecretBroker`. The mock holds a fake secret in
    memory and returns only an opaque handle + redacted metadata (field *labels*, never values).
 2. **Intent parsing is deterministic, not LLM-backed.** The demo is scenario-driven; the
    `IntentParser` maps a request to a normalized intent via the scenario spec (and keyword
@@ -79,7 +79,7 @@ explicit, per-action human approval — and is *simulated regardless*. A judge s
    Nebius/Vapi/InsForge Build Day, HUD × YC RL Environments Hackathon). No real PII.
 4. **"Cost" and "ETA" values are mock estimates** shown only inside approval packets; no payment
    rail exists.
-5. **Dark, premium theme** consistent with the repo's existing dark color-scheme; Passport gets its
+5. **Dark, premium theme** consistent with the repo's existing dark color-scheme; Janus gets its
    own identity-card visual language (capability chips, risk badges, lock/grant/revoke states).
 
 ## How the multi-agent harness is used (and why, given the mandate)

@@ -100,10 +100,10 @@ export interface ScenarioSpec {
   ttl_seconds: number
   /** Headline risk for the intent card (the engine also computes one from capabilities). */
   risk_level: RiskLevel
-  /** What Passport does if an approval is denied. */
+  /** What Janus does if an approval is denied. */
   fallback_plan: string
   steps: StepSpec[]
   finalize: (ctx: FinalizeContext) => Itinerary
-  /** "What Passport prevented" bullet points for this scenario. */
+  /** "What Janus prevented" bullet points for this scenario. */
   prevented: string[]
 }

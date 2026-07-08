@@ -1,5 +1,5 @@
 // Planner — turns a scenario script into an AgentPlan: an ordered list of steps with the
-// approval gates marked. The plan is what the agent *proposes*; Passport decides what may run.
+// approval gates marked. The plan is what the agent *proposes*; Janus decides what may run.
 
 import type { AgentPlan, PlanStep, UserIntent } from '../types'
 import type { ScenarioSpec } from '../scenarios/types'

@@ -31,7 +31,7 @@ export const RiskClassifier = {
       notes.push('Uses location to plan — live location is never shared continuously.')
     }
     if (notes.length === 0) {
-      notes.push('Read-only discovery and drafts; nothing leaves Passport without approval.')
+      notes.push('Read-only discovery and drafts; nothing leaves Janus without approval.')
     }
 
     // The headline risk is the true max across every capability touched — a critical commit

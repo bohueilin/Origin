@@ -14,7 +14,7 @@
 //   revoke(handle)    → kill a live lease (the in-flight kill switch).
 //
 // Bounded delegation: a child lease's scope ⊆ its parent's, with a TTL ≤ the parent's remaining.
-// Fail-safe: if no service-account token is set, isAvailable() is false and Passport falls back to
+// Fail-safe: if no service-account token is set, isAvailable() is false and Janus falls back to
 // the in-memory mock broker — durability/realness degrade, nothing breaks.
 // ----------------------------------------------------------------------------
 

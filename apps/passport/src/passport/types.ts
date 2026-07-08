@@ -1,4 +1,4 @@
-// Passport core data models + service contracts.
+// Janus core data models + service contracts.
 //
 // Everything here is local, deterministic, and side-effect-free. No type carries a
 // raw secret: the SecretBroker returns opaque handles + redacted metadata only.

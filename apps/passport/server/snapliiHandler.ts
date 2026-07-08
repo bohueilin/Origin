@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 // Snaplii real-payment broker — runs ONLY in the Node server. The SNAPLII_API_KEY
-// (snp_sk_live_…) lives here and is never sent to the browser. Mirrors Passport's
-// own thesis: Snaplii alone allows within-cap auto-spend; Passport overrides that
+// (snp_sk_live_…) lives here and is never sent to the browser. Mirrors Janus's
+// own thesis: Snaplii alone allows within-cap auto-spend; Janus overrides that
 // to require a per-action, one-shot, amount-bound, HMAC-signed human approval.
 //
 // Flow (hardened after an adversarial review):

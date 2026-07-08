@@ -227,7 +227,7 @@ export function loadConfig(cwd: string = process.cwd()): AppConfig {
     insforgeBaseUrl: insforge.baseUrl,
     insforgeApiKey: insforge.apiKey,
     resendApiKey: get('RESEND_API_KEY') || undefined,
-    from: get('EMAIL_FROM') || 'Passport',
+    from: get('EMAIL_FROM') || 'Janus',
     to: get('SUMMARY_EMAIL') || undefined,
   }
   const onepassword: OnePasswordConfig = {

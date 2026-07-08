@@ -3,7 +3,7 @@ import type { PassportSnapshot } from '../../engine/session'
 import { Section } from '../bits'
 import { clockTime, shortDigest } from '../format'
 
-const ACTOR_LABEL: Record<AuditActor, string> = { user: 'You', agent: 'Agent', passport: 'Passport', tool: 'Tool' }
+const ACTOR_LABEL: Record<AuditActor, string> = { user: 'You', agent: 'Agent', passport: 'Janus', tool: 'Tool' }
 
 export function AuditTraceViewer({ snap }: { snap: PassportSnapshot }) {
   const { audit } = snap

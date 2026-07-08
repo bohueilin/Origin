@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Cloudflare Workers entry for the Passport backend (always-on, public-safe).
+// Cloudflare Workers entry for the Janus backend (always-on, public-safe).
 //
 // The whole Hono app (server/app.ts createApp) is hosted INSIDE a single Durable Object so the
 // handlers' in-process state (notify pending-approval map, nonce ledger, credential leases) stays
@@ -51,7 +51,7 @@ function configFromEnv(env: Env): AppConfig {
       insforgeBaseUrl,
       insforgeApiKey,
       resendApiKey: get('RESEND_API_KEY'),
-      from: get('EMAIL_FROM') ?? 'Passport',
+      from: get('EMAIL_FROM') ?? 'Janus',
       to: get('SUMMARY_EMAIL'),
     },
     // 1Password native SDK can't run on Workers → no token → broker uses its mock path.

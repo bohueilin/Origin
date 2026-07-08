@@ -35,9 +35,9 @@ function MailIcon() {
 }
 
 /**
- * The execution-results moment: once the run completes, Passport reports back exactly what it did —
+ * The execution-results moment: once the run completes, Janus reports back exactly what it did —
  * only the actions you approved. It AUTO-emails you the recap on completion; the button re-sends it.
- * Closes the loop: request → understand → act (with a granted Passport) → results.
+ * Closes the loop: request → understand → act (with a granted Janus) → results.
  */
 export function ResultsSummary({ snap, exec, ctx }: { snap: PassportSnapshot; exec: ExecState; ctx: OrderContext | null }) {
   const [emailing, setEmailing] = useState(false)

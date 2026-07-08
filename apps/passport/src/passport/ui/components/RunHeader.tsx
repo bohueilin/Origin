@@ -48,7 +48,7 @@ function BrandIcon({ name }: { name: string }) {
 }
 
 /**
- * The human-first run header (Luma-clean): your request, the tools Passport granted (with their
+ * The human-first run header (Luma-clean): your request, the tools Janus granted (with their
  * product app-icons, each flipping to "approved" once you OK it), overall progress, and the phone
  * approval callout. The technical grant/intent/audit detail lives lower, in the "Full report" disclosure.
  */
@@ -69,7 +69,7 @@ export function RunHeader({
   const awaiting = snap.status === 'awaiting_approval'
   const pending = snap.approvals.find((a) => a.approval_id === snap.pendingApprovalId)
   const live = snap.status === 'running' || snap.status === 'awaiting_approval'
-  // Capability breakdown (these three are one axis and sum to the capabilities Passport weighed):
+  // Capability breakdown (these three are one axis and sum to the capabilities Janus weighed):
   // granted = read/draft the agent got · gated = unlocked only by your approval · forbidden = never.
   const granted = snap.grant.allowed_capabilities.length
   const gated = snap.grant.requires_approval_for.length
@@ -94,7 +94,7 @@ export function RunHeader({
       </div>
 
       <div className="pp-runstats" aria-label="Run summary">
-        <div className="pp-stat" title="Branded tools Passport scoped to the agent for this task">
+        <div className="pp-stat" title="Branded tools Janus scoped to the agent for this task">
           <b>{tools.length}</b><span>Tools</span>
         </div>
         <div className="pp-stat" title="Steps in the agent's plan, from reading your intent to the final itinerary">
@@ -113,7 +113,7 @@ export function RunHeader({
 
       {tools.length > 0 && (
         <div className="pp-runhead-tools">
-          <span className="pp-mini-label">Tools Passport gave the agent — only these, only for this task</span>
+          <span className="pp-mini-label">Tools Janus gave the agent — only these, only for this task</span>
           <div className="pp-tool-row">
             {tools.map((t) => {
               const isDone = capDone(t.cap)

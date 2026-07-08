@@ -14,7 +14,7 @@ export default defineConfig(() => {
 
   return {
     plugins: [react()],
-    // Multi-entry: the existing console (index.html) + the Passport demo (passport.html,
+    // Multi-entry: the existing console (index.html) + the Janus demo (passport.html,
     // a self-contained client-side app at /passport.html — no backend needed).
     build: {
       rollupOptions: {

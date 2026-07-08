@@ -2,7 +2,7 @@ import { Section } from '../bits'
 
 export function PreventedPanel({ prevented }: { prevented: string[] }) {
   return (
-    <Section kicker="What Passport prevented" title="Useful autonomy without silent overreach">
+    <Section kicker="What Janus prevented" title="Useful autonomy without silent overreach">
       <ul className="pp-prevented">
         {prevented.map((p) => (
           <li key={p}>

@@ -44,7 +44,7 @@ export const SECONDARY_USE_CASES: UseCaseCard[] = [
     title: 'Credentialed Task Without Exposure',
     prompt: 'Use my event account to prepare registration, but do not reveal or store my password.',
     capabilities: ['credential.scoped_request', 'events.registration.prepare'],
-    safety_angle: 'The agent never sees the raw secret — Passport brokers a scoped, opaque handle.',
+    safety_angle: 'The agent never sees the raw secret — Janus brokers a scoped, opaque handle.',
     status: 'live',
     maps_to: 'fill-my-night',
   },

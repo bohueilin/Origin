@@ -48,7 +48,7 @@ function composeHtml(scenario: string, request: string, rows: Row[]): string {
     `<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">` +
     `<tr><td style="padding:0 8px 18px;">` +
     `<div style="display:inline-block;width:34px;height:34px;border-radius:10px;background:linear-gradient(150deg,#7aa2ff,#3b62d6 60%,#2bd49b);vertical-align:middle;"></div>` +
-    `<span style="font:700 19px -apple-system,system-ui,sans-serif;color:#14171e;vertical-align:middle;margin-left:10px;">Passport</span>` +
+    `<span style="font:700 19px -apple-system,system-ui,sans-serif;color:#14171e;vertical-align:middle;margin-left:10px;">Janus</span>` +
     `<span style="font:13px -apple-system,system-ui,sans-serif;color:#8b94a2;margin-left:8px;">Agentic Journey Summary</span>` +
     `</td></tr>` +
     `<tr><td style="background:#ffffff;border:1px solid #e9ebef;border-radius:18px;padding:24px 26px;">` +
@@ -59,7 +59,7 @@ function composeHtml(scenario: string, request: string, rows: Row[]): string {
     `<p style="font:13px -apple-system,system-ui,sans-serif;color:#0a7d52;margin:8px 0 0;">Every real-world action ran only after you approved it.</p>` +
     `</td></tr>` +
     `<tr><td style="padding:16px 8px 0;font:12px -apple-system,system-ui,sans-serif;color:#8b94a2;">` +
-    `Passport &middot; delegated autonomy you can trust. Credentials stayed brokered, scoped, and revocable.` +
+    `Janus &middot; delegated autonomy you can trust. Credentials stayed brokered, scoped, and revocable.` +
     `</td></tr>` +
     `</table></td></tr></table></body></html>`
   )
@@ -92,7 +92,7 @@ export async function sendJourneyEmail(body: unknown, cfg: EmailConfig): Promise
   if (!cfg.to) {
     return { ok: true, sent: false, to: '(set SUMMARY_EMAIL)', preview: previewText }
   }
-  const subject = `Your Passport journey — ${scenario}`
+  const subject = `Your Janus journey — ${scenario}`
 
   // Provider 1 — InsForge managed transactional email (reuses InsForge creds; no extra key).
   if (cfg.insforgeBaseUrl && cfg.insforgeApiKey) {

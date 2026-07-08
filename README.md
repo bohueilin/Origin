@@ -53,7 +53,7 @@ Safety is **loop-bound**: every extra proposal-per-minute is one more unsafe com
 | Part | Path | What it is |
 |---|---|---|
 | **Origin Web** | `apps/origin-web` | The live site + the Foundry (`/foundry`) and AI-SOC (`/soc`) consoles. Deploys to `origin-physical-ai.pages.dev`. |
-| **Origin Passport** | `apps/passport` | Agentic credential broker + Autonomy Trace Console — delegated authority you can trust. |
+| **Origin Janus** (formerly Passport) | `apps/passport` | Agentic credential broker + Autonomy Trace Console — delegated authority you can trust. |
 | **Chronos UI** | `apps/chronos-ui` | Front-end for the reward-hack discovery / verifier-hardening engine. |
 | **Cobra / Chronos** | `services/{cobra,chronos}` | Auto-harden RL verifiers against reward hacking (red-team → patch → measure). |
 | **Training Evidence** | `apps/origin-web/rlkit` | Reproducible **ScoreReceipts** — the nine-pillar RL-evidence layer (`env:verify`). |

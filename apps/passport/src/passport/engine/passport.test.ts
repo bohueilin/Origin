@@ -294,7 +294,7 @@ describe('revocation', () => {
 })
 
 describe('agent collaboration', () => {
-  it('exposes a roster and a hand-off stream where Passport authorizes each capability', async () => {
+  it('exposes a roster and a hand-off stream where Janus authorizes each capability', async () => {
     const c = clock()
     const session = new PassportSession(getScenario('fill-my-night')!, { now: c.now })
     const s = await drive(session)
@@ -303,7 +303,7 @@ describe('agent collaboration', () => {
       expect(s.agents.some((a) => a.id === id)).toBe(true)
     }
     expect(s.agents.length).toBeGreaterThan(5)
-    // The stream shows workers requesting capabilities and Passport granting them.
+    // The stream shows workers requesting capabilities and Janus granting them.
     expect(s.collab.length).toBeGreaterThan(6)
     expect(s.collab.some((m) => m.kind === 'request' && m.to === 'passport')).toBe(true)
     expect(s.collab.some((m) => m.kind === 'grant' && m.from === 'passport')).toBe(true)

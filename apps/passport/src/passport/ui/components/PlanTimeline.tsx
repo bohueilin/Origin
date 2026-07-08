@@ -21,7 +21,7 @@ export function PlanTimeline({ snap }: { snap: PassportSnapshot }) {
   return (
     <Section
       kicker="5 · Multi-step plan"
-      title="The agent proposes; Passport gates"
+      title="The agent proposes; Janus gates"
       aside={<span className="pp-count">{doneCount}/{plan.steps.length} done</span>}
     >
       <div className="pp-progress" aria-hidden="true"><span style={{ width: `${pct}%` }} /></div>

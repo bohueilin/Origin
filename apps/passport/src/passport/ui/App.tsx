@@ -172,7 +172,7 @@ export function App() {
         <details className="pp-report">
           <summary className="pp-report-summary">
             <span>Full report</span>
-            <span className="pp-report-hint">grant · intent · what Passport prevented · tamper-evident audit</span>
+            <span className="pp-report-hint">grant · intent · what Janus prevented · tamper-evident audit</span>
           </summary>
           <div className="pp-report-body">
             <PassportCard snap={snap} onRevoke={pp.revoke} />
@@ -196,7 +196,7 @@ function TopBar({ crumb, onBack, status }: { crumb?: string; onBack?: () => void
     <header className="pp-top">
       <div className="pp-top-brand" onClick={onBack} role={onBack ? 'button' : undefined}>
         <span className="pp-top-mark" aria-hidden="true" />
-        <span className="pp-top-name">Passport</span>
+        <span className="pp-top-name">Janus</span>
         <span className="pp-top-sub">delegated autonomy you can trust</span>
       </div>
       {crumb && (
@@ -226,8 +226,8 @@ function statusLabel(s: SessionStatus): string {
 function Footer() {
   return (
     <footer className="pp-foot">
-      <span>Passport · local demo</span>
-      <span className="pp-foot-mid">Capability is not permission. The agent can propose; Passport decides what it may do.</span>
+      <span>Janus · local demo</span>
+      <span className="pp-foot-mid">Capability is not permission. The agent can propose; Janus decides what it may do.</span>
       <span>No real actions · credentials stay brokered, scoped, revocable</span>
     </footer>
   )

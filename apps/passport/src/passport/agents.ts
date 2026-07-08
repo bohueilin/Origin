@@ -1,6 +1,6 @@
-// The agent roster. Passport orchestrates a small team of specialist agents that collaborate
+// The agent roster. Janus orchestrates a small team of specialist agents that collaborate
 // to fulfil one intent: a Planner decomposes it, an Orchestrator routes each step to the right
-// worker, every worker must request its capability from Passport (the policy broker) before it
+// worker, every worker must request its capability from Janus (the policy broker) before it
 // can act, and sensitive acts are escalated to You. This file is the single source of truth for
 // who the agents are and which one owns a given tool — the UI renders them and the session
 // choreographs their hand-offs.
@@ -17,7 +17,7 @@ export interface Agent {
 
 export const ORCHESTRATOR: Agent = { id: 'orchestrator', name: 'Orchestrator', role: 'Routes each step', mono: 'OR', hue: 38 }
 export const PLANNER: Agent = { id: 'planner', name: 'Planner', role: 'Decomposes the intent', mono: 'PL', hue: 268 }
-export const PASSPORT: Agent = { id: 'passport', name: 'Passport', role: 'Authorizes · gates · audits', mono: 'PP', hue: 150 }
+export const PASSPORT: Agent = { id: 'passport', name: 'Janus', role: 'Authorizes · gates · audits', mono: 'JN', hue: 150 }
 export const USER: Agent = { id: 'user', name: 'You', role: 'Approves sensitive acts', mono: 'YOU', hue: 8 }
 
 // Domain workers, keyed by the tool namespace (the part before the first dot).

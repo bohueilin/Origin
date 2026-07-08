@@ -52,7 +52,7 @@ export function Home({ onRun }: { onRun: (s: ScenarioSpec) => void }) {
         </div>
         <h1 className="pp-hero-title">Capability is not permission.</h1>
         <p className="pp-hero-lede">
-          Passport is the control plane for <b>delegated autonomy</b> — the agent proposes a plan, Passport issues a{' '}
+          Janus is the control plane for <b>delegated autonomy</b> — the agent proposes a plan, Janus issues a{' '}
           <b>scoped, revocable</b> grant, and every real-world action waits for your approval. Watch one run the loop:
         </p>
 
@@ -74,7 +74,7 @@ export function Home({ onRun }: { onRun: (s: ScenarioSpec) => void }) {
               playsInline
               controls
               preload="metadata"
-              aria-label="Agent journey: an agent reorders your usual DoorDash, gated by Passport approval"
+              aria-label="Agent journey: an agent reorders your usual DoorDash, gated by Janus approval"
             />
           </div>
           <figcaption className="pp-hero-cap">
@@ -83,7 +83,7 @@ export function Home({ onRun }: { onRun: (s: ScenarioSpec) => void }) {
         </figure>
 
         <p className="pp-hero-founder">
-          We’re building Passport because the next platform shift isn’t smarter agents — it’s <b>agents you can
+          We’re building Janus because the next platform shift isn’t smarter agents — it’s <b>agents you can
           trust to act</b>. Identity-bound, policy-governed, user-authorized, auditable, revocable.
         </p>
       </section>
@@ -195,7 +195,7 @@ export function Home({ onRun }: { onRun: (s: ScenarioSpec) => void }) {
       </section>
 
       <section className="pp-pillars">
-        <div className="pp-kicker">Why Passport advances the infrastructure for safe agent adoption</div>
+        <div className="pp-kicker">Why Janus advances the infrastructure for safe agent adoption</div>
         <div className="pp-pillar-grid">
           {PILLARS.map((p) => (
             <div key={p.k} className="pp-pillar">
@@ -207,7 +207,7 @@ export function Home({ onRun }: { onRun: (s: ScenarioSpec) => void }) {
       </section>
 
       <section className="pp-usecases">
-        <div className="pp-kicker">More flows Passport governs</div>
+        <div className="pp-kicker">More flows Janus governs</div>
         <div className="pp-usecase-grid">
           {SECONDARY_USE_CASES.map((u) => {
             const target = u.maps_to && u.maps_to !== 'any' ? getScenario(u.maps_to) : null

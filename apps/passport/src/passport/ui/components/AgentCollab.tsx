@@ -13,7 +13,7 @@ const STATUS_LABEL: Record<AgentView['status'], string> = {
 
 const PHASE_LABEL: Record<string, string> = {
   thinking: 'reasoning about the step',
-  authorizing: 'asking Passport for the capability',
+  authorizing: 'asking Janus for the capability',
   working: 'doing the work',
   escalating: 'escalating to you for approval',
 }
@@ -61,7 +61,7 @@ export function AgentCollab({ snap }: { snap: PassportSnapshot }) {
   return (
     <Section
       kicker="Live · agents collaborating"
-      title="A team of agents, working under one Passport"
+      title="A team of agents, working under one Janus"
       aside={phaseChip}
     >
       <div className="pp-roster">

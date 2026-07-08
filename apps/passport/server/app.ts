@@ -251,7 +251,7 @@ export function createApp(config: AppConfig): Hono {
   })
   app.post('/api/vapi/tools', async (c) => c.json(await handleVapiTools(await jsonBody(c), runCfg)))
 
-  // Passport brain — GMI Cloud intent understanding (voice/text → scenario).
+  // Janus brain — GMI Cloud intent understanding (voice/text → scenario).
   // Origin-guarded + throttled like the other metered routes: classifyIntent forwards to a paid GMI
   // model, so a cross-origin caller must not be able to burn quota or inject transcripts.
   app.post('/api/passport/intent', async (c) => {

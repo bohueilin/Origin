@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Where the Passport client sends its /api calls.
+// Where the Janus client sends its /api calls.
 //
 // Local dev: VITE_API_BASE is unset, so paths stay RELATIVE ('/api/passport/...') and the
 // Vite dev proxy forwards them to the Node server on :8787 — same-origin, no CORS.

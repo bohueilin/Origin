@@ -1,10 +1,10 @@
-# Passport — Local Demo
+# Janus — Local Demo
 
-> **Passport** is a local-first agentic **identity + intent-authorization** layer for personal
+> **Janus** (formerly “Passport”) is a local-first agentic **identity + intent-authorization** layer for personal
 > agents and multi-agent workflows. *"1Password for agentic intent, credentials, and delegated
 > action."*
 >
-> **Capability is not permission.** You declare intent. The agent proposes a plan. Passport issues
+> **Capability is not permission.** You declare intent. The agent proposes a plan. Janus issues
 > a **scoped, revocable** grant. Tools run only within bounds, risky actions need your approval,
 > and every action leaves a tamper-evident trace.
 
@@ -22,19 +22,19 @@ approval.
 npm install          # if you haven't already
 npm run dev          # starts Vite
 
-# then open the Passport demo entry:
+# then open the Janus demo entry:
 #   http://localhost:5173/passport.html
 # (if 5173 is busy Vite picks another port — watch the terminal output)
 ```
 
 The existing "Autonomy Trace Console" still lives at `http://localhost:5173/` (`index.html`).
-Passport is a **separate, self-contained entry** at `/passport.html` — it shares only the repo's
+Janus is a **separate, self-contained entry** at `/passport.html` — it shares only the repo's
 build tooling.
 
 ### Tests
 
 ```bash
-npx vitest run src/passport     # 21 Passport tests (engine + SHA-256)
+npx vitest run src/passport     # 21 Janus tests (engine + SHA-256)
 npx vitest run                  # full repo suite (110 tests)
 ```
 
@@ -55,10 +55,10 @@ loop:
    constraints, and a risk level.
 2. **Risk classification** — a risk badge + plain-English notes (spending, third parties, location…).
 3. **Required capabilities** — what the agent asked for.
-4. **Scoped authorization grant** — the **Passport identity card**: capability *chips* split into
+4. **Scoped authorization grant** — the **Janus identity card**: capability *chips* split into
    **Granted** (green), **Approval required** (amber), and **Denied to the agent** (red, struck
    through), a TTL, an optional spend ceiling, and a **Revoke** button.
-5. **Multi-step plan** — the agent proposes; Passport gates. Approval steps are marked.
+5. **Multi-step plan** — the agent proposes; Janus gates. Approval steps are marked.
 6. **Tool activity** — every call, authorized *before* it runs; simulated commits are flagged.
 7. **Human approval gates** — sensitive actions appear as **approval cards** (action, external
    party, estimated cost, data shared, reversibility). Approve or deny.
@@ -66,7 +66,7 @@ loop:
 9. **Audit trace** — append-only event log + a tamper-evident **SHA-256 hash-chain digest**.
 10. **Revocation / expiry** — revoke at any time; every later action then fails closed.
 
-There's also a **"What Passport prevented"** panel that names the overreach that did *not* happen.
+There's also a **"What Janus prevented"** panel that names the overreach that did *not* happen.
 
 ---
 
@@ -133,9 +133,9 @@ verifiable **revocation** path.
 ## 1Password
 
 `OnePasswordSecretBroker` is a **fail-closed scaffold**: with no `OP_CONNECT_HOST` / `OP_CONNECT_TOKEN`
-configured it reports `isAvailable() === false`, so Passport uses the `MockSecretBroker`. The mock
+configured it reports `isAvailable() === false`, so Janus uses the `MockSecretBroker`. The mock
 returns only an **opaque, task-scoped handle** plus **redacted metadata** (field *labels*, never
-values). The agent never owns or sees a credential — it requests scoped access *through* Passport.
+values). The agent never owns or sees a credential — it requests scoped access *through* Janus.
 
 ---
 

@@ -20,7 +20,7 @@ Every autonomy demo shows a model that *can* act; none show what stops it from a
 ## Current capabilities (all in this repo)
 1. **Training Evidence** (`apps/origin-web/rlkit`) — reproducible **ScoreReceipts**: an EnvironmentBundle + a recorded action trace + a pinned verifier → a re-derivable, tamper-evident receipt (`env:verify`). Nine pillars (env-as-artifact, verified reward, executor/Daytona, MCP tool registry, cost+dispute, checkpoint, curriculum, promotion), 360 tests.
 2. **The live site + consoles** (`apps/origin-web`) — `/foundry` (floor → gym → license), `/soc` (AI-SOC loop-race), `/rsi` (Gemma-proposes / Origin-verifies), deployed at `origin-physical-ai.pages.dev`.
-3. **Passport** (`apps/passport`) — agentic credential broker + Autonomy Trace Console: delegated authority you can trust (identity → authority → veto).
+3. **Janus** (formerly Passport) (`apps/passport`) — agentic credential broker + Autonomy Trace Console: delegated authority you can trust (identity → authority → veto).
 4. **Verifier hardening** (`services/{chronos,cobra}`) — auto-harden RL verifiers against reward hacking (red-team → patch → measure).
 
 ## Evidence layers

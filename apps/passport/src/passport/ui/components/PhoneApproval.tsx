@@ -89,7 +89,7 @@ export function PhoneApproval({ snap, onApprove }: { snap: PassportSnapshot; onA
           <div className="pp-ph-card">
             <div className="pp-ph-app">
               <span className="pp-ph-dot" />
-              Passport
+              Janus
             </div>
             <b className="pp-ph-title">
               {pending.action_type}

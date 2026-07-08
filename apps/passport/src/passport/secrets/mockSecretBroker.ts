@@ -2,7 +2,7 @@
 //
 // It holds a fake secret in memory and NEVER returns it. A scoped request gets back an
 // opaque, task-bound handle plus redacted metadata (field LABELS only). The point of the
-// demo: the agent requests scoped access THROUGH Passport; it never owns or sees credentials.
+// demo: the agent requests scoped access THROUGH Janus; it never owns or sees credentials.
 
 import type { ScopedSecretRequest, ScopedSecretResult, SecretBroker } from '../types'
 import { MOCK_SECRET_SENTINEL, assertNoSecret } from './redact'
@@ -46,7 +46,7 @@ export class MockSecretBroker implements SecretBroker {
     if (!item) throw new Error(`No vault item for ref (fail closed)`)
 
     // Opaque handle: a hash bound to (item, capability, intent, grant). It cannot be
-    // exchanged for the secret — only Passport's server-side path (absent here) could
+    // exchanged for the secret — only Janus's server-side path (absent here) could
     // ever resolve a value, and only inside a sandbox.
     const handle =
       'pph_' +

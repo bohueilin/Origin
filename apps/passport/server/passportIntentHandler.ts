@@ -1,12 +1,12 @@
 // ----------------------------------------------------------------------------
-// The Origin / Passport brain — server-side intent understanding via GMI Cloud.
+// The Origin / Janus brain — server-side intent understanding via GMI Cloud.
 //
 // Runs ONLY in the Node process (Hono server). The GMI_API_KEY lives here and is
 // never sent to the browser. The frontend posts only a short spoken/typed
 // transcript; this file calls a GMI-hosted model (OpenAI-compatible) to classify
-// it into ONE of the three Passport scenarios and restate what it heard.
+// it into ONE of the three Janus scenarios and restate what it heard.
 //
-// It never executes anything — it only routes intent. The deterministic Passport
+// It never executes anything — it only routes intent. The deterministic Janus
 // engine still owns grants, approvals, and execution.
 // ----------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ const DEFAULT_BASE_URL = 'https://api.gmi-serving.com/v1'
 const DEFAULT_MODEL = 'anthropic/claude-opus-4.8'
 const MAX_TRANSCRIPT = 800
 
-const SYSTEM_PROMPT = `You are Origin — the intent brain for Passport, a control plane for delegated agent autonomy.
+const SYSTEM_PROMPT = `You are Origin — the intent brain for Janus, a control plane for delegated agent autonomy.
 A person speaks (or types) a real-life request. Route it to EXACTLY ONE of these three scenarios:
 
 - "fill-my-night": find a hackathon or builder/tech EVENT to attend tonight, check the calendar, prepare an event registration, draft a message to hackmates. (Going OUT to an organized event.)
@@ -75,7 +75,7 @@ function normalize(raw: unknown): IntentResult | null {
 }
 
 /**
- * Classify a transcript into a Passport scenario via GMI. Never throws — always
+ * Classify a transcript into a Janus scenario via GMI. Never throws — always
  * resolves to a typed IntentReply. On any failure the caller falls back to the
  * deterministic keyword matcher, so voice routing degrades gracefully.
  */

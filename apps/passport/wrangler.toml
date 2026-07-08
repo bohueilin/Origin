@@ -1,4 +1,4 @@
-# Cloudflare Worker for the Passport backend (always-on, public-safe). See worker/index.ts.
+# Cloudflare Worker for the Janus backend (always-on, public-safe). See worker/index.ts.
 name = "origin-passport-api"
 main = "worker/index.ts"
 compatibility_date = "2024-11-01"

@@ -4,7 +4,7 @@
 //  - read / prepare  → granted to the agent (gated by the CapabilityGrant).
 //  - commit (sideEffecting) → NEVER granted; the agent cannot invoke these on its own.
 //    They are unlocked only by an explicit, one-shot, approved ApprovalPacket — and even
-//    then run in simulation, performing no real-world action. This is how Passport makes
+//    then run in simulation, performing no real-world action. This is how Janus makes
 //    "capability is not permission" concrete.
 
 import type { Capability, RiskLevel } from './types'
@@ -40,7 +40,7 @@ const SPECS: CapabilitySpec[] = [
   { id: 'safety_share.prepare', label: 'Prepare safety share', description: 'Draft trip / safety details to share. Does not share live.', risk: 'medium', sideEffecting: false },
   { id: 'restaurant.search', label: 'Search restaurants', description: 'Find restaurants (read-only).', risk: 'low', sideEffecting: false },
   { id: 'reservation.prepare', label: 'Prepare reservation', description: 'Draft a reservation for review. Does not book.', risk: 'medium', sideEffecting: false },
-  { id: 'credential.scoped_request', label: 'Request scoped credential', description: 'Ask Passport to broker a scoped, opaque handle to a saved login. Never sees the secret.', risk: 'medium', sideEffecting: false },
+  { id: 'credential.scoped_request', label: 'Request scoped credential', description: 'Ask Janus to broker a scoped, opaque handle to a saved login. Never sees the secret.', risk: 'medium', sideEffecting: false },
 
   // ---- commit / side-effecting (denied to the agent; approval-only; simulated) ----
   { id: 'messages.send', label: 'Send message', description: 'Actually send a message to a real contact.', risk: 'high', sideEffecting: true },
@@ -62,7 +62,7 @@ const SPECS: CapabilitySpec[] = [
 
 const BY_ID = new Map<Capability, CapabilitySpec>(SPECS.map((s) => [s.id, s]))
 
-/** Capabilities that are categorically forbidden — Passport never grants these. */
+/** Capabilities that are categorically forbidden — Janus never grants these. */
 export const GLOBAL_FORBIDDEN: Capability[] = ['credential.unrestricted', 'payment.spend']
 
 export function getCapability(id: Capability): CapabilitySpec {

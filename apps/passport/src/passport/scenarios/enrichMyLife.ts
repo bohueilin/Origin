@@ -43,7 +43,7 @@ export const enrichMyLife: ScenarioSpec = {
   ttl_seconds: 3600,
   risk_level: 'medium',
   fallback_plan:
-    'Deny the order and Passport still gives you the full plan — you can order food yourself, or approve later. Nothing is bought without you.',
+    'Deny the order and Janus still gives you the full plan — you can order food yourself, or approve later. Nothing is bought without you.',
   prevented: [
     'Showing the final score (spoiler-safe mode held throughout)',
     'Placing a food order or charging a card without approval',

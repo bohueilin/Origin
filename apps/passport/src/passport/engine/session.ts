@@ -272,7 +272,7 @@ export class PassportSession {
         this.emit()
         await this.beat()
 
-        // 2) Capability is not permission: the worker must ask Passport before it can act.
+        // 2) Capability is not permission: the worker must ask Janus before it can act.
         if (step.capability) {
           this.activePhase = 'authorizing'
           this.setAgent('passport', 'working')
@@ -293,7 +293,7 @@ export class PassportSession {
           return
         }
 
-        // 4) Passport grants; the worker works, then reports back to the Orchestrator.
+        // 4) Janus grants; the worker works, then reports back to the Orchestrator.
         if (step.capability) this.say('passport', worker.id, `granted ${step.capability}`, 'grant')
         this.setAgent('passport', 'idle')
         this.activePhase = 'working'
@@ -310,7 +310,7 @@ export class PassportSession {
         continue
       }
 
-      // approval gate — the worker prepared a sensitive action; Passport escalates it to You.
+      // approval gate — the worker prepared a sensitive action; Janus escalates it to You.
       const gateWorker = workerForTool(spec.commitTool)
       const packet = this.approvals.create(spec.packet, this.intent, spec.commitTool, spec.commitInput)
       step.approval_ref = packet.approval_id

@@ -43,7 +43,7 @@ export const airportPickup: ScenarioSpec = {
   ttl_seconds: 5400,
   risk_level: 'high',
   fallback_plan:
-    'Deny the ride and Passport keeps the prepared trip; you can book it yourself, or approve later. Safety details are only shared on a confirmed trip.',
+    'Deny the ride and Janus keeps the prepared trip; you can book it yourself, or approve later. Safety details are only shared on a confirmed trip.',
   prevented: [
     'Booking a ride and authorizing payment without approval',
     'Sharing the other person’s details or your live location silently',

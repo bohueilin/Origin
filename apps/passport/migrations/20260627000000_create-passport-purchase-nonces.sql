@@ -1,6 +1,6 @@
 -- Durable one-shot purchase-nonce ledger for the Snaplii payment path.
 --
--- Each approved Passport purchase mints a single-use nonce bound to {amount,item,intent,mode}.
+-- Each approved Janus purchase mints a single-use nonce bound to {amount,item,intent,mode}.
 -- Recording the nonce here behind a UNIQUE index makes one-shot replay protection survive a server
 -- restart and hold across multiple instances: a second /purchase carrying the same nonce hits the
 -- unique violation (SQLSTATE 23505) and is refused as a replay — even after the in-process Set is

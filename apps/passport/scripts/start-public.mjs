@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // ───────────────────────────────────────────────────────────────────────────
-// Public demo launcher — the SAME real Passport flow as `npm run demo`, but served from a
+// Public demo launcher — the SAME real Janus flow as `npm run demo`, but served from a
 // PUBLIC Cloudflare Pages URL instead of localhost. Anyone with the link can run it (notifications,
 // Discord, email, wallet, credential broker) while THIS machine runs the backend behind a tunnel.
 //

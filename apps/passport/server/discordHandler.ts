@@ -71,7 +71,7 @@ export async function sendDiscord(body: unknown, cfg: DiscordConfig, demo: DemoC
     const resp = await timedFetch(cfg.webhookUrl, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ content, username: 'Passport · Concierge', allowed_mentions: { parse: [] } }),
+      body: JSON.stringify({ content, username: 'Janus · Concierge', allowed_mentions: { parse: [] } }),
     })
     if (!resp.ok) {
       console.error(`[discord] ${resp.status}`)

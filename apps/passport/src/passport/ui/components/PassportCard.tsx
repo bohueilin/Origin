@@ -11,7 +11,7 @@ export function PassportCard({ snap, onRevoke }: { snap: PassportSnapshot; onRev
       <div className="pp-card-top">
         <div className="pp-card-brand">
           <span className="pp-card-chip" aria-hidden="true" />
-          <span className="pp-card-wordmark">PASSPORT</span>
+          <span className="pp-card-wordmark">JANUS</span>
         </div>
         <StatusPill status={grant.status} />
       </div>

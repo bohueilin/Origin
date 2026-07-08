@@ -39,7 +39,7 @@ export const fillMyNight: ScenarioSpec = {
   ttl_seconds: 3600,
   risk_level: 'medium',
   fallback_plan:
-    'If you deny registration or sharing, Passport keeps the drafts and changes nothing externally; you can register or send later in one tap.',
+    'If you deny registration or sharing, Janus keeps the drafts and changes nothing externally; you can register or send later in one tap.',
   prevented: [
     'Registering you for an event before you saw it',
     'Reading your whole address book (only the "hackmates" group was read)',

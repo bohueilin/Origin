@@ -31,7 +31,7 @@ export function IntentPanel({ snap }: { snap: PassportSnapshot }) {
       </div>
       {plan.risk_notes.length > 0 && (
         <div className="pp-risknotes">
-          <div className="pp-mini-label">Passport risk assessment</div>
+          <div className="pp-mini-label">Janus risk assessment</div>
           <ul>
             {plan.risk_notes.map((n) => (
               <li key={n}>{n}</li>

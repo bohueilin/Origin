@@ -48,7 +48,8 @@ export function buildEpisodeAndReceipt({
   // for the deterministic gym, storage = canonical({task,actions}) byte length).
   let cost
   if (costModel) {
-    const storage_bytes = Buffer.byteLength(canonical({ task, actions }), 'utf8')
+    // UTF-8 byte count — TextEncoder (not Buffer) so this path also runs in a browser.
+    const storage_bytes = new TextEncoder().encode(canonical({ task, actions })).length
     cost = buildCostLedger({
       sandbox_seconds: sandboxSeconds ?? actions.length,
       tokens: { in: 0, out: 0 },

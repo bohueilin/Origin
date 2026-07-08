@@ -1,4 +1,4 @@
-// CapabilityPolicyEngine — decides which capabilities Passport will grant, deny, and gate.
+// CapabilityPolicyEngine — decides which capabilities Janus will grant, deny, and gate.
 //
 // The rule, fail-closed by construction:
 //   allowed   = requested capabilities that are NOT side-effecting and NOT globally forbidden

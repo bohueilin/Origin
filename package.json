@@ -19,5 +19,9 @@
     "build:web": "npm run build -w @origin/origin-web",
     "build:janus": "npm run build -w @origin/janus",
     "build:chronos-ui": "npm --prefix apps/chronos-ui install && npm --prefix apps/chronos-ui run build"
+  },
+  "allowScripts": {
+    "fsevents@2.3.2": true,
+    "fsevents@2.3.3": true
   }
 }

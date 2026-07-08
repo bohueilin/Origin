@@ -1,0 +1,93 @@
+# CI — the monorepo quality gate.
+#
+# Runs on every push / pull request to main (and on demand). Green here means:
+#   - apps/origin-web  (React 19, npm workspace): typecheck + lint (0 warnings) + vitest
+#   - apps/passport    (React 19, npm workspace): typecheck + lint (0 warnings) + vitest
+#   - apps/chronos-ui  (React 18, deliberately NOT a workspace — own lockfile): npm ci + build
+#
+# Install layout mirrors the repo's documented split (see docs/MIGRATION.md):
+# the two workspace apps install once from the ROOT package-lock.json; chronos-ui
+# installs standalone from its own lockfile so React 18/19 types never mix.
+#
+# deploy-origin-web.yml re-runs the origin-web checks at the deploy SHA before any
+# manual deploy, so nothing can ship that would fail this gate.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  workspace-apps:
+    name: ${{ matrix.app }} — typecheck · lint · test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [origin-web, passport]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm # keyed on the root package-lock.json (workspace lockfile)
+
+      - name: Install (root lockfile — npm workspaces)
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: apps/${{ matrix.app }}
+        run: npx tsc -b
+
+      - name: Lint (zero warnings allowed)
+        working-directory: apps/${{ matrix.app }}
+        run: npx eslint . --max-warnings=0
+
+      - name: Test
+        working-directory: apps/${{ matrix.app }}
+        run: npx vitest run
+
+  chronos-ui:
+    name: chronos-ui — standalone build (React 18)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/chronos-ui
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/chronos-ui/package-lock.json
+
+      - name: Install (own lockfile — intentionally not a workspace)
+        run: npm ci
+
+      - name: Build (tsc --noEmit + vite build)
+        run: npm run build
+
+  # Single required status for branch protection: green only when every job above is.
+  ci-ok:
+    name: CI green
+    if: always()
+    needs: [workspace-apps, chronos-ui]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any gate job failed
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: exit 1
+      - run: echo "All CI gates passed."

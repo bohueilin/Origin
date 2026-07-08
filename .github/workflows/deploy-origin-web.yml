@@ -1,12 +1,28 @@
-name: Deploy origin-web → Cloudflare Pages
-
-# Every push to main that touches the web app (or this workflow) rebuilds and ships
-# origin-web to the live site, https://origin-physical-ai.pages.dev.
-# This is the wiring that keeps the public site in sync with this (private) repo.
+# Deploy origin-web → Cloudflare Pages (LIVE site: https://origin-physical-ai.pages.dev)
+#
+# ── INVARIANT (honors CLAUDE.md + docs/DEPLOY.md: cutover is HUMAN-OWNED) ──────
+# Pushing to main NEVER deploys. The trigger model is:
+#
+#   push to main         → `build` job only: typecheck + lint + test + build, and the
+#                          dist is kept as a run artifact. This is a health/parity
+#                          CHECK — the `deploy` job is skipped on push events.
+#   manual deploy        → a human opens Actions → "Run workflow", types DEPLOY in
+#                          the confirmation box, and the run must first pass the
+#                          same gate at that exact SHA (`needs: build`). Only then
+#                          does the tested artifact ship. The job is also bound to
+#                          the `production` GitHub Environment — add required
+#                          reviewers there (Settings → Environments) for a second
+#                          approval layer where the repo's plan supports it.
+#   token unset          → the deploy step skips gracefully (run stays green) with
+#                          a warning, so the workflow is inert until a human adds
+#                          the secret AND dispatches it.
 #
 # One-time setup: add a Cloudflare API token (scope: Account › Cloudflare Pages › Edit)
-# as the repo secret CLOUDFLARE_API_TOKEN. Until it's set, the build still runs and the
-# deploy step skips gracefully (the run stays green).
+# as the repo secret CLOUDFLARE_API_TOKEN.
+# Rollback stays the old binding (bohueilin/physical-ai-demo-test @ hud-factorydad-1);
+# see docs/DEPLOY.md before any cutover.
+
+name: Deploy origin-web → Cloudflare Pages
 
 on:
   push:
@@ -17,14 +33,24 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/deploy-origin-web.yml'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPLOY to ship apps/origin-web to the LIVE site (human-owned cutover — see docs/DEPLOY.md)'
+        required: true
+        default: ''
 
 concurrency:
   group: deploy-origin-web
-  cancel-in-progress: true
+  # Cancel superseded push CHECKS, but never cancel a manual deploy in flight.
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+permissions:
+  contents: read
 
 jobs:
-  deploy:
+  build:
+    name: Build + gate (check only — never deploys)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +63,20 @@ jobs:
       - name: Install workspace deps
         run: npm ci
 
+      # Same gate as ci.yml, re-run at the exact SHA under consideration:
+      # a deploy can never ship code that hasn't passed typecheck + lint + tests.
+      - name: Typecheck
+        working-directory: apps/origin-web
+        run: npx tsc -b
+
+      - name: Lint (zero warnings allowed)
+        working-directory: apps/origin-web
+        run: npx eslint . --max-warnings=0
+
+      - name: Test
+        working-directory: apps/origin-web
+        run: npx vitest run
+
       - name: Build origin-web
         # InsForge auth — PUBLIC values (the anon key is RLS-guarded and already ships in the
         # client bundle), so they're safe to inline here. Without them AUTH_ENABLED is false.
@@ -44,6 +84,33 @@ jobs:
           VITE_INSFORGE_URL: https://36s5vrcx.us-east.insforge.app
           VITE_INSFORGE_ANON_KEY: anon_e8a0c703bf722f5b00f3af9d6209a65024bfc50ce3ff52fef88c34dec39e5bd7
         run: npm run build:web
+
+      - name: Upload dist (the exact artifact a deploy would ship)
+        uses: actions/upload-artifact@v4
+        with:
+          name: origin-web-dist
+          path: apps/origin-web/dist
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    name: Deploy to LIVE (manual dispatch + typed confirmation only)
+    # Human gate: only an explicit "Run workflow" with confirm=DEPLOY reaches this job.
+    # Push events never satisfy this condition, so main can never auto-deploy.
+    if: github.event_name == 'workflow_dispatch' && inputs.confirm == 'DEPLOY'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://origin-physical-ai.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the gated build (deploy exactly what was tested)
+        uses: actions/download-artifact@v4
+        with:
+          name: origin-web-dist
+          path: origin-web-dist
 
       - name: Check for Cloudflare token
         id: gate
@@ -54,7 +121,7 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Deploy skipped::Set repo secret CLOUDFLARE_API_TOKEN (Account › Cloudflare Pages › Edit) to enable auto-deploy."
+            echo "::warning title=Deploy skipped::Set repo secret CLOUDFLARE_API_TOKEN (Account › Cloudflare Pages › Edit) to enable manual deploys."
           fi
 
       - name: Deploy to Cloudflare Pages (production)
@@ -63,4 +130,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ecf2451e81261e8de3295b4a3b4e439c
-          command: pages deploy apps/origin-web/dist --project-name=origin-physical-ai --branch=hud-factorydad-1
+          command: pages deploy origin-web-dist --project-name=origin-physical-ai --branch=hud-factorydad-1

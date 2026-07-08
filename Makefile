@@ -38,8 +38,8 @@ dev-web: ## run the live site (origin-web) locally
 dev-passport: ## run the Passport demo (vite + Hono + tunnel)
 	npm run demo -w @origin/passport
 
-dev-chronos-ui: ## run the Chronos UI
-	npm run dev -w @origin/chronos-ui
+dev-chronos-ui: ## run the Chronos UI (standalone — NOT an npm workspace; see docs/MIGRATION.md)
+	cd apps/chronos-ui && npm run dev
 
 py-test: ## pytest each Python service (best-effort)
 	@for s in $(PY_SERVICES); do echo "── pytest $$s"; (cd $$s && uv run pytest -q) || echo "!! $$s tests need setup (see docs)"; done

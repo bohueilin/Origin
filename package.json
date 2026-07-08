@@ -18,6 +18,6 @@
     "lint": "npm run lint --workspaces --if-present",
     "build:web": "npm run build -w @origin/origin-web",
     "build:passport": "npm run build -w @origin/passport",
-    "build:chronos-ui": "npm run build -w @origin/chronos-ui"
+    "build:chronos-ui": "npm --prefix apps/chronos-ui install && npm --prefix apps/chronos-ui run build"
   }
 }

@@ -31,3 +31,6 @@ __pycache__/
 # --- big data (kept out of git or via LFS only) ---
 datasets/**/*.RData
 datasets/**/*.mp4
+
+# --- private factory algorithm (crown-jewel IP: its own local repo, never in the public tree) ---
+factory-private/

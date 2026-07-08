@@ -4,7 +4,7 @@
 // verifier NEVER reads it (band logic lives here, not in warehouse.ts) — otherwise a
 // policy could farm easy bands for reward (Goodhart). The curriculum samples near the
 // competence frontier (~50–70% pass) and promotes a band on mastery. The sealed
-// CurriculumState (rlkit/curriculum-evidence.mjs) makes promotion earned, not granted.
+// CurriculumState (env/curriculum-evidence.mjs) makes promotion earned, not granted.
 // =============================================================================
 
 import {

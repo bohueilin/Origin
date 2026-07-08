@@ -9,7 +9,7 @@ agent or robot may do — capability is never permission.** The same trust spine
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │  ① INTENT — humans + agents express what they want (voice / text / a robot site)│
-│     apps/origin-web (readiness)   ·   apps/passport (agent tasks)              │
+│     apps/origin-web (readiness)   ·   apps/janus (agent tasks)              │
 └───────────────┬──────────────────────────────────────────────────────────────┘
                 │   intent (no authority yet)
 ┌───────────────▼──────────────────────────────────────────────────────────────┐
@@ -24,7 +24,7 @@ agent or robot may do — capability is never permission.** The same trust spine
 │  ③ AUTHORITY / BROKER (server-side only) │ │  ③ PROVING GROUND (deterministic) │
 │     mint ephemeral lease → opaque handle │ │     multi-robot collision-free sim │
 │     resolve secret JIT at tool boundary  │ │     finish / escalate / refuse     │
-│     apps/passport/server · 1Password     │ │     apps/origin-web (warehouse)    │
+│     apps/janus/server · 1Password     │ │     apps/origin-web (warehouse)    │
 └───────────────┬─────────────────────────┘ └────────────────────────────────────┘
                 │ brokered call (secret never in model)
 ┌───────────────▼──────────────────────────────────────────────────────────────┐

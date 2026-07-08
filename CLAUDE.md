@@ -18,7 +18,7 @@ Unified monorepo merging the source projects.
 
 ## Layout
 - `apps/origin-web` — the LIVE site (Cloudflare Pages). Byte-preserve its HTML/og/robots/sitemap/insforge.toml.
-- `apps/passport` — Janus (formerly Passport; agent credential broker) + Autonomy Trace Console (eval gym).
+- `apps/janus` — Janus (formerly Passport; agent credential broker) + Autonomy Trace Console (eval gym).
 - `apps/chronos-ui` — Chronos front-end (React 18 + Tailwind).
 - `services/{cobra,chronos}` — Python (`uv`), each isolated with its own venv.
 - `factory/legacy` — EnvForge HTML prototype (React port = future `apps/envforge`).

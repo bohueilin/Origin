@@ -20,16 +20,16 @@ import {
   ENVIRONMENT_NAME, SCENARIO_REGISTRY_VERSION, VERIFIER_VERSION, REWARD_MODEL_VERSION,
   LICENSE_POLICY_VERSION, ROW_SCHEMA_VERSION, DAYTONA_RATE_VERSION,
 } from '../server/evalVersions.ts'
-import { canonical, sha256, bundleDigest, chainEpisode, buildScoreReceipt, recordedActions, adjudicate } from '../rlkit/env-evidence.mjs'
-import { toolsDigest, policiesDigest, registryDigest } from '../rlkit/env-manifest.mjs'
-import { warehouseToolSchemas, warehouseBundleTools, warehousePolicies } from '../rlkit/warehouse-manifest.mjs'
-import { scoreReward } from '../rlkit/reward-module.ts'
-import { exploitSuite } from '../rlkit/exploit-suite.ts'
-import { buildEpisodeAndReceipt } from '../rlkit/build-trace.mjs'
-import { buildRegistry } from '../rlkit/tool-registry.mjs'
-import { createMcpAdapter } from '../rlkit/mcp-adapter.mjs'
-import { WAREHOUSE_GRANT, actionToCall } from '../rlkit/warehouse-tools.mjs'
-import { buildCostLedger, rateDigest } from '../rlkit/cost-ledger.mjs'
+import { canonical, sha256, bundleDigest, chainEpisode, buildScoreReceipt, recordedActions, adjudicate } from '@origin/evidence/env-evidence'
+import { toolsDigest, policiesDigest, registryDigest } from '@origin/evidence/env-manifest'
+import { warehouseToolSchemas, warehouseBundleTools, warehousePolicies } from '../env/warehouse-manifest.mjs'
+import { scoreReward } from '../env/reward-module.ts'
+import { exploitSuite } from '../env/exploit-suite.ts'
+import { buildEpisodeAndReceipt } from '@origin/verifier-core/build-trace'
+import { buildRegistry } from '@origin/verifier-core/tool-registry'
+import { createMcpAdapter } from '@origin/verifier-core/mcp-adapter'
+import { WAREHOUSE_GRANT, actionToCall } from '../env/warehouse-tools.mjs'
+import { buildCostLedger, rateDigest } from '@origin/evidence/cost-ledger'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = resolve(HERE, '../docs/examples')

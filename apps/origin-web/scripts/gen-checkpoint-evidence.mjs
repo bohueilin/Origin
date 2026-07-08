@@ -12,8 +12,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { initialWarehouseState, applyWarehouseAction } from '../src/warehouse.ts'
-import { chainEpisode } from '../rlkit/env-evidence.mjs'
-import { makeCheckpoint, resumeEpisode, actionsFromSteps, checkpointBindsEpisode } from '../rlkit/checkpoint.mjs'
+import { chainEpisode } from '@origin/evidence/env-evidence'
+import { makeCheckpoint, resumeEpisode, actionsFromSteps, checkpointBindsEpisode } from '@origin/verifier-core/checkpoint'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')

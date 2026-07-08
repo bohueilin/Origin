@@ -13,10 +13,10 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { computeLicenseFromVerdicts } from '../src/license.ts'
-import { verifyEpisode, adjudicate } from '../rlkit/env-evidence.mjs'
-import { warehouseToolsDigest, warehousePoliciesDigest } from '../rlkit/warehouse-manifest.mjs'
-import { scoreReward } from '../rlkit/reward-module.ts'
-import { checkpointBindsEpisode } from '../rlkit/checkpoint.mjs'
+import { verifyEpisode, adjudicate } from '@origin/evidence/env-evidence'
+import { warehouseToolsDigest, warehousePoliciesDigest } from '../env/warehouse-manifest.mjs'
+import { scoreReward } from '../env/reward-module.ts'
+import { checkpointBindsEpisode } from '@origin/verifier-core/checkpoint'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')

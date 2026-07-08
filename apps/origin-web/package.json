@@ -32,6 +32,8 @@
   "dependencies": {
     "@hono/node-server": "^2.0.5",
     "@insforge/sdk": "^1.4.2",
+    "@origin/evidence": "*",
+    "@origin/verifier-core": "*",
     "hono": "^4.12.26",
     "openai": "^6.44.0",
     "react": "^19.2.6",

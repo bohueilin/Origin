@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url'
 import { recklessFinishPolicy } from '../src/warehouse.ts'
 import { measureCompetence, curriculumSample, promoteCurriculum, difficultyBand } from '../src/curriculum.ts'
 import { warehouseTasks } from '../src/warehouse.ts'
-import { sealCurriculumState } from '../rlkit/curriculum-evidence.mjs'
+import { sealCurriculumState } from '../env/curriculum-evidence.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')

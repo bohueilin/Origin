@@ -2,7 +2,7 @@
 #
 # Runs on every push / pull request to main (and on demand). Green here means:
 #   - apps/origin-web  (React 19, npm workspace): typecheck + lint (0 warnings) + vitest
-#   - apps/passport    (React 19, npm workspace): typecheck + lint (0 warnings) + vitest
+#   - apps/janus       (React 19, npm workspace): typecheck + lint (0 warnings) + vitest
 #   - apps/chronos-ui  (React 18, deliberately NOT a workspace — own lockfile): npm ci + build
 #
 # Install layout mirrors the repo's documented split (see docs/MIGRATION.md):
@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [origin-web, passport]
+        app: [origin-web, janus]
     steps:
       - uses: actions/checkout@v4
 

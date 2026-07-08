@@ -1,0 +1,33 @@
+{
+  "name": "@origin/evidence",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Origin Training Evidence — the pure, verifier-agnostic evidence core: canonical JSON, isomorphic synchronous SHA-256, hash-chained EpisodeTraces, ScoreReceipts, adjudication, cost ledger, and env-manifest content addressing. Zero dependencies; consumed by @origin/verifier-core and apps/origin-web.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./env-evidence.d.mts",
+      "default": "./env-evidence.mjs"
+    },
+    "./env-evidence": {
+      "types": "./env-evidence.d.mts",
+      "default": "./env-evidence.mjs"
+    },
+    "./cost-ledger": {
+      "types": "./cost-ledger.d.mts",
+      "default": "./cost-ledger.mjs"
+    },
+    "./env-manifest": {
+      "types": "./env-manifest.d.mts",
+      "default": "./env-manifest.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.9"
+  }
+}

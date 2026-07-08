@@ -12,7 +12,7 @@ Origin/
 │   │   ├─ rlkit/                     # env-manifest, reward-module, executor, cost-ledger, checkpoint, env-promotion, …
 │   │   ├─ src/warehouse.ts           # the deterministic oracle (verifyWarehouseRollout + bfsOracle) — the only judge
 │   │   └─ docs/examples/*            # digest-valid bundle/episode/receipt trios
-│   ├─ passport/       # agent credential broker + Autonomy Trace Console
+│   ├─ janus/          # agent credential broker + Autonomy Trace Console
 │   └─ chronos-ui/     # reward-hack discovery UI (React 18, standalone build)
 │
 ├─ services/          # Python (uv), each isolated

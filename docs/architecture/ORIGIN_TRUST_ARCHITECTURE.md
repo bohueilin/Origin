@@ -28,8 +28,8 @@
 ## Why speed is the architecture
 Per-step verification = two model calls per action. On GPU latency a verify-on-every-step loop leaves real time, so teams sample verification — exactly where reward-hacking and prompt-injection slip in. Cerebras (~1,300–1,500 tok/s) makes per-step verification ~free, so it rides on every step. **Safety is loop-bound; cheap loops are safe loops.**
 
-## Identity is the outer ring (Passport)
-Before *what* is allowed, **who** is allowed: `apps/passport` issues delegated agent identity + scoped, revocable authority (identity → authority → verified action → trace). A spatial example: a human-only zone is passable **only** with a live, scoped grant — so REFUSE can fire on *policy*, not just hazard.
+## Identity is the outer ring (Janus)
+Before *what* is allowed, **who** is allowed: `apps/janus` issues delegated agent identity + scoped, revocable authority (identity → authority → verified action → trace). A spatial example: a human-only zone is passable **only** with a live, scoped grant — so REFUSE can fire on *policy*, not just hazard.
 
 ## Two instantiations, one spine
 - **Physical:** `apps/origin-web` (floor → readiness evidence under a deterministic oracle verdict).

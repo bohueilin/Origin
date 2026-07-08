@@ -2,11 +2,11 @@
   "name": "origin-physical-ai",
   "version": "0.0.0",
   "private": true,
-  "description": "Origin Physical AI — the robot-readiness + agent-autonomy + RL-environment monorepo (Console, Passport, Cobra, Chronos, Factory).",
+  "description": "Origin Physical AI — the robot-readiness + agent-autonomy + RL-environment monorepo (Console, Janus, Cobra, Chronos, Factory).",
   "comment:workspaces": "chronos-ui is React 18 and is installed STANDALONE (its own node_modules) so its types don't collide with the React 19 apps under npm hoisting. The Makefile builds it separately. Switch to pnpm later for true isolation (see docs/MIGRATION.md).",
   "workspaces": [
     "apps/origin-web",
-    "apps/passport",
+    "apps/janus",
     "packages/*"
   ],
   "engines": {
@@ -17,7 +17,7 @@
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "build:web": "npm run build -w @origin/origin-web",
-    "build:passport": "npm run build -w @origin/passport",
+    "build:janus": "npm run build -w @origin/janus",
     "build:chronos-ui": "npm --prefix apps/chronos-ui install && npm --prefix apps/chronos-ui run build"
   }
 }

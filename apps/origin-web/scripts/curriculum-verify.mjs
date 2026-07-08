@@ -14,8 +14,8 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { recklessFinishPolicy } from '../src/warehouse.ts'
 import { measureCompetence } from '../src/curriculum.ts'
-import { canonical } from '../rlkit/env-evidence.mjs'
-import { verifyCurriculumState, bandRegistryDigest } from '../rlkit/curriculum-evidence.mjs'
+import { canonical } from '@origin/evidence/env-evidence'
+import { verifyCurriculumState, bandRegistryDigest } from '../env/curriculum-evidence.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')

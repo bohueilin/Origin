@@ -1,6 +1,6 @@
 // /security — the security cores, live in the browser.
 // =============================================================================
-// Four panels, each driving the REAL rlkit engine client-side (no server, no
+// Four panels, each driving the REAL @origin/verifier-core engine client-side (no server, no
 // mocks of the engines themselves — the data is synthetic and labeled as such):
 //
 //   1. Sigil            — sign → verify → tamper → VOID → wrong-signer → rejected
@@ -9,7 +9,7 @@
 //   4. Reference check  — the IAM gym + Crucible: config-bound credential from the
 //                         deterministic oracle; drift → VOID; over-grants cap the RSL
 //
-// Unblocked by the isomorphic sha256 in rlkit/env-evidence.mjs (§9.2): these
+// Unblocked by the isomorphic sha256 in @origin/evidence (§9.2): these
 // modules now load in a browser bundle because the evidence core no longer
 // hard-imports node:crypto.
 //
@@ -18,18 +18,18 @@
 // =============================================================================
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { generateSigningKey, signSigil, verifySigil } from '../../rlkit/sigil.mjs'
-import type { Sigil } from '../../rlkit/sigil.mjs'
-import { batchReceipts, verifyReceiptInBatch } from '../../rlkit/merkleBatch.mjs'
-import type { ReceiptBatch } from '../../rlkit/merkleBatch.mjs'
+import { generateSigningKey, signSigil, verifySigil } from '@origin/verifier-core/sigil'
+import type { Sigil } from '@origin/verifier-core/sigil'
+import { batchReceipts, verifyReceiptInBatch } from '@origin/verifier-core/merkleBatch'
+import type { ReceiptBatch } from '@origin/verifier-core/merkleBatch'
 import {
   createPolicy,
   amendPolicy,
   verifyPolicyChain,
   bindDecision,
   verifyDecisionUnderPolicy,
-} from '../../rlkit/proofCarryingPolicy.mjs'
-import type { PolicyVersion } from '../../rlkit/proofCarryingPolicy.mjs'
+} from '@origin/verifier-core/proofCarryingPolicy'
+import type { PolicyVersion } from '@origin/verifier-core/proofCarryingPolicy'
 import {
   issueIamReferenceCheck,
   oraclePolicy,
@@ -37,9 +37,9 @@ import {
   iamEnvDigest,
   iamTasks,
   IAM_VERSIONS,
-} from '../../rlkit/iamGym.mjs'
-import type { IamReferenceCheck } from '../../rlkit/iamGym.mjs'
-import { verifyCredential } from '../../rlkit/crucible.mjs'
+} from '@origin/verifier-core/iamGym'
+import type { IamReferenceCheck } from '@origin/verifier-core/iamGym'
+import { verifyCredential } from '@origin/verifier-core/crucible'
 import { computeLicenseFromVerdicts } from '../license'
 import type { LicenseVerdict } from '../license'
 

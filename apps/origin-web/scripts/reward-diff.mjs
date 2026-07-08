@@ -12,8 +12,8 @@
 // Exit: 0 all invariants hold · 5 reward regression (an exploit paid out, or gold broke).
 // =============================================================================
 
-import { scoreReward } from '../rlkit/reward-module.ts'
-import { goldSuite, exploitSuite } from '../rlkit/exploit-suite.ts'
+import { scoreReward } from '../env/reward-module.ts'
+import { goldSuite, exploitSuite } from '../env/exploit-suite.ts'
 
 let failures = 0
 const line = (ok, msg) => console.log(`${ok ? 'PASS' : 'FAIL'}  ${msg}`)

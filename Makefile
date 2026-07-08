@@ -7,7 +7,7 @@ SHELL := /bin/bash
 PY_SERVICES := services/cobra services/chronos
 
 .PHONY: help install install-js install-py build test gates \
-        dev-web dev-passport dev-chronos-ui py-sync py-test clean
+        dev-web dev-janus dev-chronos-ui py-sync py-test clean
 
 help: ## list targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-16s\033[0m %s\n",$$1,$$2}'
@@ -23,7 +23,7 @@ install-py: ## uv sync each Python service (isolated venvs)
 	  if [ -f $$s/pyproject.toml ]; then echo "── uv sync $$s"; (cd $$s && uv sync) || echo "!! $$s sync failed (see docs)"; fi; \
 	done
 
-build: ## build all TS apps (origin-web + passport via workspaces; chronos-ui standalone)
+build: ## build all TS apps (origin-web + janus via workspaces; chronos-ui standalone)
 	npm run build --workspaces --if-present
 	cd apps/chronos-ui && npm run build
 
@@ -35,8 +35,8 @@ gates: build test ## build + test the TS surface
 dev-web: ## run the live site (origin-web) locally
 	npm run dev -w @origin/origin-web
 
-dev-passport: ## run the Passport demo (vite + Hono + tunnel)
-	npm run demo -w @origin/passport
+dev-janus: ## run the Janus demo (vite + Hono + tunnel)
+	npm run demo -w @origin/janus
 
 dev-chronos-ui: ## run the Chronos UI (standalone — NOT an npm workspace; see docs/MIGRATION.md)
 	cd apps/chronos-ui && npm run dev

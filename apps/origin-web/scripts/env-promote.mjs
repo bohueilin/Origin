@@ -12,9 +12,9 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { warehouseTasks, oraclePolicy } from '../src/warehouse.ts'
 import { VERIFIER_VERSION } from '../server/evalVersions.ts'
-import { scoreReward } from '../rlkit/reward-module.ts'
-import { goldSuite, exploitSuite } from '../rlkit/exploit-suite.ts'
-import { promoteEnvironment, EnvStatus } from '../rlkit/env-promotion.mjs'
+import { scoreReward } from '../env/reward-module.ts'
+import { goldSuite, exploitSuite } from '../env/exploit-suite.ts'
+import { promoteEnvironment, EnvStatus } from '@origin/verifier-core/env-promotion'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const EX = resolve(HERE, '../docs/examples')

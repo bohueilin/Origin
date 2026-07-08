@@ -14,10 +14,10 @@ import {
   warehouseTasks, bfsOracle, oraclePolicy, alwaysFinishPolicy, alwaysRefusePolicy, recklessFinishPolicy,
 } from '../src/warehouse.ts'
 import { computeLicenseFromVerdicts } from '../src/license.ts'
-import { verifyEpisode } from '../rlkit/env-evidence.mjs'
-import { makeExecutor } from '../rlkit/executor.mjs'
-import { runEpisode } from '../rlkit/run-episode.mjs'
-import { scoreReward } from '../rlkit/reward-module.ts'
+import { verifyEpisode } from '@origin/evidence/env-evidence'
+import { makeExecutor } from '../env/executor.mjs'
+import { runEpisode } from '../env/run-episode.mjs'
+import { scoreReward } from '../env/reward-module.ts'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const argv = process.argv.slice(2)

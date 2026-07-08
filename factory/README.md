@@ -9,6 +9,6 @@ readiness gates, export). This is the intake front-end for the RSI loop.
   Open it directly in a browser (`file://…/legacy/envforge-console_615.html`); no build, mock data inline.
 
 ## Next (planned) — `apps/envforge`
-Port the prototype to a real React/Vite app (matching `apps/origin-web` / `apps/passport`) backed by
+Port the prototype to a real React/Vite app (matching `apps/origin-web` / `apps/janus`) backed by
 InsForge tables for the submission queue + reviewer workflow + artifact export. The deterministic
 verifier it produces feeds the Cobra/Chronos hardening loop before any environment is used for training.

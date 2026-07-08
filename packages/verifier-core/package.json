@@ -1,0 +1,60 @@
+{
+  "name": "@origin/verifier-core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Origin Verifier SDK — the environment/verifier evidence layer over @origin/evidence: Sigil signed receipts, Merkle-batched receipts, proof-carrying policy versions, Crucible config-bound credentials, the IAM gym, checkpoint/resume, environment promotion, the deterministic tool registry + MCP adapter, and the shared EpisodeTrace/ScoreReceipt builder. Subpath exports are the API (no root barrel).",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./sigil": {
+      "types": "./sigil.d.mts",
+      "default": "./sigil.mjs"
+    },
+    "./merkleBatch": {
+      "types": "./merkleBatch.d.mts",
+      "default": "./merkleBatch.mjs"
+    },
+    "./proofCarryingPolicy": {
+      "types": "./proofCarryingPolicy.d.mts",
+      "default": "./proofCarryingPolicy.mjs"
+    },
+    "./crucible": {
+      "types": "./crucible.d.mts",
+      "default": "./crucible.mjs"
+    },
+    "./iamGym": {
+      "types": "./iamGym.d.mts",
+      "default": "./iamGym.mjs"
+    },
+    "./checkpoint": {
+      "types": "./checkpoint.d.mts",
+      "default": "./checkpoint.mjs"
+    },
+    "./env-promotion": {
+      "types": "./env-promotion.d.mts",
+      "default": "./env-promotion.mjs"
+    },
+    "./build-trace": {
+      "types": "./build-trace.d.mts",
+      "default": "./build-trace.mjs"
+    },
+    "./tool-registry": {
+      "types": "./tool-registry.d.mts",
+      "default": "./tool-registry.mjs"
+    },
+    "./mcp-adapter": {
+      "types": "./mcp-adapter.d.mts",
+      "default": "./mcp-adapter.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@origin/evidence": "*"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.9"
+  }
+}

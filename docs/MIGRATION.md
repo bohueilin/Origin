@@ -9,12 +9,12 @@ upgrade should actually happen.
 
 | Surface | Managed by |
 |---|---|
-| `apps/origin-web`, `apps/passport`, `packages/*` | npm workspaces — single root `package-lock.json` |
+| `apps/origin-web`, `apps/janus`, `packages/*` | npm workspaces — single root `package-lock.json` |
 | `apps/chronos-ui` | **standalone** — its own `node_modules` and `package-lock.json` |
 | `services/{cobra,chronos}` | Python, per-service `uv` venvs (unaffected by any of this) |
 
 ### Why chronos-ui is NOT a workspace (React 18 vs 19)
-`apps/chronos-ui` is React **18.3** (with `@xyflow/react` 12); `origin-web` and `passport` are
+`apps/chronos-ui` is React **18.3** (with `@xyflow/react` 12); `origin-web` and `janus` are
 React **19**. Under npm's hoisted `node_modules`, adding chronos-ui to the workspaces array would
 let its `tsc --noEmit` resolve the hoisted `@types/react@19` and let two React majors mix at
 install time. So it installs and builds standalone, and **every tool must drive it standalone**:

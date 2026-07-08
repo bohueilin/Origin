@@ -14,8 +14,8 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { warehouseTasks, bfsOracle, oraclePolicy } from '../src/warehouse.ts'
-import { InProcessExecutor, FakeDaytona } from '../rlkit/executor.mjs'
-import { runEpisode } from '../rlkit/run-episode.mjs'
+import { InProcessExecutor, FakeDaytona } from '../env/executor.mjs'
+import { runEpisode } from '../env/run-episode.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const argv = process.argv.slice(2)

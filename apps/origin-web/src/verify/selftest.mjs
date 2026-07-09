@@ -100,5 +100,17 @@ check('sigil-wrapped credential detects as sigil', detectArtifact(wrapped) === '
 const wv = await verifyArtifact(wrapped)
 check('sigil-wrapped credential verifies code 0', wv.ok && wv.code === 0)
 
+// ── 8 · Factory reference check: same spine, physical actor — outer sigil wins
+const factory = await makeExample('factory')
+check('factory example detects as sigil (wrapped credential)', detectArtifact(factory) === 'sigil')
+const fv = await verifyArtifact(factory)
+check('factory reference check verifies code 0 VALID', fv.ok && fv.code === 0, fv.headline)
+check('factory payload is a config-bound credential',
+  typeof factory.payload?.credential_digest === 'string'
+  && factory.payload?.agent_config?.harness?.includes('verifier-gated'))
+const factoryTampered = tamperArtifact(detectArtifact(factory), factory)
+const fvt = await verifyArtifact(factoryTampered.value)
+check('factory reference check tamper → code 1 VOID', !fvt.ok && fvt.code === 1, factoryTampered.note)
+
 console.log(failures === 0 ? '\nALL PASS — /verify detect+verify logic reproduces under Node' : `\n${failures} FAILURE(S)`)
 process.exitCode = failures === 0 ? 0 : 1

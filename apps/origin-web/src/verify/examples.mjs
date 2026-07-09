@@ -16,7 +16,7 @@ import { generateSigningKey, signSigil } from '@origin/verifier-core/sigil'
 import { mintCredential } from '@origin/verifier-core/crucible'
 import { batchReceipts } from '@origin/verifier-core/merkleBatch'
 
-export const exampleKinds = ['sigil', 'credential', 'receipt', 'trace', 'inclusion']
+export const exampleKinds = ['sigil', 'credential', 'receipt', 'trace', 'inclusion', 'factory']
 
 const DEMO_ENV_DIGEST = sha256('synthetic-demo-env-bundle')
 const DEMO_VERSIONS = { verifier_version: 'demo-verifier-1.0.0', reward_model_version: 'demo-reward-1.0.0' }
@@ -109,6 +109,36 @@ export async function makeExample(kind) {
         proof: batch.proofs[2],
         root: batch.root,
       }
+    }
+    case 'factory': {
+      // One evidence spine, two actors: a PHYSICAL factory plan earns the same
+      // config-bound, sigil-wrapped reference check a digital agent gets. The
+      // shape mirrors what an external deterministic factory verifier issues
+      // (cold = un-gated plan, harnessed = verifier + recursive repair); the
+      // numbers here are SYNTHETIC demo data.
+      const key = await generateSigningKey()
+      const credential = mintCredential({
+        agentConfig: {
+          model: 'factory-brain-trm-student (SYNTHETIC demo)',
+          tools: ['plan.emit', 'plan.repair'],
+          context: 'synthetic 30-day factory scenarios',
+          harness: 'verifier-gated recursive repair, fail-closed',
+          note: 'SYNTHETIC demo config — a robot/factory plan on the same evidence spine',
+        },
+        envBundleDigest: sha256('synthetic-factory-gym-bundle'),
+        versions: { verifier_version: 'factory-verifier-demo-1', reward_model_version: 'factory-reward-demo-1' },
+        rslLevel: 'L4',
+        nTasks: 24,
+        coldPassRate: 0,
+        harnessedPassRate: 1,
+        receiptDigests: [sha256('factory-demo-receipt-001'), sha256('factory-demo-receipt-002')],
+        issuedAt: '2026-07-09',
+      })
+      return signSigil(credential, key, {
+        issuer: 'origin-factory-verifier-demo',
+        kind: 'reference-check',
+        signed_at: '2026-07-09',
+      })
     }
     default:
       throw new Error(`unknown example kind: ${String(kind)}`)

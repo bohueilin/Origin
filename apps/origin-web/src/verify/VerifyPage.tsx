@@ -25,6 +25,7 @@ const EXAMPLES: Array<{ kind: ExampleKind; label: string }> = [
   { kind: 'receipt', label: 'ScoreReceipt' },
   { kind: 'trace', label: 'Episode trace' },
   { kind: 'inclusion', label: 'Batch inclusion proof' },
+  { kind: 'factory', label: 'Factory plan reference check' },
 ]
 
 function Pill({ tone }: { tone: ReportTone }) {
@@ -132,16 +133,19 @@ export function VerifyPage() {
     setBusy(true)
     try {
       const artifact = await makeExample(kind)
+      // tamper/label by DETECTED kind — an example may wrap another artifact
+      // (e.g. the factory reference check is a sigil-wrapped credential)
+      const detected = detectArtifact(artifact)
       const pristine = JSON.stringify(artifact, null, 2)
       pristineRef.current = pristine
       if (tampered) {
-        const t = tamperArtifact(kind, artifact)
+        const t = tamperArtifact(detected, artifact)
         reset(JSON.stringify(t.value, null, 2), [
-          `Loaded a synthetic ${KIND_LABELS[kind]} minted just now by the SDK.`,
+          `Loaded a synthetic ${KIND_LABELS[detected]} minted just now by the SDK.`,
           `Tampered: ${t.note}.`,
         ])
       } else {
-        reset(pristine, [`Loaded a synthetic ${KIND_LABELS[kind]} minted just now by the SDK — labeled synthetic in its fields.`])
+        reset(pristine, [`Loaded a synthetic ${KIND_LABELS[detected]} minted just now by the SDK — labeled synthetic in its fields.`])
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))

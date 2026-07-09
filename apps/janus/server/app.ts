@@ -36,6 +36,13 @@ import { isAvailable as opAvailable, leaseScopedSecret, listLeases, revokeLease 
 import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
+import {
+  handleCountersignManifest,
+  handleCountersignEnroll,
+  handleCountersignEarn,
+  handleCountersignTaint,
+  handleCountersignAct,
+} from './countersignActHandler.ts'
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
   switch (code) {
@@ -358,6 +365,34 @@ export function createApp(config: AppConfig): Hono {
   app.get('/api/janus/order-context', (c) => {
     if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     return c.json({ ok: true, context: config.demo })
+  })
+
+  // ---- Countersign: earned, key-bound, offline-verifiable agent authority ----
+  // Public pin material (issuer key + scope-policy digest) — safe to read, no CSRF gate.
+  app.get('/api/janus/countersign/manifest', (c) => {
+    const r = handleCountersignManifest()
+    return c.json(r.body, r.status as ContentfulStatusCode)
+  })
+  app.post('/api/janus/countersign/enroll', async (c) => {
+    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    const r = handleCountersignEnroll(await jsonBody(c), Date.now())
+    return c.json(r.body, r.status as ContentfulStatusCode)
+  })
+  app.post('/api/janus/countersign/earn', async (c) => {
+    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    const r = handleCountersignEarn(await jsonBody(c), Date.now())
+    return c.json(r.body, r.status as ContentfulStatusCode)
+  })
+  app.post('/api/janus/countersign/taint', async (c) => {
+    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    const r = handleCountersignTaint(await jsonBody(c))
+    return c.json(r.body, r.status as ContentfulStatusCode)
+  })
+  app.post('/api/janus/countersign/act', async (c) => {
+    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (channelThrottled('countersign', 120)) return c.json({ ok: false, error: 'rate_limited' }, 429)
+    const r = await handleCountersignAct(await jsonBody(c), config, Date.now())
+    return c.json(r.body, r.status as ContentfulStatusCode)
   })
 
   return app

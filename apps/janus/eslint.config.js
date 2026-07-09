@@ -21,4 +21,17 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // The Hono server + Cloudflare worker are NOT React. The react-hooks/react-refresh rules
+    // (which key off `use*` / component-name heuristics) don't apply — e.g. the credential
+    // broker's `useLease(...)` is a plain function, not a hook.
+    files: ['server/**/*.ts', 'worker/**/*.ts', 'scripts/**/*.{ts,mjs}'],
+    languageOptions: {
+      globals: globals.node,
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

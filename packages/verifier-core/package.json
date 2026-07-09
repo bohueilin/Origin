@@ -6,6 +6,26 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
+    "./countersign-identity": {
+      "types": "./countersign-identity.d.mts",
+      "default": "./countersign-identity.mjs"
+    },
+    "./license-policy": {
+      "types": "./license-policy.d.mts",
+      "default": "./license-policy.mjs"
+    },
+    "./warrant": {
+      "types": "./warrant.d.mts",
+      "default": "./warrant.mjs"
+    },
+    "./delegation": {
+      "types": "./delegation.d.mts",
+      "default": "./delegation.mjs"
+    },
+    "./countersign-verify": {
+      "types": "./countersign-verify.d.mts",
+      "default": "./countersign-verify.mjs"
+    },
     "./sigil": {
       "types": "./sigil.d.mts",
       "default": "./sigil.mjs"

@@ -163,6 +163,61 @@
         </div>
       </section>
 
+      <!-- ===================== Gated evidence (live) ===================== -->
+      <section class="section" id="gated" aria-labelledby="gated-title">
+        <div class="shell">
+          <p class="kicker">Don't take our word for it</p>
+          <h2 id="gated-title">The whole thing is gated — every suite, every push.</h2>
+          <p class="section__lede leadin">
+            The deterministic oracle is the only judge, so we gate it like one. One command —
+            <code>make gates-all</code> — runs the TypeScript build, every TypeScript and Python test
+            suite (including the property-based tests on the oracle itself), the evidence-verify
+            scripts, and a machine honesty check, with real exit codes. The same surface is enforced
+            in <a href="https://github.com/bohueilin/Origin/blob/main/.github/workflows/ci.yml">CI on
+            every push</a>, alongside a secret scan and a dependency audit. The scoreboard below is the
+            machine-readable result of that run.
+          </p>
+          <div id="gates-scoreboard" class="mono-note" style="margin-top: 18px;">
+            Reproduce locally with <code>make gates-all</code>. (Live scoreboard loads here.)
+          </div>
+          <p class="mono-note" style="margin-top: 14px;">
+            Every number is <b>reproducible under this verifier</b> — never "safe" or "correct."
+            Want to check a single credential yourself? Paste it into
+            <a href="/verify.html">/verify</a> — it re-verifies offline, in your browser.
+          </p>
+        </div>
+      </section>
+
+      <script type="module">
+        // Progressive enhancement: render the committed gates-all scoreboard.
+        // Degrades to the static reproduce note above if the summary is absent.
+        try {
+          const res = await fetch('/trust/gates-summary.json', { cache: 'no-store' })
+          if (!res.ok) throw new Error('no summary')
+          const data = await res.json()
+          const rows = data.suites.map((s) => {
+            const ok = s.result === 'PASS'
+            const mark = ok ? '✓' : '✗'
+            const color = ok ? '#1a7f4b' : '#b3261e'
+            const detail = (s.detail || '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))
+            return `<tr><td style="color:${color};font-weight:600;padding-right:10px">${mark}</td>`
+              + `<td style="padding-right:16px;white-space:nowrap">${s.name}</td>`
+              + `<td style="opacity:.75">${detail}</td></tr>`
+          }).join('')
+          const when = new Date(data.generated_at).toISOString().slice(0, 10)
+          const banner = data.all_green
+            ? `<b style="color:#1a7f4b">ALL GATES GREEN</b>`
+            : `<b style="color:#b3261e">gates failing — see CI</b>`
+          document.getElementById('gates-scoreboard').innerHTML =
+            `<div style="margin-bottom:10px">${banner} · ${data.suites.length} suites · `
+            + `reproduced ${when} by <code>make gates-all</code>, enforced in CI on every push.</div>`
+            + `<div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
+            + `<tbody>${rows}</tbody></table></div>`
+        } catch {
+          /* keep the static reproduce note */
+        }
+      </script>
+
       <!-- ===================== Data & telemetry ===================== -->
       <section class="section section--tint" id="data" aria-labelledby="data-title">
         <div class="shell">

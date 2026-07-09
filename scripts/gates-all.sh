@@ -76,6 +76,21 @@ for i in "${!NAMES[@]}"; do
   printf "  %s  %-46s %s\n" "$mark" "${NAMES[$i]}" "${DETAILS[$i]}"
 done
 echo "────────────────────────────────────────────────────────────────────────"
+
+# ---- machine-readable summary (consumed by the public /trust page) ----
+SUMMARY="apps/origin-web/public/trust/gates-summary.json"
+mkdir -p "$(dirname "$SUMMARY")"
+{
+  printf '{\n  "generated_at": "%s",\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '  "all_green": %s,\n  "suites": [\n' "$([ "$FAILED" -eq 0 ] && echo true || echo false)"
+  for i in "${!NAMES[@]}"; do
+    sep=","; [ "$i" -eq $(( ${#NAMES[@]} - 1 )) ] && sep=""
+    dj=$(printf '%s' "${DETAILS[$i]}" | sed 's/\\/\\\\/g; s/"/\\"/g')
+    printf '    {"name": "%s", "result": "%s", "detail": "%s"}%s\n' \
+      "${NAMES[$i]}" "${RESULTS[$i]}" "$dj" "$sep"
+  done
+  printf '  ]\n}\n'
+} > "$SUMMARY"
 if [ "$FAILED" -eq 0 ]; then
   echo "  ALL GATES GREEN — TS build + TS/Python suites + evidence-verify + honesty."
 else

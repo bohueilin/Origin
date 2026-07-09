@@ -6,7 +6,7 @@
 SHELL := /bin/bash
 PY_SERVICES := services/cobra services/chronos
 
-.PHONY: help install install-js install-py build test gates \
+.PHONY: help install install-js install-py build test gates gates-all honesty \
         dev-web dev-janus dev-chronos-ui py-sync py-test clean
 
 help: ## list targets
@@ -31,6 +31,12 @@ test: ## test all TS apps
 	npm run test --workspaces --if-present
 
 gates: build test ## build + test the TS surface
+
+gates-all: ## run EVERYTHING (TS + Python + evidence-verify + honesty) → one scoreboard
+	bash scripts/gates-all.sh
+
+honesty: ## honesty-lint the served pages (overclaim tripwire)
+	node scripts/honesty-lint.mjs
 
 dev-web: ## run the live site (origin-web) locally
 	npm run dev -w @origin/origin-web

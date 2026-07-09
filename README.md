@@ -1,50 +1,79 @@
-# Origin — the control plane for autonomy
+# Origin — the trust + evidence layer for autonomous systems
 
-> **`gemma-4-31b` on Cerebras proposes every action. A deterministic oracle — never an LLM — ratifies it before it executes. Cerebras makes that per-step verification effectively free.**
->
-> **Capability is not permission.**
+> **Model proposes. Environment verifies. Gate decides. Trace proves. — Capability is not permission.**
 
-Built for the **Cerebras × Google DeepMind — Gemma-4 24h Hackathon** (Track 1: Multiverse Agents; also Track 3 Enterprise, Track 2 People's Choice). One engine — *Quorum* — *no agent acts alone; every action is ratified.*
+Before you let an agent — or a robot — act on your systems, Origin gives you the receipt that proves
+what it was **allowed** to do, what it **actually tried** to do, and that it was **contained** if it
+went rogue — issued by a **deterministic oracle** (never an LLM grading an LLM), reproducibly, and
+independently verifiable **offline in your browser**.
 
-- **Live demo (static showcase):** https://origin-physical-ai.pages.dev
-- **60-second video:** `<VIDEO LINK>`
-- **X / Twitter (latency race):** `<X LINK>` — @Cerebras @googlegemma
+- **Live showcase:** https://origin-physical-ai.pages.dev · **Verify a credential yourself:** [`/verify`](https://origin-physical-ai.pages.dev/verify.html)
+- **Book an evidence review:** the `/` landing page CTA · **60-second demo:** *(recording — storyboard in `docs/`)*
 
 ---
 
-## The idea in one breath
+## The one insight (this is the whole company)
 
-Every autonomy demo shows a model that *can* act. None show what stops it from acting *wrong*. Origin does:
+A deterministic verifier that gates a proposed plan and emits **tamper-evident, signed, reproducible
+evidence** is the **same product** whether the actor is a software agent touching an API or a humanoid
+robot touching a factory floor. **One evidence spine, two actors.** The environment is the moat, not
+the model.
 
-1. **Gemma-4 proposes.** Three `gemma-4-31b` agents on Cerebras — **Perceiver → Planner → Guardian** — read the world (text **and images**) and propose the next action.
-2. **A deterministic oracle ratifies.** Pure geometry/set-algebra — **never an LLM grading an LLM**. A bad action is made *impossible*, not just unlikely (fail-closed, default-deny).
-3. **Cerebras makes it affordable.** Verifying *every step* means two Gemma calls per action. At **~1,300 tok/s** that tax is effectively free — so the safety check rides on every step instead of being sampled around.
+```
+① INTENT     humans + agents express what they want            (a task, a site, a tool call)
+② CONTROL    propose a plan, then GATE it — identity → scoped grant → fail-closed authorization
+   PLANE      · measured intent (declared vs measured vs action)  · taint + blast-radius containment
+③ EVIDENCE   tamper-evident: hash-chained trace + ScoreReceipts + ES256 Sigil signatures
+   PLANE      · the deterministic oracle is the ONLY label/reward authority
+```
 
-The same engine governs a **robot on a floor** (physical) and a **software agent with credentials** (digital): identity → authority → verified action.
+A **digital agent action** and a **physical factory plan** earn the *same* signed receipt — paste
+either into [`/verify`](https://origin-physical-ai.pages.dev/verify.html) and it re-checks offline:
+green means "reproducible under this verifier," tamper any field and it goes VOID.
 
-## Why Cerebras is essential, not incidental
+## Wedge → moat → market
 
-Safety is **loop-bound**: every extra proposal-per-minute is one more unsafe completion the oracle can catch. On GPU latency, a Guardian-on-every-step loop falls out of real time, so people skip per-step verification — and that's exactly where reward-hacking and prompt-injection slip through. Cerebras collapses per-step verification from a cost you ration into a guarantee you can always afford. **The speed is the architecture.**
+- **Wedge (land):** the shareable **signed Trust Receipt** + **leak-vs-hold** proof + **blocked-injection
+  containment** — visceral in 60 seconds.
+- **Moat:** the **deterministic verified environment**. Digital = an IAM/agent gym; physical = a
+  verifier-gated factory/robot environment. Nobody else has a real, verifier-gated environment for
+  *both* — and the environment beats the model.
+- **Market:** **certification-as-a-market** — a config-bound "reference check for agents/robots,"
+  priced on the **RSL** readiness ladder (L0→L4), re-certified on every config change. A catastrophic
+  over-grant hard-caps the level: the right to act cannot be averaged back.
 
-## Track-1 criteria → proof (every claim traces to a file)
+## The verified environment is a flywheel
 
-| Criterion | What it is | Proof |
-|---|---|---|
-| **Agent collaboration** | 3-agent SOC loop (Perceiver→Planner→Guardian), each `gemma-4-31b`; a fail-closed deterministic floor is the only judge. | route `/soc`, `src/foundry/soc/` |
-| **Multimodal** | Upload a floor-plan **image** → `gemma-4-31b` vision reads it into a structured site map a deterministic pass repairs. **Image in, text out — stills, not video.** | route `/foundry`, `/api/foundry/parse-floor` |
-| **Speed in action** | Loop-race: Cerebras fully triages + verifies ~6–8 incidents in the wall-time a GPU baseline does **one**; live tok/s from the API's `time_info`. | route `/soc`, `/foundry` speed race |
-| **Innovation / physical-AI** | **Spatial Passport authority edge**: a human-only zone is passable **only** with a live, scoped grant → REFUSE fires on *policy*, not just hazard. | `src/siteEval.ts`, `src/foundry/soc/passport.ts` |
+The environment doesn't just gate — it **improves the actor, and can't lie to itself while doing it**,
+because the reward authority is a deterministic oracle the system cannot edit:
 
-**Live-verified safety beat:** Gemma was fooled by **2 prompt injections; the deterministic floor blocked both — 0 destructive actions executed.**
+- **[Cobra](services/cobra)** is an autoresearch loop that **hardens the verifier** against
+  reward-hacking (red-team → seal → measure on held-out ground truth).
+- The same discipline drives **verifier-gated recursive self-improvement**: a policy proposes, the
+  oracle gates and labels verified traces, a better policy is distilled, and it **only promotes on a
+  verifier-scored win** — so it can never regress and can never reward-hack a fake win. Bounded,
+  auditable self-improvement. *(The physical factory algorithm that instantiates this is private; only
+  its evidence format is public.)*
+
+## Why now
+
+Every enterprise is about to deploy agents (and soon humanoids) that touch money, data, production,
+and physical safety. The blocker isn't capability — it's **trust, governance, and liability**, and
+there's no standard "the actor earned the right to do X, here's the signed receipt." Origin is that
+standard. Per-step verification is what makes it real: verifying *every* action (not sampling around
+it) is where reward-hacking and prompt-injection get caught — and at frontier inference speed
+(e.g. `gemma-4-31b` on Cerebras, ~1,300 tok/s) that per-step tax is affordable, so the safety check
+rides on every step. **The speed is the architecture.**
 
 ## Honest by design (the lines we don't cross)
 
-- **Inference only.** `gemma-4-31b` on Cerebras is **image+text in / text out**. No training on Cerebras, no video generation.
-- **The deterministic oracle is the only judge** — never an LLM grading an LLM. We *contain* prompt injection; we don't claim to *prevent* it — the destructive action just never executes at the floor.
-- **Multimodal = stills** (floor-plan images, alert screenshots), never video.
-- **Speed = platform comparison** (same/peer `gemma-4-31b`, Cerebras WSE vs a GPU baseline) — not "our model is smarter." On-screen tok/s is real `time_info`.
-- **Robot-ready = the brain, not a robot.** The actuator today is a tool-call.
-- The **live URL is the static showcase**; the interactive Cerebras loop is in the locally-recorded video (never conference wifi).
+- **The deterministic oracle is the only judge** — never an LLM grading an LLM. We *contain* prompt
+  injection; we don't claim to *prevent* it — the destructive action just never executes at the gate.
+- Results are **"reproducible under this verifier,"** never "safe" or "correct." Synthetic data is
+  labeled synthetic; unmeasured numbers say **projected**. This is machine-enforced — see the
+  `honesty-lint` gate below.
+- **Prototype in private pilot** — decision-support + evidence infrastructure, not production SaaS and
+  not compliance certification. Real-customer readiness stays **blocked by default** until authorized.
 
 ---
 
@@ -52,29 +81,35 @@ Safety is **loop-bound**: every extra proposal-per-minute is one more unsafe com
 
 | Part | Path | What it is |
 |---|---|---|
-| **Origin Web** | `apps/origin-web` | The live site + the Foundry (`/foundry`) and AI-SOC (`/soc`) consoles. Deploys to `origin-physical-ai.pages.dev`. |
-| **Origin Janus** (formerly Passport) | `apps/janus` | Agentic credential broker + Autonomy Trace Console — delegated authority you can trust. |
-| **Chronos UI** | `apps/chronos-ui` | Front-end for the reward-hack discovery / verifier-hardening engine. |
-| **Cobra / Chronos** | `services/{cobra,chronos}` | Auto-harden RL verifiers against reward hacking (red-team → patch → measure). |
-| **Training Evidence** | `apps/origin-web/rlkit` | Reproducible **ScoreReceipts** — the nine-pillar RL-evidence layer (`env:verify`). |
+| **Origin Web** | [`apps/origin-web`](apps/origin-web) | The live site + the evidence console, `/security` (run the verifiers in-browser), and public **[`/verify`](apps/origin-web/verify.html)**. |
+| **Janus** (formerly Passport) | [`apps/janus`](apps/janus) | The gate: identity → scoped grant → fail-closed authorization, with measured-intent (Tell) + containment (Cordon). |
+| **Chronos UI** | [`apps/chronos-ui`](apps/chronos-ui) | Front-end for the reward-hack discovery / verifier-hardening engine. |
+| **Cobra / Chronos** | [`services/{cobra,chronos}`](services) | Auto-harden RL verifiers against reward hacking (red-team → patch → measure on held-out ground truth). |
+| **Verifier SDK** | [`packages/verifier-core`](packages/verifier-core) + [`packages/evidence`](packages/evidence) | The shared evidence spine: canonical JSON, isomorphic SHA-256, hash-chained ScoreReceipts, ES256 **Sigil** signatures, Merkle batches, config-bound **Crucible** credentials, the IAM gym + RSL ladder. Consumed by the apps *and* by external verifiers. |
 
 ## Quickstart
 
 ```bash
 make install        # npm workspaces (TS) + uv sync per Python service
-make build          # build all TS apps
-make gates          # build + lint + test the TS surface
-make dev-web        # run the live site locally (Vite :5275 + Hono :8787)
+make gates-all      # ONE green scoreboard: TS build + all TS/Python suites + evidence-verify + honesty
+make dev-web        # run the live site locally
 make help           # all targets
 ```
 
-The interactive loop needs a Cerebras key (server-side only). Without one, every surface degrades to a **clearly labeled** deterministic mock — the story still holds, nothing is faked. Secrets live only in per-app `.env.local` (gitignored), never committed.
+`make gates-all` runs everything — the two TS apps, the evidence + verifier-core suites, the
+`services/{cobra,chronos}` Python suites (the deterministic-oracle moat), the evidence-verify scripts,
+and the `honesty-lint` overclaim tripwire — with real exit codes and a per-suite scoreboard. CI
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) gates the same surface on every push, plus a
+secret scan and dependency audit.
 
 ## Where to look
 
-- **Routes:** `/` (landing) · `/foundry` (floor → gym → license) · `/soc` (AI-SOC loop-race) · `/passport` (identity → authority → veto)
-- **The oracle (the only judge):** `apps/origin-web/src/warehouse.ts` → `verifyWarehouseRollout` + `bfsOracle`
+- **The oracle (the only judge):** [`apps/origin-web/src/warehouse.ts`](apps/origin-web/src/warehouse.ts) → `verifyWarehouseRollout` + `bfsOracle`; property-tested in `warehouse.properties.test.ts` and `services/cobra/tests/test_oracle_properties.py`.
+- **The evidence spine:** [`packages/evidence/env-evidence.mjs`](packages/evidence/env-evidence.mjs) + [`packages/verifier-core`](packages/verifier-core) (Sigil, Merkle, Crucible, IAM gym).
+- **Verify it yourself:** [`/verify`](https://origin-physical-ai.pages.dev/verify.html) — paste any Origin receipt, credential, trace, or Sigil; it re-verifies offline in your browser.
 
 ---
 
-*Validated by the consensus, not a slogan: DeepMind's AI Control Roadmap (synchronous blocking, fail-closed) and arXiv 2602.09947 (deterministic architectural boundaries) — in code.*
+*Deploy note: pushing this repo does **not** deploy anything — the live site is a separate,
+human-owned Cloudflare Pages cutover. Secrets live only in per-app `.env.local` (gitignored), never
+committed.*

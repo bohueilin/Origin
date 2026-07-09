@@ -507,6 +507,11 @@ def test_bounded_failure_requires_rejection_history_and_seals():
     assert proof["rejection_history"][0]["iteration"] == 9
 
 
+@pytest.mark.skipif(
+    not Path(".external/harden-v0/harden/config.py").exists(),
+    reason="harden-v0 external dep not bootstrapped "
+    "(.external/harden-v0 — see scripts/bootstrap_external_deps.sh)",
+)
 def test_harden_config_inspection_reads_real_schema():
     config = Path(".external/harden-v0/harden/config.py")
     schema = inspect_harden_config(config)

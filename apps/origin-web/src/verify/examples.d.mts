@@ -1,6 +1,6 @@
 // Type surface for examples.mjs — synthetic, SDK-minted /verify examples.
 
-export type ExampleKind = 'sigil' | 'credential' | 'receipt' | 'trace' | 'inclusion'
+export type ExampleKind = 'sigil' | 'credential' | 'receipt' | 'trace' | 'inclusion' | 'factory'
 
 export const exampleKinds: readonly ExampleKind[]
 

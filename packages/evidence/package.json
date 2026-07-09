@@ -27,6 +27,9 @@
   "engines": {
     "node": ">=18"
   },
+  "scripts": {
+    "test": "vitest run"
+  },
   "devDependencies": {
     "vitest": "^4.1.9"
   }

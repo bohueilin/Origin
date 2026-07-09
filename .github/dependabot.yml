@@ -1,0 +1,37 @@
+# Dependabot — supply-chain safeguard. Weekly PRs for known-vulnerable / outdated deps
+# across every ecosystem in the monorepo: the two npm workspaces (root lockfile),
+# the standalone chronos-ui, the two uv Python services, and GitHub Actions pins.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/apps/chronos-ui"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "uv"
+    directory: "/services/cobra"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "uv"
+    directory: "/services/chronos"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5

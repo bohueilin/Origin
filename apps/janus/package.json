@@ -18,9 +18,9 @@
   },
   "dependencies": {
     "@1password/sdk": "^0.4.0",
-    "@hono/node-server": "^2.0.5",
-    "hono": "^4.12.26",
-    "openai": "^6.44.0",
+    "@hono/node-server": "^2.0.8",
+    "hono": "^4.12.28",
+    "openai": "^6.46.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },
@@ -35,8 +35,8 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12",
-    "vitest": "^4.1.9"
+    "typescript-eslint": "^8.63.0",
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10"
   }
 }

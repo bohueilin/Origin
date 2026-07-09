@@ -4,6 +4,14 @@
 #   - apps/origin-web  (React 19, npm workspace): typecheck + lint (0 warnings) + vitest
 #   - apps/janus       (React 19, npm workspace): typecheck + lint (0 warnings) + vitest
 #   - apps/chronos-ui  (React 18, deliberately NOT a workspace — own lockfile): npm ci + build
+#   - services/cobra   (Python, uv): pytest — the reward-hacking / verifier-hardening research
+#   - services/chronos (Python, uv): pytest — the deterministic proof/replay layer
+#
+# The deterministic ORACLE is the moat — it must never be wrong — so its Python
+# suites (cobra 168, chronos 383) gate every push, not just the TS surface.
+# chronos runs its default suite, which by its own pyproject honestly excludes 6
+# live/external-dep tests (harden-v0, grader-in-docker, live discovery); those
+# need .external/* bootstrapped (scripts/bootstrap_external_deps.sh) and secrets.
 #
 # Install layout mirrors the repo's documented split (see docs/MIGRATION.md):
 # the two workspace apps install once from the ROOT package-lock.json; chronos-ui
@@ -80,11 +88,57 @@ jobs:
       - name: Build (tsc --noEmit + vite build)
         run: npm run build
 
+  python-services:
+    name: ${{ matrix.service }} — pytest (Python moat)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [cobra, chronos]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync (isolated per-service venv)
+        working-directory: services/${{ matrix.service }}
+        run: uv sync
+
+      - name: Pytest
+        working-directory: services/${{ matrix.service }}
+        run: uv run pytest -q
+
+  secret-scan:
+    name: secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # gitleaks scans full history for leaked secrets
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+
+  honesty-lint:
+    name: honesty lint (overclaim tripwire)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Lint served pages for unscoped overclaims + required disclaimers
+        run: node scripts/honesty-lint.mjs
+
   # Single required status for branch protection: green only when every job above is.
   ci-ok:
     name: CI green
     if: always()
-    needs: [workspace-apps, chronos-ui]
+    needs: [workspace-apps, chronos-ui, python-services, secret-scan, honesty-lint]
     runs-on: ubuntu-latest
     steps:
       - name: Fail if any gate job failed

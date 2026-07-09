@@ -51,6 +51,9 @@
   "engines": {
     "node": ">=18"
   },
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "@origin/evidence": "*"
   },

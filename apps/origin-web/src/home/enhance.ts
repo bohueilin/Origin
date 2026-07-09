@@ -229,6 +229,7 @@ const INTENT_COPY: Record<string, { title: string; sub: string; cta: string }> =
   // default fallback for any CTA without an explicit intent
   demo: { title: 'Book an Agent Evidence Review', sub: 'Tell us about the high-consequence agent you need through security review.', cta: 'Request review' },
   investor: { title: 'Read the one-page brief', sub: 'Leave your details and we’ll share the brief on the wedge, the evidence ladder, and where Origin is going.', cta: 'Request brief' },
+  'design-partner': { title: 'Become a design partner', sub: 'Run your agent (or a representative policy) through the gym and get a signed, config-bound reference check. Real-customer evidence stays blocked by default until you authorize it.', cta: 'Start as a design partner' },
 }
 
 // Prefill the role field when a CTA opens the modal. Values match the <select> options.
@@ -236,6 +237,7 @@ const INTENT_ROLE: Record<string, string> = {
   review: 'Engineering / platform',
   blocker: 'Security / review',
   investor: 'Investor',
+  'design-partner': 'Engineering / platform',
 }
 
 function openLead(trigger: HTMLElement): void {

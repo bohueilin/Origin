@@ -19,13 +19,13 @@ export function SupportForm({ defaultCategory = 'general', onFiled }: { defaultC
     e.preventDefault()
     setMsg(null)
     if (!auth.user) {
-      setMsg({ ok: false, text: 'Please sign in to file a ticket — or email support@origin.ai.' })
+      setMsg({ ok: false, text: 'Please sign in to file a ticket — or email hello@originphysical.ai.' })
       return
     }
     setBusy(true)
     const ok = await fileTicket(subject, body, category)
     setBusy(false)
-    if (!ok) { setMsg({ ok: false, text: 'Could not file the ticket. Try again, or email support@origin.ai.' }); return }
+    if (!ok) { setMsg({ ok: false, text: 'Could not file the ticket. Try again, or email hello@originphysical.ai.' }); return }
     setSubject(''); setBody('')
     setMsg({ ok: true, text: 'Thanks — your ticket was filed. We’ll get back to you.' })
     onFiled?.()

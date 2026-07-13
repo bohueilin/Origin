@@ -90,6 +90,14 @@ describe('env:verify — reproducible score receipts', () => {
     expect(verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn }).code).toBe(3)
   })
 
+  it('relabeling the header task.id (provenance) without touching the chain is caught (exit 3)', () => {
+    const { bundle, episode, receipt } = buildTrio()
+    // final_digest covers events[], not the header — but 1b binds header task to the
+    // chain-bound episode.started, so a relabeled provenance is detected.
+    episode.task = { ...episode.task, id: 'a-different-task' }
+    expect(verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn }).code).toBe(3)
+  })
+
   it('bumping the pinned verifier version is drift (exit 4)', () => {
     const { bundle, episode, receipt } = buildTrio()
     bundle.verifier.verifier_version = '2.0.0' // also changes env_bundle_digest → drift

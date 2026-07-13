@@ -319,6 +319,25 @@ export function verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn }) 
   if (!chain.ok) return bad(2, `episode chain: ${chain.failures.join('; ')}`)
   ok(`episode hash chain verifies (${episode.events.length} events)`)
 
+  // 1b — the (unsigned) trace header carries task/seed, but final_digest only covers
+  //      events[]. Bind provenance: the header task.id/seed MUST match the chain-bound
+  //      episode.started payload, so a verified trace's "produced under this task/seed"
+  //      claim cannot be relabeled without breaking the chain. (Full header-into-seal
+  //      binding incl. policy_version is a versioned seal-digest migration — AUDIT_REPORT
+  //      moat-sdk-2.) episode.task is also what scoreFn is fed below, so this stops a
+  //      re-scored reward being attributed to a different task than the one recorded.
+  {
+    const started = episode.events?.find((e) => e.event_type === 'episode.started')
+    const p = started?.payload
+    if (started && p && episode.task) {
+      if (episode.task.id != null && p.task_id != null && episode.task.id !== p.task_id)
+        return bad(3, `header task.id (${episode.task.id}) != chain-bound episode.started task_id (${p.task_id}) — provenance relabeled`)
+      if (episode.task.seed != null && p.seed != null && episode.task.seed !== p.seed)
+        return bad(3, `header task.seed (${episode.task.seed}) != chain-bound episode.started seed (${p.seed}) — provenance relabeled`)
+      ok('header task/seed match the chain-bound episode.started payload')
+    }
+  }
+
   // 2 — bundle integrity + version pins (drift = exit 4)
   if (bundle) {
     const d = bundleDigest(bundle)

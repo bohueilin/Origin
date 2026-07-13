@@ -248,6 +248,10 @@ a:hover { text-decoration: underline; }
   max-width: 52ch; line-height: 1.55;
 }
 .hero__cta { margin-top: 30px; }
+.hero__cta-sub { margin-top: 14px; font-size: 13.5px; color: var(--ink-soft); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.hero__cta-sub a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.hero__cta-sub a:hover { color: var(--ink); }
+.hero__cta-sub span { opacity: .5; }
 .hero__assurances {
   list-style: none; padding: 0; margin: 26px 0 0; display: flex; flex-wrap: wrap; gap: 8px 20px;
   font-size: 13.5px; color: var(--steel);

@@ -450,6 +450,7 @@
             <p class="tr2-verify__lbl">Verify this artifact yourself</p>
             <button type="button" class="tr2-verify__copy" data-copy="npm run proof:verify" aria-label="Copy the verify command">Copy command</button>
           </div>
+          <p class="tr2-verify__lbl" style="font-weight:400;opacity:0.85;margin:0 0 10px;">No install needed — paste the downloaded JSON into <a href="/verify" style="color:var(--signal-ink);font-weight:600">/verify</a> and it re-checks offline in your browser (green = reproducible; tamper any field &rarr; VOID). Or clone the public repo <a href="https://github.com/bohueilin/Origin" style="color:var(--signal-ink);font-weight:600">github.com/bohueilin/Origin</a> and run:</p>
           <pre><span class="tr2-verify__c"># in the repo — re-derive the hash chain of the published JSON</span>
 npm run proof:verify
 <span class="tr2-verify__c"># → PASS every event hash + prev_hash link verifies · digest recomputes</span>

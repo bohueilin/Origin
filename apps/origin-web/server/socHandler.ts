@@ -341,13 +341,13 @@ export async function handleSocShootout(_body: unknown, cerebras: CerebrasConfig
   const verificationTaxX = cWall > 0 ? Math.round((gpuVerifiedProjectedMs / cWall) * 10) / 10 : 1
 
   // Honest framing: Cerebras's verified loop is GUARANTEED-safe (0 breaches by construction) AND more
-  // accurate (the loop catches mistakes); the GPU one-shot has no guarantee, and earning the same
-  // guarantee triples its latency — so per-step verification is ~Nx cheaper on Cerebras.
+  // accurate (the loop catches mistakes); the GPU one-shot has no per-step check, and adding the same
+  // per-step verification triples its latency — so per-step verification is ~Nx cheaper on Cerebras.
   const verdict =
-    `Same ${subset.length} incidents. Cerebras verified every step — ${cPassed}/${subset.length} correct, ${cBreaches} breaches (guaranteed safe) — in ${Math.round(cWall)}ms. ` +
-    `The GPU one-shot got ${gPassed}/${subset.length} with no guarantee` +
+    `Same ${subset.length} incidents. Cerebras verified every step — ${cPassed}/${subset.length} correct, ${cBreaches} destructive action${cBreaches === 1 ? '' : 's'} executed (the fail-closed policy floor held the rest) — in ${Math.round(cWall)}ms. ` +
+    `The GPU one-shot got ${gPassed}/${subset.length} with no per-step verification` +
     `${gBreaches > 0 ? ` and executed ${gBreaches} destructive action${gBreaches === 1 ? '' : 's'}` : ''} in ${Math.round(gWall)}ms; ` +
-    `giving it the same per-step guarantee means running the verify loop on every call (~${gpuVerifiedProjectedMs}ms). ` +
+    `giving it the same per-step verification means running the verify loop on every call (~${gpuVerifiedProjectedMs}ms). ` +
     `Per-step verification is ~${verificationTaxX}× cheaper on Cerebras — and more accurate.`
 
   const baseLabel = gemini.label ?? 'GPU baseline'

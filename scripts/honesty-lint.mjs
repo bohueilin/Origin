@@ -45,6 +45,11 @@ const BANNED = [
   [/\b(fully|totally) (safe|secure|autonomous)\b/i, 'absolute "fully/totally safe/secure/autonomous"'],
   [/\bnever fails\b/i, 'claims it never fails'],
   [/\bprevents (all|every|any|prompt injection\b)/i, 'claims to PREVENT (we contain, we do not prevent)'],
+  [/\bguaranteed safe\b/i, '"guaranteed safe" — we say "reproducible under this verifier," never "safe"'],
+  [/\bcan['’]?t (cheat|reward[-\s]?hack|be tricked|be gamed)\b/i, 'absolute "can\'t cheat/reward-hack/be tricked" (cheating scores zero — it is not impossible)'],
+  [/\bbrain that can['’]?t\b/i, 'absolute "a brain that can\'t X" claim'],
+  [/\bprovably (means )?safer\b/i, '"provably safer" — the oracle proves reproducibility of a score, not safety'],
+  [/\bcan never reward[-\s]?hack\b/i, 'absolute "can never reward-hack" (the verifier itself is the attack surface Cobra/Chronos harden)'],
 ]
 
 // 2. REQUIRED — a disclaimer that must survive on a given page. [file, regex, why].
@@ -64,6 +69,23 @@ const visibleText = (html) =>
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z]+;/gi, ' ')
 
+// og/twitter/description meta content + <title> — the text that spreads on a social share,
+// invisible to visibleText() (it strips tags). This is where overclaims used to hide.
+const metaAndTitleText = (html) => {
+  const chunks = []
+  for (const m of html.matchAll(/<meta[^>]*\b(?:name|property)=["'](?:description|og:title|og:description|twitter:title|twitter:description)["'][^>]*\bcontent=["']([^"']*)["']/gi)) chunks.push(m[1])
+  for (const m of html.matchAll(/<meta[^>]*\bcontent=["']([^"']*)["'][^>]*\b(?:name|property)=["'](?:description|og:title|og:description|twitter:title|twitter:description)["']/gi)) chunks.push(m[1])
+  for (const m of html.matchAll(/<title>([\s\S]*?)<\/title>/gi)) chunks.push(m[1])
+  return chunks.join('  ·  ')
+}
+
+// React marketing copy the served pages render at runtime (invisible to a static HTML scan).
+// Targeted to the demo surfaces where overclaims recur; JSX/strings scanned as-is.
+const REACT_COPY_GLOBS = [
+  'src/foundry/ui/FoundryApp.tsx', 'src/foundry/soc/SocConsole.tsx', 'src/foundry/clip/ClipView.tsx',
+  'src/factorydad/components/RsiPrimer.tsx',
+]
+
 let violations = 0
 const note = (msg) => {
   console.log(`  ✗ ${msg}`)
@@ -73,10 +95,25 @@ const note = (msg) => {
 for (const file of SERVED) {
   const path = join(WEB, file)
   if (!existsSync(path)) continue
-  const text = visibleText(readFileSync(path, 'utf8'))
+  const raw = readFileSync(path, 'utf8')
+  const text = visibleText(raw)
+  const meta = metaAndTitleText(raw)
   for (const [re, label] of BANNED) {
     const m = text.match(re)
     if (m) note(`${file}: BANNED overclaim — ${label} (matched "${m[0].trim()}")`)
+    const mm = meta.match(re)
+    if (mm) note(`${file} <meta/title>: BANNED overclaim — ${label} (matched "${mm[0].trim()}")`)
+  }
+}
+
+// React-rendered marketing copy (a curated set of demo-surface components).
+for (const rel of REACT_COPY_GLOBS) {
+  const path = join(WEB, rel)
+  if (!existsSync(path)) continue
+  const src = readFileSync(path, 'utf8')
+  for (const [re, label] of BANNED) {
+    const m = src.match(re)
+    if (m) note(`${rel} (React copy): BANNED overclaim — ${label} (matched "${m[0].trim()}")`)
   }
 }
 
@@ -89,7 +126,7 @@ for (const [file, re, why] of REQUIRED) {
 }
 
 if (violations === 0) {
-  console.log(`honesty-lint: clean — ${SERVED.length} served pages, ${BANNED.length} banned patterns, ${REQUIRED.length} required disclaimers.`)
+  console.log(`honesty-lint: clean — ${SERVED.length} served pages (prose + meta/title) + ${REACT_COPY_GLOBS.length} React copy files, ${BANNED.length} banned patterns, ${REQUIRED.length} required disclaimers.`)
   process.exit(0)
 }
 console.log(`\nhonesty-lint: ${violations} violation(s). Keep claims scoped ("reproducible under this verifier," never "safe"/"correct").`)

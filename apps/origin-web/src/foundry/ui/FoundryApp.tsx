@@ -223,7 +223,7 @@ function TrainingPanel() {
       <div className="fdy-card__head">
         <h2>Train in your floor</h2>
         <p>
-          The reward is the deterministic safety oracle, so the policy can't learn to cheat the metric. One click kicks a small but real fine-tune
+          The reward is the deterministic safety oracle, so cheating the metric earns the policy nothing — a verified-unsafe plan scores zero. One click kicks a small but real fine-tune
           (Fireworks RFT, rollouts on Modal). Watch reward climb and false-accepts fall.
         </p>
       </div>
@@ -349,7 +349,7 @@ export default function FoundryApp() {
         <div className="fdy-hero__eyebrow">Origin Foundry · powered by gemma-4-31b on Cerebras</div>
         <h1>
           Upload a floor plan.<br />
-          Get a robot brain that <span className="fdy-hero__mark">can't cheat</span>.
+          Get a robot policy that <span className="fdy-hero__mark">earns nothing for cheating</span>.
         </h1>
         <p className="fdy-hero__sub">
           gemma-4-31b reads your floor into a real simulation. A Planner proposes every move and a Guardian ratifies it — dozens of

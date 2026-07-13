@@ -177,7 +177,7 @@ export function LatencyPanel() {
             </div>
           </div>
           {typed >= data.attackText.length && ratio && (
-            <div className="fdy-race__verdict">Cerebras blocked the injection in {data.cerebras.totalMs}ms — the GPU took {data.gpu.totalMs}ms, {ratio}× slower. The defense reacts before the attack finishes typing.</div>
+            <div className="fdy-race__verdict">Cerebras blocked the injection in {data.cerebras.totalMs}ms — the GPU took {data.gpu.totalMs}ms, {ratio}× slower. The defense reacts before the attack finishes typing.{!data.cerebras.ok && <span className="fdy-race__sim"> · illustrative (no live key on this server)</span>}</div>
           )}
         </div>
       )}
@@ -525,7 +525,7 @@ function ShootLane({ l, guaranteed }: { l: SocShootoutResponse['cerebras']; guar
         <div className="fdy-lane__tok">{l.passed}/{l.total} <span>correct</span></div>
       </div>
       <div className="soc-shoot__meta">
-        <span className={guaranteed ? 'soc-shoot__safe' : 'soc-shoot__risk'}>{guaranteed ? '0 breaches · guaranteed' : `${l.breaches} breaches · no guarantee`}</span>
+        <span className={guaranteed ? 'soc-shoot__safe' : 'soc-shoot__risk'}>{l.breaches} destructive action{l.breaches === 1 ? '' : 's'} executed{guaranteed ? ' · per-step verified' : ' · no per-step check'}</span>
         <span>{l.mode === 'verified' ? 'verified every step' : 'one shot, no Guardian'}</span>
         <span>{l.totalMs}ms{l.tokS ? ` · ${l.tokS} tok/s` : ''}</span>
         {l.note && <span className="fdy-lane__note">{l.note}</span>}

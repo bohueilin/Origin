@@ -86,7 +86,7 @@ export default function ClipView() {
         {ratio && <> {ratio}× faster than a GPU model.</>} Per-step verification is free — only on Cerebras.
       </div>
 
-      <div className="clip__live">● live · measured this run</div>
+      <div className="clip__live">{data?.cerebras?.ok ? '● live · measured this run' : '● illustrative · no live key on this server'}</div>
     </div>
   )
 }

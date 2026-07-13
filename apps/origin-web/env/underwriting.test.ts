@@ -5,7 +5,6 @@ import {
   allowAllPolicy,
   IAM_VERSIONS,
 } from '@origin/verifier-core/iamGym'
-// @ts-expect-error — .mjs without colocated app types
 import { underwriteCredential, verifyUnderwriting, riskScore, riskBand } from '@origin/verifier-core/underwriting'
 import { computeLicenseFromVerdicts } from '../src/license'
 

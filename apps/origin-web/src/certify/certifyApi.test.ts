@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { certify, verify, type CertifyResponse } from './certifyApi'
-// @ts-expect-error — detect.mjs is plain ESM without colocated types
 import { detectArtifact, verifyArtifact } from '../verify/detect.mjs'
 
 // The verification-substrate API a GRC platform / insurer embeds. Deterministic,

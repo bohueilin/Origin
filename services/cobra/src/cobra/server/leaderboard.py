@@ -54,10 +54,16 @@ class Submission(BaseModel):
     examples: list[ExampleRow] = []
 
 
+# Bounds on the verified tier. The endpoint EXECUTES attacker-supplied completions and
+# materializes reasoning-gym items by index, so both are DoS surfaces without caps.
+MAX_VERIFIED_ROWS = 256
+MAX_RG_INDEX = 4096
+
+
 class VerifiedSubmission(BaseModel):
     env_name: str = Field(min_length=1)
     substrate: str  # "evalplus" or "reasoning-gym:<dataset>"
-    rows: list[dict]  # each: {task_id, model, completion, r_naive?, r_hardened?}
+    rows: list[dict] = Field(max_length=MAX_VERIFIED_ROWS)  # {task_id, model, completion, ...}
 
 
 def _now() -> str:
@@ -143,6 +149,12 @@ def create_leaderboard_app(db_path: str = store.DEFAULT_DB) -> FastAPI:
                     dataset_name, seed_str, index_str = task_id.split(":")
                     seed_int = int(seed_str)
                     index_int = int(index_str)
+                    # Bound the index: load_rg_subset(dataset, index+1, seed) generates
+                    # index+1 items, so an unbounded index is a memory/CPU DoS.
+                    if index_int < 0 or index_int > MAX_RG_INDEX:
+                        raise HTTPException(
+                            422, f"reasoning-gym index out of range [0, {MAX_RG_INDEX}]"
+                        )
                     cache_key = (dataset_name, seed_int)
                     if cache_key not in _rg_cache:
                         _rg_cache[cache_key] = load_rg_subset(dataset_name, index_int + 1, seed_int)

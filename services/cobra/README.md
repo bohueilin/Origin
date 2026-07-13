@@ -101,7 +101,9 @@ live *outside* the workdir and are never written into it. The seed exploit list 
 seed list.
 
 **Determinism is load-bearing.** Both grader and oracle run solutions in a subprocess sandbox
-(`sandbox.py`): 30 s CPU timeout, 2048 MB cap, **no network**, `PYTHONHASHSEED=0`, and the verdict is
+(`sandbox.py`): 30 s CPU timeout, `PYTHONHASHSEED=0`, a **best-effort** in-process network block and a
+**Linux-only** ~2048 MB rlimit (both are determinism aids, **not a security boundary** — a subprocess or
+`ctypes` call can bypass the network block, and the memory cap is a no-op off Linux). The verdict is
 parsed from pytest's JUnit XML — never exit codes. Float comparisons use a shared `_eq` with
 `rel_tol = abs_tol = 1e-6` (`suite.py`), embedded identically into grader and oracle suites.
 

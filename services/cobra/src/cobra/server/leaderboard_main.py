@@ -5,6 +5,7 @@ example submissions so the frontend has data to render immediately.
 """
 
 import argparse
+import os
 import socket
 
 import uvicorn
@@ -42,6 +43,19 @@ def main() -> None:
     if args.seed:
         n = seed_board(args.db)
         print(f"seeded {n} example submissions into {args.db}")
+
+    # The verified tier EXECUTES attacker-supplied completions in a best-effort in-process
+    # sandbox (an in-interpreter socket monkeypatch + Linux-only rlimits — NOT a security
+    # boundary). Binding off-loopback is therefore remote code execution. Refuse unless the
+    # operator explicitly acknowledges they have real OS-level isolation in front of it.
+    loopback = args.host in ("127.0.0.1", "::1", "localhost")
+    if not loopback and os.environ.get("COBRA_ALLOW_UNTRUSTED_EXEC_OFF_LOOPBACK") != "1":
+        raise SystemExit(
+            f"refusing to bind {args.host}: the verified tier runs attacker-supplied code in a "
+            "best-effort in-process sandbox that is NOT a security boundary — binding off-loopback "
+            "is remote code execution. Run behind real isolation (container/gVisor/microVM) and "
+            "set COBRA_ALLOW_UNTRUSTED_EXEC_OFF_LOOPBACK=1 to override."
+        )
 
     _ensure_port_free(args.host, args.port)
     print(f"leaderboard → http://{args.host}:{args.port}/board   (api: /api/leaderboard)")

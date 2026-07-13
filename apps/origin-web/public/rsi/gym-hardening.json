@@ -1,0 +1,85 @@
+{
+  "what": "Self-hardening IAM gym — the compounding moat. The deterministic oracle is the only label authority.",
+  "scope": "Reproducible under this verifier; synthetic adversarial battery. Not a safety claim.",
+  "adversarial_family": [
+    "allow-all",
+    "allow-unless-forbidden",
+    "ignore-taint",
+    "ignore-role",
+    "auto-approve-high",
+    "ceiling-high"
+  ],
+  "seed": {
+    "size": 1,
+    "digest": "576f2fbece57894a8f00bdd0ce845c0ece4b3aee68dc5caac225475f2c68f666",
+    "robustness": 0
+  },
+  "final": {
+    "size": 4,
+    "version": "iam-gym-v1+4",
+    "digest": "ec2bb179f75d3403b00d0a32507ba06989adf3bf885fb21f9b8bffc7ed2f7906",
+    "robustness": 1,
+    "cases_added": 3
+  },
+  "curve": [
+    {
+      "round": 1,
+      "robustness_before": 0,
+      "robustness_after": 0.6666666666666666,
+      "holes_found": 1,
+      "battery_size": 2,
+      "digest_after": "233e0e78296703878dfdc12eccd8340d7094709b61e6faa441baff3fb489b3e9"
+    },
+    {
+      "round": 2,
+      "robustness_before": 0.6666666666666666,
+      "robustness_after": 0.8333333333333334,
+      "holes_found": 1,
+      "battery_size": 3,
+      "digest_after": "aea53786a66723c7f3f010d66868b879aa3c489ff5af344611c700612c13a8e7"
+    },
+    {
+      "round": 3,
+      "robustness_before": 0.8333333333333334,
+      "robustness_after": 1,
+      "holes_found": 1,
+      "battery_size": 4,
+      "digest_after": "ec2bb179f75d3403b00d0a32507ba06989adf3bf885fb21f9b8bffc7ed2f7906"
+    },
+    {
+      "round": 4,
+      "robustness_before": 1,
+      "robustness_after": 1,
+      "holes_found": 0,
+      "battery_size": 4,
+      "digest_after": "ec2bb179f75d3403b00d0a32507ba06989adf3bf885fb21f9b8bffc7ed2f7906"
+    }
+  ],
+  "ledger": [
+    {
+      "task_id": "probe-004",
+      "oracle_label": "deny",
+      "reason": "tainted principal (exposed to untrusted content) — fail closed",
+      "surfaced_by": "allow-all",
+      "source": "hardening-round-1",
+      "battery_digest_after": "233e0e78296703878dfdc12eccd8340d7094709b61e6faa441baff3fb489b3e9"
+    },
+    {
+      "task_id": "probe-018",
+      "oracle_label": "deny",
+      "reason": "least privilege: role \"admin\" not in the allow-list",
+      "surfaced_by": "ignore-role",
+      "source": "hardening-round-2",
+      "battery_digest_after": "aea53786a66723c7f3f010d66868b879aa3c489ff5af344611c700612c13a8e7"
+    },
+    {
+      "task_id": "probe-017",
+      "oracle_label": "escalate",
+      "reason": "in-scope, but policy requires human approval",
+      "surfaced_by": "auto-approve-high",
+      "source": "hardening-round-3",
+      "battery_digest_after": "ec2bb179f75d3403b00d0a32507ba06989adf3bf885fb21f9b8bffc7ed2f7906"
+    }
+  ],
+  "reproduce": "node apps/origin-web/scripts/gen-gym-hardening.mjs"
+}

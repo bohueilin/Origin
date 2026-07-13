@@ -26,6 +26,10 @@
       "types": "./iamGym.d.mts",
       "default": "./iamGym.mjs"
     },
+    "./gymHardening": {
+      "types": "./gymHardening.d.mts",
+      "default": "./gymHardening.mjs"
+    },
     "./checkpoint": {
       "types": "./checkpoint.d.mts",
       "default": "./checkpoint.mjs"

@@ -48,3 +48,59 @@ describe('digest stability across the rlkit → @origin/evidence extraction', ()
     ).toBe('b9f599f5f17359af44e3ec39db66a148fd8e92790508f67f75b20a795a33a5f6')
   })
 })
+
+// DET-2: canonical() must honor toJSON (so Date does not collapse to {} and
+// collide) and must fail closed on Map/Set — and, for any JSON-safe value, it
+// must reproduce an independent "sort keys deeply, then JSON.stringify" reference.
+describe('canonical() — toJSON / Date / Map property gate (DET-2)', () => {
+  // Independent reference: deep-sort object keys, honor toJSON, then JSON.stringify.
+  const sortDeep = (v: unknown): unknown => {
+    if (Array.isArray(v)) return v.map(sortDeep)
+    if (v && typeof v === 'object') {
+      const withToJson = v as { toJSON?: () => unknown }
+      if (typeof withToJson.toJSON === 'function') return sortDeep(withToJson.toJSON())
+      const o: Record<string, unknown> = {}
+      for (const k of Object.keys(v).sort()) o[k] = sortDeep((v as Record<string, unknown>)[k])
+      return o
+    }
+    return v
+  }
+  const ref = (v: unknown) => JSON.stringify(sortDeep(v))
+
+  it('distinct Dates no longer collide (the confirmed collision bug)', () => {
+    const a = canonical({ ts: new Date('2020-01-01T00:00:00.000Z'), reward: 1 })
+    const b = canonical({ ts: new Date('2099-12-31T00:00:00.000Z'), reward: 1 })
+    expect(a).not.toBe(b)
+    expect(sha256(a)).not.toBe(sha256(b))
+    // and each matches JSON.stringify's Date handling exactly
+    expect(a).toBe(ref({ ts: new Date('2020-01-01T00:00:00.000Z'), reward: 1 }))
+    expect(canonical({ ts: new Date('2020-01-01T00:00:00.000Z') })).toBe('{"ts":"2020-01-01T00:00:00.000Z"}')
+  })
+
+  it('honors a custom toJSON like JSON.stringify does', () => {
+    const obj = { secret: 42, toJSON() { return { shown: 'ok' } } }
+    expect(canonical({ wrap: obj })).toBe('{"wrap":{"shown":"ok"}}')
+  })
+
+  it('fails closed on Map/Set (no silent {} collision)', () => {
+    expect(() => canonical({ grants: new Map([['a', 1]]) })).toThrow(/Map\/Set/)
+    expect(() => canonical(new Set([1, 2]))).toThrow(/Map\/Set/)
+  })
+
+  it('reproduces the JSON.stringify-with-sorted-keys reference for JSON-safe values', () => {
+    const samples: unknown[] = [
+      { b: 1, a: 2, nested: { z: [3, 2, 1], y: null } },
+      [1, 'two', true, null, { k: 'v', a: 'b' }],
+      { ts: new Date('2026-07-13T00:00:00.000Z'), n: 3.5, s: 'σ‑unicode', flag: false },
+      { skip: undefined, keep: 0, arr: [undefined, 1] },
+      'plain string',
+      42,
+      { deep: { deeper: { deepest: [{ q: 1, p: 2 }] } } },
+    ]
+    for (const s of samples) {
+      expect(canonical(s)).toBe(ref(s))
+      // determinism: canonicalizing twice is byte-identical
+      expect(canonical(s)).toBe(canonical(s))
+    }
+  })
+})

@@ -30,11 +30,25 @@ export const GENESIS = '0'.repeat(64) // null hash — chain anchor
 // INVALID inputs change; every JSON-safe value serializes byte-identically to
 // before, so committed digests do not move (asserted by env-evidence.test.ts).
 export function canonical(value) {
+  // Honor toJSON exactly like JSON.stringify does (Date, and any object exposing
+  // toJSON). DET-2 fix: without this, a Date fell through to the object branch below
+  // and canonicalized as `{}` — so two receipts differing only in a Date field
+  // (distinct timestamps) content-addressed identically (digest collision), and an
+  // independent verifier using JSON.stringify computed a DIFFERENT digest.
+  if (value && typeof value === 'object' && typeof value.toJSON === 'function') {
+    return canonical(value.toJSON())
+  }
   if (Array.isArray(value)) {
     // Array.from (not .map) so sparse holes are visited and serialize as null too.
     return '[' + Array.from(value, (v) => canonical(v) ?? 'null').join(',') + ']'
   }
   if (value && typeof value === 'object') {
+    // Fail closed on the silent-`{}` footgun: Map/Set (and other class instances
+    // without toJSON) have no enumerable own keys, so they would canonicalize as
+    // `{}` — two distinct values sharing one digest. Evidence must be plain JSON.
+    if (value instanceof Map || value instanceof Set) {
+      throw new TypeError('canonical(): Map/Set are not JSON-serializable evidence — pass a plain object/array')
+    }
     const keys = Object.keys(value).sort()
     const parts = []
     for (const k of keys) {

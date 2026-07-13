@@ -1,9 +1,15 @@
 # Origin Physical AI — monorepo guide (for Claude / contributors)
 
-> **Start here. This is the single source of truth.**
+> **Start here.** For code in THIS repo, this file is the guide.
+> **Canonical status + roadmap = the private `Origin_Status.md`** (at `~/hackathons/Origin_Status.md`,
+> kept OUTSIDE this public repo by design — it holds YC strategy + private Factory-Algorithm context).
+> If you have it, **read `Origin_Status.md` FIRST** — it is the single source of truth for where we are,
+> what to build next, the YC plan, and the algorithm work. Fable 5, Codex, and every machine working on
+> Origin should refer to it.
 > **Do not inspect the old hackathon folders** (`0619`, `0620`, `0620-test`, `Cerebras-0628`,
-> `Cerebras-enterprise-0628`, `Chronos`, `Cobra`, `Floor design`) unless Bo-Huei explicitly asks —
-> they are historical references only; their substantive work is already here and their copies are older.
+> `Cerebras-enterprise-0628`, `Chronos`, `Cobra`, `Floor design`) unless Bo-Huei explicitly asks — they
+> are historical references only. (Exception: `Origin_Status.md` explicitly authorizes the private
+> Factory-Algorithm work in `factoryceo_trm/` + `Floor design/`.)
 > Read first: [README.md](README.md) · [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) · [REPO_STRUCTURE.md](REPO_STRUCTURE.md).
 
 Unified monorepo merging the source projects.

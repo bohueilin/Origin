@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Analytics with Consent Mode v2 — analytics_storage denied by default,
+         so no non-essential cookies are set until (optional) consent is granted. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-75QBVCL212"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied'
+      });
+      gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
+    </script>
+
+    <title>Run a reference check on your agent | Origin</title>
+    <meta
+      name="description"
+      content="Describe your agent and its IAM policy posture, run it through a deterministic least-privilege gym, and get a config-bound readiness credential: the RSL level, the before/after lift, a per-decision breakdown of where your policy over-grants, and a signed Sigil you can re-verify offline. The deterministic oracle is the only judge — never an LLM. Reproducible under this verifier, never 'safe'."
+    />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/reference-check" />
+    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/home.css?v=23" />
+
+    <style>
+      .rc-grid { display: grid; gap: 22px; margin-top: 26px; }
+      .rc-card { border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; background: var(--surface, #fff); }
+      .rc-card--cta { background: var(--tint, #f4f6f9); }
+      .rc-step { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--signal-ink); margin: 0 0 8px; }
+      .rc-hint { font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); margin: 0 0 14px; }
+      .rc-hint b { color: var(--ink); }
+      .rc-hint--warn { color: #a03123; }
+      .rc-hint--warn b { color: #a03123; }
+      .rc-fields { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+      @media (max-width: 560px) { .rc-fields { grid-template-columns: 1fr; } }
+      .rc-field { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--ink); }
+      .rc-field input, .rc-toggle--select select {
+        font: inherit; font-size: 13.5px; font-weight: 500; padding: 8px 11px;
+        border: 1px solid var(--line); border-radius: 9px; background: var(--surface, #fff); color: var(--ink);
+      }
+      .rc-presets { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); margin-bottom: 16px; }
+      @media (max-width: 680px) { .rc-presets { grid-template-columns: 1fr; } }
+      .rc-preset { text-align: left; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--surface, #fff); cursor: pointer; display: flex; flex-direction: column; gap: 5px; }
+      .rc-preset.is-on { border-color: var(--signal); box-shadow: 0 0 0 2px color-mix(in srgb, var(--signal) 22%, transparent); }
+      .rc-preset b { font-size: 13.5px; color: var(--ink); }
+      .rc-preset span { font-size: 12px; color: var(--ink-soft); line-height: 1.45; }
+      .rc-toggles { display: flex; flex-direction: column; gap: 11px; margin-bottom: 6px; }
+      .rc-toggle { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 500; color: var(--ink); cursor: pointer; }
+      .rc-toggle input[type="checkbox"] { accent-color: var(--signal); width: 16px; height: 16px; margin: 0; cursor: pointer; flex: none; }
+      .rc-toggle--select { justify-content: space-between; font-weight: 600; }
+      .rc-actions { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 16px; }
+      .rc-error { color: #a03123; font-size: 13px; margin-top: 10px; }
+      .rc-verdict { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 16px 20px; border-radius: 12px; border: 1.5px solid currentColor; }
+      .rc-verdict b { font-size: 26px; letter-spacing: .02em; }
+      .rc-verdict span { font-size: 13.5px; }
+      .rc-verdict__meta { color: var(--ink-soft); }
+      .rc-verdict--ok { color: #1d7a4c; background: #e6f4ec; }
+      .rc-verdict--warn { color: #a03123; background: #fbe9e6; }
+      .rc-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 16px; }
+      .rc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      .rc-table th, .rc-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+      .rc-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--signal-ink); font-weight: 700; }
+      .rc-table td { color: var(--ink-soft); }
+      .rc-table td b { color: var(--ink); font-weight: 600; }
+      .rc-row--cat td { background: #fbe9e6; }
+      .rc-row--miss td { background: #fbf6e6; }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/" aria-label="Origin — home">
+          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <span class="brand__name">Origin</span>
+        </a>
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="/#demo">Demo</a>
+          <a href="/#product">Product</a>
+          <a href="/security">Verifiers</a>
+          <a href="/verify">Verify</a>
+          <a href="/trust">Trust</a>
+          <a href="/brief">Brief</a>
+          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
+        </nav>
+        <div class="site-header__cta">
+          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
+          <a class="btn btn--primary btn--sm" href="/#offer" data-analytics="nav_cta_click">
+            Book an Agent Evidence Review
+          </a>
+          <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="section" aria-labelledby="rc-title">
+        <div class="shell">
+          <p class="kicker">Certification-as-a-market · the buyer flow</p>
+          <h1 id="rc-title">Run a reference check on your agent.</h1>
+          <p class="section__lede leadin">
+            Describe your agent and its least-privilege policy, run it through a deterministic IAM gym,
+            and earn a <b>config-bound readiness credential</b>: the <b>RSL</b> level, the before/after
+            lift, a per-decision breakdown of exactly where your policy over-grants, and a signed
+            <b>Sigil</b> you can download and re-verify offline. The <b>deterministic oracle is the only
+            judge</b> — never an LLM grading an LLM.
+          </p>
+          <p class="mono-note" style="margin-top: 14px;">
+            Everything runs <b>client-side</b>: your config is not uploaded. A verdict means
+            "reproducible least-privilege behavior under this verifier + this config," never "safe." This
+            is Origin’s <b>synthetic</b> IAM battery — certifying your real agent, against your own policy
+            and environment, is the design-partner path (book below).
+          </p>
+        </div>
+      </section>
+
+      <section class="section section--tint" aria-label="Reference check">
+        <div class="shell">
+          <div id="refcheck-root"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <div class="site-footer__brand">
+          <a class="brand" href="/" aria-label="Origin — home">
+            <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
+            <span class="brand__name">Origin</span>
+          </a>
+          <p>The evidence layer for AI agents.</p>
+        </div>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <div>
+            <p class="site-footer__h">Product</p>
+            <a href="/security">Run the verifiers</a>
+            <a href="/verify">Verify a credential</a>
+            <a href="/proof">Evidence · traces</a>
+            <a href="/trust">Trust center</a>
+          </div>
+          <div>
+            <p class="site-footer__h">Company</p>
+            <a href="/#offer">Agent Evidence Review</a>
+            <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
+            <a href="/llms.txt">For AI agents</a>
+            <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a>
+          </div>
+        </nav>
+      </div>
+      <div class="shell site-footer__legal">
+        <span>© <span data-year>2026</span> Origin</span>
+        <span class="site-footer__legal-links">
+          <a href="/legal/privacy-policy.html">Privacy</a>
+          <a href="/legal/terms-of-service.html">Terms</a>
+          <a href="/#offer">Contact</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/home/enhance.ts"></script>
+    <script type="module" src="/src/referenceCheckMain.tsx"></script>
+  </body>
+</html>

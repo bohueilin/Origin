@@ -460,6 +460,11 @@ function ReferenceCheckPanel() {
         "Certified" here means <b>reproducible least-privilege behavior under this verifier + this config</b> —
         never "safe". Synthetic demo battery; real design-partner evidence stays blocked until authorized.
       </p>
+      <div className="sec-actions" style={{ marginTop: 4 }}>
+        <a className="btn btn--primary btn--sm" href="/reference-check">
+          Run your own reference check &rarr;
+        </a>
+      </div>
     </DemoCard>
   )
 }

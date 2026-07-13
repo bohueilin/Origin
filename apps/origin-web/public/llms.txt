@@ -53,6 +53,7 @@
 - Home: https://origin-physical-ai.pages.dev/
 - Evidence traces: https://origin-physical-ai.pages.dev/proof
 - Trust & controls: https://origin-physical-ai.pages.dev/trust
+- Run a reference check on your agent (configure a policy → RSL verdict → download a signed Sigil → verify): https://origin-physical-ai.pages.dev/reference-check
 - Run the verifiers live (Sigil / Merkle / policy / IAM reference check): https://origin-physical-ai.pages.dev/security
 - Verify a credential yourself (offline, in-browser): https://origin-physical-ai.pages.dev/verify
 - One-page brief: https://origin-physical-ai.pages.dev/brief

@@ -15,7 +15,7 @@ The same spine governs a **robot on a floor** (physical) and a **software agent 
 - **Safety / governance owners** who must answer "why was this allowed / promoted?" with a re-derivable receipt.
 
 ## Startup thesis
-Every autonomy demo shows a model that *can* act; none show what stops it from acting *wrong*. Origin makes the "what stops it" a **product**: a bounded gym + a deterministic verifier + a tamper-evident trace + a fail-closed gate. Safety is loop-bound — the cheaper per-step verification gets, the more unsafe completions you catch — which is exactly why fast inference turns verification from a cost you ration into a guarantee you can always afford.
+Every autonomy demo shows a model that *can* act; none show what stops it from acting *wrong*. Origin makes the "what stops it" a **product**: a bounded gym + a deterministic verifier + a tamper-evident trace + a fail-closed gate. Safety is loop-bound — the cheaper per-step verification gets, the more unsafe completions you catch — which is exactly why fast inference turns verification from a cost you ration into a per-step check you can afford to run on every action.
 
 ## Current capabilities (all in this repo)
 1. **Training Evidence** (`apps/origin-web/rlkit`) — reproducible **ScoreReceipts**: an EnvironmentBundle + a recorded action trace + a pinned verifier → a re-derivable, tamper-evident receipt (`env:verify`). Nine pillars (env-as-artifact, verified reward, executor/Daytona, MCP tool registry, cost+dispute, checkpoint, curriculum, promotion), 360 tests.
@@ -34,7 +34,7 @@ cd apps/origin-web && npm run env:verify     # a reproducible ScoreReceipt
 ```
 
 ## Claim boundaries (always preserved)
-Bounded Robot-Readiness **Gym evidence**, not robot certification · deterministic oracle is the only label/reward authority · synthetic demo ≠ real customer proof · generated counterfactual ≠ customer-owned evidence · authorized fixture ≠ real customer data · **real customer readiness stays blocked** until approved real evidence passes gates · **training fail-closed** · external APIs blocked · learned-policy = route-summary/map-derived features, not raw perception · no production-autonomy claim · no deploy/push/stage without authorization.
+Bounded Robot-Readiness **Gym evidence**, not robot certification · deterministic oracle is the sole authority over labels, gates & hard-zeros (an optional post-gate shaper can only reduce reward within the oracle's verdict, off by default) · synthetic demo ≠ real customer proof · generated counterfactual ≠ customer-owned evidence · authorized fixture ≠ real customer data · **real customer readiness stays blocked** until approved real evidence passes gates · **training fail-closed** · external APIs blocked · learned-policy = route-summary/map-derived features, not raw perception · no production-autonomy claim · no deploy/push/stage without authorization.
 
 ## Consolidated from
 `0619`/`0620`/`0620-test`/`Cerebras-0628`/`Chronos`/`Cobra` (already represented in `apps/`+`services/`) and `Cerebras-enterprise-0628` LoopForge + `agent-passport` (→ `legacy-imports/`). Future sessions start **only** from this repo.

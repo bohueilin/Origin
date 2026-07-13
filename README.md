@@ -24,7 +24,7 @@ the model.
 ② CONTROL    propose a plan, then GATE it — identity → scoped grant → fail-closed authorization
    PLANE      · measured intent (declared vs measured vs action)  · taint + blast-radius containment
 ③ EVIDENCE   tamper-evident: hash-chained trace + ScoreReceipts + ES256 Sigil signatures
-   PLANE      · the deterministic oracle is the ONLY label/reward authority
+   PLANE      · the deterministic oracle is the sole authority over labels, gates & hard-zeros
 ```
 
 A **digital agent action** and a **physical factory plan** earn the *same* signed receipt — paste
@@ -36,8 +36,9 @@ green means "reproducible under this verifier," tamper any field and it goes VOI
 - **Wedge (land):** the shareable **signed Trust Receipt** + **leak-vs-hold** proof + **blocked-injection
   containment** — visceral in 60 seconds.
 - **Moat:** the **deterministic verified environment**. Digital = an IAM/agent gym; physical = a
-  verifier-gated factory/robot environment. Nobody else has a real, verifier-gated environment for
-  *both* — and the environment beats the model.
+  verifier-gated factory/robot environment. We know of no other verifier-gated environment that spans
+  *both* actors on one evidence spine (see [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) for the adjacent
+  work we build on) — and, on the narrow tasks we target, the environment beats the model.
 - **Market:** **certification-as-a-market** — a config-bound "reference check for agents/robots,"
   priced on the **RSL** readiness ladder (L0→L4), re-certified on every config change. A catastrophic
   over-grant hard-caps the level: the right to act cannot be averaged back.
@@ -51,7 +52,8 @@ because the reward authority is a deterministic oracle the system cannot edit:
   reward-hacking (red-team → seal → measure on held-out ground truth).
 - The same discipline drives **verifier-gated recursive self-improvement**: a policy proposes, the
   oracle gates and labels verified traces, a better policy is distilled, and it **only promotes on a
-  verifier-scored win** — so it can never regress and can never reward-hack a fake win. Bounded,
+  verifier-scored win** — so it **cannot regress on the verifier's metric**, and a fake win would have
+  to break the verifier itself, which is exactly the surface Cobra/Chronos red-team and harden. Bounded,
   auditable self-improvement. *(The physical factory algorithm that instantiates this is private; only
   its evidence format is public.)*
 
@@ -67,7 +69,10 @@ rides on every step. **The speed is the architecture.**
 
 ## Honest by design (the lines we don't cross)
 
-- **The deterministic oracle is the only judge** — never an LLM grading an LLM. We *contain* prompt
+- **The deterministic oracle is the only judge** of labels, gates, and hard-gated zeros — never an LLM
+  grading an LLM. (An *optional* post-gate reward shaper exists in the env module; it can only reduce a
+  reward within the oracle's verdict, never lift a gated 0, and ships off by default — with no judge the
+  reward is byte-identical to the deterministic core.) We *contain* prompt
   injection; we don't claim to *prevent* it — the destructive action just never executes at the gate.
 - Results are **"reproducible under this verifier,"** never "safe" or "correct." Synthetic data is
   labeled synthetic; unmeasured numbers say **projected**. This is machine-enforced — see the

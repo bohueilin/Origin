@@ -513,7 +513,7 @@ export default async function (req: Request): Promise<Response> {
   // approving in the UI calls this — the agent never holds the Snaplii key. (Owner mode,
   // exactly as credential-broker.ts does it.)
   const accessToken = (req.headers.get('Authorization') || '').replace('Bearer ', '') || null
-  const client = createClient({ baseUrl: Deno.env.get('INSFORGE_BASE_URL'), accessToken })
+  const client = createClient({ baseUrl: Deno.env.get('INSFORGE_BASE_URL'), accessToken: accessToken ?? undefined })
   const { data: me } = await client.auth.getCurrentUser()
   const userId = me?.user?.id
   if (!userId) return json({ error: 'unauthorized' }, 401)

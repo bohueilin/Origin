@@ -126,7 +126,10 @@ export default async function (req: Request): Promise<Response> {
   let userId: string | undefined
   let boundGrantId: string | null = null
   if (agentTokenRaw) {
-    const admin = createAdminClient({ baseUrl: Deno.env.get('INSFORGE_BASE_URL'), apiKey: Deno.env.get('API_KEY') })
+    const adminBaseUrl = Deno.env.get('INSFORGE_BASE_URL')
+    const adminApiKey = Deno.env.get('API_KEY')
+    if (!adminBaseUrl || !adminApiKey) return json({ decision: 'denied', reason: 'server misconfigured' }, 500)
+    const admin = createAdminClient({ baseUrl: adminBaseUrl, apiKey: adminApiKey })
     const hash = await sha256Hex(agentTokenRaw)
     const { data: tks } = await admin.database.from('agent_tokens').select('*').eq('token_hash', hash).limit(1)
     // deno-lint-ignore no-explicit-any
@@ -138,7 +141,7 @@ export default async function (req: Request): Promise<Response> {
     await admin.database.from('agent_tokens').update({ use_count: (tk.use_count ?? 0) + 1, last_used_at: new Date().toISOString() }).eq('id', tk.id)
   } else {
     const token = (req.headers.get('Authorization') || '').replace('Bearer ', '') || null
-    client = createClient({ baseUrl: Deno.env.get('INSFORGE_BASE_URL'), accessToken: token })
+    client = createClient({ baseUrl: Deno.env.get('INSFORGE_BASE_URL'), accessToken: token ?? undefined })
     const { data: me } = await client.auth.getCurrentUser()
     userId = me?.user?.id
     if (!userId) return json({ decision: 'denied', reason: 'unauthorized' }, 401)

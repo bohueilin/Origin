@@ -7,7 +7,7 @@ SHELL := /bin/bash
 PY_SERVICES := services/cobra services/chronos
 
 .PHONY: help install install-js install-py build test gates gates-all honesty \
-        dev-web dev-janus dev-chronos-ui py-sync py-test clean
+        functions-check dev-web dev-janus dev-chronos-ui py-sync py-test clean
 
 help: ## list targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-16s\033[0m %s\n",$$1,$$2}'
@@ -37,6 +37,10 @@ gates-all: ## run EVERYTHING (TS + Python + evidence-verify + honesty) → one s
 
 honesty: ## honesty-lint the served pages (overclaim tripwire)
 	node scripts/honesty-lint.mjs
+
+functions-check: ## typecheck the deployed Deno edge functions (money path) — needs `deno`
+	@command -v deno >/dev/null 2>&1 || { echo "deno not installed — see https://deno.land (CI runs this via setup-deno)"; exit 1; }
+	cd apps/origin-web && deno check functions/
 
 dev-web: ## run the live site (origin-web) locally
 	npm run dev -w @origin/origin-web

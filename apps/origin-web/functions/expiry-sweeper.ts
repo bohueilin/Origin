@@ -9,7 +9,10 @@ const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: 
 
 export default async function (req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS })
-  const admin = createAdminClient({ baseUrl: Deno.env.get('INSFORGE_BASE_URL'), apiKey: Deno.env.get('API_KEY') })
+  const adminBaseUrl = Deno.env.get('INSFORGE_BASE_URL')
+  const adminApiKey = Deno.env.get('API_KEY')
+  if (!adminBaseUrl || !adminApiKey) return json({ ok: false, error: 'server misconfigured' }, 500)
+  const admin = createAdminClient({ baseUrl: adminBaseUrl, apiKey: adminApiKey })
   const nowIso = new Date().toISOString()
   const swept: Record<string, boolean> = {}
   const sweep = async (table: string, fromStatus: string) => {

@@ -79,7 +79,7 @@ export default async function (req: Request): Promise<Response> {
   if (req.method !== 'POST') return json({ error: 'method not allowed' }, 405)
 
   const accessToken = (req.headers.get('Authorization') || '').replace('Bearer ', '') || null
-  const client = createClient({ baseUrl: Deno.env.get('INSFORGE_BASE_URL'), accessToken })
+  const client = createClient({ baseUrl: Deno.env.get('INSFORGE_BASE_URL'), accessToken: accessToken ?? undefined })
   const { data: me } = await client.auth.getCurrentUser()
   const userId = me?.user?.id
   if (!userId) return json({ error: 'unauthorized' }, 401)

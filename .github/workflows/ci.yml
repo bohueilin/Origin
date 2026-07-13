@@ -111,6 +111,18 @@ jobs:
         working-directory: services/${{ matrix.service }}
         run: uv run pytest -q
 
+  functions-typecheck:
+    name: functions/ — deno check (deployed money-path typecheck)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Typecheck the deployed edge functions (Deno runtime)
+        working-directory: apps/origin-web
+        run: deno check functions/
+
   evidence-verify:
     name: evidence-verify (the moat's re-derivation gates)
     runs-on: ubuntu-latest
@@ -165,7 +177,7 @@ jobs:
   ci-ok:
     name: CI green
     if: always()
-    needs: [workspace-apps, chronos-ui, python-services, evidence-verify, secret-scan, honesty-lint]
+    needs: [workspace-apps, chronos-ui, python-services, functions-typecheck, evidence-verify, secret-scan, honesty-lint]
     runs-on: ubuntu-latest
     steps:
       - name: Fail if any gate job failed

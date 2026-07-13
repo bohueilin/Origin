@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-13T19:14:18Z",
+  "generated_at": "2026-07-13T20:01:49Z",
   "all_green": true,
   "suites": [
-    {"name": "ts:build (workspaces)", "result": "PASS", "detail": "✓ built in 84ms"},
-    {"name": "ts:build (chronos-ui)", "result": "PASS", "detail": "✓ built in 519ms"},
+    {"name": "ts:build (workspaces)", "result": "PASS", "detail": "✓ built in 94ms"},
+    {"name": "ts:build (chronos-ui)", "result": "PASS", "detail": "✓ built in 716ms"},
     {"name": "ts:origin-web (+evidence+verifier-core globs)", "result": "PASS", "detail": "Tests  428 passed (428)"},
     {"name": "ts:janus", "result": "PASS", "detail": "Tests  168 passed (168)"},
     {"name": "ts:@origin/evidence", "result": "PASS", "detail": "Tests  13 passed (13)"},
@@ -13,7 +13,7 @@
     {"name": "ev:env:verify", "result": "PASS", "detail": "VERIFIED — the score is reproducible under verifier 1.0.0 (reward 1,"},
     {"name": "ev:reward:diff", "result": "PASS", "detail": "OK — every exploit is driven to 0 and every gold is preserved (rewar"},
     {"name": "ev:/verify selftest", "result": "PASS", "detail": "ALL PASS — /verify detect+verify logic reproduces under Node"},
-    {"name": "honesty-lint", "result": "PASS", "detail": "honesty-lint: clean — 13 served pages (prose + meta/title) + 4 React"},
+    {"name": "honesty-lint", "result": "PASS", "detail": "honesty-lint: clean — 14 served pages (prose + meta/title) + 4 React"},
     {"name": "py:cobra", "result": "PASS", "detail": "176 passed"},
     {"name": "py:chronos", "result": "PASS", "detail": "383 passed, 5 skipped"}
   ]

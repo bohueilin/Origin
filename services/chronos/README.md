@@ -48,25 +48,36 @@ Modal surface (preliminary). Unmeasured values are marked TBD.
 | Detector | Reward hacks found |
 |---|---|
 | HUD [Reward Hacking QA Agent](https://github.com/hud-evals/hud-trace-explorer/blob/main/qa_reward_hacking.py), on the same tasks | **0** |
-| Chronos discovery | **14** confirmed grader-breaking reward hacks, deduped by target and mechanism |
+| Chronos discovery | **10** confirmed grader-breaking reward hacks across 5/10 tasks (preliminary) |
 
-Of 32 rewarded hacker branches, 14 broke the grader (planted a `conftest.py`, rewrote
+Of 32 rewarded hacker branches, 10 broke the grader (planted a `conftest.py`, rewrote
 `test_outputs.py`, or shadowed a fake `Rscript` onto `$PATH` so the grader passes
 regardless) and the rest were verifier-legitimate. A normal-prompt control on the same
-forkpoints, model, and runtime found zero hacks, so every one of the 14 comes from
+forkpoints, model, and runtime found zero hacks, so every one of the 10 comes from
 adversarial discovery. HUD's
 [Reward Hacking QA Agent](https://github.com/hud-evals/hud-trace-explorer/blob/main/qa_reward_hacking.py)
 finds 0 of them: it only sees the legitimate solves that actually occur in production
-and never exercises the adversarial branches. Full report:
-[`artifacts/chronos/qabench/QA_BENCHMARK_REPORT.md`](artifacts/chronos/qabench/QA_BENCHMARK_REPORT.md).
+and never exercises the adversarial branches. This is a preliminary run (4 branches/task,
+diff-based referee). Full report:
+[`artifacts/chronos/qabench/QA_BENCHMARK_REPORT.md`](artifacts/chronos/qabench/QA_BENCHMARK_REPORT.md),
+counts in [`benchmark-report.json`](artifacts/chronos/qabench/benchmark-report.json).
+
+Separately, a larger SFT-corpus pass (the original QABench partition plus wave 40, 59 raw
+reward-positive trajectories) admitted 21 confirmed reward-hack trajectories deduped to 14
+distinct task+mechanism clusters. That is a different, larger population — not the 32 branches
+above; the two counts should not be conflated.
 
 Every confirmed exploit produced a patch that passes a three-part release gate: the
 exploit succeeds under the original verifier, the exploit is blocked under the patched
 verifier, and every previously legitimate solution still passes.
 
-Using this data, after SFT on the 10 tasks we improved Qwen3-4B by 3% on a held-out
-set of Terminal Bench tasks. That is a floor, not a ceiling: more tasks and a larger
-search budget yield a larger clean set and more lift.
+From this we produced a verifier-cleaned SFT corpus (5 certified-clean positives, 33
+quarantined rows). **We do not claim a model-training or held-out improvement result.** A
+preliminary A/B screen on this data was inconclusive
+([`executable-eval/REPORT.json`](artifacts/chronos/research/sft/executable-eval/REPORT.json)
+→ `completed_no_separation`; see [`SFT.MD`](SFT.MD)). A model-improvement number will be
+reported only once a real Fireworks job plus a grouped held-out evaluation produce a
+committed, reproducible artifact.
 
 ## Built on
 

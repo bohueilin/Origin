@@ -1,41 +1,48 @@
-# CLAUDE.md — Origin working memory (read this first)
+# CLAUDE.md — apps/origin-web working guide
 
-**Product:** Origin — the robot-readiness layer for Physical AI. Submit a site → build the robot
-brain → run the proving ground → earn a readiness license. The teammate's "brain" (LLM plans →
-deterministic verifier gates → recursive repair → RL) is a **subsystem of readiness, not a second
-product**. Repo `bohueilin/physical-ai-demo-test`, branch `hud-factorydad-1`. Live:
-https://origin-physical-ai.pages.dev.
+> **Canonical story lives at the repo root** ([`../../README.md`](../../README.md),
+> [`../../PROJECT_OVERVIEW.md`](../../PROJECT_OVERVIEW.md)). Origin is **the evidence layer
+> for AI agents** — *Model proposes. Environment verifies. Gate decides. Trace proves.
+> Capability is not permission.* Physical-AI robot readiness is the longer-term arc on the
+> same evidence spine, not the current product. Do not re-introduce "robot-readiness
+> license" / certification framing here — it contradicts the live site.
+
+**This app:** the live marketing site + the evidence console + the public `/security`,
+`/verify`, `/trust`, `/proof` pages. Live: https://origin-physical-ai.pages.dev.
 
 ## Build / test / gates
-- `npm run build` — `tsc -b && vite build` (two entries: `index.html` = marketing home, `app.html` = console).
-- `npm run lint` — `eslint .` (must be **zero errors**; flat config, `@typescript-eslint/no-explicit-any` on).
-- `npm test` — vitest. `npm run gates` — build + lint + verify:evidence + test.
-- Python brain: `cd factoryceo_trm && .venv/bin/python -m pytest tests/ -q` (9 offline suites).
-- HUD bench: `cd hud-env/physical-ai-warehouse && uv run pytest -q`.
+- `npm run build` — `tsc -b && vite build`.
+- `npm run lint` — `eslint .` (must be **zero errors**).
+- `npm test` — vitest. `npm run gates` — build + lint + verify:evidence + proof:verify + test.
+- Repo-wide: `make gates-all` from the root runs every suite + the evidence-verify scripts +
+  honesty-lint (one green scoreboard → `public/trust/gates-summary.json`).
 
 ## Architecture
-- Frontend: React 19 + TS + Vite. Marketing = `src/factorydad/`; console = `src/` (`src/App.tsx` view flow).
-- Deterministic engine (client): `src/warehouse.ts` (`bfsOracle`, verifier), `src/siteEval.ts` (drawn-floor scoring).
-- Backends (coexist): Hono server `server/` (`/api`,`/v1` — voice/gym/evidence) + optional FastAPI brain
-  `factoryceo_trm/` (`:8090`). Frontend reaches the brain via `src/apiConfig.ts` (`VITE_BRAIN_URL`);
-  **always falls back to cached `public/factoryceo/library/*.json` — brain calls never throw.**
-- Data: curated `public/factoryceo/` (plain git, Pages-safe). Raw Staer 266MB in `data/staer-samples/`
-  (Git LFS, outside `public/`, never shipped to Pages).
+- Frontend: React + TS + Vite. Marketing pages = `src/factorydad/`, `src/foundry/`; the
+  evidence surfaces = `src/security/`, `src/verify/`, `src/home/`. Page entries are the
+  `*.html` vite inputs, not a single-page router.
+- Deterministic engine (client): `src/warehouse.ts` (`bfsOracle`, verifier), `src/siteEval.ts`.
+- Evidence spine: `@origin/evidence` + `@origin/verifier-core` (canonical JSON, isomorphic
+  SHA-256, ScoreReceipts, ES256 Sigils, Merkle, Crucible). `/verify` re-checks offline.
+- Backend: Hono server (`server/`) + Cloudflare Pages Functions (`functions/`, deployed).
 
 ## Non-negotiables (trust)
-- **Determinism is sacred.** The **deterministic oracle/verifier is the ONLY judge** — never an LLM judge.
-- No model sets its own reward / label / FAR-FRR / license / readiness tier.
-- **"measured" = a real oracle-scored run only; everything else is labeled "projected."** No fabricated metrics.
-- Voice/video/uploads/site-maps/robots = descriptive inputs that pre-fill a human-reviewed form only.
-- Secrets stay server-side; `VITE_*` holds **public values only**. Never commit `.env*`.
+- **Determinism is sacred.** The deterministic oracle is the sole authority over labels,
+  gates, and hard-zeros — never an LLM grading an LLM. (An optional post-gate reward shaper
+  exists in `env/reward-module.ts`; off by default, can only reduce within the oracle's verdict.)
+- **"measured" = a real oracle-scored run only; everything else is labeled "projected."** No
+  fabricated metrics. Physical-AI training metrics shown on the site are private-pipeline and
+  labeled as such (not re-derivable from this public repo).
+- Claims stay scoped: "reproducible under this verifier," never "safe"/"correct." `honesty-lint`
+  enforces this on served pages (prose + meta/og/title + curated React copy) — keep it green.
+- Secrets stay server-side; `VITE_*` holds **public values only**. Never commit `.env*` except
+  `.env.example`.
 
-## Flow (never changes)
-**localhost → inspect → push → deploy.** Build locally, verify on the dev server (preview MCP,
-desktop + 375px, zero console errors, secret-scan `dist`), let the user inspect, THEN push to
-`hud-factorydad-1` and deploy `dist` to Cloudflare Pages. Push/deploy/model-spend require explicit
-user confirmation (see `.claude/settings.json`).
+## Deploy (human-owned)
+The live site deploys from a separate repo via Cloudflare Pages; **pushing this repo does not
+deploy.** Cutover is human-owned and reversible — see [`../../docs/DEPLOY.md`](../../docs/DEPLOY.md).
+Never deploy without explicit authorization + a named target.
 
 ## Pointers
-- Design language + locked preferences: `DESIGN_PRINCIPLES.md`.
-- How to run/inspect the model + training pipeline: `RUNBOOK.md`.
-- Current consolidation status + plan: `CONSOLIDATION_STATUS.md` (+ the approved plan).
+- Design language: [`DESIGN_PRINCIPLES.md`](DESIGN_PRINCIPLES.md).
+- Deploy + cutover: [`../../docs/DEPLOY.md`](../../docs/DEPLOY.md).

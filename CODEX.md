@@ -1,8 +1,10 @@
 # Origin — Codex / agent operating guide
 
-> **Start from `/Users/bohueilin/hackathons/Origin`. Do not inspect the old hackathon folders** (`0619`, `0620`, `0620-test`, `Cerebras-0628`, `Cerebras-enterprise-0628`, `Chronos`, `Cobra`, `Floor design`) unless Bo-Huei explicitly asks. As of 2026-07-05 the consolidation is complete; those folders are historical references only and their copies are older than Origin.
+> **Work from this repo only.** This is the PUBLIC repo — the trust layer + evidence format + demos.
 >
-> **Canonical status + roadmap = the private `Origin_Status.md`** (at `~/hackathons/Origin_Status.md`, kept OUTSIDE this public repo — it holds YC strategy + private Factory-Algorithm context). If you have it, **read it FIRST**; it is the single source of truth for where we are, what to build next, the YC plan, and the algorithm work. (It explicitly authorizes the private Factory-Algorithm work in `factoryceo_trm/` + `Floor design/`.)
+> **Internal status, roadmap, and strategy live in a private doc kept OUTSIDE this public repo** — ask
+> the maintainer for it. The proprietary algorithm work lives in a separate private repo and must never
+> land here; only its public *evidence format* appears in this repo.
 
 ## Read first
 `README.md` → `PROJECT_OVERVIEW.md` → `REPO_STRUCTURE.md`.

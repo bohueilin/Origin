@@ -1,15 +1,9 @@
 # Origin Physical AI — monorepo guide (for Claude / contributors)
 
-> **Start here.** For code in THIS repo, this file is the guide.
-> **Canonical status + roadmap = the private `Origin_Status.md`** (at `~/hackathons/Origin_Status.md`,
-> kept OUTSIDE this public repo by design — it holds YC strategy + private Factory-Algorithm context).
-> If you have it, **read `Origin_Status.md` FIRST** — it is the single source of truth for where we are,
-> what to build next, the YC plan, and the algorithm work. Fable 5, Codex, and every machine working on
-> Origin should refer to it.
-> **Do not inspect the old hackathon folders** (`0619`, `0620`, `0620-test`, `Cerebras-0628`,
-> `Cerebras-enterprise-0628`, `Chronos`, `Cobra`, `Floor design`) unless Bo-Huei explicitly asks — they
-> are historical references only. (Exception: `Origin_Status.md` explicitly authorizes the private
-> Factory-Algorithm work in `factoryceo_trm/` + `Floor design/`.)
+> **Start here.** For code in THIS (public) repo, this file is the guide.
+> **Internal status, roadmap, and strategy live in a private doc kept OUTSIDE this public repo** —
+> ask the maintainer for it. This public repo is the **trust layer + evidence format + demos only**;
+> the proprietary algorithm work lives in a separate private repo and must never land here.
 > Read first: [README.md](README.md) · [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) · [REPO_STRUCTURE.md](REPO_STRUCTURE.md).
 
 Unified monorepo merging the source projects.
@@ -37,8 +31,8 @@ Front door is the [Makefile](Makefile). pnpm/turbo are a documented future upgra
 ## Hard rules
 - **Never commit `.env*` except `.env.example`.** Live keys (Snaplii real-money, InsForge admin, GMI,
   1Password, Nebius) live only in per-app `.env.local`.
-- **Never touch the live deploy** (`physical-ai-demo-test` / `hud-factorydad-1`) — cutover is human-owned
-  and reversible; see [docs/DEPLOY.md](docs/DEPLOY.md).
+- **Never touch the live deploy.** The live site deploys from a separate repo (see
+  [docs/DEPLOY.md](docs/DEPLOY.md)); pushing this repo does not deploy. Cutover is human-owned.
 - **Keep deploy-critical files in `apps/origin-web` byte-for-byte** (hardcoded canonical URLs).
 - `SNAPLII_LIVE=0` by default (fail-closed money path); `EPISODE_SIGNING_SECRET` required for prod backend.
 

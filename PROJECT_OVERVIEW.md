@@ -1,6 +1,6 @@
 # Origin — Project Overview
 
-> **Origin is a trust layer for Physical AI.** It turns site evidence into bounded Robot-Readiness Gyms, oracle-labeled hard cases, readiness metrics, and replayable evidence bundles — so teams can know whether an agent should **finish, escalate, or refuse** *before* a robot acts in the real world.
+> **Origin is the evidence layer for AI agents** (with a longer-term physical-AI arc on the same spine). It gives you a signed, reproducible, tamper-evident receipt of what an agent — or a robot — was *allowed* to do, what it *actually* did, and that it was *contained* if it went wrong, issued by a **deterministic oracle** (never an LLM grading an LLM). The physical arc turns site evidence into bounded Robot-Readiness Gyms with oracle-labeled **finish / escalate / refuse** cases and replayable evidence bundles — gym evidence, not certification.
 >
 > **Model proposes. Environment verifies. Gate decides. Trace proves.**
 

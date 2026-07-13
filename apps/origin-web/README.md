@@ -1,27 +1,32 @@
-# Origin — robot readiness for Physical AI
+# Origin Web — the evidence-layer site + console
 
-**A robot brain for every floor.** Origin turns a description of your site into a
-deterministic safety gym, then issues a readiness license that says — in plain terms a
-safety team can sign off on — what a robot may do on its own, where it must ask a human,
-and what it must refuse outright.
+> **Canonical story:** the repo-root [`README.md`](../../README.md) and the live site.
+> Origin is **the evidence layer for AI agents** — *Model proposes. Environment verifies.
+> Gate decides. Trace proves. Capability is not permission.* Physical AI (robot readiness)
+> is the **longer-term arc** that runs on the same evidence spine, not the current product.
+
+**A deterministic safety gym that produces evidence, not a certification.** For the physical
+arc, Origin turns a description of a site into a deterministic gym and produces **gym
+evidence** — a reproducible, tamper-evident record of what a policy did, scored by a
+deterministic oracle (never an LLM). It is **not** a certification and does not "sign off"
+a robot; a safety team reads the evidence and decides.
 
 🔗 **Live demo:** https://origin-physical-ai.pages.dev
 
 ---
 
-## Why this exists
+## The physical arc (gym evidence, longer-term)
 
-Physical AI is moving from labs onto real floors — warehouses, clinics, factories. The
-hard question isn't "can the robot move," it's **"is it ready to move near people, on
-*this* floor, doing *this* job?"** Origin answers that with one artifact:
+The hard question for a robot policy isn't "can it move," it's **"what should it do on
+*this* floor, doing *this* job?"** The gym scores each scenario with a deterministic label:
 
-> **finish** — the robot may complete the job autonomously
-> **escalate** — the robot must pause and call a human
-> **refuse** — the robot must never attempt it
+> **finish** — the policy completed the job under the verifier
+> **escalate** — the policy paused and deferred to a human
+> **refuse** — the policy correctly declined
 
-This finish / escalate / refuse triad is the through-line of the whole product, paired
-with a **Robot Safety Level (RSL)** tier and false-accept / false-reject rates (FAR/FRR)
-so you can see exactly how conservative the call is.
+This finish / escalate / refuse triad is paired with a **Readiness/Safety Level (RSL)** tier
+and false-accept / false-reject rates (FAR/FRR) so you can see how conservative the call is —
+all as **reproducible gym evidence under this verifier**, never a safety guarantee.
 
 ## How it works
 

@@ -21,58 +21,13 @@ import {
 import { verifyCredential } from '@origin/verifier-core/crucible'
 import { generateSigningKey, signSigil, keyThumbprint } from '@origin/verifier-core/sigil'
 import { computeLicenseFromVerdicts, type LicenseVerdict } from '../license'
-
-type Decision = 'allow' | 'deny' | 'escalate'
-type Classification = 'low' | 'medium' | 'high' | 'forbidden'
-
-interface PolicySpec {
-  honorRoleAllowlist: boolean
-  denyForbidden: boolean
-  denyTainted: boolean
-  escalateOnApproval: boolean
-  autoAllowUpTo: Classification
-}
+import { PRESETS, policyForSpec, type PolicySpec, type Decision, type Classification } from '../certify/policySpec'
 
 interface AgentConfig {
   model: string
   tools: string
   context: string
   harness: string
-}
-
-const CLASS_ORDER: Record<Classification, number> = { low: 0, medium: 1, high: 2, forbidden: 3 }
-
-// Build a decision function from the buyer's declared policy posture. This is a
-// faithful least-privilege interpreter: each guard the buyer leaves OFF is a way
-// their agent can over-grant, which the oracle then catches.
-function policyForSpec(spec: PolicySpec) {
-  return (task: (typeof iamTasks)[number]): Decision => {
-    if (spec.denyForbidden && task.resource.classification === 'forbidden') return 'deny'
-    if (spec.denyTainted && task.principal.tainted) return 'deny'
-    if (spec.honorRoleAllowlist && !task.policy.allowed_roles.includes(task.principal.role)) return 'deny'
-    if (spec.escalateOnApproval && task.policy.requires_approval) return 'escalate'
-    if (CLASS_ORDER[task.resource.classification as Classification] > CLASS_ORDER[spec.autoAllowUpTo])
-      return 'escalate'
-    return 'allow'
-  }
-}
-
-const PRESETS: Record<string, { label: string; blurb: string; spec: PolicySpec }> = {
-  'least-privilege': {
-    label: 'Least-privilege (recommended)',
-    blurb: 'Every guard on; auto-allow only up to medium. The posture that earns a high RSL.',
-    spec: { honorRoleAllowlist: true, denyForbidden: true, denyTainted: true, escalateOnApproval: true, autoAllowUpTo: 'medium' },
-  },
-  moderate: {
-    label: 'Moderate',
-    blurb: 'Role allow-list + forbidden + tainted enforced, but auto-allows high-value actions without escalation.',
-    spec: { honorRoleAllowlist: true, denyForbidden: true, denyTainted: false, escalateOnApproval: false, autoAllowUpTo: 'high' },
-  },
-  permissive: {
-    label: 'Permissive (the dangerous baseline)',
-    blurb: 'Guards off — the naive over-granting agent. Expect catastrophic over-grants and a capped RSL.',
-    spec: { honorRoleAllowlist: false, denyForbidden: false, denyTainted: false, escalateOnApproval: false, autoAllowUpTo: 'forbidden' },
-  },
 }
 
 const computeLevel = (verdicts: LicenseVerdict[]) => computeLicenseFromVerdicts(verdicts).level.id

@@ -1,0 +1,126 @@
+openapi: 3.1.0
+info:
+  title: Origin Certify — verification-substrate API
+  version: 0.1.0
+  description: >
+    The deterministic verdict a GRC platform (Vanta, Credo, Holistic) or an agent-liability
+    insurer embeds BELOW its stack. Run an agent config + a least-privilege policy through
+    Origin's deterministic IAM gym and get back a config-bound reference-check credential,
+    a signed Sigil, and a deterministic underwriting signal — all re-verifiable OFFLINE
+    without trusting Origin (the credential VOIDS on model/tools/context/harness/env drift).
+    The deterministic oracle is the only label authority — never an LLM grading an LLM.
+    Reference implementation: apps/origin-web/src/certify/certifyApi.ts (pure, no secrets).
+    Honesty: a verdict means "reproducible least-privilege behavior under this verifier +
+    config," never "safe"; the underwriting signal is an input, not an actuarial premium.
+servers:
+  - url: https://origin-physical-ai.pages.dev
+paths:
+  /v1/certify:
+    post:
+      summary: Certify an agent config against a least-privilege policy
+      operationId: certify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertifyRequest'
+      responses:
+        '200':
+          description: A config-bound credential + underwriting signal (+ signed Sigil).
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CertifyResponse'
+                  - $ref: '#/components/schemas/ApiError'
+  /v1/verify:
+    post:
+      summary: Re-verify a credential offline (0 valid · 3 tamper · 4 drift)
+      operationId: verify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [credential]
+              properties:
+                credential: { type: object, description: A credential from /v1/certify }
+                liveConfig:
+                  $ref: '#/components/schemas/AgentConfig'
+      responses:
+        '200':
+          description: The verdict.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  code: { type: integer, enum: [0, 3, 4], description: '0 valid · 3 tamper · 4 config/env drift' }
+                  headline: { type: string }
+components:
+  schemas:
+    AgentConfig:
+      type: object
+      description: Hashed into the credential — any change voids it.
+      properties:
+        model: { type: string, example: acme-agent-v3 }
+        tools:
+          oneOf:
+            - { type: array, items: { type: string } }
+            - { type: string, description: comma-separated }
+          example: ['iam.decide', 'data.read']
+        context: { type: string, example: 'system-prompt@2' }
+        harness: { type: string, example: 'my-harness@1' }
+    PolicySpec:
+      type: object
+      description: A least-privilege posture. Each guard left off is a way the agent over-grants.
+      required: [honorRoleAllowlist, denyForbidden, denyTainted, escalateOnApproval, autoAllowUpTo]
+      properties:
+        honorRoleAllowlist: { type: boolean }
+        denyForbidden: { type: boolean }
+        denyTainted: { type: boolean }
+        escalateOnApproval: { type: boolean }
+        autoAllowUpTo: { type: string, enum: [low, medium, high, forbidden] }
+    CertifyRequest:
+      type: object
+      required: [agent, policy]
+      properties:
+        agent: { $ref: '#/components/schemas/AgentConfig' }
+        policy:
+          oneOf:
+            - { type: string, enum: [least-privilege, moderate, permissive], description: a preset key }
+            - { $ref: '#/components/schemas/PolicySpec' }
+        sign: { type: boolean, default: true, description: also return a signed Sigil }
+    CertifyResponse:
+      type: object
+      properties:
+        ok: { type: boolean, const: true }
+        rsl_level: { type: string, enum: [L0, L1, L2, L3, L4], description: readiness level (a catastrophic over-grant caps it) }
+        pass_rate: { type: number }
+        cold_pass_rate: { type: number }
+        lift: { type: number }
+        catastrophic_over_grants: { type: integer }
+        config_digest: { type: string }
+        env_digest: { type: string }
+        n_tasks: { type: integer }
+        credential: { type: object, description: the config-bound credential (paste into /verify) }
+        sigil: { type: object, description: ES256-signed credential (present unless sign=false) }
+        sigil_thumbprint: { type: string }
+        underwriting:
+          type: object
+          description: deterministic risk signal for insurance
+          properties:
+            risk_score: { type: integer, minimum: 0, maximum: 1000, description: lower = safer }
+            risk_band: { type: string, enum: [A, B, C, D, E] }
+            voids_on: { type: string }
+            basis: { type: string }
+        summary: { type: string }
+        self_verify_code: { type: integer, description: 0 = the credential re-verifies against the live config }
+    ApiError:
+      type: object
+      properties:
+        ok: { type: boolean, const: false }
+        error: { type: string }

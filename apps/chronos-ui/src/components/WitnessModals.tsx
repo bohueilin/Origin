@@ -93,8 +93,8 @@ export function ReplayWitnessModal({
     <ModalShell
       icon={<Play size={16} />}
       title="Replay witness"
-      tag={result ? (result.ok ? 'DETERMINISTIC PASS' : 'DIVERGED') : undefined}
-      tagStatus={result?.ok ? 'witness' : 'dead-end'}
+      tag={result ? (result.illustrative ? 'ILLUSTRATIVE · no committed record' : result.ok ? 'DETERMINISTIC PASS' : 'DIVERGED') : undefined}
+      tagStatus={result?.illustrative ? 'root' : result?.ok ? 'witness' : 'dead-end'}
       onClose={onClose}
       footer={
         <Button variant="primary" size="md" className="w-full" onClick={onClose}>

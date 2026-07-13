@@ -336,10 +336,17 @@ export class DatasetTracebackApi implements TracebackApi {
     const steps = b?.stepsFromFork ?? d.forkPoint.upToStep
     const parent = b?.parentSnapshot ?? d.forkPoint.snapshotId
     const ev = d.replay
+    // A branch has a real, committed replay record only if it carries a witness overlay;
+    // the rest are illustrative discovery siblings synthesized for the demo.
+    const stem = b?.runId.replace('run-', '')
+    const committed = !!(stem && d.witnessOverlay?.[stem])
     return {
       witnessId,
       ok: true,
-      detail: `Witness ${witnessId} replayed deterministically against grader v1.`,
+      illustrative: !committed,
+      detail: committed
+        ? `Witness ${witnessId} replayed deterministically against grader v1.`
+        : `Illustrative replay for ${witnessId} — no committed replay record; shown to demonstrate the flow.`,
       graderVersion: 'v1',
       graderDigest: b?.graderDigest ?? d.forkPoint.graderDigest,
       steps: ev?.replayedToolCount ?? steps,

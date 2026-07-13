@@ -38,7 +38,8 @@ export function HomeView() {
               >
                 Terminal Bench
               </Link>{' '}
-              tasks, Traceback confirmed 14 grader-subversion hacks that production QA flags none of. Each one becomes a deterministic test and a
+              tasks (5 with hacks), Traceback confirmed 10 grader-subversion hacks — a preliminary run —
+              that production QA flags none of. Each one becomes a deterministic test and a
               gated patch: the exploit dies, legitimate solutions still pass.
             </p>
             <p className="mt-3 max-w-xl text-base font-medium leading-relaxed text-ink-primary">

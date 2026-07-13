@@ -148,6 +148,9 @@ export interface ReplayCheck {
 export interface ReplayResult {
   witnessId: string
   ok: boolean
+  /** True when this branch has NO committed replay record — the checks below are
+   *  illustrative (synthesized for the demo), not a re-derived deterministic result. */
+  illustrative: boolean
   detail: string
   graderVersion: string // e.g. "v1"
   graderDigest: string

@@ -112,5 +112,19 @@ const factoryTampered = tamperArtifact(detectArtifact(factory), factory)
 const fvt = await verifyArtifact(factoryTampered.value)
 check('factory reference check tamper → code 1 VOID', !fvt.ok && fvt.code === 1, factoryTampered.note)
 
+// ── 9 · The PUBLISHED flagship proof (public/proof/tr-a002.json), not a minted
+//        example — the artifact /proof invites visitors to download and re-verify.
+const { readFileSync } = await import('node:fs')
+const { fileURLToPath } = await import('node:url')
+const { dirname, resolve } = await import('node:path')
+const proofPath = resolve(dirname(fileURLToPath(import.meta.url)), '../../public/proof/tr-a002.json')
+const publishedProof = JSON.parse(readFileSync(proofPath, 'utf8'))
+check('published TR-A002 detects as trace', detectArtifact(publishedProof) === 'trace')
+const pv = await verifyArtifact(publishedProof)
+check('published TR-A002 verifies code 0 VALID (no false tamper accusation)', pv.ok && pv.code === 0 && pv.verdict === 'VALID', pv.headline)
+const proofTampered = tamperArtifact('trace', publishedProof)
+const pvt = await verifyArtifact(proofTampered.value)
+check('published TR-A002 tamper → VOID', !pvt.ok && pvt.verdict === 'VOID', proofTampered.note)
+
 console.log(failures === 0 ? '\nALL PASS — /verify detect+verify logic reproduces under Node' : `\n${failures} FAILURE(S)`)
 process.exitCode = failures === 0 ? 0 : 1

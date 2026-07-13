@@ -212,8 +212,15 @@ export function verifyChain(trace) {
     if (sha256(canonical(payload)) !== event_hash) failures.push(`event ${e.seq} event_hash`)
     prev = event_hash
   }
+  // The sealing event is the last event. Accept both sealing conventions: the
+  // EpisodeTrace emitter uses { event_type: 'episode.sealed' }; the published
+  // TR-A002 evidence package uses { action: 'evidence.digest_sealed' }. Either
+  // marker is fine — the event's own hash (below) still binds every field, so a
+  // tampered sealing event breaks the chain regardless of which name it carries.
   const last = trace.events?.[trace.events.length - 1]
-  if (!last || last.event_type !== 'episode.sealed') failures.push('missing sealing event')
+  const sealMarker = last && (last.event_type ?? last.action)
+  if (!last || (sealMarker !== 'episode.sealed' && sealMarker !== 'evidence.digest_sealed'))
+    failures.push('missing sealing event')
   if (last && trace.final_digest !== last.event_hash) failures.push('final_digest != sealing hash')
   if (trace.log_digest !== sha256(canonical((trace.events || []).map((e) => e.event_hash))))
     failures.push('log_digest')

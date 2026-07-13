@@ -125,6 +125,18 @@ for (const [file, re, why] of REQUIRED) {
   }
 }
 
+// Privacy invariant: any served page that loads Google Analytics MUST also set
+// Consent Mode with analytics_storage denied by default — otherwise it sets
+// cookies with no consent, contradicting the published privacy policy.
+for (const file of SERVED) {
+  const path = join(WEB, file)
+  if (!existsSync(path)) continue
+  const raw = readFileSync(path, 'utf8')
+  if (!/googletagmanager\.com\/gtag/i.test(raw)) continue
+  const hasConsentDefault = /gtag\(\s*['"]consent['"]\s*,\s*['"]default['"]/i.test(raw) && /analytics_storage\s*:\s*['"]denied['"]/i.test(raw)
+  if (!hasConsentDefault) note(`${file}: loads Google Analytics WITHOUT Consent Mode default-deny (analytics_storage: 'denied') — the privacy policy says non-essential cookies are off by default`)
+}
+
 if (violations === 0) {
   console.log(`honesty-lint: clean — ${SERVED.length} served pages (prose + meta/title) + ${REACT_COPY_GLOBS.length} React copy files, ${BANNED.length} banned patterns, ${REQUIRED.length} required disclaimers.`)
   process.exit(0)

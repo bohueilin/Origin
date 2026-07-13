@@ -9,7 +9,15 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-75QBVCL212');
+      // Consent Mode v2 — analytics_storage denied by default, so no non-essential
+      // cookies are set until (optional) consent is granted (keeps the privacy policy true).
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied'
+      });
+      gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

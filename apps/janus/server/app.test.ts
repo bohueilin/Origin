@@ -34,9 +34,12 @@ const config: AppConfig = {
 const app = createApp(config)
 
 async function post(path: string, body: unknown): Promise<Response> {
+  // A real same-origin browser sends Origin on POST; the metered routes are
+  // origin-guarded, so functional tests must too (the no-Origin/stranger cases
+  // are covered separately with raw app.request in the origin-guard describe).
   return app.request(path, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', origin: 'http://localhost:5275' },
     body: JSON.stringify(body),
   })
 }
@@ -45,7 +48,7 @@ async function post(path: string, body: unknown): Promise<Response> {
 async function postRaw(path: string, raw: string): Promise<Response> {
   return app.request(path, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', origin: 'http://localhost:5275' },
     body: raw,
   })
 }
@@ -70,6 +73,17 @@ describe('createApp /api/janus origin guard (CSRF / public-tunnel abuse)', () =>
   it('allows a safe GET with no Origin (browsers omit Origin on same-origin GET)', async () => {
     const r = await app.request('/api/janus/order-context', { method: 'GET' })
     expect(r.status).toBe(200)
+  })
+
+  it('guards the paid-inference routes (Nebius quota/cost burn)', async () => {
+    // /api/nebius-action, /api/run-episode, /v1/reference-episodes all forward to a
+    // paid model — a no-Origin or cross-origin caller must be refused, like /intent.
+    for (const path of ['/api/nebius-action', '/api/run-episode', '/v1/reference-episodes']) {
+      const noOrigin = await app.request(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
+      expect(noOrigin.status, `${path} no-Origin`).toBe(403)
+      const stranger = await app.request(path, { method: 'POST', headers: { origin: 'https://evil.example.com', 'content-type': 'application/json' }, body: '{}' })
+      expect(stranger.status, `${path} stranger Origin`).toBe(403)
+    }
   })
 
   it('guards the metered intent route too (cross-origin abuse / quota burn)', async () => {

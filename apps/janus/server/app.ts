@@ -208,6 +208,8 @@ export function createApp(config: AppConfig): Hono {
   // The ONLY path that can mint trusted mock/nebius provenance — and only after
   // the server actually runs that reference agent against the gym env.
   app.post('/v1/reference-episodes', async (c) => {
+    // mode:'nebius' forwards to a paid model — origin-guard + throttle like /api/janus/intent.
+    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     const parsed = await strictJsonObject(c)
     if (!parsed.ok) return badRequest(c, parsed.error)
     const body = parsed.body
@@ -221,6 +223,7 @@ export function createApp(config: AppConfig): Hono {
     if (body.mode !== 'mock' && body.mode !== 'nebius') {
       return badRequest(c, 'mode must be "mock" or "nebius".')
     }
+    if (body.mode === 'nebius' && channelThrottled('nebius', 20)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await runReferenceEpisode(
       { scenarioId: body.scenarioId, mode: body.mode },
       { gym: gymCfg, nebius: config.nebius },
@@ -230,6 +233,9 @@ export function createApp(config: AppConfig): Hono {
 
   // ---- Legacy /api (reuses existing server-owned handlers) ----------------
   app.post('/api/run-episode', async (c) => {
+    // policyMode:'nebius' forwards to a paid model — origin-guard + throttle.
+    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (channelThrottled('nebius', 20)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await handleRunEpisode(await jsonBody(c), runCfg)
     if (!r.ok) return c.json(r, r.code === 'bad_request' ? 400 : 502)
     // Client-safe subset (auditRow stays server-side).
@@ -246,6 +252,9 @@ export function createApp(config: AppConfig): Hono {
     return c.json({ ok: true, ...status })
   })
   app.post('/api/nebius-action', async (c) => {
+    // Forwards to the paid Nebius model — origin-guard + throttle like /api/janus/intent.
+    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (channelThrottled('nebius', 20)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await handleNebiusAction(await jsonBody(c), config.nebius)
     return c.json(r, r.ok ? 200 : nebiusStatus(r.code))
   })

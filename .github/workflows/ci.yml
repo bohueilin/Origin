@@ -111,6 +111,32 @@ jobs:
         working-directory: services/${{ matrix.service }}
         run: uv run pytest -q
 
+  evidence-verify:
+    name: evidence-verify (the moat's re-derivation gates)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install (root lockfile — npm workspaces)
+        run: npm ci
+      - name: verify:evidence (server evidence re-derives)
+        working-directory: apps/origin-web
+        run: npm run --silent verify:evidence
+      - name: proof:verify (TR-A002 hash chain re-derives)
+        working-directory: apps/origin-web
+        run: npm run --silent proof:verify
+      - name: env:verify (ScoreReceipt is reproducible under the pinned verifier)
+        working-directory: apps/origin-web
+        run: npm run --silent env:verify
+      - name: reward:diff (every exploit driven to 0, every gold preserved)
+        working-directory: apps/origin-web
+        run: npm run --silent reward:diff
+      - name: /verify selftest (the public offline re-checker's real logic)
+        run: node apps/origin-web/src/verify/selftest.mjs
+
   secret-scan:
     name: secret scan (gitleaks)
     runs-on: ubuntu-latest
@@ -139,7 +165,7 @@ jobs:
   ci-ok:
     name: CI green
     if: always()
-    needs: [workspace-apps, chronos-ui, python-services, secret-scan, honesty-lint]
+    needs: [workspace-apps, chronos-ui, python-services, evidence-verify, secret-scan, honesty-lint]
     runs-on: ubuntu-latest
     steps:
       - name: Fail if any gate job failed

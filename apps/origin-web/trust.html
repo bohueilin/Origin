@@ -174,8 +174,9 @@
             suite (including the property-based tests on the oracle itself), the evidence-verify
             scripts, and a machine honesty check, with real exit codes. The same surface is enforced
             in <a href="https://github.com/bohueilin/Origin/blob/main/.github/workflows/ci.yml">CI on
-            every push</a>, alongside a secret scan and a dependency audit. The scoreboard below is the
-            machine-readable result of that run.
+            every push</a> — the same suites plus the evidence-verify scripts, a secret scan (gitleaks),
+            and the honesty-lint — with automated dependency updates via Dependabot. The scoreboard below
+            is a machine-readable snapshot of the local <code>make gates-all</code> run.
           </p>
           <div id="gates-scoreboard" class="mono-note" style="margin-top: 18px;">
             Reproduce locally with <code>make gates-all</code>. (Live scoreboard loads here.)

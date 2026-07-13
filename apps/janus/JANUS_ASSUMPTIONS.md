@@ -125,6 +125,50 @@ dismissed 7 false positives (e.g. confirming the 1Password broker is genuinely f
 - **Approval TTL (15 min) is independent of the grant TTL.** This is safe because every commit also
   re-checks grant liveness, so an approval can never outlive its grant in practice.
 
+## Countersign (agent identity) — what is REAL vs SIMULATED
+
+Countersign is the identity ring around the Janus gate: **an agent IS an Ed25519 key, and its
+authority is a Warrant re-derived from the license it earned in the deterministic gym.** Full design
+in [`docs/architecture/COUNTERSIGN.md`](../../docs/architecture/COUNTERSIGN.md). Keeping the honest
+lanes separate here too:
+
+**REAL — present, deterministic, offline-verifiable** (in `packages/verifier-core/`):
+- **Ed25519 identity + proof-of-possession** — `countersign-identity.mjs`: `generateAgentKey`,
+  `agentThumbprint` (`agent_id = sha256(canonical{crv,kty,x})`, RFC 7638 / 8037), `signPayload` /
+  `verifyPayload` (`node:crypto` one-shot sync, signature over the content-address), and
+  `buildPopChallenge` / `verifyPop`. **Unit-tested** in `countersign-identity.test.ts` (stable
+  thumbprint, name-squatting → code 1, forged signature → code 2, route/body mismatch → code 3).
+- **Earned-level policy** — `license-policy.mjs`: `deriveWarrantLevel` is a pure function of the
+  verdicts (no wall-clock, no RNG), with the **catastrophe cap** (any catastrophic episode → L1) and
+  the **diversity gate** (L3+ needs ≥5 distinct scenarios + a held-out). Base thresholds mirror
+  `apps/janus/src/license.ts` byte-for-byte, so a Warrant never claims more than the gym would grant.
+- **Warrant mint + offline verify + chain completeness** — `warrant.mjs`: `mintWarrant`,
+  `verifyWarrant`, `foldAgentChain`. Verification **re-derives** the level under the pinned policy
+  (inflation → code 3) and re-folds the **complete** verdict set into `chain_head` (cherry-picking →
+  code 4), fully offline with a pinned issuer thumbprint. Deterministic; present and callable now.
+- **The gate + enforcement route through the mock broker.** The gate composes `verifyPop` →
+  `cordon.guardSecretRequest` (deny-before-resolve, tested in `cordon.test.ts`) → `verifyWarrant` →
+  scope-subset → broker. Enforcement runs against **`MockSecretBroker`** (opaque `jns_…` handle,
+  redacted field *labels* only, `assertNoSecret` boundary) with **zero external services**.
+
+**SIMULATED / OPTIONAL — the durable path, degrade-not-break**:
+- **Durable lease store.** Leases live in an **in-process** ledger (`onePasswordBroker.ts`
+  `Map`; the mock broker is in-memory). The durable InsForge-backed store is the layered P2 path
+  (referenced as `leaseStore.ts`), not exercised in the offline demo.
+- **Real 1Password resolution.** `onePasswordBroker.ts` (`@1password/sdk` `secrets.resolve("op://…")`
+  at the action boundary) is real code but **optional**: `isAvailable()` is `false` without an
+  `ops_…` service-account token, so Janus falls back to the mock — durability/realness degrade,
+  nothing breaks.
+- **Operator / WebAuthn binding.** PoP proves possession of a **key**, not the identity of the
+  **human** who holds it. Binding a key to a real operator is a separate PKI / WebAuthn /
+  hardware-attestation concern — **future work**, not claimed.
+- **Reserved-but-not-yet-present modules.** `packages/verifier-core/package.json` declares
+  `delegation.mjs` (the cryptographic Ed25519 offline attenuation certificate) and
+  `countersign-verify.mjs` (the aggregate one-command bundle verifier / CLI). The **files are not
+  present yet**. Monotonic-narrowing delegation is real *today* at the lease layer (child scope ⊆
+  parent, TTL ≤ parent's remaining); the standalone crypto certificate and CLI wrapper are the
+  planned durable form. We do not describe a reserved export as shipped.
+
 ## Hard constraints honored
 Local only · no push · no deploy · no real registration/booking/ordering/messaging/spending ·
 secrets never in code/logs/traces/storage/screenshots/fixtures · every side-effecting action

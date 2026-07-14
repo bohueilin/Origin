@@ -1,15 +1,21 @@
 # Deploy — Origin Physical AI
 
-## The live site (unchanged by the monorepo)
-`origin-physical-ai.pages.dev` is deployed by **Cloudflare Pages watching GitHub repo
-`bohueilin/physical-ai-demo-test`, branch `hud-factorydad-1`**. It is bound to GitHub, **not** to any
-local folder — so building this monorepo cannot affect the live site. The old repo keeps deploying and
-is the instant rollback.
+## Canonical deploy source = THIS repo (`bohueilin/Origin`, `apps/origin-web`)
+We are consolidating: **Origin is the single source of truth for the live site**, replacing the legacy
+`bohueilin/physical-ai-demo-test`. Origin's `apps/origin-web` is a **superset** of the old repo (same
+app lineage, every live page **plus** `/security` `/verify` `/reference-check` `/simulation`
+`/operations`, the `functions/`, and the honesty fixes) and its Pages build is **verified from a clean
+clone**. The one remaining step — repointing the Cloudflare Pages Git source at Origin — is a
+**human-owned dashboard action**; the full checklist is **[`docs/CUTOVER.md`](CUTOVER.md)**.
 
-The deploy-critical, hardcoded-URL files were copied **byte-for-byte** into `apps/origin-web` and must
-stay verbatim: `index.html` / `app.html` / `passport.html` (og:/canonical), `public/_headers`,
-`public/robots.txt`, `public/sitemap.xml`, `public/llms.txt`, `insforge.toml` (OAuth allowlist),
-`src/auth/AuthProvider.tsx` (redirect fallback). Do not relativize them.
+Until you run the cutover, the live site still deploys from `physical-ai-demo-test @ hud-factorydad-1`
+(so **pushing Origin does not yet deploy**), and that old repo remains the instant rollback. After the
+cutover, `physical-ai-demo-test` is legacy rollback only — archive it once Origin has deployed cleanly.
+
+The deploy-critical, hardcoded-URL files live in `apps/origin-web` and must stay correct:
+`index.html` / `app.html` / `passport.html` (og:/canonical), `public/_headers`, `public/robots.txt`,
+`public/sitemap.xml`, `public/llms.txt`, `insforge.toml` (OAuth allowlist), `src/auth/AuthProvider.tsx`
+(redirect fallback). Keep the canonical origin (`origin-physical-ai.pages.dev`) consistent across them.
 
 ## Cutover — HUMAN-OWNED, reversible, do LAST
 Only after the monorepo's `apps/origin-web` builds and you've confirmed parity. Two safe options:

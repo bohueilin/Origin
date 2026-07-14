@@ -38,10 +38,12 @@
 - Secrets stay server-side; `VITE_*` holds **public values only**. Never commit `.env*` except
   `.env.example`.
 
-## Deploy (human-owned)
-The live site deploys from a separate repo via Cloudflare Pages; **pushing this repo does not
-deploy.** Cutover is human-owned and reversible — see [`../../docs/DEPLOY.md`](../../docs/DEPLOY.md).
-Never deploy without explicit authorization + a named target.
+## Deploy (Origin is canonical; human-owned cutover)
+This repo (`apps/origin-web`) is the **canonical deploy source** for the live site, replacing the legacy
+`physical-ai-demo-test`. The Cloudflare Pages **cutover** (repointing the Git source at `bohueilin/Origin`)
+is a human dashboard action — see [`../../docs/CUTOVER.md`](../../docs/CUTOVER.md). Verified Pages build:
+root `apps/origin-web`, `npm install && npm run build`, output `dist`. Pushing this repo does not deploy;
+after cutover, deploys stay human-gated. Never deploy without explicit authorization.
 
 ## Pointers
 - Design language: [`DESIGN_PRINCIPLES.md`](DESIGN_PRINCIPLES.md).

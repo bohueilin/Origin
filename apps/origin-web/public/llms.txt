@@ -55,6 +55,7 @@
 - Trust & controls: https://origin-physical-ai.pages.dev/trust
 - Run a reference check on your agent (configure a policy → RSL verdict → download a signed Sigil → verify): https://origin-physical-ai.pages.dev/reference-check
 - Watch a verified plan execute — multi-robot warehouse simulation in 2D + 3D, oracle-gated (finish/escalate/refuse), the run drops a signed Sigil: https://origin-physical-ai.pages.dev/simulation
+- Verified fleet-operations console — run a shift, track utilization/peak-parallel/collisions like a real ops dashboard, earn a signed RSL fleet-readiness credential: https://origin-physical-ai.pages.dev/operations
 - Run the verifiers live (Sigil / Merkle / policy / IAM reference check): https://origin-physical-ai.pages.dev/security
 - Verify a credential yourself (offline, in-browser): https://origin-physical-ai.pages.dev/verify
 - One-page brief: https://origin-physical-ai.pages.dev/brief

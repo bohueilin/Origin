@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Analytics with Consent Mode v2 — analytics_storage denied by default. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-75QBVCL212"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+      gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
+    </script>
+
+    <title>Verified fleet-operations console — Origin</title>
+    <meta
+      name="description"
+      content="A verified operations dashboard for a robot fleet: run a multi-wave shift and watch fleet utilization, peak-simultaneous activity, throughput, and collision events, like a real ops console. Origin's deterministic oracle scores every wave; the fleet earns a signed RSL readiness credential only if it clears the targets with zero collisions — re-verifiable offline. No learned-coordinator result is claimed."
+    />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/operations" />
+    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Verified fleet-operations console — Origin" />
+    <meta property="og:description" content="Run a fleet shift, watch utilization / peak-parallel / collisions like a real ops dashboard, and mint a signed fleet-readiness credential the oracle stands behind. Reproducible under this verifier." />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/home.css?v=23" />
+
+    <style>
+      .ops-wrap { display: grid; gap: 18px; margin-top: 24px; }
+      .ops-controls { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+      .ops-range { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ink); }
+      .ops-range input { accent-color: var(--signal, #2f6df6); }
+      .ops-targets { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; margin-left: auto; }
+      .ops-verdict { display: flex; align-items: center; gap: 18px; padding: 16px 20px; border-radius: 14px; border: 1.5px solid currentColor; }
+      .ops-verdict p { margin: 0; font-size: 13.5px; }
+      .ops-verdict__badge { display: flex; flex-direction: column; align-items: center; line-height: 1; flex: 0 0 auto; }
+      .ops-verdict__badge b { font-size: 30px; letter-spacing: .03em; }
+      .ops-verdict__badge span { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; margin-top: 5px; }
+      .ops-ok { color: #0f9d6e; background: #e6f4ec; }
+      .ops-warn { color: #b97400; background: #fbf1e0; }
+      .ops-bad { color: #e5484d; background: #fbe9e6; }
+      .ops-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+      @media (max-width: 760px) { .ops-tiles { grid-template-columns: repeat(3, 1fr); } }
+      @media (max-width: 460px) { .ops-tiles { grid-template-columns: repeat(2, 1fr); } }
+      .ops-tiles > div { border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; background: var(--surface, #fff); }
+      .ops-tiles b { display: block; font-size: 22px; color: var(--ink); font-family: 'Space Grotesk', system-ui; }
+      .ops-tiles span { font-size: 11px; color: var(--ink-soft); }
+      .ops-tile-ok b { color: #0f9d6e; } .ops-tile-bad b { color: #e5484d; }
+      .ops-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 18px; }
+      @media (max-width: 820px) { .ops-grid { grid-template-columns: 1fr; } }
+      .ops-h { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); margin: 0 0 10px; }
+      .ops-timeline { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--surface, #fff); }
+      .ops-wave { display: grid; grid-template-columns: 14px 66px 1fr; align-items: center; gap: 10px; width: 100%; text-align: left; background: none; border: none; border-radius: 8px; padding: 7px 8px; cursor: pointer; font: inherit; }
+      .ops-wave:hover { background: var(--tint, #f4f6f9); }
+      .ops-wave.is-sel { background: color-mix(in srgb, var(--signal, #2f6df6) 10%, transparent); }
+      .ops-wave__dot { width: 10px; height: 10px; border-radius: 50%; }
+      .ops-wave__label { font-size: 13px; font-weight: 600; color: var(--ink); }
+      .ops-wave__bar { grid-column: 3; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; position: relative; }
+      .ops-wave__bar i { display: block; height: 100%; }
+      .ops-wave__meta { grid-column: 3; font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+      .ops-stage { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #f6f8fc; display: flex; flex-direction: column; }
+      .ops-canvas { display: block; width: 100%; height: min(42vh, 360px); }
+      .ops-caption { margin: 0; padding: 8px 12px; font-size: 12px; color: var(--ink-soft); border-top: 1px solid var(--line); font-family: ui-monospace, monospace; }
+      .ops-evidence { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+      .ops-thumb { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; }
+      .ops-note { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; margin: 0; }
+      .ops-note b { color: var(--ink); }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/" aria-label="Origin — home">
+          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <span class="brand__name">Origin</span>
+        </a>
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="/simulation">Simulation</a>
+          <a href="/reference-check">Reference check</a>
+          <a href="/security">Verifiers</a>
+          <a href="/verify">Verify</a>
+          <a href="/trust">Trust</a>
+          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
+        </nav>
+        <div class="site-header__cta">
+          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
+          <a class="btn btn--primary btn--sm" href="/#offer" data-analytics="nav_cta_click">Book an Agent Evidence Review</a>
+          <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="section" aria-labelledby="ops-title">
+        <div class="shell">
+          <p class="kicker">One evidence spine · the operations console</p>
+          <h1 id="ops-title">Benchmark the fleet. Earn the SLA.</h1>
+          <p class="section__lede leadin">
+            Run a robot fleet across a full shift and watch it like a real operations dashboard —
+            <b>fleet utilization</b>, <b>peak-simultaneous</b> activity, <b>throughput</b>, and
+            <b>collision events</b>. Origin’s deterministic oracle scores every wave, and the fleet
+            earns a <b>signed RSL readiness credential</b> only if it clears the targets with
+            <b>zero collisions</b> — the same evidence spine a digital agent action earns.
+          </p>
+          <p class="mono-note" style="margin-top: 14px;">
+            Every metric is computed <b>deterministically</b> from the oracle-verified run — <b>no
+            learned-coordinator result is claimed</b>. A verdict means "reproducible under this
+            verifier," never "safe." Seeded + replayable; synthetic layouts.
+          </p>
+        </div>
+      </section>
+
+      <section class="section section--tint" aria-label="Fleet operations console">
+        <div class="shell">
+          <div id="ops-root"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <div class="site-footer__brand">
+          <a class="brand" href="/" aria-label="Origin — home">
+            <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
+            <span class="brand__name">Origin</span>
+          </a>
+          <p>The evidence layer for AI agents.</p>
+        </div>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <div>
+            <p class="site-footer__h">Product</p>
+            <a href="/simulation">Watch a plan execute</a>
+            <a href="/reference-check">Run a reference check</a>
+            <a href="/verify">Verify a credential</a>
+            <a href="/trust">Trust center</a>
+          </div>
+          <div>
+            <p class="site-footer__h">Company</p>
+            <a href="/#offer">Agent Evidence Review</a>
+            <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
+            <a href="/llms.txt">For AI agents</a>
+            <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a>
+          </div>
+        </nav>
+      </div>
+      <div class="shell site-footer__legal">
+        <span>© <span data-year>2026</span> Origin</span>
+        <span class="site-footer__legal-links">
+          <a href="/legal/privacy-policy.html">Privacy</a>
+          <a href="/legal/terms-of-service.html">Terms</a>
+          <a href="/#offer">Contact</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/home/enhance.ts"></script>
+    <script type="module" src="/src/operationsMain.tsx"></script>
+  </body>
+</html>

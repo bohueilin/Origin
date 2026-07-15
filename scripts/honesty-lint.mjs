@@ -28,7 +28,7 @@ const WEB = join(ROOT, 'apps', 'origin-web')
 const SERVED = [
   'index.html', 'app.html', 'auth.html', 'brief.html', 'capture.html', 'clip.html',
   'foundry.html', 'passport.html', 'proof.html', 'security.html', 'soc.html',
-  'trust.html', 'verify.html', 'reference-check.html', 'simulation.html', 'operations.html',
+  'trust.html', 'verify.html', 'reference-check.html', 'simulation.html', 'operations.html', 'labs.html',
 ]
 
 // 1. BANNED — regex + human label. Matched case-insensitively against visible text.

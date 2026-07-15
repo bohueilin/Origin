@@ -110,18 +110,18 @@
         <nav class="site-nav" id="site-nav" aria-label="Primary">
           <a href="#demo">Demo</a>
           <a href="#product">Product</a>
-          <a href="#evidence">Evidence</a>
-          <a href="#offer">Review</a>
+          <a href="/verify">Verify</a>
           <a href="#trust">Trust</a>
+          <a href="/labs">Labs</a>
           <a href="/brief">Brief</a>
           <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
         </nav>
 
         <div class="site-header__cta">
           <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
-          <button type="button" class="btn btn--primary btn--sm" data-open-lead data-intent="review" data-analytics="nav_cta_click">
-            Book an Agent Evidence Review
-          </button>
+          <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">
+            Check an agent
+          </a>
           <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
             <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
           </button>
@@ -134,32 +134,31 @@
       <section class="hero" aria-labelledby="hero-title">
         <div class="shell hero__grid">
           <div class="hero__copy">
-            <p class="eyebrow">The evidence layer for AI agents</p>
-            <h1 id="hero-title">Get your agent through security review — and prove what it did.</h1>
+            <p class="eyebrow">Capability is not permission.</p>
+            <h1 id="hero-title">The reference check for AI agents.</h1>
             <p class="lede">
-              Origin enforces runtime policy before an AI agent can take a side effect, routes every tool
-              call through a controlled proxy, and produces a tamper-evident evidence package showing what
-              happened, why it was allowed, and who owned the risk.
+              Before an agent gets production access, Origin tests it against <b>your</b> policies and
+              permissions, shows exactly where it’s <b>over-granted</b>, and issues a signed
+              <b>attestation</b> you can re-verify independently — one that <b>automatically voids</b> when
+              the agent, tools, policy, or environment change.
             </p>
 
             <div class="hero__cta cta-row">
-              <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="hero_primary_cta_click">
-                Book an Agent Evidence Review
-              </button>
-              <a class="btn btn--ghost" href="/reference-check" data-analytics="hero_refcheck_cta_click">
-                Run a reference check &rarr;
+              <a class="btn btn--primary" href="/reference-check" data-analytics="hero_check_agent_click">
+                Check an agent
+              </a>
+              <a class="btn btn--ghost" href="/verify" data-analytics="hero_verify_attestation_click">
+                Verify an attestation &rarr;
               </a>
             </div>
             <p class="hero__cta-sub">
-              <a href="#demo" data-analytics="hero_secondary_cta_click">Watch the 90-second demo</a>
+              <a href="#demo" data-analytics="hero_secondary_cta_click">Watch the 60-second demo</a>
               <span aria-hidden="true">·</span>
-              <a href="/simulation" data-analytics="hero_sim_link">See a plan execute (2D/3D)</a>
-              <span aria-hidden="true">·</span>
-              <a href="/verify" data-analytics="hero_verify_link">Verify a credential yourself</a>
+              <button type="button" class="linklike" data-open-lead data-intent="review" data-analytics="hero_book_review_click">Book an evidence review</button>
             </p>
 
-            <p class="hero__buyer">For the owner of a high-consequence agent — touching production, internal tools, code, PII, or money — that a reviewer can't yet approve.</p>
-            <p class="honesty-line">Prototype in private pilot. Origin is decision-support and evidence infrastructure — not production SaaS, and not compliance certification.</p>
+            <p class="hero__buyer">For the owner of a high-consequence agent — touching production, internal tools, code, PII, or money — that a reviewer can’t yet approve.</p>
+            <p class="honesty-line">Origin replaces unbounded safety claims with <b>exact, reproducible evidence</b> — the policy, the verifier version, the config hash, the cases, the limits, and what voids it. Prototype in private pilot; not compliance certification.</p>
 
             <ul class="hero__assurances" aria-label="How Origin works">
               <li>Policy gate before side effects</li>
@@ -554,7 +553,7 @@
           </div>
           <p class="mono-note" style="margin-top: 18px;">Origin is decision-support and evidence infrastructure. We use "tamper-evident" to mean alteration is detectable by replay and digest checks; "review-ready," not "reviewer-accepted." It does not provide legal or compliance certification, and the customer stays responsible for the agents and tools they connect.</p>
           <div class="cta-row" style="margin-top: 20px;">
-            <a class="btn btn--primary" href="/reference-check" data-analytics="refcheck_link">Run a reference check &rarr;</a>
+            <a class="btn btn--primary" href="/reference-check" data-analytics="refcheck_link">Check an agent &rarr;</a>
             <a class="btn btn--ghost" href="/trust" data-analytics="trust_center_link">Read the trust center</a>
             <a class="btn btn--ghost" href="/security" data-analytics="security_demo_link">Run the verifiers live &rarr;</a>
             <a class="btn btn--ghost" href="/verify" data-analytics="verify_page_link">Verify a credential yourself &rarr;</a>
@@ -604,8 +603,8 @@
           <h2 id="final-title">Have an agent stuck in security review?</h2>
           <p class="section__lede leadin">Show us one blocked workflow. We'll map the risk, run the evidence loop, and tell you honestly whether Origin can produce the evidence your reviewer needs.</p>
           <div class="cta-row">
-            <button type="button" class="btn btn--primary btn--lg" data-open-lead data-intent="review" data-analytics="final_primary_cta_click">Book an Agent Evidence Review</button>
-            <a class="btn btn--ghost btn--lg" href="mailto:hello@originphysical.ai?subject=Reviewer%20blocker&amp;body=The%20agent%3A%0AWhat%20it%20touches%3A%0AThe%20blocker%3A%0AWho%20signs%20off%3A" data-analytics="final_blocker_mailto">Send us the reviewer blocker</a>
+            <a class="btn btn--primary btn--lg" href="/reference-check" data-analytics="final_check_agent_click">Check an agent</a>
+            <button type="button" class="btn btn--ghost btn--lg" data-open-lead data-intent="review" data-analytics="final_primary_cta_click">Book an evidence review</button>
           </div>
         </div>
       </section>

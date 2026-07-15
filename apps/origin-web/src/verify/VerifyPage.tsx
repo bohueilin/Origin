@@ -20,7 +20,7 @@ import { makeExample } from './examples.mjs'
 import type { ExampleKind } from './examples.mjs'
 
 const EXAMPLES: Array<{ kind: ExampleKind; label: string }> = [
-  { kind: 'sigil', label: 'Sigil' },
+  { kind: 'sigil', label: 'Origin Attestation' },
   { kind: 'credential', label: 'Credential' },
   { kind: 'receipt', label: 'ScoreReceipt' },
   { kind: 'trace', label: 'Episode trace' },
@@ -55,7 +55,7 @@ function DetectionTable() {
       <p className="kicker">How detection works</p>
       <h2 style={{ marginTop: 6 }}>Shape in, verifier out.</h2>
       <p className="section__lede" style={{ marginTop: 8 }}>
-        The artifact kind is read from the JSON's shape — most specific first (a Sigil may wrap a
+        The artifact kind is read from the JSON's shape — most specific first (an Origin Attestation may wrap a
         credential or receipt in its payload, so the outer signature wins). Each kind routes to the
         matching verifier from the same SDK the test suite gates.
       </p>
@@ -71,7 +71,7 @@ function DetectionTable() {
           </thead>
           <tbody>
             <tr>
-              <td><b>Sigil</b></td>
+              <td><b>Origin Attestation</b></td>
               <td><code>pubkey_jwk</code> + <code>signature</code> + <code>payload_digest</code></td>
               <td><code>verifySigil</code> — recompute the content-address, verify ES256 with the embedded key, optional issuer pin</td>
               <td>0 valid · 1 payload tampered · 2 signature invalid · 3 wrong signer · 4 malformed</td>
@@ -134,7 +134,7 @@ export function VerifyPage() {
     try {
       const artifact = await makeExample(kind)
       // tamper/label by DETECTED kind — an example may wrap another artifact
-      // (e.g. the factory reference check is a sigil-wrapped credential)
+      // (e.g. the factory reference check is an attestation-wrapped credential)
       const detected = detectArtifact(artifact)
       const pristine = JSON.stringify(artifact, null, 2)
       pristineRef.current = pristine
@@ -222,7 +222,7 @@ export function VerifyPage() {
             rows={14}
             spellCheck={false}
             autoComplete="off"
-            placeholder='{ "sigil_schema_version": "1.0.0", … }  — a Sigil, Crucible credential, ScoreReceipt, episode trace, or Merkle inclusion proof'
+            placeholder='{ "sigil_schema_version": "1.0.0", … }  — an Origin Attestation, Crucible credential, ScoreReceipt, episode trace, or Merkle inclusion proof'
             aria-describedby="vfy-hint"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -234,13 +234,13 @@ export function VerifyPage() {
         </p>
 
         <div className="field">
-          <label htmlFor="vfy-thumbprint">Pin issuer thumbprint (optional — Sigils only)</label>
+          <label htmlFor="vfy-thumbprint">Pin issuer thumbprint (optional — Origin Attestations only)</label>
           <input
             id="vfy-thumbprint"
             type="text"
             spellCheck={false}
             autoComplete="off"
-            placeholder="expected signer thumbprint (sha256 of the RFC-7638 JWK members) — rejects a valid-but-wrong-signer Sigil"
+            placeholder="expected signer thumbprint (sha256 of the RFC-7638 JWK members) — rejects a valid-but-wrong-signer attestation"
             value={thumbprint}
             onChange={(e) => setThumbprint(e.target.value)}
           />

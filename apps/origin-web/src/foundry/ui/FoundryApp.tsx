@@ -1,6 +1,6 @@
 // Origin Foundry — the hero surface. Upload a floor → gemma-4-31b (vision) reads it into
 // a real RL environment → a Planner + Guardian loop on Cerebras proposes and RATIFIES every
-// step → the deterministic oracle scores it → you get a readiness license. The speed race
+// step → the deterministic oracle scores it → you get a readiness level. The speed race
 // proves it only works at Cerebras tok/s. Every model call is gemma-4-31b on Cerebras; a
 // labeled mock keeps the demo alive offline.
 

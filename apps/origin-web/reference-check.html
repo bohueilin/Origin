@@ -23,7 +23,7 @@
     <title>Run a reference check on your agent | Origin</title>
     <meta
       name="description"
-      content="Describe your agent and its IAM policy posture, run it through a deterministic least-privilege gym, and get a config-bound readiness credential: the RSL level, the before/after lift, a per-decision breakdown of where your policy over-grants, and a signed Sigil you can re-verify offline. The deterministic oracle is the only judge — never an LLM. Reproducible under this verifier, never 'safe'."
+      content="Describe your agent and its IAM policy posture, run it through a deterministic least-privilege gym, and get a config-bound readiness credential: the Verified Readiness Level, the before/after lift, a per-decision breakdown of where your policy over-grants, and a signed Origin Attestation you can re-verify offline. The deterministic oracle is the only judge — never an LLM. Reproducible under this verifier, never 'safe'."
     />
     <link rel="canonical" href="https://origin-physical-ai.pages.dev/reference-check" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
@@ -44,6 +44,12 @@
 
     <style>
       .rc-grid { display: grid; gap: 22px; margin-top: 26px; }
+      .rc-scenarios { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      @media (max-width: 560px) { .rc-scenarios { grid-template-columns: 1fr; } }
+      .rc-scn { text-align: left; border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px; background: var(--surface, #fff); cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+      .rc-scn.is-on { border-color: var(--signal); box-shadow: 0 0 0 2px color-mix(in srgb, var(--signal) 22%, transparent); }
+      .rc-scn b { font-size: 14.5px; color: var(--ink); }
+      .rc-scn span { font-size: 12px; color: var(--ink-soft); }
       .rc-card { border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; background: var(--surface, #fff); }
       .rc-card--cta { background: var(--tint, #f4f6f9); }
       .rc-step { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--signal-ink); margin: 0 0 8px; }
@@ -99,16 +105,16 @@
         <nav class="site-nav" id="site-nav" aria-label="Primary">
           <a href="/#demo">Demo</a>
           <a href="/#product">Product</a>
-          <a href="/security">Verifiers</a>
           <a href="/verify">Verify</a>
-          <a href="/trust">Trust</a>
+          <a href="/#trust">Trust</a>
+          <a href="/labs">Labs</a>
           <a href="/brief">Brief</a>
           <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
         </nav>
         <div class="site-header__cta">
           <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
-          <a class="btn btn--primary btn--sm" href="/#offer" data-analytics="nav_cta_click">
-            Book an Agent Evidence Review
+          <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">
+            Check an agent
           </a>
           <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
             <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
@@ -120,20 +126,20 @@
     <main id="main">
       <section class="section" aria-labelledby="rc-title">
         <div class="shell">
-          <p class="kicker">Certification-as-a-market · the buyer flow</p>
-          <h1 id="rc-title">Run a reference check on your agent.</h1>
+          <p class="kicker">Configuration-bound reference checks + attestations · the buyer flow</p>
+          <h1 id="rc-title">Check an agent before it gets production access.</h1>
           <p class="section__lede leadin">
-            Describe your agent and its least-privilege policy, run it through a deterministic IAM gym,
-            and earn a <b>config-bound readiness credential</b>: the <b>RSL</b> level, the before/after
-            lift, a per-decision breakdown of exactly where your policy over-grants, and a signed
-            <b>Sigil</b> you can download and re-verify offline. The <b>deterministic oracle is the only
-            judge</b> — never an LLM grading an LLM.
+            Pick a scenario, describe your agent, and declare its policy. Origin runs it against the
+            deterministic oracle and shows exactly where it’s <b>over-granted</b> — then issues a signed
+            <b>Origin Attestation</b> carrying the <b>Verified Readiness Level</b>, the before/after lift, and the
+            config hash, that you can re-verify offline and that <b>voids the moment a tool or permission
+            changes.</b> The <b>deterministic oracle is the only judge</b> — never an LLM grading an LLM.
           </p>
           <p class="mono-note" style="margin-top: 14px;">
             Everything runs <b>client-side</b>: your config is not uploaded. A verdict means
             "reproducible least-privilege behavior under this verifier + this config," never "safe." This
-            is Origin’s <b>synthetic</b> IAM battery — certifying your real agent, against your own policy
-            and environment, is the design-partner path (book below).
+            is Origin’s <b>synthetic</b> battery — checking your real agent, against your own policy and
+            environment, is the design-partner path (book below).
           </p>
         </div>
       </section>

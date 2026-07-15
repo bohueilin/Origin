@@ -18,7 +18,7 @@ const STEPS = [
   },
   {
     n: '4',
-    t: 'Get the readiness license',
+    t: 'Get the readiness level',
     d: 'A safety-first readiness tier, with the failures it must fix to climb — re-earned by each new brain.',
   },
 ]

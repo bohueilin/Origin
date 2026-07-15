@@ -3,11 +3,11 @@
 // Four panels, each driving the REAL @origin/verifier-core engine client-side (no server, no
 // mocks of the engines themselves — the data is synthetic and labeled as such):
 //
-//   1. Sigil            — sign → verify → tamper → VOID → wrong-signer → rejected
+//   1. Origin Attestation — sign → verify → tamper → VOID → wrong-signer → rejected
 //   2. Merkle batch     — one signed root, O(log N) inclusion proofs, beneficiary-bound
 //   3. Policy chain     — hash-chained versions; decisions bind to the version in force
 //   4. Reference check  — the IAM gym + Crucible: config-bound credential from the
-//                         deterministic oracle; drift → VOID; over-grants cap the RSL
+//                         deterministic oracle; drift → VOID; over-grants cap the readiness level
 //
 // Unblocked by the isomorphic sha256 in @origin/evidence (§9.2): these
 // modules now load in a browser bundle because the evidence core no longer
@@ -99,7 +99,7 @@ function DemoCard(props: { kicker: string; title: string; lede: string; children
   )
 }
 
-// ── 1 · Sigil ────────────────────────────────────────────────────────────────
+// ── 1 · Origin Attestation ────────────────────────────────────────────────────────────────
 // A SYNTHETIC score receipt — the payload we sign. Labeled synthetic on purpose.
 const DEMO_RECEIPT = {
   receipt_schema_version: '1.0.0',
@@ -125,9 +125,9 @@ function SigilPanel() {
       const v = await verifySigil(s)
       setSigil(s)
       setSteps([
-        info('signed', `ES256 over the content-address ${short(s.payload_digest)} — the public key travels inside the Sigil`),
+        info('signed', `ES256 over the content-address ${short(s.payload_digest)} — the public key travels inside the attestation`),
         v.ok
-          ? ok('verified offline', `${v.reason} (code ${v.code}) — no server, no registry, just the Sigil`)
+          ? ok('verified offline', `${v.reason} (code ${v.code}) — no server, no registry, just the attestation`)
           : bad('verify', v.reason),
       ])
     } finally {
@@ -163,15 +163,15 @@ function SigilPanel() {
       info('imposter', 'a DIFFERENT key signed the same payload — signature itself is valid'),
       v.ok
         ? bad('MISSED', 'wrong signer was accepted')
-        : ok('signer pinned', `${v.reason} (code ${v.code}) — a valid-but-wrong-signer Sigil is rejected`),
+        : ok('signer pinned', `${v.reason} (code ${v.code}) — a valid-but-wrong-signer attestation is rejected`),
     ])
   }
 
   return (
     <DemoCard
-      kicker="Sigil · portable signed receipt"
+      kicker="Origin Attestation · portable signed receipt"
       title="Flip one byte and it voids."
-      lede="Sign a synthetic score receipt with ECDSA P-256 in your browser (Web Crypto — the private key never leaves this page), then verify it offline with only the Sigil itself. Then try to cheat."
+      lede="Sign a synthetic score receipt with ECDSA P-256 in your browser (Web Crypto — the private key never leaves this page), then verify it offline with only the attestation itself. Then try to cheat."
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={() => void signAndVerify()} disabled={busy}>
@@ -185,7 +185,7 @@ function SigilPanel() {
         </button>
       </div>
       <Log steps={steps} />
-      <Peek title="Peek at the Sigil (JSON)" value={sigil} />
+      <Peek title="Peek at the attestation (JSON)" value={sigil} />
       <p className="sec-note">
         Integrity + authenticity only: it proves the content is intact and this key signed it — not that the
         key belongs to a real-world identity. That binding is a separate PKI/attestation concern.
@@ -225,7 +225,7 @@ function MerklePanel() {
     setRootSigil(rs)
     setSteps([
       info('batched', `${b.count} receipts → ONE Merkle root ${short(b.root)} — one signature amortizes the whole batch`),
-      rsv.ok ? ok('root signed', 'the root travels as a Sigil; each holder gets a compact inclusion proof') : bad('root sign', rsv.reason),
+      rsv.ok ? ok('root signed', 'the root travels as an attestation; each holder gets a compact inclusion proof') : bad('root sign', rsv.reason),
       check.ok
         ? ok(`receipt #4 verified`, `${check.reason} — proof is ${b.proofs[3].proof.length} hashes for ${b.count} receipts (O(log N)), no other receipt revealed`)
         : bad('inclusion', check.reason),
@@ -278,7 +278,7 @@ function MerklePanel() {
       </div>
       <Log steps={steps} />
       <Peek title="Peek at receipt #4's inclusion proof" value={batch ? batch.proofs[3] : null} />
-      <Peek title="Peek at the signed root (Sigil)" value={rootSigil} />
+      <Peek title="Peek at the signed root (attestation)" value={rootSigil} />
     </DemoCard>
   )
 }
@@ -404,7 +404,7 @@ function ReferenceCheckPanel() {
       info('baseline', 'the naive allow-all agent runs the same battery'),
       bad(
         `${r.catastrophic} catastrophic over-grants`,
-        `allowed forbidden/tainted/high-sensitivity actions the oracle refuses — the RSL is capped at ${r.credential.rsl_level}. Over-caution is a miss; over-GRANTING is catastrophic.`,
+        `allowed forbidden/tainted/high-sensitivity actions the oracle refuses — the readiness level is capped at ${r.credential.rsl_level}. Over-caution is a miss; over-GRANTING is catastrophic.`,
       ),
     ])
   }
@@ -428,9 +428,9 @@ function ReferenceCheckPanel() {
 
   return (
     <DemoCard
-      kicker="Crucible + IAM gym · certification-as-a-market"
+      kicker="Crucible + IAM gym · configuration-bound reference checks + attestations"
       title="A reference check for agents — issued by the oracle, bound to the config."
-      lede="Run an agent policy through a deterministic IAM/least-privilege gym and mint a config-bound credential: the RSL readiness level, the before/after lift, and the receipts that back it. Change the model, tools, context, or harness — and it voids."
+      lede="Run an agent policy through a deterministic IAM/least-privilege gym and mint a config-bound credential: the Verified Readiness Level, the before/after lift, and the receipts that back it. Change the model, tools, context, or harness — and it voids."
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={runHarnessed}>
@@ -446,7 +446,7 @@ function ReferenceCheckPanel() {
       {result ? (
         <div className="sec-badge-row">
           <span className="sec-rsl">
-            {result.credential.rsl_level} <small>RSL level</small>
+            {result.credential.rsl_level} <small>Verified Readiness Level</small>
           </span>
           <span className="sec-note" style={{ marginTop: 0 }}>
             pass {Math.round(result.credential.pass_rate * 100)}% · cold {Math.round(result.credential.cold_pass_rate * 100)}% · lift +

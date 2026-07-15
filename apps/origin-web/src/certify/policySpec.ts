@@ -39,7 +39,7 @@ export function policyForSpec(spec: PolicySpec) {
 export const PRESETS: Record<string, { label: string; blurb: string; spec: PolicySpec }> = {
   'least-privilege': {
     label: 'Least-privilege (recommended)',
-    blurb: 'Every guard on; auto-allow only up to medium. The posture that earns a high RSL.',
+    blurb: 'Every guard on; auto-allow only up to medium. The posture that earns a high Verified Readiness Level.',
     spec: { honorRoleAllowlist: true, denyForbidden: true, denyTainted: true, escalateOnApproval: true, autoAllowUpTo: 'medium' },
   },
   moderate: {
@@ -49,8 +49,54 @@ export const PRESETS: Record<string, { label: string; blurb: string; spec: Polic
   },
   permissive: {
     label: 'Permissive (the dangerous baseline)',
-    blurb: 'Guards off — the naive over-granting agent. Expect catastrophic over-grants and a capped RSL.',
+    blurb: 'Guards off — the naive over-granting agent. Expect catastrophic over-grants and a capped level.',
     spec: { honorRoleAllowlist: false, denyForbidden: false, denyTainted: false, escalateOnApproval: false, autoAllowUpTo: 'forbidden' },
+  },
+}
+
+// ── Support-agent scenario (the relatable hero: refunds / PII / bank changes) ──
+export interface SupportPolicySpec {
+  refundCap: number // dollars the agent may auto-refund without approval
+  denyPii: boolean // refuse to disclose personal data
+  denyForbidden: boolean // refuse destructive / bulk actions
+  denyTainted: boolean // route fraud-flagged accounts to review
+  requireApprovalHigh: boolean // escalate over-cap refunds + high-risk changes (e.g. bank details)
+}
+
+export interface SupportTaskShape {
+  amount: number | null
+  pii: boolean
+  forbidden: boolean
+  tainted: boolean
+  requires_approval: boolean
+}
+
+export function supportPolicyForSpec(spec: SupportPolicySpec) {
+  return (task: SupportTaskShape): Decision => {
+    if (spec.denyForbidden && task.forbidden) return 'deny'
+    if (spec.denyPii && task.pii) return 'deny'
+    if (spec.denyTainted && task.tainted) return 'escalate'
+    if (task.amount != null && task.amount > spec.refundCap) return spec.requireApprovalHigh ? 'escalate' : 'allow'
+    if (spec.requireApprovalHigh && task.requires_approval) return 'escalate'
+    return 'allow'
+  }
+}
+
+export const SUPPORT_PRESETS: Record<string, { label: string; blurb: string; spec: SupportPolicySpec }> = {
+  'least-privilege': {
+    label: 'Least-privilege (recommended)',
+    blurb: 'Refund cap $100, never disclose PII, no destructive actions, fraud + bank changes go to a human. Earns a high Verified Readiness Level.',
+    spec: { refundCap: 100, denyPii: true, denyForbidden: true, denyTainted: true, requireApprovalHigh: true },
+  },
+  moderate: {
+    label: 'Moderate',
+    blurb: 'Refuses PII + destructive actions, but auto-approves fraud-flagged refunds and bank-detail changes — real over-grants.',
+    spec: { refundCap: 100, denyPii: true, denyForbidden: true, denyTainted: false, requireApprovalHigh: false },
+  },
+  permissive: {
+    label: 'Permissive (the dangerous baseline)',
+    blurb: 'Guards off — the naive agent discloses PII, changes bank details, and deletes accounts. Expect catastrophic over-grants and a capped level.',
+    spec: { refundCap: 100000, denyPii: false, denyForbidden: false, denyTainted: false, requireApprovalHigh: false },
   },
 }
 

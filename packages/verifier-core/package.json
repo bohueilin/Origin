@@ -26,6 +26,10 @@
       "types": "./iamGym.d.mts",
       "default": "./iamGym.mjs"
     },
+    "./supportGym": {
+      "types": "./supportGym.d.mts",
+      "default": "./supportGym.mjs"
+    },
     "./gymHardening": {
       "types": "./gymHardening.d.mts",
       "default": "./gymHardening.mjs"

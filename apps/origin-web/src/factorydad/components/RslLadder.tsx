@@ -1,7 +1,7 @@
-// The RSL ladder — the one device that teaches what L0–L4 actually mean, in
+// The Verified Readiness Level — the one device that teaches what L0–L4 actually mean, in
 // terms a buyer controls ("what may the robot do on its own?"). Each rung carries
 // an autonomy meter (segments filled to the tier) so the progression is legible
-// at a glance. Reused atop the RSL curve and the cost table. Pure presentational.
+// at a glance. Reused atop the readiness level curve and the cost table. Pure presentational.
 
 import { tierColor } from '../labels'
 
@@ -41,7 +41,7 @@ function AutonomyMeter({ tier }: { tier: string }) {
 
 export function RslLadder({ compact = false }: { compact?: boolean }) {
   return (
-    <ol className={`rsl-ladder ${compact ? 'rsl-ladder-compact' : ''}`} aria-label="Robot Safety License levels, L0 to L4">
+    <ol className={`rsl-ladder ${compact ? 'rsl-ladder-compact' : ''}`} aria-label="Verified Readiness Level (L0–L4)">
       {RUNGS.map((r) => {
         const color = tierColor(r.id)
         const target = r.id === 'L3'

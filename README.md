@@ -1,23 +1,33 @@
-# Origin — the trust + evidence layer for autonomous systems
+<p align="center">
+  <img src="docs/assets/origin-thinking.png" alt="Origin — the reference check for AI agents" width="820" />
+</p>
+
+# Origin — the reference check for AI agents
 
 > **Model proposes. Environment verifies. Gate decides. Trace proves. — Capability is not permission.**
 
-Before you let an agent — or a robot — act on your systems, Origin gives you the receipt that proves
-what it was **allowed** to do, what it **actually tried** to do, and that it was **contained** if it
-went rogue — issued by a **deterministic oracle** (never an LLM grading an LLM), reproducibly, and
-independently verifiable **offline in your browser**.
+Before an AI agent gets production access, Origin tests it against **your** policies and permissions,
+shows exactly where it is **over-granted**, and issues a signed **Origin Attestation** you can re-verify
+independently — one that **automatically voids** when the agent's model, tools, context, or environment
+change. Every verdict comes from a **deterministic oracle** (never an LLM grading an LLM), reproducibly,
+and is checkable **offline in your browser**.
 
-- **Live showcase:** https://origin-physical-ai.pages.dev · **Verify a credential yourself:** [`/verify`](https://origin-physical-ai.pages.dev/verify.html)
-- **Book an evidence review:** the `/` landing page CTA · **60-second demo:** *(recording — storyboard in `docs/`)*
+On the same architecture — *one evidence spine, many domain verifiers* — the same signed receipt covers a
+**software agent**, a **factory/robot plan**, and a **spatial-reconstruction model**. The environment
+(the verifier) is the moat, not the model.
+
+- **Live showcase:** https://origin-physical-ai.pages.dev · **Check an agent:** [`/reference-check`](https://origin-physical-ai.pages.dev/reference-check) · **Verify an attestation:** [`/verify`](https://origin-physical-ai.pages.dev/verify)
+- **Run the verifiers live:** [`/security`](https://origin-physical-ai.pages.dev/security) · **Labs (robot / fleet / spatial):** [`/labs`](https://origin-physical-ai.pages.dev/labs) · **Trust center:** [`/trust`](https://origin-physical-ai.pages.dev/trust)
 
 ---
 
 ## The one insight (this is the whole company)
 
 A deterministic verifier that gates a proposed plan and emits **tamper-evident, signed, reproducible
-evidence** is the **same product** whether the actor is a software agent touching an API or a humanoid
-robot touching a factory floor. **One evidence spine, two actors.** The environment is the moat, not
-the model.
+evidence** is the **same product** whether the actor is a software agent touching an API, a humanoid
+robot touching a factory floor, or a model reconstructing a room from a photo. **One evidence spine,
+many domain verifiers** — demonstrated today with two actors (an agent action + a factory plan) that earn
+the *same* receipt. The environment is the moat, not the model.
 
 ```
 ① INTENT     humans + agents express what they want            (a task, a site, a tool call)
@@ -33,14 +43,15 @@ green means "reproducible under this verifier," tamper any field and it goes VOI
 
 ## Wedge → moat → market
 
-- **Wedge (land):** the shareable **signed Trust Receipt** + **leak-vs-hold** proof + **blocked-injection
-  containment** — visceral in 60 seconds.
+- **Wedge (land):** the self-serve **agent reference check** — a signed **Origin Attestation** +
+  per-decision over-grant breakdown + the **drift-void** moment, visceral in 60 seconds.
 - **Moat:** the **deterministic verified environment**. Digital = an IAM/agent gym; physical = a
   verifier-gated factory/robot environment. We know of no other verifier-gated environment that spans
   *both* actors on one evidence spine (see [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) for the adjacent
   work we build on) — and, on the narrow tasks we target, the environment beats the model.
-- **Market:** **certification-as-a-market** — a config-bound "reference check for agents/robots,"
-  priced on the **RSL** readiness ladder (L0→L4), re-certified on every config change. A catastrophic
+- **Market:** config-bound **reference checks + attestations**, re-run on every config change (recurring),
+  priced on **agents, tools, evaluation volume, and drift-monitoring — never on the Verified Readiness
+  Level you earn** (the level is a deterministic result, not something you can buy). A catastrophic
   over-grant hard-caps the level: the right to act cannot be averaged back.
 
 ## The verified environment is a flywheel
@@ -90,7 +101,29 @@ rides on every step. **The speed is the architecture.**
 | **Janus** (formerly Passport) | [`apps/janus`](apps/janus) | The gate: identity → scoped grant → fail-closed authorization, with measured-intent (Tell) + containment (Cordon). |
 | **Chronos UI** | [`apps/chronos-ui`](apps/chronos-ui) | Front-end for the reward-hack discovery / verifier-hardening engine. |
 | **Cobra / Chronos** | [`services/{cobra,chronos}`](services) | Auto-harden RL verifiers against reward hacking (red-team → patch → measure on held-out ground truth). |
-| **Verifier SDK** | [`packages/verifier-core`](packages/verifier-core) + [`packages/evidence`](packages/evidence) | The shared evidence spine: canonical JSON, isomorphic SHA-256, hash-chained ScoreReceipts, ES256 **Sigil** signatures, Merkle batches, config-bound **Crucible** credentials, the IAM gym + RSL ladder. Consumed by the apps *and* by external verifiers. |
+| **Verifier SDK** | [`packages/verifier-core`](packages/verifier-core) + [`packages/evidence`](packages/evidence) | The shared evidence spine: canonical JSON, isomorphic SHA-256, hash-chained ScoreReceipts, ES256 **Origin Attestation** (Sigil) signatures, Merkle batches, config-bound **Crucible** credentials, the IAM + support gyms + the Verified Readiness Level ladder. Consumed by the apps *and* by external verifiers. |
+
+## The cast — the pieces, and how they collaborate
+
+The names aren't decoration: each guards one part of the threshold between *what an agent can do* and
+*what it's permitted to do.*
+
+| Name | Myth | What it is in Origin | How it collaborates |
+|---|---|---|---|
+| **Origin** | — (the substrate / the world) | The evidence spine — the one contract every actor is measured against. | Everything below plugs into it; a verdict from any verifier becomes the same signed, offline-checkable artifact. |
+| **Janus** | **Roman** god of gates, doorways & thresholds — two-faced, watching what enters *and* what leaves | The runtime **gate + credential broker**: identity → scoped, revocable authority → fail-closed authorization, with measured intent (Tell) and blast-radius containment (Cordon). It brokers **handles, never raw secrets**. | Stands at the threshold when an agent proposes an action — routes every tool call through itself, and refuses the secret to a tainted agent. |
+| **Crucible** | a vessel where metal is tested by fire | The **test environment**: an agent's policy is run through a deterministic least-privilege gym and forged into a **Verified Readiness Level** (L0–L4). | Consumes the policy Janus would enforce; hands its verdicts to the Oracle to be judged and sealed. |
+| **the Oracle** | the **Greek** Oracle (Delphi) — the source of true judgment | The **deterministic verifier** — the *sole* authority over labels, gates, and hard-zeros. **Never an LLM grading an LLM.** | Judges every proposed action *finish / escalate / refuse*; its verdict is the only thing that can mint an attestation. |
+| **Origin Attestation** *(Sigil)* | a sigil — a sealed mark of authority | The **ES256-signed receipt** that seals a verdict: the level, the config it's bound to, the evidence. | Voids the moment the agent's model/tools/context/environment drift; re-verifies offline at `/verify`. |
+| **Chronos** | **Greek** Titan of **time** | The **reward-hack-discovery / verifier-hardening** engine (with the Chronos UI). | Over time, keeps hardening the Oracle so a policy can never learn to game the metric — the verifier gets *stronger* with every run. |
+| **Cobra** | the serpent — the adversary that makes the guardian stronger | The **red-team**: auto-attacks the verifier (red-team → patch → measure on held-out ground truth). | Feeds Chronos the exploits; a verifier that survives Cobra is one you can trust. |
+| **Foundry** | the forge | Where new **verified environments / gyms** are forged (the Labs). | Extends the one spine to new actors — a robot fleet, a spatial-reconstruction model — each with its own domain verifier. |
+
+**The loop, in one breath:** an agent proposes → **Janus** gates it and brokers scoped authority →
+**Crucible** puts the policy through the gym → **the Oracle** (deterministic, never an LLM) judges every
+step → the verdict is sealed as an **Origin Attestation** anyone can re-verify offline → **Cobra +
+Chronos** keep red-teaming and hardening the Oracle so it can't be gamed → **Foundry** forges the next
+verified environment. *Capability is never mistaken for permission.*
 
 ## Quickstart
 

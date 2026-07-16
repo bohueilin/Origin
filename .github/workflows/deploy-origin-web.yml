@@ -126,7 +126,7 @@ jobs:
 
       - name: Deploy to Cloudflare Pages (production)
         if: steps.gate.outputs.ready == 'true'
-        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ecf2451e81261e8de3295b4a3b4e439c

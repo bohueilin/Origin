@@ -72,10 +72,12 @@ describe('Crucible — config-bound certification issued by the deterministic or
     expect(verifyCredential({ credential, liveConfig: { ...HARNESSED_CONFIG, tools: ['observe', 'finish'] }, envBundleDigest: ENV_DIGEST, versions: VERSIONS }).code).toBe(4)
   })
 
-  it('env / verifier drift VOIDS the credential (exit 4)', () => {
+  it('env / verifier / reward-model drift VOIDS the credential (exit 4)', () => {
     const { credential } = mintForOracle()
     expect(verifyCredential({ credential, liveConfig: HARNESSED_CONFIG, envBundleDigest: 'b'.repeat(64), versions: VERSIONS }).code).toBe(4)
     expect(verifyCredential({ credential, liveConfig: HARNESSED_CONFIG, envBundleDigest: ENV_DIGEST, versions: { ...VERSIONS, verifier_version: '2.0.0' } }).code).toBe(4)
+    // reward_model_version is part of the label authority — a silent swap must VOID too (CPVER audit #7)
+    expect(verifyCredential({ credential, liveConfig: HARNESSED_CONFIG, envBundleDigest: ENV_DIGEST, versions: { ...VERSIONS, reward_model_version: 'reward-swap-2' } }).code).toBe(4)
   })
 
   it('tampering the earned readiness is caught by the Sigil (exit 3)', () => {

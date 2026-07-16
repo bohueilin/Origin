@@ -34,3 +34,8 @@ datasets/**/*.mp4
 
 # --- private factory algorithm (crown-jewel IP: its own local repo, never in the public tree) ---
 factory-private/
+# Private-algorithm residue dirs — never track in the public repo (defense-in-depth beyond __pycache__/;
+# CPVER audit #9: the deterministic-oracle bytecode must not sit one `git add -f` from a public commit).
+services/factoryceo-trm/
+services/foundry-train/
+site-to-gym/

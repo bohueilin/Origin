@@ -53,9 +53,9 @@ jobs:
     name: Build + gate (check only — never deploys)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
           cache: npm
@@ -86,7 +86,7 @@ jobs:
         run: npm run build:web
 
       - name: Upload dist (the exact artifact a deploy would ship)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: origin-web-dist
           path: apps/origin-web/dist
@@ -104,10 +104,10 @@ jobs:
       name: production
       url: https://origin-physical-ai.pages.dev
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Download the gated build (deploy exactly what was tested)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: origin-web-dist
           path: origin-web-dist
@@ -126,7 +126,7 @@ jobs:
 
       - name: Deploy to Cloudflare Pages (production)
         if: steps.gate.outputs.ready == 'true'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ecf2451e81261e8de3295b4a3b4e439c

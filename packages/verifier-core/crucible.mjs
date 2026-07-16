@@ -86,6 +86,11 @@ export function verifyCredential({ credential, liveConfig, envBundleDigest, vers
   // 3 — environment + verifier binding.
   if (envBundleDigest && credential.env_bundle_digest !== envBundleDigest) return bad(4, 'env_bundle drift — VOID')
   if (versions && credential.verifier_version !== versions.verifier_version) return bad(4, 'verifier drift — VOID')
+  // The reward model is part of the label authority — a silent swap must VOID the credential too,
+  // mirroring the verifier_version pin (CPVER audit #7 / A37924 "a verification artifact is not a
+  // correctness oracle": the pin must be a decision input, not decorative).
+  if (versions && versions.reward_model_version !== undefined && credential.reward_model_version !== versions.reward_model_version)
+    return bad(4, 'reward_model drift — VOID')
   ok(`bound to env ${String(credential.env_bundle_digest).slice(0, 12)}… + verifier ${credential.verifier_version} · RSL ${credential.rsl_level}`)
 
   return { code: 0, checks }

@@ -5,7 +5,7 @@ description = "An autoresearch loop that hardens RL verifiers against reward hac
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "anthropic>=0.40",
-    "fastapi>=0.115",
+    "fastapi>=0.139.1",
     "uvicorn[standard]>=0.32",
     "websockets>=13",
     "evalplus>=0.3",

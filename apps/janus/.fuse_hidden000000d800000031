@@ -1,0 +1,26 @@
+# Cloudflare Worker for the Passport backend (always-on, public-safe). See worker/index.ts.
+name = "origin-passport-api"
+main = "worker/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# Stub the native 1Password SDK out of the Workers bundle (mock broker on the edge).
+[alias]
+"@1password/sdk" = "./worker/op-sdk-stub.ts"
+
+# Host the Hono app in ONE Durable Object so notify/nonce/lease in-process state stays consistent.
+# SQLite-backed DO class → eligible on the Workers free plan.
+[[durable_objects.bindings]]
+name = "APP_DO"
+class_name = "AppDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AppDO"]
+
+# Non-secret vars (secrets like GMI_API_KEY are set via `wrangler secret put`, never in this file).
+[vars]
+NTFY_BASE_URL = "https://ntfy.sh"
+DISCORD_CHANNEL_LABEL = "Game Night"
+SNAPLII_BASE_URL = "https://aipayment.snaplii.com"

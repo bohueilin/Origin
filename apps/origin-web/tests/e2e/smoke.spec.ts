@@ -76,6 +76,22 @@ test('interactive 90-second demo steps and reaches the blocked + sealed states',
   await expect(page.locator('[data-demo-panel="8"]')).toContainText('SEALED')
 })
 
+test('reference check communicates selection, verdict, and drift invalidation accessibly', async ({ page }) => {
+  await page.goto('/reference-check')
+  const support = page.getByRole('button', { name: /Customer-support agent/ })
+  const iam = page.getByRole('button', { name: /IAM least-privilege/ })
+  await expect(support).toHaveAttribute('aria-pressed', 'true')
+  await expect(iam).toHaveAttribute('aria-pressed', 'false')
+
+  await page.getByRole('button', { name: 'Run the reference check' }).click()
+  const result = page.getByRole('status')
+  await expect(result).toContainText('Verified Readiness Level')
+  await expect(page.locator('body')).toContainText('Synthetic pilot battery')
+
+  await page.getByRole('button', { name: /Change a tool/ }).click()
+  await expect(page.getByRole('alert')).toContainText('VOID (code 4) — config drift')
+})
+
 test('auth page is invite-only private pilot with legal links', async ({ page }) => {
   await page.goto('/auth.html')
   await expect(page.locator('h1')).toHaveCount(1)

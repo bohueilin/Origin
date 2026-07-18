@@ -144,10 +144,10 @@ export function ReferenceCheckPage() {
     <div className="rc-grid">
       {/* Scenario switch */}
       <div className="rc-scenarios">
-        <button type="button" className={`rc-scn${scenario === 'support' ? ' is-on' : ''}`} onClick={() => switchScenario('support')}>
+        <button type="button" aria-pressed={scenario === 'support'} className={`rc-scn${scenario === 'support' ? ' is-on' : ''}`} onClick={() => switchScenario('support')}>
           <b>Customer-support agent</b><span>Refunds · CRM · email · PII · bank changes</span>
         </button>
-        <button type="button" className={`rc-scn${scenario === 'iam' ? ' is-on' : ''}`} onClick={() => switchScenario('iam')}>
+        <button type="button" aria-pressed={scenario === 'iam'} className={`rc-scn${scenario === 'iam' ? ' is-on' : ''}`} onClick={() => switchScenario('iam')}>
           <b>IAM least-privilege</b><span>Access decisions across roles + sensitivity</span>
         </button>
       </div>
@@ -172,7 +172,7 @@ export function ReferenceCheckPage() {
         </p>
         <div className="rc-presets">
           {Object.entries(presets).map(([key, p]) => (
-            <button key={key} type="button" className={`rc-preset${presetKey === key ? ' is-on' : ''}`} onClick={() => applyPreset(key)}>
+            <button key={key} type="button" aria-pressed={presetKey === key} className={`rc-preset${presetKey === key ? ' is-on' : ''}`} onClick={() => applyPreset(key)}>
               <b>{p.label}</b><span>{p.blurb}</span>
             </button>
           ))}
@@ -205,14 +205,14 @@ export function ReferenceCheckPage() {
         <div className="rc-actions">
           <button className="btn btn--primary" onClick={run} disabled={busy}>{busy ? 'Running the check…' : 'Run the reference check'}</button>
         </div>
-        {error ? <p className="rc-error">Error: {error}</p> : null}
+        {error ? <p className="rc-error" role="alert">Error: {error}</p> : null}
       </div>
 
       {/* 3 · verdict */}
       {result ? (
         <div className="rc-card">
           <p className="rc-step">3 · Your reference check</p>
-          <div className={`rc-verdict ${verdictClass}`}>
+          <div className={`rc-verdict ${verdictClass}`} role="status" aria-live="polite">
             <b>{result.level}</b>
             <span>Verified Readiness Level</span>
             <span className="rc-verdict__meta">passed {Math.round(result.passRate * 100)}% · unbounded baseline {Math.round(result.coldPassRate * 100)}% · lift +{Math.round(result.lift * 100)}% · config {short(result.configDigest)}</span>
@@ -250,7 +250,7 @@ export function ReferenceCheckPage() {
             <button className="btn btn--ghost btn--sm" onClick={simulateDrift}>Change a tool → watch it void</button>
           </div>
           {result.driftCode != null ? (
-            <p className={`rc-hint ${result.driftCode === 0 ? '' : 'rc-hint--warn'}`}>
+            <p className={`rc-hint ${result.driftCode === 0 ? '' : 'rc-hint--warn'}`} role="alert">
               {result.driftCode === 4
                 ? <><b>VOID (code 4) — config drift.</b> Adding a tool (<code>payments.transfer</code>) changed the config hash, so the attestation no longer applies. <b>Static approvals go stale; Origin’s evidence is bound to the exact system tested.</b></>
                 : <>Re-checked against the drifted config → code {result.driftCode}.</>}

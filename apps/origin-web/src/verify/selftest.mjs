@@ -19,6 +19,20 @@ function check(name, cond, detail = '') {
   console.log(`${status}  ${name}${detail ? ` — ${detail}` : ''}`)
 }
 
+// ── 0 · Bundled reference check: deterministic config-bound credential bundle
+const reference = await makeExample('reference')
+check('reference-check example detects as config-bound credential', detectArtifact(reference) === 'credential')
+check('reference-check example is explicitly synthetic sandbox evidence',
+  reference.artifact_kind === 'synthetic-sandbox-reference-check-credential'
+  && reference.note.includes('not customer evidence'))
+const referenceValid = await verifyArtifact(reference)
+check('reference-check example verifies code 0 VALID', referenceValid.ok && referenceValid.code === 0 && referenceValid.verdict === 'VALID')
+const referenceTampered = tamperArtifact('credential', reference)
+const referenceVoid = await verifyArtifact(referenceTampered.value)
+check('reference-check meaningful credential mutation → code 3 VOID', !referenceVoid.ok && referenceVoid.code === 3 && referenceVoid.verdict === 'VOID', referenceTampered.note)
+const referenceReset = await verifyArtifact(reference)
+check('reference-check pristine value remains VALID after tampering copy', referenceReset.ok && referenceReset.code === 0)
+
 // ── 1 · Sigil: sign → detect → verify 0 → tamper 1 → corrupt 2 → wrong signer 3
 const sigil = await makeExample('sigil')
 check('sigil detect', detectArtifact(sigil) === 'sigil')

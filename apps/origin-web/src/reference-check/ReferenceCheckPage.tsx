@@ -142,6 +142,9 @@ export function ReferenceCheckPage() {
 
   return (
     <div className="rc-grid">
+      <p className="rc-hint">
+        This is the implemented synthetic pre-access check. <a href="/reference-check-vs-runtime">See how it differs from proposed runtime enforcement →</a>
+      </p>
       {/* Scenario switch */}
       <div className="rc-scenarios">
         <button type="button" aria-pressed={scenario === 'support'} className={`rc-scn${scenario === 'support' ? ' is-on' : ''}`} onClick={() => switchScenario('support')}>

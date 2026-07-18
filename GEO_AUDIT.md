@@ -21,6 +21,14 @@ Origin's public source already provides a strong crawler-readable entity definit
 | 2 | The complete proposal → gate → controlled execution/block → evidence → verification → tamper-failure story spans `/`, `/proof`, and `/verify`; no single tested runbook names exact clicks and fallback evidence. | Homepage demo, `/reference-check`, `/verify`, `scripts/verify-tr-a002.mjs` | Add the canonical sequence and offline fallback to `DEMO_RUNBOOK.md`. **Documented this iteration; UI consolidation deferred.** |
 | 3 | Canonical descriptions differ in emphasis: homepage/reference-check describe pre-access testing while legal and `llms.txt` describe runtime proxy enforcement. Both are evidenced, but retrieval may present them as one undifferentiated product mode. | `index.html`, `reference-check.html`, `public/llms.txt`, legal pages | Add a crawlable “reference check vs runtime enforcement” explanation on an unprotected canonical page, with current/proposed status labels. |
 
+## Iterations 2–3 implemented changes
+
+`/reference-check-vs-runtime` (`apps/origin-web/reference-check-vs-runtime.html`) is now the crawlable, source-backed mode comparison. It labels the synthetic pre-access reference check “Implemented today,” labels runtime controlled-proxy enforcement “Proposed architecture,” defines trust boundaries, verdict semantics, evidence provenance, limitations, and product-category distinctions, and links to `/reference-check`, `/verify`, `/proof`, and `/trust`. `apps/origin-web/tests/e2e/smoke.spec.ts` asserts its static content, single H1, labels, and resolving primary links.
+
+Iteration 3 de-orphans the explainer from the product journey with a visible link in the modifiable React surface at `src/reference-check/ReferenceCheckPage.tsx`. The page also carries claim-minimal `TechArticle` JSON-LD whose headline, description, and URL match visible content and the canonical URL. `apps/origin-web/tests/e2e/smoke.spec.ts` parses the JSON-LD, enforces semantic invariants and unsupported-claim omissions, and checks that the source link is visible and resolves. The page is now included in the serious/critical WCAG A/AA e2e scan.
+
+All existing public HTML entries and `public/sitemap.xml` remain byte-preserved. After human authorization, add a visible `/reference-check-vs-runtime` link to one primary footer/navigation surface and add its canonical URL to the sitemap; until then the route is discoverable from `/reference-check` but absent from protected global navigation and sitemap coverage.
+
 ## Required gap summary
 
 - Product clarity: distinguish the implemented synthetic pre-access reference check from the broader runtime-enforcement architecture in one canonical explanation.
@@ -39,7 +47,7 @@ Repository guidance requires deploy-critical Origin Web HTML, metadata, `robots.
 ## Next three slices
 
 1. Make `/verify` accept a bundled deterministic demo example and test valid → tampered/VOID behavior end to end.
-2. Add a crawlable technical explainer mapping reference checks, runtime gates, trust boundaries, and evidence provenance to current implementation status.
+2. Add a crawlable technical explainer mapping reference checks, runtime gates, trust boundaries, and evidence provenance to current implementation status. **Implemented in iteration 2; protected navigation/sitemap inclusion deferred.**
 3. With explicit authorization for protected files, align homepage structured data, visible copy, sitemap coverage, and crawler policy to that explainer.
 
 ## 30-day content roadmap

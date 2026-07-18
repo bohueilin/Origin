@@ -16,7 +16,7 @@ import { generateSigningKey, signSigil } from '@origin/verifier-core/sigil'
 import { mintCredential } from '@origin/verifier-core/crucible'
 import { batchReceipts } from '@origin/verifier-core/merkleBatch'
 
-export const exampleKinds = ['sigil', 'credential', 'receipt', 'trace', 'inclusion', 'factory']
+export const exampleKinds = ['reference', 'sigil', 'credential', 'receipt', 'trace', 'inclusion', 'factory']
 
 const DEMO_ENV_DIGEST = sha256('synthetic-demo-env-bundle')
 const DEMO_VERSIONS = { verifier_version: 'demo-verifier-1.0.0', reward_model_version: 'demo-reward-1.0.0' }
@@ -44,6 +44,27 @@ function demoTrace() {
 /** Mint one synthetic example of the given kind. Async because the Sigil is signed live. */
 export async function makeExample(kind) {
   switch (kind) {
+    case 'reference': {
+      const liveConfig = {
+        model: 'support-agent-v1 (SYNTHETIC sandbox)',
+        tools: ['ticket.read', 'ticket.reply', 'refund.escalate'],
+        context: 'synthetic support-policy@1',
+        harness: 'deterministic least-privilege reference-check@1',
+        note: 'SYNTHETIC SANDBOX configuration — not customer evidence',
+      }
+      const envBundleDigest = sha256('synthetic-support-reference-check-bundle-v1')
+      const versions = { verifier_version: 'support-reference-check-demo-1', reward_model_version: 'support-oracle-demo-1' }
+      const credential = mintCredential({
+        agentConfig: liveConfig, envBundleDigest, versions, rslLevel: 'L2', nTasks: 6,
+        coldPassRate: 0.5, harnessedPassRate: 1,
+        receiptDigests: [sha256('synthetic-support-reference-receipt-001')], issuedAt: '2026-07-18',
+      })
+      return {
+        artifact_kind: 'synthetic-sandbox-reference-check-credential',
+        note: 'SYNTHETIC SANDBOX example — illustrative only; not customer evidence or external validation',
+        credential, liveConfig, envBundleDigest, versions,
+      }
+    }
     case 'sigil': {
       const key = await generateSigningKey()
       return signSigil(

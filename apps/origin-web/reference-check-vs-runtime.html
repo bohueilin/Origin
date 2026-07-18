@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reference check vs runtime enforcement | Origin</title>
+    <meta name="description" content="A source-backed explanation of Origin's implemented synthetic pre-access reference check and proposed runtime enforcement architecture, trust boundaries, evidence, verdicts, and limitations." />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/reference-check-vs-runtime" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Reference check vs runtime enforcement",
+        "description": "A source-backed explanation of Origin's implemented synthetic pre-access reference check and proposed runtime enforcement architecture, trust boundaries, evidence, verdicts, and limitations.",
+        "url": "https://origin-physical-ai.pages.dev/reference-check-vs-runtime"
+      }
+    </script>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/home.css?v=23" />
+    <style>
+      .mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:24px; }
+      .mode-card { border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--surface,#fff); }
+      .mode-card h2 { margin:8px 0 10px; }
+      .status { display:inline-block; padding:4px 9px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#1d6243; background:#e6f4ec; }
+      .status--future { color:#765417; background:#fbf2d9; }
+      .evidence-list li { margin:8px 0; }
+      main a { text-decoration:underline; text-underline-offset:2px; }
+      @media (max-width:700px) { .mode-grid { grid-template-columns:1fr; } }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header"><div class="shell site-header__inner"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" /><span class="brand__name">Origin</span></a></div></header>
+    <main id="main">
+      <section class="section"><div class="shell">
+        <p class="kicker">Technical explainer · source-backed</p>
+        <h1>Reference check vs runtime enforcement</h1>
+        <p class="section__lede leadin"><b>Origin is the evidence layer for AI agents:</b> prototype/private-pilot infrastructure for agent-platform, security, trust, and infrastructure teams. It tests proposed actions with deterministic verifiers, separates capability from permission, and produces evidence that can be independently rechecked.</p>
+        <p class="mono-note">The model proposes. The environment verifies. The gate decides. The trace proves. Capability is not permission.</p>
+        <div class="mode-grid">
+          <article class="mode-card" id="reference-check"><span class="status">Implemented today</span><h2>Synthetic pre-access reference check</h2><p>The checked-in browser flow runs synthetic support and IAM task batteries against deterministic policy logic before production access. It mints configuration-bound evidence; changing a bound tool or configuration makes verification fail.</p><p><a href="/reference-check">Run the synthetic reference check →</a></p></article>
+          <article class="mode-card" id="runtime-enforcement"><span class="status status--future">Proposed architecture</span><h2>Runtime enforcement through a controlled proxy</h2><p>The broader design places a deterministic gate between an agent proposal and a consequential side effect. The gate would evaluate permission, scope, policy, budget, and approval requirements; only an allowed action would reach a controlled executor. This page does not claim that architecture is generally available or deployed for customers.</p><p><a href="/trust">Inspect the trust model →</a></p></article>
+        </div>
+      </div></section>
+      <section class="section section--tint" aria-labelledby="boundaries"><div class="shell">
+        <h2 id="boundaries">Trust boundaries and verdicts</h2>
+        <ul class="evidence-list">
+          <li><b>Proposal is not permission.</b> Model output is an input to deterministic evaluation, not its own authorization.</li>
+          <li><b>ALLOW</b> means the evaluated action met the bound checks; <b>PAUSE</b> requires a named human decision; <b>DENY/BLOCK</b> prevents the controlled path from executing.</li>
+          <li><b>Verifier failure fails closed.</b> On the browser verifier, code 0 is valid; codes 1–4 identify payload, signature, signer, tamper, or configuration-drift failures according to artifact type.</li>
+          <li><b>Evidence integrity is not issuer identity or safety.</b> A valid digest, signature, or chain establishes consistency under the relevant verifier and bindings; it does not establish that an action is universally safe.</li>
+        </ul>
+      </div></section>
+      <section class="section" aria-labelledby="provenance"><div class="shell">
+        <h2 id="provenance">Evidence provenance and limitations</h2>
+        <p>Origin keeps four checked-in categories distinct: machine-emitted sandbox evidence, authored examples, synthetic evaluations, and authorized fixtures. None is presented here as external customer evidence, production adoption, certification, or reviewer acceptance.</p>
+        <ul class="evidence-list">
+          <li><a href="/proof#tr-a002">TR-A002</a> is a machine-emitted sandbox trace whose SHA-256 chain can be recomputed.</li>
+          <li><a href="/verify">/verify</a> recomputes supported artifact digests, signatures, bindings, chains, and inclusion proofs offline in the browser.</li>
+          <li><a href="/proof">The evidence ladder</a> labels authored and machine-emitted artifacts separately.</li>
+          <li>The implemented reference check uses synthetic task distributions. The runtime gate and controlled-proxy flow above remain proposed architecture, not evidence of a customer deployment.</li>
+        </ul>
+        <p><b>Product distinction:</b> identity establishes who or what an actor is; observability records and debugs behavior; generic guardrails filter inputs or outputs; policy engines evaluate rules; compliance tools organize controls and evidence. Origin's intended role is to bind deterministic verification and permission decisions to a controlled action path and a re-verifiable trace.</p>
+      </div></section>
+    </main>
+    <footer class="site-footer"><div class="shell site-footer__inner"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><span class="brand__name">Origin</span></a><p>Prototype/private-pilot infrastructure; not generally available production SaaS.</p></div></div></footer>
+  </body>
+</html>

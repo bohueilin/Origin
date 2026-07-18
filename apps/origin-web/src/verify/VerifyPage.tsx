@@ -20,6 +20,7 @@ import { makeExample } from './examples.mjs'
 import type { ExampleKind } from './examples.mjs'
 
 const EXAMPLES: Array<{ kind: ExampleKind; label: string }> = [
+  { kind: 'reference', label: 'Synthetic sandbox reference check' },
   { kind: 'sigil', label: 'Origin Attestation' },
   { kind: 'credential', label: 'Credential' },
   { kind: 'receipt', label: 'ScoreReceipt' },
@@ -27,6 +28,8 @@ const EXAMPLES: Array<{ kind: ExampleKind; label: string }> = [
   { kind: 'inclusion', label: 'Batch inclusion proof' },
   { kind: 'factory', label: 'Factory plan reference check' },
 ]
+
+const liveKeyExamples = new Set<ExampleKind>(['sigil', 'factory'])
 
 function Pill({ tone }: { tone: ReportTone }) {
   const txt = tone === 'ok' ? 'pass' : tone === 'bad' ? 'void' : 'note'
@@ -120,6 +123,7 @@ export function VerifyPage() {
   const [notes, setNotes] = useState<string[]>([])
   const [tampered, setTampered] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [selectedExample, setSelectedExample] = useState<ExampleKind | null>(null)
   const pristineRef = useRef<string | null>(null)
 
   const reset = (nextText: string, nextNotes: string[]) => {
@@ -138,15 +142,12 @@ export function VerifyPage() {
       const detected = detectArtifact(artifact)
       const pristine = JSON.stringify(artifact, null, 2)
       pristineRef.current = pristine
-      if (tampered) {
-        const t = tamperArtifact(detected, artifact)
-        reset(JSON.stringify(t.value, null, 2), [
-          `Loaded a synthetic ${KIND_LABELS[detected]} minted just now by the SDK.`,
-          `Tampered: ${t.note}.`,
-        ])
-      } else {
-        reset(pristine, [`Loaded a synthetic ${KIND_LABELS[detected]} minted just now by the SDK — labeled synthetic in its fields.`])
-      }
+      setSelectedExample(kind)
+      setTampered(false)
+      const provenance = liveKeyExamples.has(kind)
+        ? 'signed just now with an in-session key from synthetic checked-in inputs'
+        : 'generated from synthetic checked-in inputs'
+      reset(pristine, [`Loaded a synthetic sandbox ${KIND_LABELS[detected]}, ${provenance} — labeled synthetic in its fields.`])
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
@@ -198,7 +199,14 @@ export function VerifyPage() {
     pristineRef.current = null
     setTampered(false)
     setThumbprint('')
+    setSelectedExample(null)
     reset('', [])
+  }
+
+  const resetExample = () => {
+    if (pristineRef.current == null) return
+    setTampered(false)
+    reset(pristineRef.current, ['Reset the selected example to its original untampered evidence. Verify again for VALID.'])
   }
 
   const verdictTone = report ? (report.ok ? 'ok' : report.verdict === 'UNRECOGNIZED' ? 'info' : 'bad') : null
@@ -225,7 +233,15 @@ export function VerifyPage() {
             placeholder='{ "sigil_schema_version": "1.0.0", … }  — an Origin Attestation, Crucible credential, ScoreReceipt, episode trace, or Merkle inclusion proof'
             aria-describedby="vfy-hint"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              const nextText = e.target.value
+              setText(nextText)
+              if (selectedExample != null && nextText !== pristineRef.current) {
+                setSelectedExample(null)
+                setTampered(false)
+                pristineRef.current = null
+              }
+            }}
           />
         </div>
         <p className="vfy-note" id="vfy-hint">
@@ -253,6 +269,9 @@ export function VerifyPage() {
           <button className="btn btn--ghost btn--sm" onClick={clearAll} disabled={busy || (text === '' && !report && !error)}>
             Clear
           </button>
+          <button className="btn btn--ghost btn--sm" onClick={resetExample} disabled={busy || selectedExample == null}>
+            Reset selected example
+          </button>
           <label className="vfy-toggle">
             <input type="checkbox" checked={tampered} onChange={(e) => toggleTamper(e.target.checked)} disabled={busy} />
             Tamper one field (see it void)
@@ -268,6 +287,7 @@ export function VerifyPage() {
               onClick={() => void loadExample(ex.kind)}
               disabled={busy}
               aria-describedby="vfy-examples-label"
+              aria-pressed={selectedExample === ex.kind}
             >
               {ex.label}
             </button>

@@ -80,6 +80,10 @@ test('interactive 90-second demo steps and reaches the blocked + sealed states',
 
 test('reference check communicates selection, verdict, and drift invalidation accessibly', async ({ page }) => {
   await page.goto('/reference-check')
+  const explainerLink = page.getByRole('link', { name: /differs from proposed runtime enforcement/i })
+  await expect(explainerLink).toBeVisible()
+  await expect(explainerLink).toHaveAttribute('href', '/reference-check-vs-runtime')
+  expect((await page.request.get('/reference-check-vs-runtime')).status()).toBe(200)
   const support = page.getByRole('button', { name: /Customer-support agent/ })
   const iam = page.getByRole('button', { name: /IAM least-privilege/ })
   await expect(support).toHaveAttribute('aria-pressed', 'true')
@@ -92,6 +96,59 @@ test('reference check communicates selection, verdict, and drift invalidation ac
 
   await page.getByRole('button', { name: /Change a tool/ }).click()
   await expect(page.getByRole('alert')).toContainText('VOID (code 4) — config drift')
+})
+
+test('/verify bundled reference check completes VALID → tampered → VOID → reset', async ({ page }) => {
+  await page.goto('/verify')
+  const example = page.getByRole('button', { name: 'Synthetic sandbox reference check' })
+  await expect(example).toHaveAttribute('aria-pressed', 'false')
+  await example.click()
+  await expect(example).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByLabel('Artifact JSON')).toContainText('SYNTHETIC SANDBOX')
+  await page.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'VALID' })).toContainText('code 0')
+  await page.getByLabel('Tamper one field (see it void)').check()
+  await page.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'VOID' })).toContainText('code 3')
+  await page.getByRole('button', { name: 'Reset selected example' }).click()
+  await expect(page.getByLabel('Tamper one field (see it void)')).not.toBeChecked()
+  await page.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'VALID' })).toContainText('code 0')
+})
+
+test('/verify clears selected-example state after a manual edit', async ({ page }) => {
+  await page.goto('/verify')
+  const example = page.getByRole('button', { name: 'Synthetic sandbox reference check' })
+  await example.click()
+  await expect(example).toHaveAttribute('aria-pressed', 'true')
+  await page.getByLabel('Artifact JSON').pressSequentially(' ')
+  await expect(example).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.getByRole('button', { name: 'Reset selected example' })).toBeDisabled()
+})
+
+test('reference-check versus runtime explainer is crawlable and source-linked', async ({ page }) => {
+  const response = await page.request.get('/reference-check-vs-runtime')
+  expect(response.status()).toBe(200)
+  const html = await response.text()
+  expect(html).toContain('Implemented today')
+  expect(html).toContain('Proposed architecture')
+  const jsonLdSource = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1]
+  expect(jsonLdSource).toBeTruthy()
+  const jsonLd = JSON.parse(jsonLdSource!) as Record<string, unknown>
+  expect(jsonLd['@type']).toBe('TechArticle')
+  expect(jsonLd.headline).toBe('Reference check vs runtime enforcement')
+  expect(jsonLd.url).toBe('https://origin-physical-ai.pages.dev/reference-check-vs-runtime')
+  expect(jsonLd.description).toBe("A source-backed explanation of Origin's implemented synthetic pre-access reference check and proposed runtime enforcement architecture, trust boundaries, evidence, verdicts, and limitations.")
+  expect(Object.keys(jsonLd).sort()).toEqual(['@context', '@type', 'description', 'headline', 'url'])
+  await page.goto('/reference-check-vs-runtime')
+  await expect(page).toHaveTitle(/Reference check vs runtime enforcement/)
+  await expect(page.locator('h1')).toHaveCount(1)
+  await expect(page.locator('h1')).toHaveText('Reference check vs runtime enforcement')
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', String(jsonLd.url))
+  for (const href of ['/reference-check', '/verify', '/proof', '/trust']) {
+    await expect(page.locator(`a[href="${href}"]`).first()).toBeVisible()
+    expect((await page.request.get(href)).status(), href).toBe(200)
+  }
 })
 
 test('auth page is invite-only private pilot with legal links', async ({ page }) => {

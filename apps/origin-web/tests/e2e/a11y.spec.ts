@@ -8,6 +8,7 @@ const PAGES: Array<[string, string]> = [
   ['console', '/app.html'],
   ['auth', '/auth.html'],
   ['proof', '/proof.html'],
+  ['reference-check-vs-runtime', '/reference-check-vs-runtime'],
 ]
 
 for (const [name, path] of PAGES) {

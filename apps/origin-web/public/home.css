@@ -1160,3 +1160,14 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .blockline { margin: 22px 0; border-left: 4px solid var(--danger); background: #fbecea; border-radius: 0 12px 12px 0; padding: 15px 20px; }
 .blockline__t { margin: 0; font-family: var(--font-display); font-size: clamp(16px,2.3vw,20px); line-height: 1.4; color: var(--ink); letter-spacing: -0.01em; }
 .blockline__t b { color: var(--danger); }
+
+/* Accessible links inside the dark TR-A002 verification strip. */
+.tr2-verify__lbl a {
+  color: #9db2ff !important;
+  text-decoration-color: currentColor;
+}
+
+.tr2-verify__lbl a:hover,
+.tr2-verify__lbl a:focus-visible {
+  color: #c6d0ff !important;
+}

@@ -2,6 +2,10 @@
 
 Scope: checked-in public Origin Web source, inspected 2026-07-17. The repository is the source of truth; no live-site or external-index claims were made.
 
+## Executive summary
+
+Origin's public source already provides a strong crawler-readable entity definition, honest prototype/private-pilot boundaries, and independently re-verifiable sandbox evidence. The highest-priority retrieval risk is that the implemented synthetic reference check and the broader runtime-enforcement architecture can be flattened into one maturity claim when content is retrieved out of context. The next 30 days should first make the existing verify journey deterministic and self-contained, then publish a source-backed mode comparison, and only then align protected metadata and crawler policy after explicit human authorization. No source supports claims of production deployment, customer adoption, certification, reviewer acceptance, indexing, ranking, or citation performance.
+
 ## Baseline
 
 - Primary homepage: `/`, statically authored in `apps/origin-web/index.html`. Its title, description, one H1, buyer statement, prototype/private-pilot qualifier, canonical thesis, and JSON-LD are crawler-readable before JavaScript.
@@ -37,6 +41,15 @@ Repository guidance requires deploy-critical Origin Web HTML, metadata, `robots.
 1. Make `/verify` accept a bundled deterministic demo example and test valid → tampered/VOID behavior end to end.
 2. Add a crawlable technical explainer mapping reference checks, runtime gates, trust boundaries, and evidence provenance to current implementation status.
 3. With explicit authorization for protected files, align homepage structured data, visible copy, sitemap coverage, and crawler policy to that explainer.
+
+## 30-day content roadmap
+
+| Sequence | Window | Priority | Deliverable | Evidence / completion check | Human decision dependency |
+|---|---|---|---|---|---|
+| 1 | Days 1–7 | P0 | Bundled deterministic `/verify` example covering untampered valid → tampered `VOID` | Focused browser test plus existing verifier tests; claims remain limited to integrity and sandbox evidence | None; keep the existing issuer-identity limitation explicit |
+| 2 | Days 8–14 | P0 | Crawlable technical explainer comparing the implemented reference check with the runtime-gate architecture | Links to `/reference-check`, `/trust`, `/proof`, verifier code/tests, and current/proposed status labels | Human review of product-mode terminology before publication |
+| 3 | Days 15–21 | P1 | Citation-ready claim-to-evidence index for architecture, trust boundaries, verdicts, failure behavior, evidence provenance, and limitations | Every factual claim maps to a checked-in route, file, test, or artifact; no customer or certification claim | Approval for any external/design-partner evidence; otherwise publish repository evidence only |
+| 4 | Days 22–30 | P1 | Protected-surface alignment proposal for homepage copy/JSON-LD, sitemap coverage, and differentiated crawler policy | Byte-level patch proposal and local syntax/semantic test plan; protected files remain unchanged until authorized | Explicit owner decisions on protected HTML/metadata and search, retrieval, user-fetch, and training crawler policy |
 
 ## Residual risk
 

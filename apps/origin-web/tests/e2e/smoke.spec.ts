@@ -211,6 +211,20 @@ test('the evidence console (/app) is a simulated, scenario-switchable preview', 
   expect(html).not.toMatch(/work order|no-go zone|AMR-|ROS 2/i)
 })
 
+test('reference-check versus runtime explainer is discoverable from home and sitemap', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(
+    page.getByRole('link', { name: 'Reference check vs runtime' }),
+  ).toHaveAttribute('href', '/reference-check-vs-runtime')
+
+  const sitemap = await page.request.get('/sitemap.xml')
+  expect(sitemap.status()).toBe(200)
+  expect(await sitemap.text()).toContain(
+    'https://origin-physical-ai.pages.dev/reference-check-vs-runtime',
+  )
+})
+
 test('key routes are served (brief, trust, llms, legal)', async ({ page }) => {
   for (const path of ['/brief.html', '/trust.html', '/llms.txt', '/legal/privacy-policy.html', '/legal/terms-of-service.html']) {
     const res = await page.request.get(path)

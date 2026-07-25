@@ -290,6 +290,7 @@ export function ReflectAlign({
   onApprove,
   onBack,
   onEdit,
+  backLabel = '← Back to capture',
 }: {
   draft: WorkflowUnderstanding
   onApprove: (frozen: FrozenWorkflow) => void
@@ -297,6 +298,8 @@ export function ReflectAlign({
   /** Live-syncs every edit up to the parent so navigating away + back never
    *  resets the user's floor (the parent keeps the latest as the working draft). */
   onEdit?: (snapshot: FloorPlanSnapshot) => void
+  /** Copy for the back control — pages without a capture step pass their own. */
+  backLabel?: string
 }) {
   const [domain, setDomain] = useState<PhysicalDomain>(draft.domain)
   const [embodiment, setEmbodiment] = useState<RobotEmbodiment>(draft.embodiment)
@@ -476,7 +479,7 @@ export function ReflectAlign({
     <section className="reflect">
       <div className="flow-shell wide">
         <button className="btn ghost back" onClick={onBack}>
-          ← Back to capture
+          {backLabel}
         </button>
         <div className="flow-kicker">Review &amp; confirm</div>
         <h1>Does this match the real workflow?</h1>

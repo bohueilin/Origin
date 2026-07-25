@@ -29,6 +29,7 @@ const SERVED = [
   'index.html', 'app.html', 'auth.html', 'brief.html', 'capture.html', 'clip.html',
   'foundry.html', 'passport.html', 'proof.html', 'security.html', 'soc.html',
   'trust.html', 'verify.html', 'reference-check.html', 'simulation.html', 'operations.html', 'labs.html',
+  'proving-ground.html',
 ]
 
 // 1. BANNED — regex + human label. Matched case-insensitively against visible text.
@@ -83,7 +84,7 @@ const metaAndTitleText = (html) => {
 // Targeted to the demo surfaces where overclaims recur; JSX/strings scanned as-is.
 const REACT_COPY_GLOBS = [
   'src/foundry/ui/FoundryApp.tsx', 'src/foundry/soc/SocConsole.tsx', 'src/foundry/clip/ClipView.tsx',
-  'src/factorydad/components/RsiPrimer.tsx',
+  'src/factorydad/components/RsiPrimer.tsx', 'src/proving-ground/ProvingGroundPage.tsx',
 ]
 
 let violations = 0

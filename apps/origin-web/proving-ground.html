@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Analytics with Consent Mode v2 — analytics_storage denied by default. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-75QBVCL212"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+      gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
+    </script>
+
+    <title>Robot proving ground — draw a floor, deploy a mixed fleet — Origin</title>
+    <meta
+      name="description"
+      content="Paint a warehouse floor, deploy a mixed robot fleet — humanoid, AMR, quadruped, arm, drone — and watch it work the same floor in 2D and 3D. Origin's deterministic oracle scores one episode per robot type; the fleet earns a Verified Readiness Level (L0–L4) sealed as a signed credential you can re-verify offline. Placements are descriptive; the oracle alone decides. Reproducible under this verifier."
+    />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/proving-ground" />
+    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Robot proving ground — draw a floor, deploy a mixed fleet — Origin" />
+    <meta property="og:description" content="Paint a floor, deploy humanoids / AMRs / quadrupeds, watch it in 2D + 3D, and earn a Verified Readiness Level from a deterministic oracle — sealed as a signed, offline-verifiable credential. Reproducible under this verifier." />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/home.css?v=23" />
+
+    <style>
+      .pg-wrap { display: grid; gap: 26px; margin-top: 8px; }
+      .pg-h { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); margin: 0 0 10px; }
+      .pg-stage { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--surface, #fff); }
+      .pg-stage__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .pg-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+      .pg-toggle button { font: inherit; font-size: 12.5px; font-weight: 600; padding: 5px 16px; border: none; background: none; cursor: pointer; color: var(--ink-soft); }
+      .pg-toggle button.is-on { background: var(--signal, #2f6df6); color: #fff; }
+      .pg-note { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; margin: 10px 0 0; }
+      .pg-note b { color: var(--ink); }
+      .pg-results { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--surface, #fff); display: grid; gap: 16px; }
+      .pg-episodes { display: grid; gap: 6px; }
+      .pg-episode { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 10px; font-size: 13px; flex-wrap: wrap; }
+      .pg-episode__dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+      .pg-episode__name { color: var(--ink-soft); }
+      .pg-episode__verdict { font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; font-size: 11.5px; }
+      .pg-episode__meta { font-size: 12px; color: var(--ink-soft); margin-left: auto; }
+      .pg-ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+      .pg-rung { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: grid; gap: 2px; opacity: .45; }
+      .pg-rung.is-earned { opacity: 1; }
+      .pg-rung.is-on { border-width: 2px; }
+      .pg-rung b { font-size: 13px; }
+      .pg-rung span { font-size: 11px; color: var(--ink-soft); }
+      .pg-verdict { display: flex; gap: 14px; align-items: flex-start; border: 2px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+      .pg-verdict__badge { color: #fff; border-radius: 10px; padding: 10px 14px; display: grid; text-align: center; flex: none; }
+      .pg-verdict__badge b { font-size: 20px; }
+      .pg-verdict__badge span { font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; }
+      .pg-verdict__line { margin: 0 0 6px; font-size: 14px; line-height: 1.5; }
+      .pg-verdict__perm { margin: 0 0 6px; font-size: 12.5px; color: var(--ink-soft); }
+      .pg-verdict__scope { margin: 0; font-size: 11.5px; color: var(--ink-soft); font-family: ui-monospace, monospace; }
+      .pg-evidence { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+      .pg-thumb { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; }
+      @media (max-width: 720px) { .pg-ladder { grid-template-columns: repeat(2, 1fr); } .pg-episode__meta { margin-left: 20px; } }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/" aria-label="Origin — home">
+          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <span class="brand__name">Origin</span>
+        </a>
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="/labs">Labs</a>
+          <a href="/simulation">Simulation</a>
+          <a href="/reference-check">Reference check</a>
+          <a href="/verify">Verify</a>
+          <a href="/trust">Trust</a>
+          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
+        </nav>
+        <div class="site-header__cta">
+          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
+          <a class="btn btn--primary btn--sm" href="/#offer" data-analytics="nav_cta_click">Book an Agent Evidence Review</a>
+          <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="section" aria-labelledby="pg-title">
+        <div class="shell">
+          <p class="kicker">One evidence spine · the robot proving ground</p>
+          <h1 id="pg-title">Draw the floor. Deploy the fleet. Earn the level.</h1>
+          <p class="section__lede leadin">
+            Paint your own warehouse floor — walls, hazards, human-only zones — and deploy a
+            <b>mixed robot fleet</b>: humanoid, AMR, quadruped, arm, drone. Watch the same floor work
+            in <b>2D and 3D</b>. Origin's <b>deterministic oracle</b> then scores one episode per robot
+            type, and the fleet earns a <b>Verified Readiness Level (L0–L4)</b> sealed as a signed
+            credential — the same evidence spine a digital agent action earns.
+          </p>
+          <p class="mono-note" style="margin-top: 14px;">
+            Robot placements are <b>descriptive</b> — they drive the animation, never the verdict. The
+            oracle alone judges (never an LLM), a catastrophic episode hard-caps the level, and a level
+            means "reproducible under this verifier" — never "safe." Synthetic floors; runs in your browser.
+          </p>
+        </div>
+      </section>
+
+      <section class="section section--tint" aria-label="Robot proving ground console">
+        <div class="shell">
+          <div id="pg-root"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <div class="site-footer__brand">
+          <a class="brand" href="/" aria-label="Origin — home">
+            <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
+            <span class="brand__name">Origin</span>
+          </a>
+          <p>The evidence layer for AI agents.</p>
+        </div>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <div>
+            <p class="site-footer__h">Product</p>
+            <a href="/simulation">Watch a plan execute</a>
+            <a href="/reference-check">Run a reference check</a>
+            <a href="/verify">Verify a credential</a>
+            <a href="/trust">Trust center</a>
+          </div>
+          <div>
+            <p class="site-footer__h">Company</p>
+            <a href="/#offer">Agent Evidence Review</a>
+            <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
+            <a href="/llms.txt">For AI agents</a>
+            <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a>
+          </div>
+        </nav>
+      </div>
+      <div class="shell site-footer__legal">
+        <span>© <span data-year>2026</span> Origin</span>
+        <span class="site-footer__legal-links">
+          <a href="/legal/privacy-policy.html">Privacy</a>
+          <a href="/legal/terms-of-service.html">Terms</a>
+          <a href="/#offer">Contact</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/home/enhance.ts"></script>
+    <script type="module" src="/src/provingGroundMain.tsx"></script>
+  </body>
+</html>

@@ -56,6 +56,7 @@
 - Run a reference check on your agent (configure a policy → Verified Readiness Level verdict → download a signed Origin Attestation → verify): https://origin-physical-ai.pages.dev/reference-check
 - Watch a verified plan execute — multi-robot warehouse simulation in 2D + 3D, oracle-gated (finish/escalate/refuse), the run drops a signed attestation: https://origin-physical-ai.pages.dev/simulation
 - Verified fleet-operations console — run a shift, track utilization/peak-parallel/collisions like a real ops dashboard, earn a signed readiness level fleet-readiness credential: https://origin-physical-ai.pages.dev/operations
+- Robot proving ground — paint a floor, deploy a mixed fleet (humanoid/AMR/quadruped/arm/drone), watch it in 2D+3D, one deterministic-oracle episode per robot type, earn a Verified Readiness Level (L0-L4) sealed as a signed demo credential: https://origin-physical-ai.pages.dev/proving-ground
 - Origin Labs — proof the same evidence contract generalizes past software agents (robot fleet + spatial reconstruction; the domain verifier changes, the contract does not): https://origin-physical-ai.pages.dev/labs
 - Run the verifiers live (attestation / Merkle / policy / IAM reference check): https://origin-physical-ai.pages.dev/security
 - Verify a credential yourself (offline, in-browser): https://origin-physical-ai.pages.dev/verify

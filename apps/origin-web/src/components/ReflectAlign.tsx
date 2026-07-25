@@ -151,6 +151,11 @@ function applyTool(
     )
   }
 
+  // Refuse a placement that would strip the LAST item or drop (the oracle
+  // anchors) — the same ≥1 floor the toggle and Clear paths enforce.
+  if (here?.layer === 'item' && totalIn(fleets, 'items') <= 1) return map
+  if (here?.layer === 'drop' && totalIn(fleets, 'drops') <= 1) return map
+
   // Place: clear the cell across all layers, then add the new element.
   fleets.forEach((f) => {
     f.robots = without(f.robots, x, y)

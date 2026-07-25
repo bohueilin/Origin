@@ -85,6 +85,7 @@ const metaAndTitleText = (html) => {
 const REACT_COPY_GLOBS = [
   'src/foundry/ui/FoundryApp.tsx', 'src/foundry/soc/SocConsole.tsx', 'src/foundry/clip/ClipView.tsx',
   'src/factorydad/components/RsiPrimer.tsx', 'src/proving-ground/ProvingGroundPage.tsx',
+  'src/license.ts', // its level names/permissions render on /proving-ground
 ]
 
 let violations = 0

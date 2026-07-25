@@ -33,11 +33,12 @@ export function ProvingGroundPage() {
   const embodiment = snapshot?.embodiment ?? draft.embodiment
   const domain = snapshot?.domain ?? draft.domain
 
-  const { episodes, readiness, digestInput } = useMemo(
+  const { episodes, readiness, unverifiedFalseAccepts, digestInput } = useMemo(
     () => fleetReadiness(siteMap, embodiment),
     [siteMap, embodiment],
   )
   const level = readiness.level
+  const uniformVerdict = episodes.every((e) => e.evaluation.verdict === episodes[0]?.evaluation.verdict)
 
   const approve = (f: FrozenWorkflow) => {
     setFrozen(f)
@@ -78,7 +79,7 @@ export function ProvingGroundPage() {
           </div>
         </div>
         {view === '2d'
-          ? <MultiRobotSim siteMap={siteMap} embodiment={embodiment} verdictLabel={episodes[0]?.evaluation.verdict} />
+          ? <MultiRobotSim siteMap={siteMap} embodiment={embodiment} verdictLabel={uniformVerdict ? episodes[0]?.evaluation.verdict : 'mixed per robot type — see episodes below'} />
           : <ProvingGround3D siteMap={siteMap} embodiment={embodiment} domain={domain} />}
         <p className="pg-note">
           The animation is <b>descriptive</b> — robot placements drive what you watch, never the verdict.
@@ -98,12 +99,24 @@ export function ProvingGroundPage() {
               <span className="pg-episode__name">{e.embodiment}</span>
               <span className="pg-episode__verdict">{e.evaluation.verdict}</span>
               <span className="pg-episode__meta">
-                {e.verdict.passed ? 'verdict matches policy' : 'verdict misses policy'} · reward {e.verdict.reward.toFixed(2)}
+                {e.evaluation.verdict === 'finish'
+                  ? `autonomy earned · reward ${e.verdict.reward.toFixed(2)}`
+                  : e.evaluation.verdict === 'escalate'
+                    ? 'no autonomy — must escalate to a human'
+                    : 'no autonomy — must refuse the order'}
                 {e.verdict.catastrophic ? ' · CATASTROPHIC' : ''}
               </span>
             </div>
           ))}
         </div>
+        {unverifiedFalseAccepts > 0 && (
+          <p className="pg-note">
+            <b>Counterfactual:</b> an <b>unverified</b> always-act policy false-accepts{' '}
+            {unverifiedFalseAccepts} episode(s) on this floor — claiming success it never safely
+            earned (executing a forbidden order, or fabricating a finish no route supports). The
+            verified fleet does neither; its catastrophic count stays 0. Capability is not permission.
+          </p>
+        )}
 
         <div className="pg-ladder" aria-label="Verified Readiness Level ladder">
           {LEVEL_ORDER.map((id) => {
@@ -147,6 +160,13 @@ export function ProvingGroundPage() {
                 <span className="pg-thumb">signed · {level.id} · key {sigil.thumb.slice(0, 10)}…</span>
               </>}
         </div>
+        {sigil && (
+          <p className="pg-note">
+            Signed with an <b>in-session key</b> (thumbprint above) for offline integrity — a{' '}
+            <b>demo credential</b>, not an Origin-issued attestation. Production credentials issue
+            under Origin's pinned issuer key.
+          </p>
+        )}
       </div>
     </div>
   )

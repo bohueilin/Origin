@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/assets/The_Origin_github_darktheme.png" alt="Origin — the reference check for AI agents" width="820" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/The_Origin_github_darktheme.png" />
+    <img src="docs/assets/origin-thinking.png" alt="Origin — the reference check for AI agents" width="820" />
+  </picture>
 </p>
 
 # Origin — the reference check for AI agents

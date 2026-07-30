@@ -803,8 +803,14 @@ a:hover { text-decoration: underline; }
 .mobilecta { display: none; }
 @media (max-width: 700px) {
   .mobilecta { display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 38; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: rgba(246,245,242,.94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
-  .mobilecta .btn { flex: 1; min-height: 44px; }
-  body { padding-bottom: 76px; }
+  /* .btn sets white-space: nowrap, which is right on desktop but clips inside this
+     fixed bar at 320-360px — and body{overflow-x:clip} means it clips rather than
+     scrolls, so the label is silently truncated. Allow wrapping here only. */
+  .mobilecta .btn { flex: 1; min-height: 44px; white-space: normal; line-height: 1.25; padding-inline: 10px; }
+  /* The bar is 10 + 44 (min-height) + 10 + env(safe-area-inset-bottom). On a
+     home-indicator iPhone that is ~98px, so a flat 76px left the last ~22px of
+     footer sitting UNDER the fixed bar. Reserve the inset too. */
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
   /* the long header CTA button is redundant once the sticky bar + burger show —
      hiding it keeps the header row from overflowing on phones (≤~430px). */
   .site-header__cta .btn--primary { display: none; }

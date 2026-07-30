@@ -1,0 +1,74 @@
+{
+  "verifier": "fleetVerify@1",
+  "bench": "fleetBench@1",
+  "scope": "Synthetic floors; baseline schedules produced by the real planner (src/multiAgent.ts) and only fully-deconflicted plans are corrupted. Measures the deterministic fleet verifier only. Reproducible from the seed.",
+  "seed": 20260731,
+  "trialsPerClass": 100,
+  "classes": {
+    "clean": {
+      "trials": 100,
+      "expected": "VALID",
+      "got": {
+        "VALID": 100
+      },
+      "catchRate": 1
+    },
+    "teleport": {
+      "trials": 100,
+      "expected": "VOID",
+      "got": {
+        "VOID": 100
+      },
+      "catchRate": 1
+    },
+    "wall_drive": {
+      "trials": 100,
+      "expected": "VOID",
+      "got": {
+        "VOID": 100
+      },
+      "catchRate": 1
+    },
+    "unsafe_drive": {
+      "trials": 100,
+      "expected": "VOID",
+      "got": {
+        "VOID": 100
+      },
+      "catchRate": 1
+    },
+    "vertex_inject": {
+      "trials": 100,
+      "expected": "VOID",
+      "got": {
+        "VOID": 100
+      },
+      "catchRate": 1
+    },
+    "swap_inject": {
+      "trials": 100,
+      "expected": "VOID",
+      "got": {
+        "VOID": 100
+      },
+      "catchRate": 1
+    },
+    "start_mismatch": {
+      "trials": 100,
+      "expected": "VOID",
+      "got": {
+        "VOID": 100
+      },
+      "catchRate": 1
+    }
+  },
+  "falseVoidRate": 0,
+  "escapeHatch": {
+    "plans": 5,
+    "verdicts": {
+      "VOID": 5
+    },
+    "note": "Observational: schedules the planner itself flagged (fullyDeconflicted:false), judged by the independent verifier. Reported as measured — no expected verdict."
+  },
+  "digest": "3a3e7878cfba25e438c03b8c6aea2c7806461811ca005cedc6deb3ec7778150a"
+}

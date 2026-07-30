@@ -11,6 +11,7 @@ import { parseFloor, quorumRun, speedRace, fileToDataUri } from '../foundryClien
 import { SpeedProofs } from '../soc/SocConsole'
 import type { ParseFloorResponse, QuorumRunResponse, SpeedRaceResponse, FoundrySource, QuorumMode } from '../types'
 import { gateParsedFloor, type ParseGateResult } from '../parseGate'
+import { analyzeFloorMargin } from '../../floorMargin'
 import type { GridPos } from '../../warehouse'
 import { evaluateDrawnSite, type DrawnSiteEval } from '../../siteEval'
 import type { ZoneScope } from '../../credentials/types'
@@ -92,39 +93,60 @@ function GateCard({ gate, evidence }: { gate: ParseGateResult; evidence?: ParseF
 
 /** The published gate-bench numbers (public/trust/floor-gate-bench.json) —
  *  fetched from the same origin, scoped copy, link to the raw artifact. */
+interface BenchJson {
+  trialsPerClass: number
+  classes: Record<string, { expected: string; catchRate: number }>
+  falseVoidRate: number
+  digest: string
+}
+
 function GateBenchStrip() {
-  const [bench, setBench] = useState<{
-    trialsPerClass: number
-    classes: Record<string, { expected: string; catchRate: number }>
-    falseVoidRate: number
-    digest: string
-  } | null>(null)
+  const [bench, setBench] = useState<BenchJson | null>(null)
+  const [fleet, setFleet] = useState<BenchJson | null>(null)
   useEffect(() => {
     let alive = true
-    void fetch('/trust/floor-gate-bench.json')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => {
-        if (alive && j?.classes) setBench(j as never)
-      })
-      .catch(() => undefined)
+    const load = (url: string, set: (v: BenchJson) => void): void => {
+      void fetch(url)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j: BenchJson | null) => {
+          if (alive && j?.classes) set(j)
+        })
+        .catch(() => undefined)
+    }
+    load('/trust/floor-gate-bench.json', setBench)
+    load('/trust/fleet-verify-bench.json', setFleet)
     return () => {
       alive = false
     }
   }, [])
   if (!bench) return null
-  const entries = Object.values(bench.classes)
-  const voidClasses = entries.filter((c) => c.expected === 'VOID')
-  const voidCatch = voidClasses.length ? voidClasses.reduce((s, c) => s + c.catchRate, 0) / voidClasses.length : 0
+  // floor, not round: 99.6% must never display as 100%
+  const pct = (b: BenchJson): number => {
+    const voidClasses = Object.values(b.classes).filter((c) => c.expected === 'VOID')
+    const rate = voidClasses.length ? voidClasses.reduce((s, c) => s + c.catchRate, 0) / voidClasses.length : 0
+    return Math.floor(rate * 1000) / 10
+  }
   return (
     <div className="fdy-benchstrip">
       <span>
-        {/* floor, not round: 99.6% must never display as 100% */}
         Gate discrimination, measured: {Object.keys(bench.classes).length} corruption classes × {bench.trialsPerClass} trials —{' '}
-        VOID-class catch {Math.floor(voidCatch * 1000) / 10}%, false-VOID rate {bench.falseVoidRate}. Synthetic floors, deterministic, reproducible from seed.
+        VOID-class catch {pct(bench)}%, false-VOID rate {bench.falseVoidRate}. Synthetic floors, deterministic, reproducible from seed.
       </span>
       <a href="/trust/floor-gate-bench.json" target="_blank" rel="noreferrer">
         raw report · {bench.digest.slice(0, 12)}…
       </a>
+      {fleet && (
+        <>
+          <span>
+            Fleet-schedule verifier, measured: {Object.keys(fleet.classes).length} violation classes × {fleet.trialsPerClass} trials on the
+            planner's schedules over synthetic floors (simulated, deterministic, reproducible from seed) — catch {pct(fleet)}%, false-VOID
+            rate {fleet.falseVoidRate}.
+          </span>
+          <a href="/trust/fleet-verify-bench.json" target="_blank" rel="noreferrer">
+            raw report · {fleet.digest.slice(0, 12)}…
+          </a>
+        </>
+      )}
     </div>
   )
 }
@@ -382,6 +404,7 @@ function QuorumTrace({ result, revealed }: { result: QuorumRunResponse; revealed
 export default function FoundryApp() {
   const [parse, setParse] = useState<ParseFloorResponse | null>(null)
   const [parsing, setParsing] = useState(false)
+  const [showChokepoints, setShowChokepoints] = useState(true)
   const [mode, setMode] = useState<QuorumMode>('verified')
   const [quorum, setQuorum] = useState<QuorumRunResponse | null>(null)
   const [running, setRunning] = useState(false)
@@ -445,6 +468,9 @@ export default function FoundryApp() {
     return pts
   }, [quorum, revealed])
   const cursor = trail.length ? trail[trail.length - 1] : parse?.siteMap?.start ?? null
+  // Margin analysis runs IN THIS BROWSER on the parsed floor — chokepoints are
+  // client-computed from open-source code, not server-asserted.
+  const margin = useMemo(() => (parse?.siteMap ? analyzeFloorMargin(parse.siteMap) : null), [parse])
   const lastStep = quorum && revealed > 0 ? quorum.steps[Math.min(revealed, quorum.steps.length) - 1] : null
   const vetoCell =
     lastStep && lastStep.verdict === 'veto' && lastStep.proposed.startsWith('move:')
@@ -522,7 +548,7 @@ export default function FoundryApp() {
 
         {parse?.siteMap && (
           <div className="fdy-parse">
-            <FloorGrid map={parse.siteMap} trail={trail} cursor={cursor} veto={vetoCell} />
+            <FloorGrid map={parse.siteMap} trail={trail} cursor={cursor} veto={vetoCell} critical={showChokepoints && margin ? margin.criticalCells : []} />
             <div className="fdy-parse__side">
               <div className="fdy-parse__row">
                 <SourceBadge source={parse.source} />
@@ -532,6 +558,31 @@ export default function FoundryApp() {
                 {parse.timing?.tokS && <span className="fdy-chip">{parse.timing.tokS} tok/s</span>}
               </div>
               {parse.gate && parse.gate.verdict !== 'VOID' && <GateCard gate={parse.gate} evidence={parse} />}
+              {margin && margin.verdict === 'finish' && (
+                <div className={`fdy-verdictbox fdy-verdictbox--${margin.singleFailureSafe ? 'finish' : 'escalate'}`}>
+                  <strong>
+                    {margin.singleFailureSafe
+                      ? `Single-failure analysis: no chokepoints in ${margin.sweptCells} swept cells`
+                      : `Single-failure analysis: ${margin.criticalCells.length} chokepoint${margin.criticalCells.length === 1 ? '' : 's'}`}
+                  </strong>
+                  <span>
+                    {margin.singleFailureSafe
+                      ? 'No single blocked free cell (dock/pick/drop excluded) flips this floor\'s finish verdict — exact within this model, budget-aware, computed in this browser.'
+                      : 'Blocking any marked free cell flips the verdict away from finish — exact within this model, budget-aware, computed in this browser.'}
+                  </span>
+                  <span>
+                    {margin.disconnectionMargin === null
+                      ? 'Disconnection margin: no set of free cells can sever the route (anchors adjoin) — budget effects can still flip it.'
+                      : `Disconnection margin: ${margin.disconnectionMargin} free cell${margin.disconnectionMargin === 1 ? '' : 's'} (exact min cut, budget-blind — an upper bound, not the margin itself).`}{' '}
+                    Model: static 4-connected grid with declared budgets — not a claim about any physical site.
+                  </span>
+                  {!margin.singleFailureSafe && (
+                    <button className="fdy-btn fdy-btn--ghost" onClick={() => setShowChokepoints((s) => !s)}>
+                      {showChokepoints ? 'Hide' : 'Show'} chokepoints on the grid
+                    </button>
+                  )}
+                </div>
+              )}
               {parse.oracle && (
                 <div className={`fdy-verdictbox fdy-verdictbox--${parse.oracle.verdict}`}>
                   <strong>Oracle reads this floor: {parse.oracle.verdict.toUpperCase()}</strong>

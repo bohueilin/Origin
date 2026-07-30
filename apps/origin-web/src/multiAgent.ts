@@ -203,8 +203,29 @@ export function planMultiAgent(input: MultiAgentInput): MultiAgentPlan {
   // collision-free, and the UI must say so rather than overclaim.
   let usedFallback = false
 
+  // Independent verification (server/fleetVerify) caught two real collision
+  // classes in plans this function certified fullyDeconflicted:
+  //   1. A robot planned EARLY drove through the start cell of a robot planned
+  //      LATER — which was still standing there. Unplanned robots' starts are
+  //      now statically blocked for earlier robots (conservative: the cell
+  //      stays off-limits even after the later robot departs; a route that
+  //      needs it falls back, which honestly clears the flag).
+  //   2. The parked-tail reservation ran only `horizon+4` ticks past a robot's
+  //      own timeline; a longer later timeline outran it and drove through the
+  //      parked robot. Tails are now reserved to a global tick cap that no
+  //      timeline can exceed (legs are horizon-bounded).
+  // A post-plan self-check re-derives the flag instead of trusting bookkeeping.
+  const TICK_CAP = horizon * (input.items.length * 2 + 3) + 8
+
   const emptyRes: Reservations = { vertex: new Set(), edge: new Set() }
   robots.forEach((start, ri) => {
+    // Static occupancy of robots not yet planned (they are standing on their
+    // start cells while this robot drives). Own start excluded — this robot
+    // must be free to wait at and depart from it.
+    const unplannedStarts = new Set<string>()
+    for (let rj = ri + 1; rj < robots.length; rj += 1) unplannedStarts.add(k2(robots[rj].x, robots[rj].y))
+    const blockedForThisRobot = new Set<string>([...blocked, ...unplannedStarts])
+
     const timeline: GridPos[] = [{ x: start.x, y: start.y }]
     const carrying: boolean[] = [false]
     let pos: GridPos = { x: start.x, y: start.y }
@@ -216,7 +237,7 @@ export function planMultiAgent(input: MultiAgentInput): MultiAgentPlan {
     // shortest path if reservations make it momentarily unsolvable (keeps a robot
     // from ever freezing — a pragmatic stand-in for full deadlock recovery).
     const planLeg = (from: GridPos, to: GridPos) => {
-      const aware = spaceTimePath(from, to, t, W, H, blocked, res, horizon)
+      const aware = spaceTimePath(from, to, t, W, H, blockedForThisRobot, res, horizon)
       if (aware) return aware
       const fallback = spaceTimePath(from, to, t, W, H, blocked, emptyRes, horizon)
       if (fallback) usedFallback = true // reservation-free escape hatch was needed
@@ -257,10 +278,10 @@ export function planMultiAgent(input: MultiAgentInput): MultiAgentPlan {
         res.edge.add(eKey(timeline[i].x, timeline[i].y, timeline[i + 1].x, timeline[i + 1].y, i))
       }
     }
-    // Park at the FINAL cell (= home), reserved going forward. Homes are unique
-    // per robot, so this never blocks the shared drop.
+    // Park at the FINAL cell (= home), reserved to the GLOBAL tick cap — a
+    // later robot's longer timeline must never outrun the parked reservation.
     const last = timeline[timeline.length - 1]
-    for (let tt = timeline.length; tt < timeline.length + horizon + 4; tt += 1) {
+    for (let tt = timeline.length; tt <= TICK_CAP; tt += 1) {
       res.vertex.add(vKey(last.x, last.y, tt))
     }
 
@@ -292,5 +313,42 @@ export function planMultiAgent(input: MultiAgentInput): MultiAgentPlan {
     }
   })
 
-  return { robots: plans, ticks, itemPickTick, unassignedItems: unassigned, fullyDeconflicted: !usedFallback }
+  // The flag re-derives itself: scan the PADDED timelines for vertex and swap
+  // conflicts — and for cell legality (a robot standing on a wall or unsafe
+  // cell at ANY tick, including its start: independent verification caught
+  // plans certified clean whose robots were parked inside walls) — instead of
+  // trusting reservation bookkeeping. The flag is a measurement, not a promise.
+  let selfCheckClean = true
+  const illegalCells = new Set<string>([...input.blocked, ...input.unsafe].map((p) => k2(p.x, p.y)))
+  for (const p of plans) {
+    if (!selfCheckClean) break
+    for (const pos of p.timeline) {
+      if (pos.x < 0 || pos.y < 0 || pos.x >= W || pos.y >= H || illegalCells.has(k2(pos.x, pos.y))) {
+        selfCheckClean = false
+        break
+      }
+    }
+  }
+  outer: for (let t = 0; t < ticks; t += 1) {
+    const seen = new Map<string, number>()
+    for (let a = 0; a < plans.length; a += 1) {
+      const p = plans[a].timeline[t]
+      const k = k2(p.x, p.y)
+      if (seen.has(k)) { selfCheckClean = false; break outer }
+      seen.set(k, a)
+      if (t > 0) {
+        const prev = plans[a].timeline[t - 1]
+        for (let b = 0; b < a; b += 1) {
+          const bPrev = plans[b].timeline[t - 1]
+          const bCur = plans[b].timeline[t]
+          if (prev.x === bCur.x && prev.y === bCur.y && bPrev.x === p.x && bPrev.y === p.y && (prev.x !== p.x || prev.y !== p.y)) {
+            selfCheckClean = false
+            break outer
+          }
+        }
+      }
+    }
+  }
+
+  return { robots: plans, ticks, itemPickTick, unassignedItems: unassigned, fullyDeconflicted: !usedFallback && selfCheckClean }
 }

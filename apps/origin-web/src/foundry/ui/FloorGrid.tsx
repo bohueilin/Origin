@@ -13,12 +13,15 @@ interface FloorGridProps {
   cursor?: GridPos | null
   /** A vetoed destination cell to flag in red. */
   veto?: GridPos | null
+  /** Chokepoints from the margin analysis: cells whose single blocking flips
+   *  the verdict. Drawn as warning rings over the base cell. */
+  critical?: GridPos[]
   size?: number
 }
 
 const key = (p: GridPos) => `${p.x},${p.y}`
 
-export function FloorGrid({ map, trail = [], cursor, veto, size = 360 }: FloorGridProps) {
+export function FloorGrid({ map, trail = [], cursor, veto, critical = [], size = 360 }: FloorGridProps) {
   const cell = Math.max(14, Math.floor(size / Math.max(map.width, map.height)))
   const w = cell * map.width
   const h = cell * map.height
@@ -54,6 +57,18 @@ export function FloorGrid({ map, trail = [], cursor, veto, size = 360 }: FloorGr
   return (
     <svg viewBox={`0 0 ${w} ${h}`} width="100%" style={{ maxWidth: size, display: 'block' }} role="img" aria-label="Floor occupancy grid">
       {cells}
+      {critical.map((c) => (
+        <circle
+          key={`crit-${c.x}-${c.y}`}
+          cx={c.x * cell + cell / 2}
+          cy={c.y * cell + cell / 2}
+          r={cell * 0.3}
+          fill="none"
+          stroke="var(--fg-veto)"
+          strokeWidth={2.5}
+          strokeDasharray={`${cell * 0.18} ${cell * 0.1}`}
+        />
+      ))}
       {marker(map.start, 'S', 'var(--fg-start)')}
       {marker(map.item, 'P', 'var(--fg-item)')}
       {marker(map.drop, 'D', 'var(--fg-drop)')}

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:client": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run functions:stage",
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server/main.ts",
@@ -28,7 +28,8 @@
     "test:e2e": "playwright test",
     "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm run reward:diff && npm test && npm run reachability",
     "gates:full": "npm run gates && npm run test:e2e",
-    "reachability": "node scripts/reachability-lint.mjs --max 78"
+    "reachability": "node scripts/reachability-lint.mjs --max 78",
+    "functions:stage": "rm -rf dist/functions && mkdir -p dist/functions/api && cp -R functions/api/. dist/functions/api/ && echo \"staged $(find dist/functions -name '*.ts' | wc -l | tr -d ' ') Cloudflare Pages Function(s) into dist/\""
   },
   "dependencies": {
     "@hono/node-server": "^2.0.5",

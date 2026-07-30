@@ -108,12 +108,11 @@
         </a>
 
         <nav class="site-nav" id="site-nav" aria-label="Primary">
-          <a href="#demo">Demo</a>
           <a href="#product">Product</a>
+          <a href="#demo">Demo</a>
           <a href="/verify">Verify</a>
-          <a href="#trust">Trust</a>
           <a href="/proving-ground">Proving ground</a>
-          <a href="/labs">Labs</a>
+          <a href="/trust">Trust</a>
           <a href="/brief">Brief</a>
           <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
         </nav>
@@ -229,6 +228,26 @@
               <li>Tamper-evident audit trail</li>
             </ul>
             <a class="truststrip__link" href="#trust">See trust &amp; controls →</a>
+          </div>
+        </div>
+
+        <!-- Interop row. This is the slot where funded competitors put customer logos.
+             Origin has no customers, so it states what its evidence format actually
+             SPEAKS instead — every item here is a format the verifier reads or emits
+             today, which is checkable rather than borrowed. Do not add a vendor name
+             to this list unless an integration genuinely exists. -->
+        <div class="truststrip" aria-label="Formats Origin's evidence speaks">
+          <div class="shell truststrip__inner">
+            <span class="truststrip__lead">Speaks the formats your reviewer already reads</span>
+            <ul class="truststrip__items">
+              <li>SHA-256 hash chains</li>
+              <li>Ed25519 signatures</li>
+              <li>in-toto / DSSE</li>
+              <li>Sigstore bundles</li>
+              <li>X.509 chains</li>
+              <li>Canonical JSON</li>
+            </ul>
+            <a class="truststrip__link" href="/verify">Check one yourself →</a>
           </div>
         </div>
       </section>

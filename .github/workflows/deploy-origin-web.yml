@@ -126,6 +126,24 @@ jobs:
           name: origin-web-dist
           path: origin-web-dist
 
+      # wrangler `pages deploy <dir>` reads Functions from ./functions in the WORKING
+      # DIRECTORY — not from inside <dir>. functions/ lives at apps/origin-web/functions,
+      # so nothing was ever uploaded and /api/* has always been served by the static
+      # 404/405 handler: every "Book an evidence review" submission was dropped.
+      #
+      # Copy ONLY functions/api. Pages compiles every file under functions/ into one
+      # worker, and the root-level modules (snaplii-broker, credential-broker,
+      # _onePasswordBroker, expiry-sweeper, …) are InsForge DENO functions using
+      # Deno.env and npm: specifiers — they would fail the Workers build, and
+      # expiry-sweeper is an unauthenticated admin-key endpoint that must never
+      # become routable.
+      - name: Stage Cloudflare Pages Functions where wrangler looks for them
+        run: |
+          rm -rf functions
+          mkdir -p functions/api
+          cp -R apps/origin-web/functions/api/. functions/api/
+          echo "staged:"; find functions -type f
+
       - name: Check for Cloudflare token
         id: gate
         env:

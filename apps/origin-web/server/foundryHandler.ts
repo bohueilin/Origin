@@ -19,6 +19,7 @@
 import type { CerebrasConfig, GeminiConfig } from './config.ts'
 import { cerebrasChat, geminiChat, extractJsonObject, type ChatMessage } from './cerebrasHandler.ts'
 import { repairSiteMap } from '../src/foundry/floorValidator.ts'
+import { gateParsedFloor } from '../src/foundry/parseGate.ts'
 import {
   bfsOracle,
   verifyWarehouseRollout,
@@ -36,6 +37,7 @@ import { sealLicense } from '../src/foundry/licenseSeal.ts'
 import type { DescriptiveSiteMap } from '../src/workflowDraft.ts'
 import type {
   ParseFloorResponse,
+  ParseFallbackReason,
   QuorumRunResponse,
   QuorumStep,
   QuorumMode,
@@ -167,27 +169,40 @@ interface ParseFloorBody {
 }
 
 export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig): Promise<ParseFloorResponse> {
-  const finish = (mapRaw: unknown, source: FoundrySource, timing: ParseFloorResponse['timing'], repairsIn: string[], model: string): ParseFloorResponse => {
-    const { map, repairs } = repairSiteMap(mapRaw)
-    let oracle: ParseFloorResponse['oracle']
+  const tryOracle = (map: DescriptiveSiteMap): ParseFloorResponse['oracle'] => {
     try {
-      oracle = oracleSummary(map, chooseEmbodiment(undefined))
+      return oracleSummary(map, chooseEmbodiment(undefined))
     } catch {
-      oracle = undefined
+      return undefined
     }
-    return { ok: true, siteMap: map, source, timing, repairs: [...repairsIn, ...repairs], model, oracle }
   }
+  // An image was uploaded but the parse could not run: REFUSE with the reason.
+  // The sample floor never stands in for a parse of the user's upload.
+  const refuse = (fallback: ParseFallbackReason, error: string, timing: ParseFloorResponse['timing'] = null, model = cfg.model): ParseFloorResponse =>
+    ({ ok: false, siteMap: null, source: 'mock', timing, repairs: [], model, fallback, error })
 
-  // Offline / no-key: labeled deterministic sample.
-  if (!cfg.apiKey || !body.imageDataUri || typeof body.imageDataUri !== 'string') {
-    const why = !cfg.apiKey ? 'CEREBRAS_API_KEY not set' : 'no image provided'
-    return finish(sampleFloor(), 'mock', null, [`Mock floor (${why}) — deterministic sample, set the key + upload to parse a real floor.`], cfg.model)
+  // Demo mode: nothing was uploaded. A LABELED sample keeps the offline demo alive.
+  if (!body.imageDataUri || typeof body.imageDataUri !== 'string') {
+    const map = sampleFloor()
+    return {
+      ok: true,
+      siteMap: map,
+      source: 'mock',
+      timing: null,
+      repairs: ['Sample floor — nothing was parsed. Upload a photo (with CEREBRAS_API_KEY set) to run the Perceiver.'],
+      model: cfg.model,
+      oracle: tryOracle(map),
+      fallback: 'no_image',
+    }
+  }
+  if (!cfg.apiKey) {
+    return refuse('no_key', 'CEREBRAS_API_KEY is not set — the Perceiver cannot run, so nothing was parsed.')
   }
   // Cerebras caps images at ~10MB/request; a base64 data URI is ~33% larger than the bytes.
   // Reject oversize uploads BEFORE spending a request (cost + latency guard).
   const MAX_DATA_URI = 10_000_000
   if (body.imageDataUri.length > MAX_DATA_URI) {
-    return finish(sampleFloor(), 'mock', null, ['Image too large (>~7MB) — Cerebras caps images at 10MB. Using the deterministic sample; re-upload a smaller image.'], cfg.model)
+    return refuse('oversize', 'Image too large (>~7MB) — Cerebras caps images at 10MB. Re-upload a smaller image.')
   }
 
   const messages: ChatMessage[] = [
@@ -202,15 +217,25 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
   ]
   const res = await cerebrasChat(messages, cfg, { jsonSchema: { name: 'floor_grid', schema: FLOOR_SCHEMA }, reasoningEffort: 'low', maxTokens: 1200, temperature: 0.1 })
   if (!res.ok) {
-    return finish(sampleFloor(), 'mock', null, [`Cerebras parse unavailable (${res.code ?? 'error'}) — using the deterministic sample floor.`], cfg.model)
+    return refuse('api_error', `Cerebras parse unavailable (${res.code ?? 'error'}) — nothing was parsed.`, res.timing ?? null, res.model)
   }
   let parsed: unknown
   try {
     parsed = JSON.parse(extractJsonObject(res.content))
   } catch {
-    return finish(sampleFloor(), 'mock', res.timing, ['Model output was not valid JSON — using the deterministic sample floor.'], res.model)
+    return refuse('bad_json', 'Model output was not valid JSON — the parse is voided, not repaired.', res.timing, res.model)
   }
-  return finish(parsed, 'cerebras', res.timing, [], res.model)
+
+  // The deterministic gate judges the model's RAW proposal. VOID → no map: an
+  // unsupported anchor or out-of-contract geometry is refused, never repaired
+  // into a plausible floor. VALID/ESCALATE → the cleaned map, with every
+  // cleanup on the record and a receipt that re-verifies offline.
+  const gate = gateParsedFloor(parsed)
+  if (gate.verdict === 'VOID') {
+    return { ok: true, siteMap: null, source: 'cerebras', timing: res.timing, repairs: gate.repairs, model: res.model, gate }
+  }
+  const map = gate.map as DescriptiveSiteMap
+  return { ok: true, siteMap: map, source: 'cerebras', timing: res.timing, repairs: gate.repairs, model: res.model, oracle: tryOracle(map), gate }
 }
 
 // ============================================================================

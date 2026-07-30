@@ -139,10 +139,20 @@ jobs:
       # become routable.
       - name: Stage Cloudflare Pages Functions where wrangler looks for them
         run: |
-          rm -rf functions
+          rm -rf functions server src
           mkdir -p functions/api
           cp -R apps/origin-web/functions/api/. functions/api/
-          echo "staged:"; find functions -type f
+          # Tests never ship as routes.
+          find functions -name '*.test.ts' -delete
+          # functions/api/foundry/parse-floor.ts imports ../../../server and
+          # ../../../src (it reuses the SAME handleParseFloor + parseGate the
+          # local Hono server runs). wrangler's bundler follows relative imports
+          # anywhere on disk, but only files UNDER functions/ become routes — so
+          # staging these trees beside functions/ adds zero routes and keeps the
+          # deployed parse path byte-identical to the tested one.
+          cp -R apps/origin-web/server ./server
+          cp -R apps/origin-web/src ./src
+          echo "staged routes:"; find functions -type f
 
       - name: Check for Cloudflare token
         id: gate

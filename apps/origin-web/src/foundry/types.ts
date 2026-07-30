@@ -11,6 +11,7 @@
 
 import type { DescriptiveSiteMap } from '../workflowDraft'
 import type { WarehouseAction, WarehouseTerminal, GridPos, WarehouseOracle, WarehouseRollout, WarehouseTask } from '../warehouse'
+import type { ParseGateResult } from './parseGate'
 
 /** Where a result came from. 'mock' is the deterministic offline fallback (always labeled in the UI). */
 export type FoundrySource = 'cerebras' | 'gemini' | 'mock'
@@ -24,16 +25,27 @@ export interface FoundryTiming {
 
 // ---- parse-floor ------------------------------------------------------------
 
+/**
+ * Why no real parse ran. 'no_image' is DEMO MODE (nothing was uploaded — a labeled
+ * sample is fine). Every other reason means an image WAS uploaded and the parse was
+ * REFUSED (ok:false, siteMap:null): a sample floor never impersonates a parse.
+ */
+export type ParseFallbackReason = 'no_image' | 'no_key' | 'oversize' | 'api_error' | 'bad_json'
+
 export interface ParseFloorResponse {
   ok: boolean
   siteMap: DescriptiveSiteMap | null
   source: FoundrySource
   timing: FoundryTiming | null
-  /** Deterministic repairs applied to the model's raw JSON (the Origin trust layer). */
+  /** The gate's cleanup log for real parses; the sample-floor label in demo mode. */
   repairs: string[]
   model: string
   /** Oracle's read of the parsed floor (deterministic): verdict + safe-path length. */
   oracle?: { verdict: WarehouseTerminal; reason: string; pathLength: number }
+  /** Deterministic gate verdict over the model's RAW grid — present for real parses only. */
+  gate?: ParseGateResult
+  /** Set when no real parse ran (see ParseFallbackReason). */
+  fallback?: ParseFallbackReason
   error?: string
 }
 

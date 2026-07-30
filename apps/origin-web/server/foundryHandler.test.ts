@@ -24,24 +24,34 @@ const post = async (path: string, body: unknown) =>
   app.request(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
 
 describe('POST /api/foundry/parse-floor', () => {
-  it('returns a repaired, oracle-scored sample floor when offline', async () => {
+  it('returns a LABELED sample floor in demo mode (no image uploaded)', async () => {
     const res = await post('/api/foundry/parse-floor', {})
     expect(res.status).toBe(200)
     const data = (await res.json()) as ParseFloorResponse
     expect(data.ok).toBe(true)
     expect(data.source).toBe('mock')
+    expect(data.fallback).toBe('no_image') // demo mode is labeled, never disguised as a parse
     expect(data.siteMap).not.toBeNull()
     expect(data.siteMap?.width).toBeGreaterThanOrEqual(4)
-    // The deterministic oracle reads the parsed floor.
+    // The deterministic oracle reads the sample floor.
     expect(['finish', 'escalate', 'refuse']).toContain(data.oracle?.verdict)
   })
 
-  it('deterministically repairs an inconsistent grid (wall on an anchor, out-of-bounds)', async () => {
-    // No key, so this still returns the sample floor — but repairSiteMap is unit-covered below.
+  it('a hint without an image is still demo mode, with the sample label on the record', async () => {
     const res = await post('/api/foundry/parse-floor', { hint: 'classroom' })
     const data = (await res.json()) as ParseFloorResponse
     expect(data.ok).toBe(true)
-    expect(Array.isArray(data.repairs)).toBe(true)
+    expect(data.fallback).toBe('no_image')
+    expect(data.repairs.join(' ')).toMatch(/sample/i)
+  })
+
+  it('an uploaded image with no key is REFUSED — no sample impersonates the parse', async () => {
+    const res = await post('/api/foundry/parse-floor', { imageDataUri: 'data:image/png;base64,AAAA' })
+    expect(res.status).toBe(200)
+    const data = (await res.json()) as ParseFloorResponse
+    expect(data.ok).toBe(false)
+    expect(data.siteMap).toBeNull()
+    expect(data.fallback).toBe('no_key')
   })
 })
 

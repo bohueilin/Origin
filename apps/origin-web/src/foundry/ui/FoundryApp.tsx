@@ -10,6 +10,7 @@ import { FloorGrid } from './FloorGrid'
 import { parseFloor, quorumRun, speedRace, fileToDataUri } from '../foundryClient'
 import { SpeedProofs } from '../soc/SocConsole'
 import type { ParseFloorResponse, QuorumRunResponse, SpeedRaceResponse, FoundrySource, QuorumMode } from '../types'
+import { gateParsedFloor, type ParseGateResult } from '../parseGate'
 import type { GridPos } from '../../warehouse'
 import { evaluateDrawnSite, type DrawnSiteEval } from '../../siteEval'
 import type { ZoneScope } from '../../credentials/types'
@@ -18,6 +19,45 @@ import type { DescriptiveSiteMap } from '../../workflowDraft'
 function SourceBadge({ source, model }: { source: FoundrySource; model?: string }) {
   const label = source === 'cerebras' ? 'gemma-4-31b · Cerebras' : source === 'gemini' ? model || 'GPU baseline' : 'deterministic mock'
   return <span className={`fdy-badge fdy-badge--${source}`}>{label}</span>
+}
+
+/**
+ * The parse gate's verdict card. VOID lists the failing checks by name — nothing
+ * was repaired into existence. ESCALATE/VALID show the verdict + the receipt,
+ * and the receipt digest is RECOMPUTED IN THIS BROWSER before it is displayed:
+ * the server's capability to emit a verdict is not this page's permission to
+ * trust it.
+ */
+function GateCard({ gate }: { gate: ParseGateResult }) {
+  const reverified = useMemo(() => {
+    const { receipt_digest, ...body } = gate.receipt
+    return gateParsedFloor.recomputeReceiptDigest(body) === receipt_digest
+  }, [gate])
+  const failing = gate.checks.filter((c) => !c.pass)
+  const cls = gate.verdict === 'VOID' ? 'refuse' : gate.verdict === 'ESCALATE' ? 'escalate' : 'finish'
+  return (
+    <div className={`fdy-verdictbox fdy-verdictbox--${cls}`}>
+      <strong>
+        {gate.verdict === 'VOID'
+          ? 'Parse VOIDED — the model\'s proposal could not be supported'
+          : gate.verdict === 'ESCALATE'
+            ? 'Parse ESCALATED — usable after cleanup, but a human should review it'
+            : `Parse gate: VALID · ${gate.checks.length}/${gate.checks.length} checks`}
+      </strong>
+      {gate.verdict === 'VOID' && (
+        <span>No floor is shown because none was supported — a voided parse is refused, not repaired into something plausible.</span>
+      )}
+      {failing.map((c) => (
+        <span key={c.name}>
+          <code>{c.name}</code> — {c.detail}
+        </span>
+      ))}
+      <span className="fdy-gate-receipt">
+        receipt {gate.receipt.receipt_digest.slice(0, 16)}…{' '}
+        {reverified ? '· recomputed and matched in this browser' : '· DIGEST MISMATCH — do not trust this verdict'}
+      </span>
+    </div>
+  )
 }
 
 function Stat({ label, value, unit, tone }: { label: string; value: string | number; unit?: string; tone?: 'pos' | 'neg' | 'warn' }) {
@@ -372,7 +412,10 @@ export default function FoundryApp() {
       <section className="fdy-card">
         <div className="fdy-card__head">
           <h2>1 · Read the floor</h2>
-          <p>Snap a photo or use the sample. gemma-4-31b's vision parses it; a deterministic pass repairs the grid before anything trusts it.</p>
+          <p>
+            Snap a photo or use the sample. gemma-4-31b's vision proposes a grid; a deterministic gate judges it before
+            anything trusts it — an unsupported proposal is <em>voided</em>, never repaired into something plausible.
+          </p>
         </div>
         <div className="fdy-actions">
           <input
@@ -394,15 +437,31 @@ export default function FoundryApp() {
         </div>
         {uploadError && <p className="fdy-upload-error" role="alert">{uploadError}</p>}
 
+        {/* An upload that could not be parsed is REFUSED with the reason — the
+            sample floor never stands in for a parse of the user's image. */}
+        {parse && !parse.ok && (
+          <div className="fdy-verdictbox fdy-verdictbox--refuse" role="alert">
+            <strong>No parse ran</strong>
+            <span>{parse.error}</span>
+            <span>Nothing is shown because nothing was parsed. "Use the sample floor" explores the loop on a floor that is labeled as a sample.</span>
+          </div>
+        )}
+
+        {/* A real parse the gate VOIDED: the named checks, no invented floor. */}
+        {parse?.ok && parse.gate?.verdict === 'VOID' && <GateCard gate={parse.gate} />}
+
         {parse?.siteMap && (
           <div className="fdy-parse">
             <FloorGrid map={parse.siteMap} trail={trail} cursor={cursor} veto={vetoCell} />
             <div className="fdy-parse__side">
               <div className="fdy-parse__row">
                 <SourceBadge source={parse.source} />
-                <span className="fdy-chip">vision</span>
+                {parse.fallback === 'no_image'
+                  ? <span className="fdy-chip fdy-chip--sample">sample floor — not parsed from an upload</span>
+                  : <span className="fdy-chip">vision</span>}
                 {parse.timing?.tokS && <span className="fdy-chip">{parse.timing.tokS} tok/s</span>}
               </div>
+              {parse.gate && parse.gate.verdict !== 'VOID' && <GateCard gate={parse.gate} />}
               {parse.oracle && (
                 <div className={`fdy-verdictbox fdy-verdictbox--${parse.oracle.verdict}`}>
                   <strong>Oracle reads this floor: {parse.oracle.verdict.toUpperCase()}</strong>

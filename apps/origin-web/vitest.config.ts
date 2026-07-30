@@ -16,6 +16,10 @@ export default defineConfig({
       'src/**/*.test.ts',
       'server/**/*.test.ts',
       'env/**/*.test.ts',
+      // Pages Functions are outside tsc/eslint (Deno-runtime dir) — vitest is
+      // the only gate that exercises them. Scoped to api/ (the Pages-routable
+      // subtree); the root-level functions are InsForge Deno modules.
+      'functions/api/**/*.test.ts',
       '../../packages/evidence/**/*.test.ts',
       '../../packages/verifier-core/**/*.test.ts',
     ],

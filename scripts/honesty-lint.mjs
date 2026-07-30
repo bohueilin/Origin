@@ -116,6 +116,8 @@ const REACT_COPY_GLOBS = [
   // Added after an audit found affirmative "Certified"/"certificate" copy shipping on
   // /security and /reference-check while the gate scanned neither file.
   'src/security/SecurityPage.tsx', 'src/reference-check/ReferenceCheckPage.tsx',
+  // parseGate's check details + repair log render verbatim on /foundry.
+  'src/foundry/parseGate.ts',
 ]
 
 let violations = 0

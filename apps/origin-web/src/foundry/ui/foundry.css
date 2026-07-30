@@ -107,6 +107,10 @@ body {
 .fdy-badge--gemini { background: rgba(110, 122, 140, 0.16); color: #475063; }
 .fdy-badge--mock { background: rgba(185, 116, 0, 0.14); color: var(--warn); }
 .fdy-chip { font: 600 11.5px/1 ui-monospace, monospace; color: var(--text-soft); padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; }
+/* Demo-mode floors carry their sample label ON the artifact, not in fine print. */
+.fdy-chip--sample { color: var(--warn); border-color: rgba(185, 116, 0, 0.4); background: rgba(185, 116, 0, 0.07); }
+.fdy-gate-receipt { font: 500 11px/1.4 ui-monospace, monospace; color: var(--text-soft); word-break: break-all; }
+.fdy-verdictbox code { font: 600 12px/1 ui-monospace, monospace; }
 
 /* ---- speed race (dark engine) ---- */
 .fdy-race { background: var(--ink); border-color: var(--ink-line); color: var(--ink-text); }

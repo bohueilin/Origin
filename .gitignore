@@ -39,3 +39,9 @@ factory-private/
 services/factoryceo-trm/
 services/foundry-train/
 site-to-gym/
+
+# InsForge CLI link state. `npx @insforge/cli link` writes .insforge/project.json,
+# which contains the project's FULL-ACCESS ADMIN API key (ik_ prefix). This is a
+# PUBLIC repo — that file must never be committed. The public anon_ key is a
+# different value and belongs in the deploy workflow.
+.insforge/

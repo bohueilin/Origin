@@ -111,6 +111,9 @@ body {
 .fdy-chip--sample { color: var(--warn); border-color: rgba(185, 116, 0, 0.4); background: rgba(185, 116, 0, 0.07); }
 .fdy-gate-receipt { font: 500 11px/1.4 ui-monospace, monospace; color: var(--text-soft); word-break: break-all; }
 .fdy-verdictbox code { font: 600 12px/1 ui-monospace, monospace; }
+.fdy-btn--ghost { background: transparent; border: 1px dashed var(--line); font-size: 12.5px; padding: 6px 10px; justify-self: start; }
+.fdy-benchstrip { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; margin-top: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 12.5px; color: var(--text-soft); }
+.fdy-benchstrip a { font: 500 11.5px/1 ui-monospace, monospace; }
 
 /* ---- speed race (dark engine) ---- */
 .fdy-race { background: var(--ink); border-color: var(--ink-line); color: var(--ink-text); }

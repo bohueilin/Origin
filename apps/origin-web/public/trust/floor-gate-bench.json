@@ -1,0 +1,107 @@
+{
+  "verifier": "parseGate@1",
+  "bench": "gateBench@1",
+  "scope": "Synthetic floors, procedurally generated from the seed below. Measures the deterministic gate's discrimination only — not the vision model. Reproducible: same seed, same numbers.",
+  "seed": 20260730,
+  "trialsPerClass": 200,
+  "classes": {
+    "clean": {
+      "trials": 200,
+      "expected": "VALID",
+      "got": {
+        "VALID": 200
+      },
+      "catchRate": 1
+    },
+    "benign_noise": {
+      "trials": 200,
+      "expected": "VALID",
+      "got": {
+        "VALID": 200
+      },
+      "catchRate": 1
+    },
+    "anchor_oob": {
+      "trials": 200,
+      "expected": "VOID",
+      "got": {
+        "VOID": 200
+      },
+      "catchRate": 1
+    },
+    "anchor_collision": {
+      "trials": 200,
+      "expected": "VOID",
+      "got": {
+        "VOID": 200
+      },
+      "catchRate": 1
+    },
+    "anchor_malformed": {
+      "trials": 200,
+      "expected": "VOID",
+      "got": {
+        "VOID": 200
+      },
+      "catchRate": 1
+    },
+    "dims_out_of_contract": {
+      "trials": 200,
+      "expected": "VOID",
+      "got": {
+        "VOID": 200
+      },
+      "catchRate": 1
+    },
+    "role_not_array": {
+      "trials": 200,
+      "expected": "VOID",
+      "got": {
+        "VOID": 200
+      },
+      "catchRate": 1
+    },
+    "junk_flood": {
+      "trials": 200,
+      "expected": "VOID",
+      "got": {
+        "VOID": 200
+      },
+      "catchRate": 1
+    },
+    "moderate_junk": {
+      "trials": 200,
+      "expected": "ESCALATE",
+      "got": {
+        "ESCALATE": 200
+      },
+      "catchRate": 1
+    },
+    "contradiction_flood": {
+      "trials": 200,
+      "expected": "ESCALATE",
+      "got": {
+        "ESCALATE": 200
+      },
+      "catchRate": 1
+    },
+    "wall_flood": {
+      "trials": 200,
+      "expected": "ESCALATE",
+      "got": {
+        "ESCALATE": 200
+      },
+      "catchRate": 1
+    },
+    "dupe_flood": {
+      "trials": 200,
+      "expected": "ESCALATE",
+      "got": {
+        "ESCALATE": 200
+      },
+      "catchRate": 1
+    }
+  },
+  "falseVoidRate": 0,
+  "digest": "72dc20292a16f0b2e235b66e6888f8f7f4faec11b07e287cdac9b74654670484"
+}

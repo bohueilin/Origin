@@ -56,3 +56,4 @@ factoryceo_trm/results/
 /playwright-report/
 /blob-report/
 /.playwright/
+bench-out/

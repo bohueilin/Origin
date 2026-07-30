@@ -198,6 +198,12 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
   if (!cfg.apiKey) {
     return refuse('no_key', 'CEREBRAS_API_KEY is not set — the Perceiver cannot run, so nothing was parsed.')
   }
+  // Only inline raster images are relayed to the model provider. Anything else
+  // (http/file URLs, HTML/SVG data URIs) would make this endpoint a relay for
+  // fetching or smuggling content it never inspected.
+  if (!/^data:image\/(png|jpe?g|webp);base64,/i.test(body.imageDataUri)) {
+    return refuse('bad_image', 'imageDataUri must be an inline base64 data URI of type image/png, image/jpeg, or image/webp — nothing was parsed.')
+  }
   // Cerebras caps images at ~10MB/request; a base64 data URI is ~33% larger than the bytes.
   // Reject oversize uploads BEFORE spending a request (cost + latency guard).
   const MAX_DATA_URI = 10_000_000
@@ -232,10 +238,10 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
   // cleanup on the record and a receipt that re-verifies offline.
   const gate = gateParsedFloor(parsed)
   if (gate.verdict === 'VOID') {
-    return { ok: true, siteMap: null, source: 'cerebras', timing: res.timing, repairs: gate.repairs, model: res.model, gate }
+    return { ok: true, siteMap: null, source: 'cerebras', timing: res.timing, repairs: gate.repairs, model: res.model, gate, rawProposal: parsed }
   }
   const map = gate.map as DescriptiveSiteMap
-  return { ok: true, siteMap: map, source: 'cerebras', timing: res.timing, repairs: gate.repairs, model: res.model, oracle: tryOracle(map), gate }
+  return { ok: true, siteMap: map, source: 'cerebras', timing: res.timing, repairs: gate.repairs, model: res.model, oracle: tryOracle(map), gate, rawProposal: parsed }
 }
 
 // ============================================================================

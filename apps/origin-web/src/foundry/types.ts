@@ -30,7 +30,7 @@ export interface FoundryTiming {
  * sample is fine). Every other reason means an image WAS uploaded and the parse was
  * REFUSED (ok:false, siteMap:null): a sample floor never impersonates a parse.
  */
-export type ParseFallbackReason = 'no_image' | 'no_key' | 'oversize' | 'api_error' | 'bad_json'
+export type ParseFallbackReason = 'no_image' | 'no_key' | 'bad_image' | 'oversize' | 'api_error' | 'bad_json'
 
 export interface ParseFloorResponse {
   ok: boolean
@@ -44,6 +44,9 @@ export interface ParseFloorResponse {
   oracle?: { verdict: WarehouseTerminal; reason: string; pathLength: number }
   /** Deterministic gate verdict over the model's RAW grid — present for real parses only. */
   gate?: ParseGateResult
+  /** The model's raw proposal, exactly as gated — the receipt's input_digest binds THIS.
+   *  Ships in the downloadable evidence so `tools/floor-verify` re-verifies offline. */
+  rawProposal?: unknown
   /** Set when no real parse ran (see ParseFallbackReason). */
   fallback?: ParseFallbackReason
   error?: string

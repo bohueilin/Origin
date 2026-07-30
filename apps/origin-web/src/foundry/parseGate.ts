@@ -36,12 +36,16 @@ export interface ParseGateCheck {
 
 export interface ParseGateReceiptBody {
   kind: 'floor-parse-receipt'
-  schema_version: '1.0.0'
+  /** 1.1.0 added map_digest: the receipt binds the CLEANED MAP, not just the verdict. */
+  schema_version: '1.1.0'
   verifier: 'parseGate@1'
   verdict: ParseGateVerdict
   /** 0 valid · 2 anchor unsupported (would require invention) · 3 geometry out of contract · 4 escalate */
   code: number
   input_digest: string
+  /** SHA-256 over the canonical cleaned map (or null for VOID) — editing the
+   *  displayed floor after issuance breaks this binding offline. */
+  map_digest: string
 }
 
 export interface ParseGateReceipt extends ParseGateReceiptBody {
@@ -71,6 +75,8 @@ const DROP_VOID = 0.2
 const CONTRADICTION_ESCALATE = 3
 /** A floor that is ≥60% wall is more wall than floor — likely a misread. */
 const WALL_DENSITY_ESCALATE = 0.6
+/** Duplicate entries beyond max(this floor, half of all entries) = degenerate repetition. */
+const DUPE_ESCALATE_FLOOR = 8
 
 // ---- canonical JSON (sorted keys) so digests are reproducible anywhere ------
 const canonical = (v: unknown): string => {
@@ -92,14 +98,15 @@ function asCell(raw: unknown, w: number, h: number): GridPos | null {
   return { x: o.x, y: o.y }
 }
 
-function buildReceipt(verdict: ParseGateVerdict, code: number, inputDigest: string): ParseGateReceipt {
+function buildReceipt(verdict: ParseGateVerdict, code: number, inputDigest: string, map: DescriptiveSiteMap | null): ParseGateReceipt {
   const body: ParseGateReceiptBody = {
     kind: 'floor-parse-receipt',
-    schema_version: '1.0.0',
+    schema_version: '1.1.0',
     verifier: 'parseGate@1',
     verdict,
     code,
     input_digest: inputDigest,
+    map_digest: sha256(canonical(map)),
   }
   return { ...body, receipt_digest: sha256(canonical(body)) }
 }
@@ -120,7 +127,7 @@ export function gateParsedFloor(raw: unknown): ParseGateResult {
     map: null,
     repairs,
     droppedFraction,
-    receipt: buildReceipt('VOID', code, inputDigest),
+    receipt: buildReceipt('VOID', code, inputDigest, null),
   })
 
   // 1 — raw shape: an object with integer dims inside the Perceiver contract,
@@ -173,11 +180,20 @@ export function gateParsedFloor(raw: unknown): ParseGateResult {
   const anchorSet = new Set(anchorKeys)
 
   // 3 — role cells: drop (never clamp) malformed/out-of-bounds entries and hold
-  //     the drop fraction to a budget. Dupes and one-cell-one-role conflicts are
-  //     free cleanup; labels on anchors are contradictions, counted separately.
+  //     the drop fraction to a budget. One-cell-one-role conflicts are free
+  //     cleanup; labels on anchors are contradictions, counted separately.
+  //
+  //     The junk budget's denominator counts DISTINCT well-formed cells + bad
+  //     entries — duplicates count zero. The adversarial review demonstrated
+  //     the earlier entries.length denominator was dilutable: 200 out-of-bounds
+  //     cells padded with 4,000 duplicates of one wall graded VALID. Dupes are
+  //     therefore excluded from the budget AND tracked by their own check —
+  //     degenerate repetition is a suspect proposal, not free cleanup.
   let proposed = 0
   let droppedBad = 0
   let contradictions = 0
+  let rawEntries = 0
+  let dupesTotal = 0
   const taken = new Set<string>(anchorSet)
   const cleanRole = (name: (typeof roleNames)[number]): GridPos[] => {
     const arr = o[name]
@@ -186,7 +202,7 @@ export function gateParsedFloor(raw: unknown): ParseGateResult {
       return []
     }
     const entries = arr as unknown[]
-    proposed += entries.length
+    rawEntries += entries.length
     const out: GridPos[] = []
     const seen = new Set<string>()
     let bad = 0
@@ -197,14 +213,16 @@ export function gateParsedFloor(raw: unknown): ParseGateResult {
       const cell = asCell(e, width, height)
       if (!cell) {
         bad += 1
+        proposed += 1 // bad entries always count against the budget
         continue
       }
       const k = key(cell)
       if (seen.has(k)) {
-        dupes += 1
+        dupes += 1 // duplicates count zero toward the budget denominator
         continue
       }
       seen.add(k)
+      proposed += 1 // each DISTINCT well-formed cell counts once
       if (anchorSet.has(k)) {
         onAnchor += 1
         continue
@@ -218,6 +236,7 @@ export function gateParsedFloor(raw: unknown): ParseGateResult {
     }
     droppedBad += bad
     contradictions += onAnchor
+    dupesTotal += dupes
     if (bad > 0) repairs.push(`${bad} ${name} cell(s) dropped — malformed or outside the ${width}×${height} grid.`)
     if (dupes > 0) repairs.push(`${dupes} duplicate ${name} cell(s) collapsed.`)
     if (conflicts > 0) repairs.push(`${conflicts} ${name} cell(s) dropped — already labeled by another role (one cell, one role).`)
@@ -259,25 +278,39 @@ export function gateParsedFloor(raw: unknown): ParseGateResult {
       : `${Math.round(wallDensity * 100)}% of the grid is wall — more wall than floor, likely a misread`,
   )
 
+  // Degenerate repetition: duplicates never dilute the junk budget (above),
+  // and a proposal that is MOSTLY duplicates is itself suspect.
+  const dupesOk = dupesTotal <= Math.max(DUPE_ESCALATE_FLOOR, rawEntries * 0.5)
+  check(
+    'duplication_sanity',
+    dupesOk,
+    dupesOk
+      ? `${dupesTotal} duplicate entr${dupesTotal === 1 ? 'y' : 'ies'} across ${rawEntries}`
+      : `${dupesTotal} of ${rawEntries} entries are duplicates — degenerate repetition needs review`,
+  )
+
   // Optional robots overlay: cleaned quietly, never affects the verdict.
   const robots = Array.isArray(o.robots)
     ? (o.robots as unknown[]).map((r) => asCell(r, width, height)).filter((c): c is GridPos => c !== null)
     : []
 
-  const escalate = !cellsOk || !contradictionsOk || !densityOk
+  const escalate = !cellsOk || !contradictionsOk || !densityOk || !dupesOk
   const verdict: ParseGateVerdict = escalate ? 'ESCALATE' : 'VALID'
   const code = escalate ? 4 : 0
   const [start, item, drop] = anchors.map((a): GridPos => ({ x: a.x, y: a.y }))
+  const map: DescriptiveSiteMap = { width, height, start, item, drop, obstacles, hazards, humanOnly, robots }
   return {
     verdict,
     code,
     checks,
-    map: { width, height, start, item, drop, obstacles, hazards, humanOnly, robots },
+    map,
     repairs,
     droppedFraction,
-    receipt: buildReceipt(verdict, code, inputDigest),
+    receipt: buildReceipt(verdict, code, inputDigest, map),
   }
 }
 
 /** Offline re-verification: recompute the receipt digest from its body. */
 gateParsedFloor.recomputeReceiptDigest = (body: ParseGateReceiptBody): string => sha256(canonical(body))
+/** Offline re-verification: recompute the map binding (null for VOID receipts). */
+gateParsedFloor.computeMapDigest = (map: DescriptiveSiteMap | null): string => sha256(canonical(map))

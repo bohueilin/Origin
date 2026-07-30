@@ -163,6 +163,59 @@ describe('gateParsedFloor — ESCALATE (code 4): usable, but a human should look
   })
 })
 
+describe('gateParsedFloor — dilution attacks (from the adversarial review)', () => {
+  it('duplicate padding cannot dilute the junk budget: 200 OOB cells stay VOID under 4000 dupes', () => {
+    const raw = clean()
+    for (let i = 0; i < 200; i += 1) raw.obstacles.push({ x: 100 + i, y: 100 + i })
+    for (let i = 0; i < 4000; i += 1) raw.obstacles.push({ x: 2, y: 2 })
+    const r = gateParsedFloor(raw)
+    expect(r.verdict).toBe('VOID')
+    expect(r.code).toBe(3)
+    expect(r.droppedFraction).toBeGreaterThan(0.2)
+  })
+
+  it('a moderate junk fraction still escalates when padded with duplicates', () => {
+    const raw = clean()
+    for (let i = 0; i < 12; i += 1) raw.obstacles.push({ x: i % 8, y: i < 8 ? 0 : 1 })
+    raw.obstacles.push({ x: 50, y: 50 }, { x: 51, y: 51 })
+    for (let i = 0; i < 500; i += 1) raw.obstacles.push({ x: 2, y: 2 }) // dupe padding
+    const r = gateParsedFloor(raw)
+    expect(r.verdict).toBe('ESCALATE')
+    expect(r.droppedFraction).toBeGreaterThan(0.05)
+  })
+
+  it('a dupe flood alone is a degenerate proposal — ESCALATE, not free cleanup', () => {
+    const raw = clean()
+    for (let i = 0; i < 400; i += 1) raw.obstacles.push({ x: 2, y: 2 })
+    const r = gateParsedFloor(raw)
+    expect(r.verdict).toBe('ESCALATE')
+    expect(failed(r)).toContain('duplication_sanity')
+    expect(r.map?.obstacles).toHaveLength(2)
+  })
+
+  it('a handful of duplicates is still tolerated noise', () => {
+    const raw = clean()
+    raw.obstacles.push({ ...raw.obstacles[0] }, { ...raw.obstacles[1] })
+    expect(gateParsedFloor(raw).verdict).toBe('VALID')
+  })
+})
+
+describe('gateParsedFloor — receipt binds the cleaned map, not just the verdict', () => {
+  it('the receipt carries a map_digest that recomputes over the returned map', () => {
+    const r = gateParsedFloor(clean())
+    expect(r.receipt.map_digest).toMatch(/^[0-9a-f]{64}$/)
+    expect(gateParsedFloor.computeMapDigest(r.map)).toBe(r.receipt.map_digest)
+    // altering the map after issuance breaks the binding
+    const tampered = { ...r.map!, hazards: [] }
+    expect(gateParsedFloor.computeMapDigest(tampered)).not.toBe(r.receipt.map_digest)
+  })
+
+  it('a VOID receipt binds a null map', () => {
+    const r = gateParsedFloor({ ...clean(), start: { x: 99, y: 1 } })
+    expect(r.receipt.map_digest).toBe(gateParsedFloor.computeMapDigest(null))
+  })
+})
+
 describe('gateParsedFloor — receipt: deterministic and offline re-verifiable', () => {
   it('emits stable digests: same input → same receipt; different input → different input digest', () => {
     const a = gateParsedFloor(clean())

@@ -26,7 +26,10 @@
     "reward:diff": "node scripts/reward-diff.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm run reward:diff && npm test && npm run reachability",
+    "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm run reward:diff && npm test && npm run reachability && npm run bench:gate:check",
+    "bench:gate": "node scripts/floor-gate-bench.mjs",
+    "bench:gate:check": "node scripts/floor-gate-bench.mjs --check",
+    "bench:perceiver": "node scripts/perceiver-bench.mjs",
     "gates:full": "npm run gates && npm run test:e2e",
     "reachability": "node scripts/reachability-lint.mjs --max 78"
   },

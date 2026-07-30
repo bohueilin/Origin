@@ -64,6 +64,16 @@ describe('handleParseFloor — an uploaded image is never answered with a fake p
     expect(chat).not.toHaveBeenCalled()
   })
 
+  it('refuses a non-image "imageDataUri" — the endpoint must not relay arbitrary URLs to the model provider', async () => {
+    for (const uri of ['https://internal.example/secret.png', 'data:text/html;base64,AAAA', 'file:///etc/passwd', 'data:image/svg+xml;base64,AAAA']) {
+      const res = await handleParseFloor({ imageDataUri: uri }, cfg)
+      expect(res.ok).toBe(false)
+      expect(res.fallback).toBe('bad_image')
+      expect(res.siteMap).toBeNull()
+    }
+    expect(chat).not.toHaveBeenCalled()
+  })
+
   it('refuses an oversize upload before spending a request', async () => {
     const res = await handleParseFloor({ imageDataUri: `data:image/png;base64,${'A'.repeat(10_000_001)}` }, cfg)
     expect(res.ok).toBe(false)
@@ -110,6 +120,18 @@ describe('handleParseFloor — the gate judges real model output', () => {
     expect(res.gate?.verdict).toBe('VALID')
     expect(res.gate?.receipt.receipt_digest).toMatch(/^[0-9a-f]{64}$/)
     expect(['finish', 'refuse', 'escalate']).toContain(res.oracle?.verdict)
+  })
+
+  it('real parses carry the RAW model proposal so the receipt binding re-verifies offline', async () => {
+    chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
+    const valid = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    expect(valid.rawProposal).toEqual(cleanGrid) // input_digest is computed over exactly this
+    chat.mockResolvedValue(reply(JSON.stringify({ ...cleanGrid, start: { x: 99, y: 0 } })))
+    const voided = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    expect(voided.rawProposal).toEqual({ ...cleanGrid, start: { x: 99, y: 0 } })
+    // demo mode has no model proposal — nothing to bind
+    const demo = await handleParseFloor({}, cfg)
+    expect(demo.rawProposal).toBeUndefined()
   })
 
   it('ESCALATE: a contradictory proposal returns the cleaned map flagged for review', async () => {

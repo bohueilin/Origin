@@ -28,13 +28,38 @@ function SourceBadge({ source, model }: { source: FoundrySource; model?: string 
  * the server's capability to emit a verdict is not this page's permission to
  * trust it.
  */
-function GateCard({ gate }: { gate: ParseGateResult }) {
+function GateCard({ gate, evidence }: { gate: ParseGateResult; evidence?: ParseFloorResponse }) {
   const reverified = useMemo(() => {
     const { receipt_digest, ...body } = gate.receipt
     return gateParsedFloor.recomputeReceiptDigest(body) === receipt_digest
   }, [gate])
   const failing = gate.checks.filter((c) => !c.pass)
   const cls = gate.verdict === 'VOID' ? 'refuse' : gate.verdict === 'ESCALATE' ? 'escalate' : 'finish'
+  const download = useCallback(() => {
+    if (!evidence) return
+    // The reviewer artifact: receipt + the raw proposal it binds + everything
+    // needed to re-check it offline with tools/floor-verify (zero install).
+    const file = {
+      kind: 'floor-parse-evidence',
+      verify_with: 'tools/floor-verify/floor-verify.mjs in the Origin repo — node floor-verify.mjs <this file>',
+      verdict: gate.verdict,
+      code: gate.code,
+      receipt: gate.receipt,
+      checks: gate.checks,
+      repairs: gate.repairs,
+      raw_proposal: evidence.rawProposal,
+      site_map: evidence.siteMap,
+      oracle: evidence.oracle ?? null,
+      source: evidence.source,
+      model: evidence.model,
+    }
+    const url = URL.createObjectURL(new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `floor-parse-evidence-${gate.receipt.receipt_digest.slice(0, 12)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [gate, evidence])
   return (
     <div className={`fdy-verdictbox fdy-verdictbox--${cls}`}>
       <strong>
@@ -56,6 +81,50 @@ function GateCard({ gate }: { gate: ParseGateResult }) {
         receipt {gate.receipt.receipt_digest.slice(0, 16)}…{' '}
         {reverified ? '· recomputed and matched in this browser' : '· DIGEST MISMATCH — do not trust this verdict'}
       </span>
+      {evidence?.rawProposal !== undefined && (
+        <button className="fdy-btn fdy-btn--ghost" onClick={download}>
+          Download parse evidence (re-verify offline)
+        </button>
+      )}
+    </div>
+  )
+}
+
+/** The published gate-bench numbers (public/trust/floor-gate-bench.json) —
+ *  fetched from the same origin, scoped copy, link to the raw artifact. */
+function GateBenchStrip() {
+  const [bench, setBench] = useState<{
+    trialsPerClass: number
+    classes: Record<string, { expected: string; catchRate: number }>
+    falseVoidRate: number
+    digest: string
+  } | null>(null)
+  useEffect(() => {
+    let alive = true
+    void fetch('/trust/floor-gate-bench.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (alive && j?.classes) setBench(j as never)
+      })
+      .catch(() => undefined)
+    return () => {
+      alive = false
+    }
+  }, [])
+  if (!bench) return null
+  const entries = Object.values(bench.classes)
+  const voidClasses = entries.filter((c) => c.expected === 'VOID')
+  const voidCatch = voidClasses.length ? voidClasses.reduce((s, c) => s + c.catchRate, 0) / voidClasses.length : 0
+  return (
+    <div className="fdy-benchstrip">
+      <span>
+        {/* floor, not round: 99.6% must never display as 100% */}
+        Gate discrimination, measured: {Object.keys(bench.classes).length} corruption classes × {bench.trialsPerClass} trials —{' '}
+        VOID-class catch {Math.floor(voidCatch * 1000) / 10}%, false-VOID rate {bench.falseVoidRate}. Synthetic floors, deterministic, reproducible from seed.
+      </span>
+      <a href="/trust/floor-gate-bench.json" target="_blank" rel="noreferrer">
+        raw report · {bench.digest.slice(0, 12)}…
+      </a>
     </div>
   )
 }
@@ -416,6 +485,7 @@ export default function FoundryApp() {
             Snap a photo or use the sample. gemma-4-31b's vision proposes a grid; a deterministic gate judges it before
             anything trusts it — an unsupported proposal is <em>voided</em>, never repaired into something plausible.
           </p>
+          <GateBenchStrip />
         </div>
         <div className="fdy-actions">
           <input
@@ -448,7 +518,7 @@ export default function FoundryApp() {
         )}
 
         {/* A real parse the gate VOIDED: the named checks, no invented floor. */}
-        {parse?.ok && parse.gate?.verdict === 'VOID' && <GateCard gate={parse.gate} />}
+        {parse?.ok && parse.gate?.verdict === 'VOID' && <GateCard gate={parse.gate} evidence={parse} />}
 
         {parse?.siteMap && (
           <div className="fdy-parse">
@@ -461,7 +531,7 @@ export default function FoundryApp() {
                   : <span className="fdy-chip">vision</span>}
                 {parse.timing?.tokS && <span className="fdy-chip">{parse.timing.tokS} tok/s</span>}
               </div>
-              {parse.gate && parse.gate.verdict !== 'VOID' && <GateCard gate={parse.gate} />}
+              {parse.gate && parse.gate.verdict !== 'VOID' && <GateCard gate={parse.gate} evidence={parse} />}
               {parse.oracle && (
                 <div className={`fdy-verdictbox fdy-verdictbox--${parse.oracle.verdict}`}>
                   <strong>Oracle reads this floor: {parse.oracle.verdict.toUpperCase()}</strong>

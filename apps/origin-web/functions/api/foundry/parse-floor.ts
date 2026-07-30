@@ -24,11 +24,23 @@ interface ParseFloorEnv {
   CEREBRAS_API_KEY?: string
   CEREBRAS_MODEL?: string
   CEREBRAS_BASE_URL?: string
+  /** Set '1' to take the endpoint offline without a deploy. */
+  PARSE_DISABLED?: string
+  /** Per-isolate requests/minute (default 20). */
+  PARSE_RATE_PER_MIN?: string
 }
 
 // The handler refuses data URIs over 10MB; anything larger than that plus JSON
 // envelope headroom is junk — reject before JSON.parse allocates for it.
 const MAX_BODY = 10_500_000
+
+// ABUSE GUARD, honestly scoped: this endpoint spends a paid Cerebras key when
+// the key is configured, so it must not be a free relay. The bucket below is
+// per-ISOLATE (Workers memory is per-POP and evictable) — real edge
+// enforcement should ALSO be a Cloudflare WAF rate rule on /api/foundry/*
+// (dashboard action; see the deploy notes). This is friction, not a guarantee.
+let windowStart = 0
+let windowCount = 0
 
 const json = (body: unknown, status = 200): Response =>
   new Response(JSON.stringify(body), {
@@ -37,6 +49,24 @@ const json = (body: unknown, status = 200): Response =>
   })
 
 export const onRequestPost = async (ctx: { request: Request; env: ParseFloorEnv }): Promise<Response> => {
+  if (ctx.env.PARSE_DISABLED === '1') {
+    return json({ ok: false, error: 'Parse endpoint is temporarily disabled.' }, 503)
+  }
+  const limit = Math.max(1, Number(ctx.env.PARSE_RATE_PER_MIN) || 20)
+  const now = Date.now()
+  if (now - windowStart >= 60_000) {
+    windowStart = now
+    windowCount = 0
+  }
+  windowCount += 1
+  if (windowCount > limit) {
+    return json({ ok: false, error: 'Rate limit exceeded — try again in a minute.' }, 429)
+  }
+  // Reject an oversize declared length BEFORE buffering the body at all.
+  const declared = Number(ctx.request.headers.get('content-length'))
+  if (Number.isFinite(declared) && declared > MAX_BODY) {
+    return json({ ok: false, error: 'Body too large — images are capped at ~7MB.' }, 413)
+  }
   const raw = await ctx.request.text()
   if (raw.length > MAX_BODY) {
     return json({ ok: false, error: 'Body too large — images are capped at ~7MB.' }, 413)

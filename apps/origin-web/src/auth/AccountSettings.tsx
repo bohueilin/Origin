@@ -9,9 +9,7 @@ import {
   disconnectIntegration, disconnectWallet, effectiveStatus, listApprovalRequests, listAudit, listGrants,
   listIntegrations, listSessionKeys, listVaultItems, listWalletActions, listWallets, mintAgentToken, prepareWalletActionGoverned, purgeAccountData,
   revokeAllAuthority, revokeGrant, revokeSessionKey,
-  snapliiAuthorize, snapliiConnect, snapliiPurchase, snapliiQuote, snapliiRunClaim,
   type ApprovalRequest, type AuditRow, type IntegrationConnection, type NewGrantInput, type SessionKey,
-  type SnapliiConnectResult, type SnapliiPurchaseResult, type SnapliiQuoteResult,
   type WalletActionRequest, type WalletConnection,
 } from '../credentials/store'
 import { type VaultItem } from '../credentials/mockVault'
@@ -568,206 +566,13 @@ function ApprovalsTab() {
   )
 }
 
-// ---- Snaplii payment wallet (real server-brokered money path) -----------------
-
-// Human-readable, fail-closed copy for every broker error code. Anything unexpected
-// resolves to a generic refusal — a payment path must never render an unknown code as
-// if it were benign.
-function snapliiCodeNote(code: string | undefined, fallback: string): string {
-  switch (code) {
-    case 'over_cap': return 'Over the spend cap. The broker refused before any charge — per-buy $25, daily $50.'
-    case 'insecure_secret': return 'Refused — the server key failed its integrity check. Failing closed; no spend.'
-    case 'replayed': return 'This approval was already used. One-shot tokens can never be replayed — no second charge.'
-    case 'uncertain': return 'The outcome could not be confirmed. Failing closed and treating it as not purchased — verify before retrying.'
-    case 'mode_mismatch': return 'Live/simulation mode changed mid-flow. Refused to be safe — reconnect and try again.'
-    case 'bad_token': return 'That approval token is not valid. No purchase was made.'
-    case 'bad_quote': return 'That quote is no longer valid. Request a fresh quote.'
-    case 'no_token': return 'No approval token — the human-approval step has not been completed.'
-    case 'no_key': return 'No payment key is configured on the server yet. Nothing was charged.'
-    case 'upstream': return 'Snaplii was unreachable. No charge was made — try again shortly.'
-    case 'bad_request': return 'The broker rejected the request. Check the amount and try again.'
-    default: return fallback
-  }
-}
-
-const fmtUsd = (n: number | undefined) => (typeof n === 'number' ? `$${n.toFixed(2)}` : '—')
-
-type SnapliiStep = 'idle' | 'quoted' | 'done'
-
-function SnapliiCard() {
-  const [conn, setConn] = useState<SnapliiConnectResult | null>(null)
-  const [connecting, setConnecting] = useState(false)
-  const [connErr, setConnErr] = useState('')
-
-  // Test-purchase flow state.
-  const [amount, setAmount] = useState('15')
-  const [intent, setIntent] = useState('DoorDash dinner order')
-  const [step, setStep] = useState<SnapliiStep>('idle')
-  const [busy, setBusy] = useState(false)
-  const [quote, setQuote] = useState<SnapliiQuoteResult | null>(null)
-  const [result, setResult] = useState<SnapliiPurchaseResult | null>(null)
-  const [flowErr, setFlowErr] = useState('')
-
-  async function connect() {
-    setConnecting(true); setConnErr('')
-    try {
-      const r = await snapliiConnect()
-      if (!r.ok || !r.connected) { setConnErr(snapliiCodeNote(undefined, r.error || 'Could not connect to Snaplii. Try again.')); return }
-      setConn(r)
-    } catch (e) { setConnErr(e instanceof Error ? e.message : 'Snaplii broker unreachable.') }
-    finally { setConnecting(false) }
-  }
-
-  function resetFlow() { setStep('idle'); setQuote(null); setResult(null); setFlowErr('') }
-
-  async function runQuote() {
-    const usd = parseFloat(amount)
-    if (!Number.isFinite(usd) || usd <= 0) { setFlowErr('Enter a positive USD amount.'); return }
-    const useIntent = intent.trim() || 'passport-wallet-test'
-    setBusy(true); setFlowErr(''); setResult(null)
-    try {
-      // Server-mint the Passport run claim first (binds owner+amount+intent); quote requires it.
-      const rc = await snapliiRunClaim(usd, useIntent)
-      if (!rc.ok) { setFlowErr(rc.error || 'Could not start the purchase (run claim refused).'); setStep('idle'); return }
-      // rc.run_claim may be undefined when minting degraded (function not deployed); the broker
-      // quotes without it. A real owner-denial already returned ok:false above.
-      const q = await snapliiQuote(usd, useIntent, rc.run_claim)
-      if (!q.ok) { setFlowErr(snapliiCodeNote(q.code, q.error || 'Could not get a quote.')); setStep('idle'); return }
-      setQuote(q); setStep('quoted')
-    } catch (e) { setFlowErr(e instanceof Error ? e.message : 'Quote failed.'); setStep('idle') }
-    finally { setBusy(false) }
-  }
-
-  // The human-approval step. authorize() IS the moment the human authorizes spend; we
-  // chain straight into purchase() so the one-shot approval token never lingers.
-  async function approveAndBuy() {
-    if (!quote?.quote_claim) { setFlowErr('Missing quote — request a quote first.'); return }
-    setBusy(true); setFlowErr('')
-    try {
-      const auth = await snapliiAuthorize(quote.quote_claim)
-      if (!auth.ok || !auth.approval_token) { setFlowErr(snapliiCodeNote(auth.code, auth.error || 'Authorization was refused.')); return }
-      const p = await snapliiPurchase(auth.approval_token)
-      if (!p.ok) { setFlowErr(snapliiCodeNote(p.code, p.error || 'Purchase failed.')); return }
-      setResult(p); setStep('done')
-    } catch (e) { setFlowErr(e instanceof Error ? e.message : 'Approval failed.') }
-    finally { setBusy(false) }
-  }
-
-  const live = conn?.live === true
-
-  return (
-    <div className="cset-snaplii">
-      <div className="cset-snaplii-head">
-        <div className="cset-snaplii-brandmark" aria-hidden="true">S</div>
-        <div className="cset-snaplii-title">
-          <strong>Snaplii</strong>
-          <span className="cset-meta">Server-brokered payment wallet · capped &amp; one-shot</span>
-        </div>
-        {conn && (
-          <span className={`cset-mode-pill ${live ? 'live' : 'sim'}`} title={live ? 'LIVE — approved buys spend real money' : 'SIMULATION — approved buys are simulated, no real money'}>
-            {live ? 'LIVE' : 'SIMULATION'}
-          </span>
-        )}
-      </div>
-
-      {!conn ? (
-        <div className="cset-snaplii-connect">
-          <p className="cset-meta">
-            Connect Snaplii to let an agent pay at a brand on your behalf — without ever holding the key.
-            Every purchase is brokered server-side, capped, one-shot, and requires your explicit approval.
-          </p>
-          {connErr && <div className="cset-rowmsg deny">{connErr}</div>}
-          <button className="cset-btn" onClick={connect} disabled={connecting}>{connecting ? 'Connecting…' : 'Connect Snaplii'}</button>
-        </div>
-      ) : (
-        <>
-          <div className="cset-snaplii-facts">
-            <div className="cset-fact">
-              <span className="cset-fact-l">Brand</span>
-              <span className="cset-fact-v">{conn.brand?.name ?? '—'}</span>
-            </div>
-            <div className="cset-fact">
-              <span className="cset-fact-l">Scope</span>
-              <span className="cset-fact-v mono">{conn.scope ?? 'PAY_WRITE'}</span>
-            </div>
-            <div className="cset-fact">
-              <span className="cset-fact-l">Per buy</span>
-              <span className="cset-fact-v mono">$25.00</span>
-            </div>
-            <div className="cset-fact">
-              <span className="cset-fact-l">Per day</span>
-              <span className="cset-fact-v mono">$50.00</span>
-            </div>
-          </div>
-          {conn.note && <p className="cset-meta cset-snaplii-note">{conn.note}</p>}
-
-          <div className="cset-snaplii-flow">
-            <h4 className="cset-snaplii-flow-h">Run a test purchase</h4>
-            <p className="cset-meta">Exercise the real broker end to end. The key stays on the server; you authorize the spend by hand.</p>
-
-            <div className="cset-snaplii-inputs">
-              <label className="cset-field"><span>Amount (USD)</span>
-                <input value={amount} inputMode="decimal" onChange={(e) => { setAmount(e.target.value); resetFlow() }} aria-label="Amount in USD" />
-              </label>
-              <label className="cset-field"><span>Intent</span>
-                <input value={intent} onChange={(e) => { setIntent(e.target.value); resetFlow() }} placeholder="what is this buy for?" aria-label="Purchase intent" />
-              </label>
-              <button className="cset-btn ghost cset-snaplii-quote-btn" onClick={runQuote} disabled={busy}>{busy && step === 'idle' ? 'Quoting…' : 'Quote'}</button>
-            </div>
-
-            {step !== 'idle' && quote && (
-              <div className="cset-quote-card">
-                <div className="cset-quote-line"><span>Price</span><strong className="mono">{fmtUsd(quote.amount)} {quote.currency ?? 'USD'}</strong></div>
-                <div className="cset-quote-line"><span>Cashback</span><strong className="mono cset-cashback">+{fmtUsd(quote.cashback)}</strong></div>
-                <div className="cset-quote-line"><span>Brand</span><strong>{quote.brand ?? conn.brand?.name ?? '—'}</strong></div>
-              </div>
-            )}
-
-            {step === 'quoted' && (
-              <div className="cset-approve">
-                <div className="cset-approve-copy">
-                  <strong>You are authorizing this spend</strong>
-                  <span className="cset-meta">
-                    {live
-                      ? <>This will charge <strong>{fmtUsd(quote?.amount)}</strong> for real. This single click is the human approval — the agent cannot reach it.</>
-                      : <>Simulation mode — no real money moves. In LIVE mode this same click would charge <strong>{fmtUsd(quote?.amount)}</strong>. This is the human-approval step the agent can never reach.</>}
-                  </span>
-                </div>
-                <div className="cset-approve-actions">
-                  <button className="cset-link" onClick={resetFlow} disabled={busy}>Cancel</button>
-                  <button className="cset-approve-btn" onClick={approveAndBuy} disabled={busy}>{busy ? 'Authorizing…' : `Approve & buy ${fmtUsd(quote?.amount)}`}</button>
-                </div>
-              </div>
-            )}
-
-            {flowErr && <div className="cset-snaplii-fail"><span className="cset-snaplii-fail-tag">Refused · fail-closed</span><span>{flowErr}</span></div>}
-
-            {step === 'done' && result && (
-              <div className="cset-receipt">
-                <div className="cset-receipt-top">
-                  <span className={`cset-mode-pill ${result.simulated ? 'sim' : 'live'} sm`}>{result.simulated ? 'SIMULATED' : 'REAL SPEND'}</span>
-                  <strong className="mono">{fmtUsd(result.amount)} {result.currency ?? 'USD'}</strong>
-                  <span className="cset-meta">{result.brand ?? conn.brand?.name}</span>
-                </div>
-                <div className="cset-receipt-code">
-                  <span className="cset-fact-l">Redemption code</span>
-                  <code className="mono">{result.masked_code ?? '••••'}</code>
-                </div>
-                {result.message && <p className="cset-meta cset-receipt-msg">{result.message}</p>}
-                <button className="cset-link cset-receipt-again" onClick={resetFlow}>Run another</button>
-              </div>
-            )}
-          </div>
-
-          <p className="cset-snaplii-thesis">
-            The agent never holds the Snaplii key. Every purchase is server-brokered, one-shot, and capped — and pauses here for your approval.
-            {live ? ' LIVE mode is on: approvals spend real money.' : ' Real money only moves once the owner enables LIVE mode.'}
-          </p>
-        </>
-      )}
-    </div>
-  )
-}
+// Snaplii payment wallet: ARCHIVED 2026-07-30.
+//
+// The card UI and its broker helpers lived here. Snaplii is not part of Origin's
+// forward plan, so the ~200 lines were removed rather than left unrendered to rot
+// (git history has them; the server broker still exists at functions/snaplii-broker.ts
+// and functions/snaplii-run-claim.ts, neither of which is routed — public/_routes.json
+// admits only /api/*). Card payments will be built on Stripe.
 
 // ---- Wallets ------------------------------------------------------------------
 
@@ -804,7 +609,11 @@ function WalletsTab() {
         <p>Origin never stores a seed phrase or private key, and an agent can never sign — it can only prepare a draft you approve. Link a wallet by proving you control it.</p>
       </header>
 
-      <SnapliiCard />
+      {/* Snaplii card removed 2026-07-30 — the Snaplii payment path is ARCHIVED and is
+          not part of Origin's forward plan. The component and its server broker remain in
+          the tree (functions/snaplii-broker.ts, snaplii-run-claim.ts) as reference for the
+          approve -> lease -> spend shape, but nothing renders it in the account UX and it
+          must not be re-mounted. Card payments will be built on Stripe instead. */}
 
       <h3 className="cset-subh">On-chain wallet</h3>
       <div className="cset-siwe">

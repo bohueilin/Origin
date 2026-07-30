@@ -59,6 +59,20 @@ const BANNED = [
   // than the word. So match the shape that actually overclaims: asserting that some
   // artifact IS a certificate.
   [/\bsafety certificate\b/i, '"safety certificate" — a trace is evidence, not a certificate'],
+  // Bare assurance adverbs. The banned-word list has always included safe/secure, but
+  // the gate had NO rule for them — so "Approve it safely" and "We send this securely
+  // to our team" both shipped through a green lint. A gate that reports clean while
+  // the words it exists to catch are on the page is worse than no gate: it gives the
+  // person relying on it false assurance, which for this company is the worst possible
+  // category of bug.
+  //
+  // Scoped to the ADVERBS and to copular assertions. The approved phrasings — the
+  // negated form (never "safe" or "correct"), quoted prior-work descriptions, and
+  // hyphenated domain compounds like frontier-safety — must keep passing, or people
+  // learn to delete the disclaimer instead of the claim.
+  [/\b(safely|securely)\b/i, 'bare "safely"/"securely" — we say "reproducible under this verifier," never an assurance adverb'],
+  [/\b(is|are|keeps?|makes?)\s+(it\s+|you\s+|your\s+\w+\s+)?(safe|secure)\b/i, 'asserts something IS safe/secure — scope the claim to the verifier instead'],
+
   [/\b(is|are|as)\s+(the\s+|a\s+|your\s+)?(safety\s+|compliance\s+)?certificates?\b/i, 'asserts an artifact IS a certificate — Origin issues none; say evidence / independently verifiable record'],
   [/\bwe\s+certify\b/i, '"we certify" — Origin does not certify; the customer\'s gate decides'],
   [/\bbrain that can['’]?t\b/i, 'absolute "a brain that can\'t X" claim'],

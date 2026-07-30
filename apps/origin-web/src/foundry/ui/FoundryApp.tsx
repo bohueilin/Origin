@@ -353,7 +353,7 @@ export default function FoundryApp() {
         </h1>
         <p className="fdy-hero__sub">
           gemma-4-31b reads your floor into a real simulation. A Planner proposes every move and a Guardian ratifies it — dozens of
-          perceive→plan→verify cycles per second, only possible at ~1,500 tok/s. The judge of "did it do the job safely" is a deterministic
+          perceive→plan→verify cycles per second, only possible at ~1,500 tok/s. The judge of "did it do the job within policy" is a deterministic
           oracle, never an LLM.
         </p>
       </header>

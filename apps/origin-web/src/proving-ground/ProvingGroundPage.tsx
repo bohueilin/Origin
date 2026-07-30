@@ -112,7 +112,7 @@ export function ProvingGroundPage() {
         {unverifiedFalseAccepts > 0 && (
           <p className="pg-note">
             <b>Counterfactual:</b> an <b>unverified</b> always-act policy false-accepts{' '}
-            {unverifiedFalseAccepts} episode(s) on this floor — claiming success it never safely
+            {unverifiedFalseAccepts} episode(s) on this floor — claiming success it never actually
             earned (executing a forbidden order, or fabricating a finish no route supports). The
             verified fleet does neither; its catastrophic count stays 0. Capability is not permission.
           </p>

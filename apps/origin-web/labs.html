@@ -87,6 +87,13 @@
               <div class="labs-card__cta"><a class="btn btn--ghost btn--sm" href="/proving-ground">Enter the proving ground →</a></div>
             </div>
             <div class="labs-card">
+              <span class="labs-card__kicker">Software actor · credential broker</span>
+              <h3>Agent credential broker</h3>
+              <p>An agent asks for access it does not hold. A named human approves one scoped grant, the broker mints an <b>opaque lease handle</b> — never a secret — and the value is resolved only at the tool-call boundary, then discarded. Revoke mid-flight and the next call fails closed.</p>
+              <p class="labs-verifier">Domain verifier: <b>the grant ledger</b> (approve / lease / revoke; every use recorded). Runs against a mock vault — no real credential is brokered here.</p>
+              <div class="labs-card__cta"><a class="btn btn--ghost btn--sm" href="/passport">Open the broker demo →</a></div>
+            </div>
+            <div class="labs-card">
               <span class="labs-card__kicker">Physical actor · robot plan</span>
               <h3>Verified warehouse</h3>
               <p>Multi-robot fleet follows the oracle’s BFS-verified plan, avoids a moving human + exclusion zones, and emits a signed attestation. Rendered in 2D and 3D.</p>

@@ -48,6 +48,19 @@ const BANNED = [
   [/\bprevents (all|every|any|prompt injection\b)/i, 'claims to PREVENT (we contain, we do not prevent)'],
   [/\bguaranteed safe\b/i, '"guaranteed safe" — we say "reproducible under this verifier," never "safe"'],
   [/\bcan['’]?t (cheat|reward[-\s]?hack|be tricked|be gamed)\b/i, 'absolute "can\'t cheat/reward-hack/be tricked" (cheating scores zero — it is not impossible)'],
+  // "certification" is legally reserved for accredited bodies (TÜV, UL, SGS, exida, CertX —
+  // all now NVIDIA Halos partners). Said in a robotics/safety context it ends the
+  // conversation, and Origin issues no certificates: the customer's gate decides.
+  // Use: release gate, admission control, evidence, independently verifiable record.
+  // Scoped deliberately to AFFIRMATIVE equations only. Negated disclaimers ("not a
+  // regulatory certification", "not reviewer-accepted or certified") and scoped
+  // definitions ('"Certified" here means …') are the APPROVED phrasings and must keep
+  // passing — flagging them would train people to delete the disclaimer, which is worse
+  // than the word. So match the shape that actually overclaims: asserting that some
+  // artifact IS a certificate.
+  [/\bsafety certificate\b/i, '"safety certificate" — a trace is evidence, not a certificate'],
+  [/\b(is|are|as)\s+(the\s+|a\s+|your\s+)?(safety\s+|compliance\s+)?certificates?\b/i, 'asserts an artifact IS a certificate — Origin issues none; say evidence / independently verifiable record'],
+  [/\bwe\s+certify\b/i, '"we certify" — Origin does not certify; the customer\'s gate decides'],
   [/\bbrain that can['’]?t\b/i, 'absolute "a brain that can\'t X" claim'],
   [/\bprovably (means )?safer\b/i, '"provably safer" — the oracle proves reproducibility of a score, not safety'],
   [/\bcan never reward[-\s]?hack\b/i, 'absolute "can never reward-hack" (the verifier itself is the attack surface Cobra/Chronos harden)'],
@@ -86,6 +99,9 @@ const REACT_COPY_GLOBS = [
   'src/foundry/ui/FoundryApp.tsx', 'src/foundry/soc/SocConsole.tsx', 'src/foundry/clip/ClipView.tsx',
   'src/factorydad/components/RsiPrimer.tsx', 'src/proving-ground/ProvingGroundPage.tsx',
   'src/license.ts', // its level names/permissions render on /proving-ground
+  // Added after an audit found affirmative "Certified"/"certificate" copy shipping on
+  // /security and /reference-check while the gate scanned neither file.
+  'src/security/SecurityPage.tsx', 'src/reference-check/ReferenceCheckPage.tsx',
 ]
 
 let violations = 0

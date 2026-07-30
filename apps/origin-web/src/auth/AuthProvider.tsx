@@ -44,7 +44,13 @@ function msg(error: any): string {
   return error?.message || error?.error || 'Something went wrong. Please try again.'
 }
 
-const REDIRECT = typeof window !== 'undefined' ? `${window.location.origin}/app` : 'https://origin-physical-ai.pages.dev/app'
+// OAuth MUST return to a page that actually mounts this provider, because the
+// authorization code is exchanged by the retry loop below. /app does NOT mount any
+// JS module (app.html has no `type="module"` script), so returning there left the
+// code unexchanged and the visitor silently signed out with no error — the reported
+// "Google sign-in does nothing". /auth mounts authMain.tsx, exchanges the code, and
+// then forwards to `next` (AuthPage), so the destination UX is unchanged.
+const REDIRECT = typeof window !== 'undefined' ? `${window.location.origin}/auth` : 'https://origin-physical-ai.pages.dev/auth'
 
 // Only hit the auth endpoint when there's actually a session to restore: a stored token,
 // or an OAuth code in the URL to exchange. Without this, signed-out visitors fire repeated

@@ -113,7 +113,7 @@ export function ControlPlaneThesis() {
           <h3>Honest by design</h3>
           <ul>
             <li>We <b>contain</b> prompt injection, we don&rsquo;t claim to <b>prevent</b> it — the destructive action never executes at the floor, regardless of what the model believes.</li>
-            <li><b>Deterministic + auditable</b>, not "formally verified." The audit trace is the safety certificate.</li>
+            <li><b>Deterministic + auditable</b>, not "formally verified." The audit trace IS the evidence — an independently verifiable record, not a certificate.</li>
             <li><b>Frame-by-frame perception</b>, not video. Gemma-4 on Cerebras is image+text → text. We built the robot-ready brain, not a robot.</li>
           </ul>
         </div>
@@ -769,7 +769,7 @@ export default function SocConsole() {
             {done && (
               <div className="soc-verdict">
                 <strong>{run.threatsBlocked} destructive action{run.threatsBlocked === 1 ? '' : 's'} blocked synchronously, before execution.</strong> Zero executed.
-                The deterministic policy — not an LLM — decided every "allowed" (DeepMind&rsquo;s R3 synchronous block), and the Guardian ran on every step because it&rsquo;s free at Cerebras speed. This trace is the audit trail — the safety certificate.
+                The deterministic policy — not an LLM — decided every "allowed" (DeepMind&rsquo;s R3 synchronous block), and the Guardian ran on every step because it&rsquo;s free at Cerebras speed. This trace is the audit trail &mdash; the independently verifiable record. Origin issues no certificate; the gate decides.
               </div>
             )}
           </>

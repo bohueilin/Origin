@@ -33,13 +33,29 @@ function GoogleMark() {
 type Mode = 'signup' | 'signin'
 type Step = 'details' | 'password' | 'verify'
 
+const NEXT_KEY = 'origin.auth.next'
+
 export function AuthPage() {
   const auth = useAuth()
-  const next = useMemo(() => new URLSearchParams(window.location.search).get('next') || '/app.html', [])
-  // OAuth must land on a whitelisted absolute URL. Returning to the Passport demo keeps the
-  // owner in context to trigger the live flow; everything else defaults to the console (/app).
+  // `next` survives the OAuth round trip in sessionStorage, because the redirect URL must
+  // stay query-free to match insforge.toml's full-URL allowlist (see googleRedirect).
+  const next = useMemo(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get('next')
+    if (fromUrl) return fromUrl
+    try { return sessionStorage.getItem(NEXT_KEY) || '/app.html' } catch { return '/app.html' }
+  }, [])
+  // OAuth must land on an allowlisted absolute URL that MOUNTS AuthProvider, because the
+  // authorization code is exchanged there. /passport does mount it; /app does NOT (app.html
+  // carries no module script), so the old `next.includes('passport') ? '/passport' : '/app'`
+  // silently dropped every non-Passport Google sign-in — the visitor landed signed out with
+  // no error. Return to /auth, which mounts authMain.tsx, exchanges the code, and then
+  // forwards to `next` via the effect below, so the destination UX is unchanged.
+  //
+  // No query string: insforge.toml `allowed_redirect_urls` matches FULL URLs, so the
+  // redirect must be exactly an allowlisted origin+path. `next` therefore travels in
+  // sessionStorage across the OAuth round trip instead of in the URL.
   const googleRedirect = useMemo(
-    () => `${window.location.origin}${next.includes('passport') ? '/passport' : '/app'}`,
+    () => `${window.location.origin}${next.includes('passport') ? '/passport' : '/auth'}`,
     [next],
   )
 
@@ -57,7 +73,10 @@ export function AuthPage() {
 
   // Already signed in → go straight to the destination.
   useEffect(() => {
-    if (auth.ready && auth.user) window.location.replace(next)
+    if (auth.ready && auth.user) {
+      try { sessionStorage.removeItem(NEXT_KEY) } catch { /* nothing to clean up */ }
+      window.location.replace(next)
+    }
   }, [auth.ready, auth.user, next])
 
   const go = () => window.location.assign(next)
@@ -76,6 +95,8 @@ export function AuthPage() {
     // Hard gate (not just the disabled attribute): no account creation while paused.
     if (mode === 'signup' && !SIGNUPS_OPEN) { setError('Account creation is paused during the closed private pilot.'); return }
     setError(''); setBusy(true)
+    // Persist the destination before we leave the origin; the callback URL carries no query.
+    try { sessionStorage.setItem(NEXT_KEY, next) } catch { /* private mode — fall back to /app.html */ }
     const { error } = await auth.signInWithGoogle({ redirectTo: googleRedirect })
     setBusy(false)
     if (error) setError(error)

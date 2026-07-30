@@ -22,7 +22,7 @@
       gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
     </script>
 
-    <title>Origin — the evidence layer for AI agents</title>
+    <title>Origin — runtime authorization for AI agents</title>
     <meta
       name="description"
       content="Origin enforces runtime policy before AI agents can take side effects, routes tool calls through a controlled proxy, and produces a tamper-evident evidence package — so teams can get high-consequence agents through security review and prove what happened afterward."
@@ -39,13 +39,13 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://origin-physical-ai.pages.dev/" />
-    <meta property="og:title" content="Origin — the evidence layer for AI agents" />
+    <meta property="og:title" content="Origin — runtime authorization for AI agents" />
     <meta property="og:description" content="Runtime policy enforcement + a tamper-evident evidence package, so teams can get high-consequence AI agents through security review and prove what they did." />
     <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Origin — the evidence layer for AI agents" />
+    <meta name="twitter:title" content="Origin — runtime authorization for AI agents" />
     <meta name="twitter:description" content="Enforce what an agent is allowed to do at runtime. Prove what it did. Get through security review." />
     <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
 
@@ -73,7 +73,7 @@
           "logo": "https://origin-physical-ai.pages.dev/origin-logo.png",
           "email": "hello@originphysical.ai",
           "founder": { "@type": "Person", "name": "Bo-Huei Lin" },
-          "description": "The evidence layer for AI agents: runtime policy enforcement plus a tamper-evident evidence package for high-consequence agents in security review."
+          "description": "Runtime authorization for AI agents: an external gate that decides at the moment of the tool call, holds high-consequence actions for a named human, and emits a tamper-evident record a reviewer re-verifies offline."
         },
         {
           "@type": "WebSite",
@@ -136,30 +136,28 @@
         <div class="shell hero__grid">
           <div class="hero__copy">
             <p class="eyebrow">Capability is not permission.</p>
-            <h1 id="hero-title">The reference check for AI agents.</h1>
+            <h1 id="hero-title">Your agent can call the payments API. That is not the same as being allowed to.</h1>
             <p class="lede">
-              Before an agent gets production access, Origin tests it against <b>your</b> policies and
-              permissions, shows exactly where it’s <b>over-granted</b>, and issues a signed
-              <b>attestation</b> you can re-verify independently — one that <b>automatically voids</b> when
-              the agent, tools, policy, or environment change.
+              Origin is <b>runtime authorization</b>: an external gate in front of the tool call. It decides
+              server-side before the side effect, holds anything above your threshold for a
+              <b>named human</b>, and writes a hash-chained record a reviewer re-verifies
+              <b>offline — without our server</b>.
             </p>
 
             <div class="hero__cta cta-row">
-              <a class="btn btn--primary" href="/reference-check" data-analytics="hero_check_agent_click">
-                Check an agent
+              <a class="btn btn--primary" href="/verify" data-analytics="hero_verify_attestation_click">
+                Verify a credential &rarr;
               </a>
-              <a class="btn btn--ghost" href="/verify" data-analytics="hero_verify_attestation_click">
-                Verify an attestation &rarr;
+              <a class="btn btn--ghost" href="/proving-ground" data-analytics="hero_proving_ground_click">
+                See it decide
               </a>
             </div>
             <p class="hero__cta-sub">
-              <a href="#demo" data-analytics="hero_secondary_cta_click">Watch the 60-second demo</a>
-              <span aria-hidden="true">·</span>
-              <button type="button" class="linklike" data-open-lead data-intent="review" data-analytics="hero_book_review_click">Book an evidence review</button>
+              Verification runs in your browser. Nothing you paste is uploaded, and nothing is stored.
             </p>
 
             <p class="hero__buyer">For the owner of a high-consequence agent — touching production, internal tools, code, PII, or money — that a reviewer can’t yet approve.</p>
-            <p class="honesty-line">Origin replaces unbounded safety claims with <b>exact, reproducible evidence</b> — the policy, the verifier version, the config hash, the cases, the limits, and what voids it. Prototype in private pilot; not compliance certification.</p>
+            <p class="honesty-line">Origin replaces unbounded assurances with <b>exact, reproducible evidence</b> — the policy, the verifier version, the config hash, the cases and the limits. Every lane shown here is simulated: no live money and no live tool has ever moved through Origin. This is a working prototype — <b>not production SaaS, and not compliance certification</b>.</p>
 
             <ul class="hero__assurances" aria-label="How Origin works">
               <li>Policy gate before side effects</li>
@@ -619,7 +617,7 @@
             <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
             <span class="brand__name">Origin</span>
           </a>
-          <p>The evidence layer for AI agents.</p>
+          <p>Runtime authorization for AI agents.</p>
         </div>
         <nav class="site-footer__nav" aria-label="Footer">
           <div>

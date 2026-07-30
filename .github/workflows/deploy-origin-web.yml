@@ -80,9 +80,15 @@ jobs:
       - name: Build origin-web
         # InsForge auth — PUBLIC values (the anon key is RLS-guarded and already ships in the
         # client bundle), so they're safe to inline here. Without them AUTH_ENABLED is false.
+        #
+        # 2026-07-30: repointed from 36s5vrcx.us-east (project "autonomy-trace-console") to
+        # 82fs5fqk.us-west (project "Origin"). The old project is PAUSED — every endpoint,
+        # including /api/auth/*, returned 503 "No backend services available", so sign-in could
+        # not work no matter what the client did. Do not point this back without checking
+        # `npx @insforge/cli list` for project status first.
         env:
-          VITE_INSFORGE_URL: https://36s5vrcx.us-east.insforge.app
-          VITE_INSFORGE_ANON_KEY: anon_e8a0c703bf722f5b00f3af9d6209a65024bfc50ce3ff52fef88c34dec39e5bd7
+          VITE_INSFORGE_URL: https://82fs5fqk.us-west.insforge.app
+          VITE_INSFORGE_ANON_KEY: anon_d727beb831e1f5c4ee7c36f0484a51375574f443d4f3421add387932f9c0b44d
         run: npm run build:web
 
       - name: Upload dist (the exact artifact a deploy would ship)

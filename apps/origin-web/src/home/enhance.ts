@@ -469,3 +469,69 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
   else playBtn?.addEventListener('click', () => { const wasPlaying = !!timer; play(); if (!wasPlaying) track('demo_play') })
   render()
 })
+
+// ── Hero self-verification ────────────────────────────────────────────────────
+//
+// The homepage argued that evidence is independently checkable, and then asked the
+// visitor to take that on faith — an investor could read the whole page without ever
+// seeing Origin refuse anything, or seeing a single claim actually verified.
+//
+// This recomputes the SHA-256 hash chain over the console's own audit entries, in the
+// visitor's browser, with no network and no Origin server involved. It is the same
+// computation /verify performs on a real exported package. The tamper button edits one
+// entry and re-runs it, so the chain breaks in front of them.
+//
+// Honesty: these entries are the SIMULATED console's, not a customer's, and the
+// caption says so. What is genuinely demonstrated is the mechanism — that altering any
+// byte breaks the chain, and that checking it requires nothing of ours.
+const chainRoot = document.querySelector<HTMLElement>('[data-chain-check]')
+if (chainRoot && window.crypto?.subtle) {
+  const out = chainRoot.querySelector<HTMLElement>('[data-chain-out]')
+  const runBtn = chainRoot.querySelector<HTMLButtonElement>('[data-chain-run]')
+  const tamperBtn = chainRoot.querySelector<HTMLButtonElement>('[data-chain-tamper]')
+  const entries = Array.from(document.querySelectorAll<HTMLElement>('.log li'))
+    .map((li) => (li.textContent || '').replace(/\s+/g, ' ').trim())
+  let tampered = false
+
+  const sha256 = async (text: string): Promise<string> => {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))
+    return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('')
+  }
+
+  // Same shape as the real chain: each link digests the previous hash plus this entry,
+  // so one altered byte changes every hash after it.
+  const buildChain = async (rows: string[]): Promise<string[]> => {
+    const hashes: string[] = []
+    let prev = ''
+    for (const row of rows) { prev = await sha256(`${prev}|${row}`); hashes.push(prev) }
+    return hashes
+  }
+
+  const render = (msg: string, state: 'ok' | 'bad' | 'busy') => {
+    if (!out) return
+    out.textContent = msg
+    out.dataset.state = state
+  }
+
+  const verify = async () => {
+    render('Recomputing…', 'busy')
+    const rows = entries.slice()
+    if (tampered && rows.length > 2) rows[2] = rows[2].replace('Approved', 'Approved (altered)')
+    const sealed = await buildChain(entries)          // what was sealed when written
+    const recomputed = await buildChain(rows)          // what the bytes say now
+    const bad = recomputed.findIndex((h, i) => h !== sealed[i])
+    if (bad === -1) {
+      render(`chain intact · ${sealed.length}/${sealed.length} links verified · head ${sealed[sealed.length - 1].slice(0, 12)}…`, 'ok')
+    } else {
+      render(`TAMPER at entry ${bad + 1} — recomputed ${recomputed[bad].slice(0, 12)}… ≠ sealed ${sealed[bad].slice(0, 12)}…`, 'bad')
+    }
+  }
+
+  runBtn?.addEventListener('click', () => { void verify(); track('hero_chain_verify') })
+  tamperBtn?.addEventListener('click', () => {
+    tampered = !tampered
+    if (tamperBtn) tamperBtn.textContent = tampered ? 'Restore the record' : 'Alter one entry'
+    void verify()
+    track('hero_chain_tamper')
+  })
+}

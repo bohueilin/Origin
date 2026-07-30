@@ -211,8 +211,19 @@
                 </div>
               </div>
             </div>
+            <!-- Self-verification. The page claims the record is independently
+                 checkable; this lets the visitor check it, in their own browser, with
+                 no network call and nothing of ours running. Same computation /verify
+                 performs on a real exported package. -->
+            <div class="chaincheck" data-chain-check>
+              <div class="chaincheck__row">
+                <button type="button" class="btn btn--ghost btn--sm" data-chain-run>Re-verify this trail</button>
+                <button type="button" class="linklike" data-chain-tamper>Alter one entry</button>
+              </div>
+              <output class="chaincheck__out" data-chain-out aria-live="polite">Runs in your browser — no upload, no server of ours.</output>
+            </div>
             <figcaption id="console-cap" class="hero__cap">
-              Simulated Evidence Console · representative UI — agent proposal, policy verdict, controlled proxy, and a hash-chained audit trail for every action.
+              Simulated Evidence Console · representative UI — agent proposal, policy verdict, controlled proxy, and a hash-chained audit trail for every action. The re-verify button recomputes the chain over these entries locally; a real package is checked the same way at <a href="/verify">/verify</a>.
             </figcaption>
           </figure>
         </div>

@@ -1171,3 +1171,15 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .tr2-verify__lbl a:focus-visible {
   color: #c6d0ff !important;
 }
+
+/* Hero self-verification — lets a visitor recompute the console's own hash chain
+   in-browser. Deliberately uses existing tokens/spacing; no new scale introduced. */
+.chaincheck { margin-top: 10px; }
+.chaincheck__row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.chaincheck__out {
+  display: block; margin-top: 8px; font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 12.5px; line-height: 1.5; color: var(--steel, #6b7280); word-break: break-word;
+}
+.chaincheck__out[data-state="ok"]   { color: #0f7b4f; }
+.chaincheck__out[data-state="bad"]  { color: #b42318; font-weight: 600; }
+.chaincheck__out[data-state="busy"] { opacity: .7; }

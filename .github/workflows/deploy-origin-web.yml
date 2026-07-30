@@ -77,6 +77,14 @@ jobs:
         working-directory: apps/origin-web
         run: npx vitest run
 
+      # Orphan gate. Typecheck, lint and tests all stayed green while c2fc5b3 and
+      # b1c14ce silently took admin, the support queue, payments, 1Password and the
+      # OAuth callback offline — an unreachable module is still valid TypeScript
+      # with passing tests. This is the only check that notices.
+      - name: Reachability (no new orphaned modules)
+        working-directory: apps/origin-web
+        run: node scripts/reachability-lint.mjs --max 78
+
       - name: Build origin-web
         # InsForge auth — PUBLIC values (the anon key is RLS-guarded and already ships in the
         # client bundle), so they're safe to inline here. Without them AUTH_ENABLED is false.

@@ -129,6 +129,12 @@ jobs:
         working-directory: apps/origin-web
         run: deno check functions/
 
+      # Orphan gate — the only check that notices when a mount point disappears
+      # and takes working features dark (c2fc5b3, b1c14ce).
+      - name: Reachability (no new orphaned modules)
+        working-directory: apps/origin-web
+        run: node scripts/reachability-lint.mjs --max 78
+
   evidence-verify:
     name: evidence-verify (the moat's re-derivation gates)
     runs-on: ubuntu-latest

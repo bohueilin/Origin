@@ -26,8 +26,9 @@
     "reward:diff": "node scripts/reward-diff.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm run reward:diff && npm test",
-    "gates:full": "npm run gates && npm run test:e2e"
+    "gates": "npm run build && npm run lint && npm run verify:evidence && npm run proof:verify && npm run reward:diff && npm test && npm run reachability",
+    "gates:full": "npm run gates && npm run test:e2e",
+    "reachability": "node scripts/reachability-lint.mjs --max 78"
   },
   "dependencies": {
     "@hono/node-server": "^2.0.5",

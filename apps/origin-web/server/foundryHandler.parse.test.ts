@@ -122,6 +122,20 @@ describe('handleParseFloor — the gate judges real model output', () => {
     expect(['finish', 'refuse', 'escalate']).toContain(res.oracle?.verdict)
   })
 
+  it('the parse call keeps reasoning OFF with budget for a full grid (live outage regression)', async () => {
+    // First live run with a real key: reasoningEffort 'low' turned Gemma's
+    // reasoning ON, which consumed the entire 1200-token budget before ONE
+    // content byte — finish_reason 'length', empty content, every real parse
+    // died as bad_json. A perception readout under a forced JSON schema needs
+    // no reasoning; it needs output budget (a 16x16 grid's cell list alone can
+    // pass 1500 tokens).
+    chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
+    await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const opts = chat.mock.calls[0][2] as { reasoningEffort?: string; maxTokens?: number }
+    expect(opts.reasoningEffort).toBe('none')
+    expect(opts.maxTokens).toBeGreaterThanOrEqual(2500)
+  })
+
   it('real parses carry the RAW model proposal so the receipt binding re-verifies offline', async () => {
     chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
     const valid = await handleParseFloor({ imageDataUri: IMG }, cfg)

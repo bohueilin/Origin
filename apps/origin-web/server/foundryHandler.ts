@@ -221,7 +221,11 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
       ],
     },
   ]
-  const res = await cerebrasChat(messages, cfg, { jsonSchema: { name: 'floor_grid', schema: FLOOR_SCHEMA }, reasoningEffort: 'low', maxTokens: 1200, temperature: 0.1 })
+  // reasoningEffort MUST stay 'none': 'low' turns Gemma reasoning ON, and on the
+  // first live run it consumed the entire token budget before one content byte
+  // (finish_reason 'length', empty content → every parse died bad_json). The
+  // budget is sized for a full 16x16 grid's cell list, not for thinking.
+  const res = await cerebrasChat(messages, cfg, { jsonSchema: { name: 'floor_grid', schema: FLOOR_SCHEMA }, reasoningEffort: 'none', maxTokens: 3000, temperature: 0.1 })
   if (!res.ok) {
     return refuse('api_error', `Cerebras parse unavailable (${res.code ?? 'error'}) — nothing was parsed.`, res.timing ?? null, res.model)
   }

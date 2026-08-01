@@ -22,9 +22,12 @@
 // the same discipline as the evidence spine. Deterministic: no clock, no RNG.
 // ----------------------------------------------------------------------------
 
-import { sha256 } from '../passport/hash'
-import type { DescriptiveSiteMap } from '../workflowDraft'
-import type { GridPos } from '../warehouse'
+// Explicit .ts extensions: this module runs under BOTH Vite (client) and plain
+// `node server/main.ts` (native type-stripping), and the latter cannot resolve
+// extensionless relative imports — the local server crashed on this once.
+import { sha256 } from '../passport/hash.ts'
+import type { DescriptiveSiteMap } from '../workflowDraft.ts'
+import type { GridPos } from '../warehouse.ts'
 
 export type ParseGateVerdict = 'VALID' | 'ESCALATE' | 'VOID'
 

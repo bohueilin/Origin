@@ -1,0 +1,41 @@
+{
+  "bench": "perceiver-bench@1",
+  "scope": "Synthetic rendered plans (origin-synthetic-floors-v1), scored by the deterministic scorer. Numbers hold under THIS scorer on THIS dataset — no broader claim.",
+  "api": "http://localhost:8787",
+  "gt_verdicts": {
+    "escalate": 3,
+    "finish": 3,
+    "refuse": 2
+  },
+  "aggregate": {
+    "n": 24,
+    "scored": 24,
+    "unparsed": 0,
+    "meanRoleF1": {
+      "obstacles": 0.33748834593415555,
+      "hazards": 0.20917495203209485,
+      "humanOnly": 0.06635802469135803
+    },
+    "roleSupport": {
+      "obstacles": 21,
+      "hazards": 21,
+      "humanOnly": 18
+    },
+    "anchorAccuracy": 0,
+    "dimsMatchRate": 0.16666666666666666,
+    "verdictAgreementRate": 0.9583333333333334
+  },
+  "gateVerdicts": {
+    "VALID": 20,
+    "ESCALATE": 4,
+    "VOID": 0
+  },
+  "fallbacks": {},
+  "baseline": {
+    "label": "first measured baseline",
+    "date": "2026-07-30",
+    "model": "gemma-4-31b via Cerebras",
+    "samples": 24,
+    "note": "n=24 (8 floors x 3 render styles), local run. Reproduce: npm run bench:perceiver -- --floors 8 --api-base <server>. Numbers hold under the deterministic scorer on the synthetic dataset only."
+  }
+}

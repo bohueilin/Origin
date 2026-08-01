@@ -103,21 +103,33 @@ if (!API) {
 const scores = []
 const fallbacks = {}
 let gateVerdicts = { VALID: 0, ESCALATE: 0, VOID: 0 }
+// Pace the run: Cerebras enforces a requests-per-minute cap, and firing the
+// whole dataset back-to-back turned 19/24 requests into rate-limit errors on
+// the first real run. Default ~2.5s between calls (override with --delay-ms),
+// plus up to 3 retries with exponential backoff on rate-limit/api errors —
+// a retried row is the SAME row, never silently dropped.
+const DELAY_MS = Number(flag('--delay-ms') ?? 2500)
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+let firstCall = true
 for (const row of rows) {
   const png = renderFloorPng(row.ground_truth, row.style).png
   const dataUri = `data:image/png;base64,${png.toString('base64')}`
-  let res
-  try {
-    const r = await fetch(`${API}/api/foundry/parse-floor`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ imageDataUri: dataUri, hint: row.hint }),
-    })
-    res = await r.json()
-  } catch (e) {
-    fallbacks.network = (fallbacks.network ?? 0) + 1
-    scores.push(scoreParse(row.ground_truth, null))
-    continue
+  let res = null
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    if (!firstCall) await sleep(attempt === 0 ? DELAY_MS : DELAY_MS * 2 ** attempt)
+    firstCall = false
+    try {
+      const r = await fetch(`${API}/api/foundry/parse-floor`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ imageDataUri: dataUri, hint: row.hint }),
+      })
+      res = await r.json()
+    } catch (e) {
+      res = { fallback: 'network' }
+    }
+    if (res.fallback !== 'api_error' && res.fallback !== 'network') break
+    process.stdout.write('r') // retrying this same row
   }
   if (res.fallback) fallbacks[res.fallback] = (fallbacks[res.fallback] ?? 0) + 1
   if (res.gate?.verdict) gateVerdicts[res.gate.verdict] = (gateVerdicts[res.gate.verdict] ?? 0) + 1

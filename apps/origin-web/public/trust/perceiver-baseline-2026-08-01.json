@@ -1,0 +1,162 @@
+{
+  "kind": "perceiver-baseline",
+  "date": "2026-08-01",
+  "bench": "perceiver-bench@2",
+  "model": "gemma-4-31b via Cerebras",
+  "samples": 72,
+  "scope": "Synthetic rendered plans (origin-synthetic-floors-v2), scored by the deterministic scorer. Deltas are PAIRED same-floor same-style comparisons; the A0R-vs-A0 noise floor bounds what an identical config produces. Numbers hold under THIS scorer on THIS dataset — no broader claim.",
+  "gt_verdicts": {
+    "escalate": 8,
+    "finish": 8,
+    "refuse": 8
+  },
+  "arm": {
+    "name": "A0",
+    "condition": {
+      "gridRefs": false,
+      "variant": "legend"
+    },
+    "grouped": {
+      "overall": {
+        "n": 72,
+        "scored": 72,
+        "unparsed": 0,
+        "meanRoleF1": {
+          "obstacles": 0.36359520925168937,
+          "hazards": 0.32950629790664654,
+          "humanOnly": 0.23503357753357754
+        },
+        "roleSupport": {
+          "obstacles": 66,
+          "hazards": 63,
+          "humanOnly": 60
+        },
+        "anchorAccuracy": 0.05555555555555555,
+        "dimsMatchRate": 0.19444444444444445,
+        "verdictAgreementRate": 0.8333333333333334
+      },
+      "byCondition": {
+        "print|plain|legend": {
+          "n": 24,
+          "scored": 24,
+          "unparsed": 0,
+          "meanRoleF1": {
+            "obstacles": 0.34154131411718053,
+            "hazards": 0.24309216264103486,
+            "humanOnly": 0.19166666666666665
+          },
+          "roleSupport": {
+            "obstacles": 22,
+            "hazards": 21,
+            "humanOnly": 20
+          },
+          "anchorAccuracy": 0,
+          "dimsMatchRate": 0.125,
+          "verdictAgreementRate": 0.9166666666666666
+        },
+        "blueprint|plain|legend": {
+          "n": 24,
+          "scored": 24,
+          "unparsed": 0,
+          "meanRoleF1": {
+            "obstacles": 0.28066419789380803,
+            "hazards": 0.3691467147988887,
+            "humanOnly": 0.26926739926739923
+          },
+          "roleSupport": {
+            "obstacles": 22,
+            "hazards": 21,
+            "humanOnly": 20
+          },
+          "anchorAccuracy": 0.08333333333333333,
+          "dimsMatchRate": 0.20833333333333334,
+          "verdictAgreementRate": 0.8333333333333334
+        },
+        "sketch|plain|legend": {
+          "n": 24,
+          "scored": 24,
+          "unparsed": 0,
+          "meanRoleF1": {
+            "obstacles": 0.4685801157440795,
+            "hazards": 0.3762800162800163,
+            "humanOnly": 0.24416666666666664
+          },
+          "roleSupport": {
+            "obstacles": 22,
+            "hazards": 21,
+            "humanOnly": 20
+          },
+          "anchorAccuracy": 0.08333333333333333,
+          "dimsMatchRate": 0.25,
+          "verdictAgreementRate": 0.75
+        }
+      },
+      "byStyle": {
+        "print": {
+          "n": 24,
+          "scored": 24,
+          "unparsed": 0,
+          "meanRoleF1": {
+            "obstacles": 0.34154131411718053,
+            "hazards": 0.24309216264103486,
+            "humanOnly": 0.19166666666666665
+          },
+          "roleSupport": {
+            "obstacles": 22,
+            "hazards": 21,
+            "humanOnly": 20
+          },
+          "anchorAccuracy": 0,
+          "dimsMatchRate": 0.125,
+          "verdictAgreementRate": 0.9166666666666666
+        },
+        "blueprint": {
+          "n": 24,
+          "scored": 24,
+          "unparsed": 0,
+          "meanRoleF1": {
+            "obstacles": 0.28066419789380803,
+            "hazards": 0.3691467147988887,
+            "humanOnly": 0.26926739926739923
+          },
+          "roleSupport": {
+            "obstacles": 22,
+            "hazards": 21,
+            "humanOnly": 20
+          },
+          "anchorAccuracy": 0.08333333333333333,
+          "dimsMatchRate": 0.20833333333333334,
+          "verdictAgreementRate": 0.8333333333333334
+        },
+        "sketch": {
+          "n": 24,
+          "scored": 24,
+          "unparsed": 0,
+          "meanRoleF1": {
+            "obstacles": 0.4685801157440795,
+            "hazards": 0.3762800162800163,
+            "humanOnly": 0.24416666666666664
+          },
+          "roleSupport": {
+            "obstacles": 22,
+            "hazards": 21,
+            "humanOnly": 20
+          },
+          "anchorAccuracy": 0.08333333333333333,
+          "dimsMatchRate": 0.25,
+          "verdictAgreementRate": 0.75
+        }
+      }
+    },
+    "gateVerdicts": {
+      "VALID": 61,
+      "ESCALATE": 11,
+      "VOID": 0
+    },
+    "fallbacks": {}
+  },
+  "notes": [
+    "Supersedes perceiver-baseline-2026-07-30.json (n=24): that run measured a legend truncated by a 300-char server hint cap (fixed to 800 in this commit) and used a verdict-skewed floor set. This set is balanced 8/8/8 finish/refuse/escalate.",
+    "Reproduce: npm run bench:perceiver -- --floors 24 --arms A0 --api-base <server-with-key>. Numbers hold under the deterministic scorer on the synthetic dataset only."
+  ]
+}

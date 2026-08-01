@@ -168,6 +168,9 @@ interface ParseFloorBody {
   hint?: string
 }
 
+/** Hard bound on the user-supplied hint (see the comment at the use site). */
+const HINT_MAX = 800
+
 export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig): Promise<ParseFloorResponse> {
   const tryOracle = (map: DescriptiveSiteMap): ParseFloorResponse['oracle'] => {
     try {
@@ -216,7 +219,12 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
     {
       role: 'user',
       content: [
-        { type: 'text', text: body.hint ? `Floor context: ${String(body.hint).slice(0, 300)}` : 'Parse this floor plan into the JSON grid.' },
+        // HINT_MAX was 300, which silently clipped every styleHint the bench
+        // sends (they run 301–316 chars) — the n=24 baseline measured a
+        // truncated legend. 800 fits legend + grid-reference explanation +
+        // counting procedure (~770) while staying a hard bound against
+        // prompt stuffing.
+        { type: 'text', text: body.hint ? `Floor context: ${String(body.hint).slice(0, HINT_MAX)}` : 'Parse this floor plan into the JSON grid.' },
         { type: 'image_url', image_url: { url: body.imageDataUri } },
       ],
     },

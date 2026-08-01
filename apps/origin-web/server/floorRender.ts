@@ -71,6 +71,14 @@ const PALETTES: Record<RenderStyle, Palette> = {
   },
 }
 
+export interface RenderOpts {
+  /** Print grid-reference numbers (0,1,2,…) in the margins with tick stubs —
+   *  the counting→reading lever: coordinates become something the model READS
+   *  off the image instead of counting in pixels. Default off; the default
+   *  render stays byte-identical to the pre-refs renderer. */
+  gridRefs?: boolean
+}
+
 export interface RenderMeta {
   style: RenderStyle
   cell: number
@@ -78,6 +86,49 @@ export interface RenderMeta {
   pxWidth: number
   pxHeight: number
   palette: Palette
+  gridRefs: boolean
+  /** Bitmap-font scale used for margin labels (pixels per font bit). */
+  labelScale: number
+  /** Top edge (y) of the top-margin column labels — a test seam for decoding. */
+  labelTopY: number
+}
+
+// ---- 3×5 bitmap digit font (dependency-free, deterministic) -----------------
+// Rows top→bottom, each string is 3 bits. Distinctness of all ten glyphs is
+// pinned by a test; '1' and '7' are deliberately different shapes.
+const FONT_3X5: Record<string, readonly string[]> = {
+  '0': ['111', '101', '101', '101', '111'],
+  '1': ['010', '110', '010', '010', '111'],
+  '2': ['111', '001', '111', '100', '111'],
+  '3': ['111', '001', '111', '001', '111'],
+  '4': ['101', '101', '111', '001', '001'],
+  '5': ['111', '100', '111', '001', '111'],
+  '6': ['111', '100', '111', '101', '111'],
+  '7': ['111', '001', '001', '001', '001'],
+  '8': ['111', '101', '111', '101', '111'],
+  '9': ['111', '101', '111', '001', '111'],
+}
+
+const LABEL_SCALE = 2
+
+/** Deterministic raster for a numeric label — the single source of glyph truth
+ *  (tests blit-compare this against the decoded PNG margin). */
+export function labelRaster(text: string, scale: number = LABEL_SCALE): boolean[][] {
+  const glyphs = [...text].map((ch) => FONT_3X5[ch] ?? FONT_3X5['0'])
+  const height = 5 * scale
+  const width = glyphs.length * 3 * scale + (glyphs.length - 1) * scale
+  const out: boolean[][] = Array.from({ length: height }, () => Array.from({ length: width }, () => false))
+  let xOff = 0
+  for (const glyph of glyphs) {
+    for (let gy = 0; gy < 5; gy += 1)
+      for (let gx = 0; gx < 3; gx += 1) {
+        if (glyph[gy][gx] !== '1') continue
+        for (let sy = 0; sy < scale; sy += 1)
+          for (let sx = 0; sx < scale; sx += 1) out[gy * scale + sy][xOff + gx * scale + sx] = true
+      }
+    xOff += 3 * scale + scale
+  }
+  return out
 }
 
 // ---- deterministic jitter for the sketch style ------------------------------
@@ -200,10 +251,17 @@ class Raster {
   }
 }
 
-/** Render a floor layout to a PNG in the given style. Deterministic. */
-export function renderFloorPng(floor: BenchFloor, style: RenderStyle): { png: Buffer; meta: RenderMeta } {
+/** Render a floor layout to a PNG in the given style. Deterministic; the
+ *  default (no opts) render is byte-identical to the pre-gridRefs renderer. */
+export function renderFloorPng(floor: BenchFloor, style: RenderStyle, opts: RenderOpts = {}): { png: Buffer; meta: RenderMeta } {
+  const gridRefs = opts.gridRefs === true
+  if (gridRefs && (floor.width > 16 || floor.height > 16)) {
+    throw new Error(`gridRefs supports grids up to 16×16 (labels overlap beyond that); got ${floor.width}×${floor.height}`)
+  }
   const cell = 32
-  const margin = 20
+  // Refs need room for tick stubs + a two-digit label outside the outer wall:
+  // 3px wall + 6px tick + 2px gap + 10px label (3×5 font at scale 2) + breathing.
+  const margin = gridRefs ? 44 : 20
   const pxWidth = margin * 2 + floor.width * cell
   const pxHeight = margin * 2 + floor.height * cell
   const pal = PALETTES[style]
@@ -216,6 +274,44 @@ export function renderFloorPng(floor: BenchFloor, style: RenderStyle): { png: Bu
   for (let gy = 0; gy <= floor.height; gy += 1) r.fillRect(margin, margin + gy * cell, floor.width * cell, 1, pal.grid)
   // outer wall
   r.strokeRect(margin - 3, margin - 3, floor.width * cell + 6, floor.height * cell + 6, pal.wall, 3)
+
+  // Grid references: tick stubs on every grid line + a printed number centered
+  // on every column/row, on ALL FOUR sides (redundant reads, like real CAD
+  // sheets). Labels are NEVER jittered, even in sketch style — legibility is
+  // the whole point of this lever.
+  const labelTopY = margin - 3 - 6 - 2 - 5 * LABEL_SCALE
+  if (gridRefs) {
+    const wallOuter = margin - 3
+    const floorW = floor.width * cell
+    const floorH = floor.height * cell
+    // tick stubs (6px) extending every grid line outward on all four sides
+    for (let gx = 0; gx <= floor.width; gx += 1) {
+      const x = margin + gx * cell
+      r.fillRect(x, wallOuter - 6, 1, 6, pal.wall)
+      r.fillRect(x, wallOuter + floorH + 6, 1, 6, pal.wall)
+    }
+    for (let gy = 0; gy <= floor.height; gy += 1) {
+      const y = margin + gy * cell
+      r.fillRect(wallOuter - 6, y, 6, 1, pal.wall)
+      r.fillRect(margin + floorW + 3, y, 6, 1, pal.wall)
+    }
+    const blit = (raster: boolean[][], x0: number, y0: number): void => {
+      for (let y = 0; y < raster.length; y += 1)
+        for (let x = 0; x < raster[y].length; x += 1) if (raster[y][x]) r.set(x0 + x, y0 + y, pal.wall)
+    }
+    for (let cx = 0; cx < floor.width; cx += 1) {
+      const raster = labelRaster(String(cx))
+      const x0 = margin + cx * cell + Math.floor((cell - raster[0].length) / 2)
+      blit(raster, x0, labelTopY) // top
+      blit(raster, x0, margin + floorH + 3 + 6 + 2) // bottom
+    }
+    for (let cy = 0; cy < floor.height; cy += 1) {
+      const raster = labelRaster(String(cy))
+      const y0 = margin + cy * cell + Math.floor((cell - raster.length) / 2)
+      blit(raster, margin - 3 - 6 - 2 - raster[0].length, y0) // left
+      blit(raster, margin + floorW + 3 + 6 + 2, y0) // right
+    }
+  }
 
   const cellOrigin = (c: { x: number; y: number }): [number, number] => [margin + c.x * cell, margin + c.y * cell]
 
@@ -244,15 +340,34 @@ export function renderFloorPng(floor: BenchFloor, style: RenderStyle): { png: Bu
 
   return {
     png: encodePng(pxWidth, pxHeight, r.data),
-    meta: { style, cell, margin, pxWidth, pxHeight, palette: pal },
+    meta: { style, cell, margin, pxWidth, pxHeight, palette: pal, gridRefs, labelScale: LABEL_SCALE, labelTopY },
   }
 }
 
-/** The legend the bench passes as the parse `hint` — the image itself has no text. */
-export function styleHint(style: RenderStyle): string {
+export const PROMPT_VARIANTS = ['legend', 'counting'] as const
+export type PromptVariant = (typeof PROMPT_VARIANTS)[number]
+
+export interface StyleHintOpts {
+  gridRefs?: boolean
+  variant?: PromptVariant
+}
+
+/** The legend the bench passes as the parse `hint`. The zero-arg call returns
+ *  the historical legend exactly (baseline comparability). `gridRefs` explains
+ *  the printed margin numbers; `variant: 'counting'` adds the read-not-count
+ *  procedure (only meaningful with refs on — it references the printed numbers).
+ *  Every combination must stay under the server's 800-char hint cap (pinned by
+ *  tests). */
+export function styleHint(style: RenderStyle, opts: StyleHintOpts = {}): string {
   const base =
     'Plan legend: solid filled squares are walls/shelving (obstacles); diagonal-striped cells are hazards; cross-hatched cells are human-only zones; the filled circle is the robot dock (start); the filled diamond is the pickup (item); the thick hollow square is the drop point.'
-  if (style === 'blueprint') return `Blueprint-style plan (light marks on blue). ${base}`
-  if (style === 'sketch') return `Hand-sketched plan on paper. ${base}`
-  return `CAD print (dark marks on white). ${base}`
+  const prefix = style === 'blueprint' ? 'Blueprint-style plan (light marks on blue). ' : style === 'sketch' ? 'Hand-sketched plan on paper. ' : 'CAD print (dark marks on white). '
+  let hint = `${prefix}${base}`
+  if (opts.gridRefs) {
+    hint += ' Printed grid reference numbers sit in the margins: column numbers 0,1,2,... run left to right along the top and bottom; row numbers 0,1,2,... run top to bottom along the left and right. Each number is centered on its column or row of cells.'
+    if (opts.variant === 'counting') {
+      hint += ' Do not count cells by eye. Read the largest printed column number C and row number R: width = C+1, height = R+1. Report each marked cell\'s x as the printed column number above it and y as the printed row number beside it.'
+    }
+  }
+  return hint
 }

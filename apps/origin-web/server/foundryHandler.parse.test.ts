@@ -136,6 +136,22 @@ describe('handleParseFloor — the gate judges real model output', () => {
     expect(opts.maxTokens).toBeGreaterThanOrEqual(2500)
   })
 
+  it('a long hint reaches the model untruncated up to the cap (the 300-char cap silently clipped every styleHint)', async () => {
+    chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
+    const hint700 = 'H'.repeat(700)
+    await handleParseFloor({ imageDataUri: IMG, hint: hint700 }, cfg)
+    const msg = chat.mock.calls[0][0][1].content as { type: string; text?: string }[]
+    const text = msg.find((p) => p.type === 'text')?.text ?? ''
+    expect(text).toContain(hint700) // untruncated below the cap
+    chat.mockClear()
+    chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
+    await handleParseFloor({ imageDataUri: IMG, hint: 'H'.repeat(2000) }, cfg)
+    const msg2 = chat.mock.calls[0][0][1].content as { type: string; text?: string }[]
+    const text2 = msg2.find((p) => p.type === 'text')?.text ?? ''
+    expect(text2).not.toContain('H'.repeat(801)) // still hard-bounded at 800
+    expect(text2).toContain('H'.repeat(800))
+  })
+
   it('real parses carry the RAW model proposal so the receipt binding re-verifies offline', async () => {
     chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
     const valid = await handleParseFloor({ imageDataUri: IMG }, cfg)

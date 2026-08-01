@@ -1,0 +1,840 @@
+{
+  "kind": "perceiver-gridrefs-ab",
+  "date": "2026-08-01",
+  "bench": "perceiver-bench@2",
+  "scope": "Synthetic rendered plans (origin-synthetic-floors-v2), scored by the deterministic scorer. Deltas are PAIRED same-floor same-style comparisons; the A0R-vs-A0 noise floor bounds what an identical config produces. Numbers hold under THIS scorer on THIS dataset — no broader claim.",
+  "api": "http://localhost:8787",
+  "floors": 24,
+  "gt_verdicts": {
+    "escalate": 8,
+    "finish": 8,
+    "refuse": 8
+  },
+  "arms": {
+    "A0": {
+      "condition": {
+        "gridRefs": false,
+        "variant": "legend"
+      },
+      "grouped": {
+        "overall": {
+          "n": 72,
+          "scored": 72,
+          "unparsed": 0,
+          "meanRoleF1": {
+            "obstacles": 0.36359520925168937,
+            "hazards": 0.32950629790664654,
+            "humanOnly": 0.23503357753357754
+          },
+          "roleSupport": {
+            "obstacles": 66,
+            "hazards": 63,
+            "humanOnly": 60
+          },
+          "anchorAccuracy": 0.05555555555555555,
+          "dimsMatchRate": 0.19444444444444445,
+          "verdictAgreementRate": 0.8333333333333334
+        },
+        "byCondition": {
+          "print|plain|legend": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.34154131411718053,
+              "hazards": 0.24309216264103486,
+              "humanOnly": 0.19166666666666665
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0,
+            "dimsMatchRate": 0.125,
+            "verdictAgreementRate": 0.9166666666666666
+          },
+          "blueprint|plain|legend": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.28066419789380803,
+              "hazards": 0.3691467147988887,
+              "humanOnly": 0.26926739926739923
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.08333333333333333,
+            "dimsMatchRate": 0.20833333333333334,
+            "verdictAgreementRate": 0.8333333333333334
+          },
+          "sketch|plain|legend": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.4685801157440795,
+              "hazards": 0.3762800162800163,
+              "humanOnly": 0.24416666666666664
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.08333333333333333,
+            "dimsMatchRate": 0.25,
+            "verdictAgreementRate": 0.75
+          }
+        },
+        "byStyle": {
+          "print": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.34154131411718053,
+              "hazards": 0.24309216264103486,
+              "humanOnly": 0.19166666666666665
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0,
+            "dimsMatchRate": 0.125,
+            "verdictAgreementRate": 0.9166666666666666
+          },
+          "blueprint": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.28066419789380803,
+              "hazards": 0.3691467147988887,
+              "humanOnly": 0.26926739926739923
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.08333333333333333,
+            "dimsMatchRate": 0.20833333333333334,
+            "verdictAgreementRate": 0.8333333333333334
+          },
+          "sketch": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.4685801157440795,
+              "hazards": 0.3762800162800163,
+              "humanOnly": 0.24416666666666664
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.08333333333333333,
+            "dimsMatchRate": 0.25,
+            "verdictAgreementRate": 0.75
+          }
+        }
+      },
+      "gateVerdicts": {
+        "VALID": 61,
+        "ESCALATE": 11,
+        "VOID": 0
+      },
+      "fallbacks": {}
+    },
+    "A0R": {
+      "condition": {
+        "gridRefs": false,
+        "variant": "legend"
+      },
+      "grouped": {
+        "overall": {
+          "n": 72,
+          "scored": 72,
+          "unparsed": 0,
+          "meanRoleF1": {
+            "obstacles": 0.35587273175398243,
+            "hazards": 0.32896862894792495,
+            "humanOnly": 0.23765873015873018
+          },
+          "roleSupport": {
+            "obstacles": 66,
+            "hazards": 63,
+            "humanOnly": 60
+          },
+          "anchorAccuracy": 0.05555555555555555,
+          "dimsMatchRate": 0.19444444444444445,
+          "verdictAgreementRate": 0.875
+        },
+        "byCondition": {
+          "print|plain|legend": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.338406517878936,
+              "hazards": 0.2420896563753707,
+              "humanOnly": 0.20833333333333331
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0,
+            "dimsMatchRate": 0.125,
+            "verdictAgreementRate": 0.9166666666666666
+          },
+          "blueprint|plain|legend": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.2646623936978743,
+              "hazards": 0.3685362141883881,
+              "humanOnly": 0.2604761904761905
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.08333333333333333,
+            "dimsMatchRate": 0.20833333333333334,
+            "verdictAgreementRate": 0.9166666666666666
+          },
+          "sketch|plain|legend": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.46454928368513676,
+              "hazards": 0.3762800162800163,
+              "humanOnly": 0.24416666666666664
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.08333333333333333,
+            "dimsMatchRate": 0.25,
+            "verdictAgreementRate": 0.7916666666666666
+          }
+        },
+        "byStyle": {
+          "print": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.338406517878936,
+              "hazards": 0.2420896563753707,
+              "humanOnly": 0.20833333333333331
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0,
+            "dimsMatchRate": 0.125,
+            "verdictAgreementRate": 0.9166666666666666
+          },
+          "blueprint": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.2646623936978743,
+              "hazards": 0.3685362141883881,
+              "humanOnly": 0.2604761904761905
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.08333333333333333,
+            "dimsMatchRate": 0.20833333333333334,
+            "verdictAgreementRate": 0.9166666666666666
+          },
+          "sketch": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.46454928368513676,
+              "hazards": 0.3762800162800163,
+              "humanOnly": 0.24416666666666664
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.08333333333333333,
+            "dimsMatchRate": 0.25,
+            "verdictAgreementRate": 0.7916666666666666
+          }
+        }
+      },
+      "gateVerdicts": {
+        "VALID": 61,
+        "ESCALATE": 11,
+        "VOID": 0
+      },
+      "fallbacks": {}
+    },
+    "A1": {
+      "condition": {
+        "gridRefs": true,
+        "variant": "legend"
+      },
+      "grouped": {
+        "overall": {
+          "n": 72,
+          "scored": 71,
+          "unparsed": 1,
+          "meanRoleF1": {
+            "obstacles": 0.9332475018390919,
+            "hazards": 0.9222309948116398,
+            "humanOnly": 0.8716666666666666
+          },
+          "roleSupport": {
+            "obstacles": 66,
+            "hazards": 62,
+            "humanOnly": 60
+          },
+          "anchorAccuracy": 0.9014084507042254,
+          "dimsMatchRate": 1,
+          "verdictAgreementRate": 0.9436619718309859
+        },
+        "byCondition": {
+          "print|refs|legend": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.9677385968077938,
+              "hazards": 0.9079365079365079,
+              "humanOnly": 0.875
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.9166666666666666,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9166666666666666
+          },
+          "blueprint|refs|legend": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.8540403022336294,
+              "hazards": 0.9640470640470641,
+              "humanOnly": 0.8816666666666668
+            },
+            "roleSupport": {
+              "obstacles": 23,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.8333333333333334,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9583333333333334
+          },
+          "sketch|refs|legend": {
+            "n": 24,
+            "scored": 23,
+            "unparsed": 1,
+            "meanRoleF1": {
+              "obstacles": 0.9838647162016727,
+              "hazards": 0.8933333333333332,
+              "humanOnly": 0.8583333333333332
+            },
+            "roleSupport": {
+              "obstacles": 21,
+              "hazards": 20,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.9565217391304348,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9565217391304348
+          }
+        },
+        "byStyle": {
+          "print": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.9677385968077938,
+              "hazards": 0.9079365079365079,
+              "humanOnly": 0.875
+            },
+            "roleSupport": {
+              "obstacles": 22,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.9166666666666666,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9166666666666666
+          },
+          "blueprint": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.8540403022336294,
+              "hazards": 0.9640470640470641,
+              "humanOnly": 0.8816666666666668
+            },
+            "roleSupport": {
+              "obstacles": 23,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.8333333333333334,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9583333333333334
+          },
+          "sketch": {
+            "n": 24,
+            "scored": 23,
+            "unparsed": 1,
+            "meanRoleF1": {
+              "obstacles": 0.9838647162016727,
+              "hazards": 0.8933333333333332,
+              "humanOnly": 0.8583333333333332
+            },
+            "roleSupport": {
+              "obstacles": 21,
+              "hazards": 20,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.9565217391304348,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9565217391304348
+          }
+        }
+      },
+      "gateVerdicts": {
+        "VALID": 71,
+        "ESCALATE": 0,
+        "VOID": 1
+      },
+      "fallbacks": {}
+    },
+    "A2": {
+      "condition": {
+        "gridRefs": true,
+        "variant": "counting"
+      },
+      "grouped": {
+        "overall": {
+          "n": 72,
+          "scored": 71,
+          "unparsed": 1,
+          "meanRoleF1": {
+            "obstacles": 0.9373962460271673,
+            "hazards": 0.9090729894651463,
+            "humanOnly": 0.8455483405483405
+          },
+          "roleSupport": {
+            "obstacles": 67,
+            "hazards": 63,
+            "humanOnly": 60
+          },
+          "anchorAccuracy": 0.9436619718309859,
+          "dimsMatchRate": 1,
+          "verdictAgreementRate": 0.9154929577464789
+        },
+        "byCondition": {
+          "print|refs|counting": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.9384490008359386,
+              "hazards": 0.9293410293410292,
+              "humanOnly": 0.9204545454545453
+            },
+            "roleSupport": {
+              "obstacles": 23,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 1,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9583333333333334
+          },
+          "blueprint|refs|counting": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.9053464576180549,
+              "hazards": 0.9707070707070706,
+              "humanOnly": 0.8161904761904761
+            },
+            "roleSupport": {
+              "obstacles": 23,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.875,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.875
+          },
+          "sketch|refs|counting": {
+            "n": 24,
+            "scored": 23,
+            "unparsed": 1,
+            "meanRoleF1": {
+              "obstacles": 0.9713453780656364,
+              "hazards": 0.8271708683473388,
+              "humanOnly": 0.8
+            },
+            "roleSupport": {
+              "obstacles": 21,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.9565217391304348,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9130434782608695
+          }
+        },
+        "byStyle": {
+          "print": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.9384490008359386,
+              "hazards": 0.9293410293410292,
+              "humanOnly": 0.9204545454545453
+            },
+            "roleSupport": {
+              "obstacles": 23,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 1,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9583333333333334
+          },
+          "blueprint": {
+            "n": 24,
+            "scored": 24,
+            "unparsed": 0,
+            "meanRoleF1": {
+              "obstacles": 0.9053464576180549,
+              "hazards": 0.9707070707070706,
+              "humanOnly": 0.8161904761904761
+            },
+            "roleSupport": {
+              "obstacles": 23,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.875,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.875
+          },
+          "sketch": {
+            "n": 24,
+            "scored": 23,
+            "unparsed": 1,
+            "meanRoleF1": {
+              "obstacles": 0.9713453780656364,
+              "hazards": 0.8271708683473388,
+              "humanOnly": 0.8
+            },
+            "roleSupport": {
+              "obstacles": 21,
+              "hazards": 21,
+              "humanOnly": 20
+            },
+            "anchorAccuracy": 0.9565217391304348,
+            "dimsMatchRate": 1,
+            "verdictAgreementRate": 0.9130434782608695
+          }
+        }
+      },
+      "gateVerdicts": {
+        "VALID": 71,
+        "ESCALATE": 0,
+        "VOID": 1
+      },
+      "fallbacks": {}
+    }
+  },
+  "paired": {
+    "A1_vs_A0": [
+      {
+        "metric": "anchorsExact",
+        "pairs": 71,
+        "wins": 60,
+        "ties": 11,
+        "losses": 0,
+        "meanDelta": 0.8450704225352113,
+        "signTestP": 1.734723475976807e-18,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "dimsMatch",
+        "pairs": 71,
+        "wins": 58,
+        "ties": 13,
+        "losses": 0,
+        "meanDelta": 0.8169014084507042,
+        "signTestP": 6.938893903907228e-18,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "obstaclesF1",
+        "pairs": 71,
+        "wins": 60,
+        "ties": 9,
+        "losses": 2,
+        "meanDelta": 0.5271885161141112,
+        "signTestP": 8.474124180146703e-16,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "hazardsF1",
+        "pairs": 71,
+        "wins": 49,
+        "ties": 20,
+        "losses": 2,
+        "meanDelta": 0.5129496466225767,
+        "signTestP": 1.1786127629420662e-12,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "humanOnlyF1",
+        "pairs": 71,
+        "wins": 46,
+        "ties": 22,
+        "losses": 3,
+        "meanDelta": 0.5379997936335966,
+        "signTestP": 6.981082378842984e-11,
+        "excludedUnparsed": 1
+      }
+    ],
+    "A2_vs_A0": [
+      {
+        "metric": "anchorsExact",
+        "pairs": 71,
+        "wins": 64,
+        "ties": 6,
+        "losses": 1,
+        "meanDelta": 0.8873239436619719,
+        "signTestP": 3.577867169202165e-18,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "dimsMatch",
+        "pairs": 71,
+        "wins": 58,
+        "ties": 13,
+        "losses": 0,
+        "meanDelta": 0.8169014084507042,
+        "signTestP": 6.938893903907228e-18,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "obstaclesF1",
+        "pairs": 71,
+        "wins": 61,
+        "ties": 7,
+        "losses": 3,
+        "meanDelta": 0.5301633522048176,
+        "signTestP": 4.742842403537839e-15,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "hazardsF1",
+        "pairs": 71,
+        "wins": 49,
+        "ties": 20,
+        "losses": 2,
+        "meanDelta": 0.5001788953265562,
+        "signTestP": 1.1786127629420662e-12,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "humanOnlyF1",
+        "pairs": 71,
+        "wins": 44,
+        "ties": 23,
+        "losses": 4,
+        "meanDelta": 0.5159279687448703,
+        "signTestP": 1.5138326148189662e-9,
+        "excludedUnparsed": 1
+      }
+    ],
+    "A2_vs_A1": [
+      {
+        "metric": "anchorsExact",
+        "pairs": 71,
+        "wins": 5,
+        "ties": 64,
+        "losses": 2,
+        "meanDelta": 0.04225352112676056,
+        "signTestP": 0.453125,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "dimsMatch",
+        "pairs": 71,
+        "wins": 0,
+        "ties": 71,
+        "losses": 0,
+        "meanDelta": 0,
+        "signTestP": 1,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "obstaclesF1",
+        "pairs": 71,
+        "wins": 8,
+        "ties": 53,
+        "losses": 10,
+        "meanDelta": 0.002974836090706316,
+        "signTestP": 0.8145294189453125,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "hazardsF1",
+        "pairs": 71,
+        "wins": 4,
+        "ties": 61,
+        "losses": 6,
+        "meanDelta": -0.012770751296020559,
+        "signTestP": 0.75390625,
+        "excludedUnparsed": 1
+      },
+      {
+        "metric": "humanOnlyF1",
+        "pairs": 71,
+        "wins": 4,
+        "ties": 61,
+        "losses": 6,
+        "meanDelta": -0.022071824888726298,
+        "signTestP": 0.75390625,
+        "excludedUnparsed": 1
+      }
+    ]
+  },
+  "noiseFloor": [
+    {
+      "metric": "anchorsExact",
+      "pairs": 72,
+      "wins": 0,
+      "ties": 72,
+      "losses": 0,
+      "meanDelta": 0,
+      "signTestP": 1,
+      "excludedUnparsed": 0
+    },
+    {
+      "metric": "dimsMatch",
+      "pairs": 72,
+      "wins": 0,
+      "ties": 72,
+      "losses": 0,
+      "meanDelta": 0,
+      "signTestP": 1,
+      "excludedUnparsed": 0
+    },
+    {
+      "metric": "obstaclesF1",
+      "pairs": 72,
+      "wins": 1,
+      "ties": 66,
+      "losses": 5,
+      "meanDelta": -0.0070789377062314245,
+      "signTestP": 0.21875,
+      "excludedUnparsed": 0
+    },
+    {
+      "metric": "hazardsF1",
+      "pairs": 72,
+      "wins": 0,
+      "ties": 70,
+      "losses": 2,
+      "meanDelta": -0.00047046033888139063,
+      "signTestP": 0.5,
+      "excludedUnparsed": 0
+    },
+    {
+      "metric": "humanOnlyF1",
+      "pairs": 72,
+      "wins": 1,
+      "ties": 70,
+      "losses": 1,
+      "meanDelta": 0.002187627187627189,
+      "signTestP": 1,
+      "excludedUnparsed": 0
+    }
+  ],
+  "preregistration": {
+    "stated_before_run": "Thresholds were written into the approved plan before any arm executed.",
+    "decision_rule": "NO-GO on fine-tuning if arm A2 (pooled n=72) meets ALL bars; GO if significant deltas but a bar missed; HOLD if deltas not significant vs the A0R noise floor.",
+    "thresholds": {
+      "anchorAccuracy": 0.5,
+      "dimsMatchRate": 0.8,
+      "obstaclesF1": 0.7,
+      "hazardsF1": 0.6
+    },
+    "evaluation": {
+      "anchorAccuracy": {
+        "measured": 0.9436619718309859,
+        "bar": 0.5,
+        "pass": true
+      },
+      "dimsMatchRate": {
+        "measured": 1,
+        "bar": 0.8,
+        "pass": true
+      },
+      "obstaclesF1": {
+        "measured": 0.9373962460271673,
+        "bar": 0.7,
+        "pass": true
+      },
+      "hazardsF1": {
+        "measured": 0.9090729894651463,
+        "bar": 0.6,
+        "pass": true
+      }
+    },
+    "verdict": "NO_GO_FINE_TUNE_UNNECESSARY",
+    "verdict_plain": "All four bars cleared by the zero-training levers. Printed grid references converted coordinate counting into reading (anchors 5.6%→94.4%, dims 19.4%→100%, paired sign-test p ≈ 1e-18 vs an all-ties noise floor). LoRA fine-tuning is not warranted for this task at this bar."
+  },
+  "headline_caveats": [
+    "Per-style slices are exploratory; the decision reads pooled n=72 only.",
+    "One of 72 A1/A2 parses was VOIDed by the deterministic gate and is excluded from geometry means, counted as unparsed.",
+    "Verdict-agreement differences between v1 (95.8%, skewed easier set) and v2 baselines reflect the harder balanced floor mix, not a regression."
+  ]
+}

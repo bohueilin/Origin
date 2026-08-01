@@ -6,7 +6,7 @@
 // scorer on labeled synthetic pairs. VOIDs are counted, never averaged away.
 
 import { describe, expect, it } from 'vitest'
-import { scoreParse, aggregateScores, genScenarioFloor } from './perceiverScore'
+import { scoreParse, aggregateScores, aggregateScoresBy, pairedCompare, genScenarioFloor } from './perceiverScore'
 import { genFloor } from './gateBench'
 
 const gt = genFloor(3)
@@ -49,6 +49,84 @@ describe('scoreParse', () => {
   it('a VOID/refused parse is recorded as unparsed, never given a geometry score', () => {
     const s = scoreParse(gt, null)
     expect(s.kind).toBe('unparsed')
+  })
+})
+
+describe('aggregateScoresBy — grouped aggregation for the A/B arms', () => {
+  it('partitions by condition with no leakage, and overall equals the flat aggregate', () => {
+    const rows = [
+      { condition: { style: 'print', gridRefs: false, variant: 'legend' }, score: scoreParse(gt, perfect) },
+      { condition: { style: 'print', gridRefs: true, variant: 'legend' }, score: scoreParse(gt, null) },
+      { condition: { style: 'sketch', gridRefs: true, variant: 'counting' }, score: scoreParse(gt, perfect) },
+    ] as const
+    const g = aggregateScoresBy([...rows])
+    expect(g.overall).toEqual(aggregateScores(rows.map((r) => r.score)))
+    expect(Object.keys(g.byCondition).sort()).toEqual(['print|plain|legend', 'print|refs|legend', 'sketch|refs|counting'])
+    expect(g.byCondition['print|plain|legend'].scored).toBe(1)
+    expect(g.byCondition['print|refs|legend'].unparsed).toBe(1)
+    expect(g.byCondition['print|refs|legend'].scored).toBe(0)
+    expect(g.byStyle.print.n).toBe(2)
+    expect(g.byStyle.sketch.n).toBe(1)
+  })
+})
+
+describe('pairedCompare — same-floor paired deltas with an exact sign test', () => {
+  const win = () => scoreParse(gt, perfect) // anchorsExact 3 → metric 1
+  const lose = () => {
+    const shifted = JSON.parse(JSON.stringify(gt)) as typeof gt
+    shifted.drop = { x: (gt.drop.x + 1) % gt.width, y: gt.drop.y }
+    shifted.width = gt.width + 1 // also breaks dimsMatch
+    return scoreParse(gt, shifted)
+  }
+
+  it('5 clean wins on a metric: exact two-sided binomial p = 2·(1/2)^5 = 0.0625', () => {
+    const ids = ['0-print', '1-print', '2-print', '3-print', '4-print']
+    const a = ids.map((id) => ({ id, score: win() }))
+    const b = ids.map((id) => ({ id, score: lose() }))
+    const deltas = pairedCompare(a, b)
+    const anchors = deltas.find((d) => d.metric === 'anchorsExact')
+    expect(anchors?.pairs).toBe(5)
+    expect(anchors?.wins).toBe(5)
+    expect(anchors?.losses).toBe(0)
+    expect(anchors?.signTestP).toBeCloseTo(0.0625, 10)
+    expect(anchors?.meanDelta).toBeGreaterThan(0)
+  })
+
+  it('identical arms: all ties, meanDelta 0, p = 1', () => {
+    const ids = ['0-print', '1-print', '2-print']
+    const a = ids.map((id) => ({ id, score: win() }))
+    const b = ids.map((id) => ({ id, score: win() }))
+    for (const d of pairedCompare(a, b)) {
+      expect(d.ties).toBe(d.pairs)
+      expect(d.meanDelta).toBe(0)
+      expect(d.signTestP).toBe(1)
+    }
+  })
+
+  it('an unparsed side excludes the pair from deltas and counts it honestly', () => {
+    const a = [{ id: 'x', score: win() }, { id: 'y', score: win() }]
+    const b = [{ id: 'x', score: scoreParse(gt, null) }, { id: 'y', score: lose() }]
+    const d = pairedCompare(a, b).find((m) => m.metric === 'anchorsExact')
+    expect(d?.pairs).toBe(1)
+    expect(d?.excludedUnparsed).toBe(1)
+  })
+
+  it('is antisymmetric: swapping arms negates meanDelta and swaps wins/losses', () => {
+    const ids = ['0-print', '1-print']
+    const a = ids.map((id) => ({ id, score: win() }))
+    const b = ids.map((id) => ({ id, score: lose() }))
+    const ab = pairedCompare(a, b).find((m) => m.metric === 'dimsMatch')
+    const ba = pairedCompare(b, a).find((m) => m.metric === 'dimsMatch')
+    expect(ab?.meanDelta).toBeCloseTo(-(ba?.meanDelta ?? NaN), 10)
+    expect(ab?.wins).toBe(ba?.losses)
+    expect(ab?.losses).toBe(ba?.wins)
+  })
+
+  it('pairs strictly by id: unmatched rows are ignored, never cross-paired', () => {
+    const a = [{ id: 'only-in-a', score: win() }, { id: 'both', score: win() }]
+    const b = [{ id: 'both', score: lose() }, { id: 'only-in-b', score: lose() }]
+    const d = pairedCompare(a, b).find((m) => m.metric === 'anchorsExact')
+    expect(d?.pairs).toBe(1)
   })
 })
 

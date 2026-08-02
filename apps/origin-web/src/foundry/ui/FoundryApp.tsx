@@ -91,6 +91,50 @@ function GateCard({ gate, evidence }: { gate: ParseGateResult; evidence?: ParseF
   )
 }
 
+/** The measured Perceiver result — the CORRECTED attribution (arm A1: grid
+ *  references alone), never the conflated 94.4% headline the provenance
+ *  companion retracts. Numbers are read from the published artifact at render
+ *  time, not hardcoded, so this strip cannot drift from what /trust serves. */
+function PerceiverResultStrip() {
+  const [ab, setAb] = useState<{
+    arms: Record<string, { grouped: { overall: { anchorAccuracy: number; scored: number; n: number } } }>
+  } | null>(null)
+  useEffect(() => {
+    let alive = true
+    void fetch('/trust/perceiver-gridrefs-ab-2026-08-01.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (alive && j?.arms?.A0 && j?.arms?.A1) setAb(j as never)
+      })
+      .catch(() => undefined)
+    return () => {
+      alive = false
+    }
+  }, [])
+  if (!ab) return null
+  const a0 = ab.arms.A0.grouped.overall
+  const a1 = ab.arms.A1.grouped.overall
+  return (
+    <div className="fdy-benchstrip">
+      <span>
+        Perceiver, measured: printing grid-reference numbers on the plan took exact anchor placement from{' '}
+        {Math.round(a0.anchorAccuracy * 1000) / 10}% to {Math.round(a1.anchorAccuracy * 1000) / 10}% ({a1.scored} of {a1.n}{' '}
+        parses scored; one was voided by the gate). Pre-registered paired A/B on synthetic rendered plans — numbers hold
+        under our deterministic scorer on that dataset only.
+      </span>
+      <a href="/trust/perceiver-gridrefs-ab-2026-08-01.json" target="_blank" rel="noreferrer">
+        full A/B report
+      </a>
+      <a href="/trust/perceiver-gridrefs-ab-2026-08-01-provenance.json" target="_blank" rel="noreferrer">
+        provenance + corrections
+      </a>
+      <a href="/trust/perceiver-baseline-2026-08-01.json" target="_blank" rel="noreferrer">
+        baseline
+      </a>
+    </div>
+  )
+}
+
 /** The published gate-bench numbers (public/trust/floor-gate-bench.json) —
  *  fetched from the same origin, scoped copy, link to the raw artifact. */
 interface BenchJson {
@@ -231,25 +275,23 @@ function PassportGymCard() {
 }
 
 function RsiVerifierCard() {
+  // No run numbers here on purpose: an earlier version of this card quoted a
+  // "recorded run" (40 scenarios / 120 samples / ~869 tok/s) that its own
+  // linked dashboard — badged source:mock — did not contain. A number this
+  // page cannot back with a linked artifact does not get printed on it.
   return (
     <section className="fdy-card fdy-rsi-card">
       <div className="fdy-card__head">
         <h2>Gemma proposes. Origin verifies.</h2>
         <p>
-          One building map → 40 distinct deterministic robot safety tests from 120 Gemma samples; verifier overrode the
-          proposer 17 times; oracle divergence 0.
+          The RSI loop turns one building map into a battery of deterministic robot scenario tests: Gemma proposes
+          scenario variants, and the oracle — never an LLM judge — recomputes every verdict from geometry, overriding
+          the proposer whenever they disagree.
         </p>
       </div>
-      <div className="fdy-rsi-card__stats">
-        <Stat label="scenarios" value={40} />
-        <Stat label="Gemma samples" value={120} />
-        <Stat label="verifier overrides" value={17} tone="warn" />
-        <Stat label="divergence" value={0} tone="pos" />
-      </div>
       <p className="fdy-rsi-card__note">
-        Recorded run: real gemma-4-31b on Cerebras (~869 tok/s), recomputed from geometry by the deterministic oracle —
-        never an LLM judge. The dashboard carries the full artifact and source label; with no key, propose→verify falls
-        back to a labeled mock.
+        The dashboard labels its data source on every run — a real gemma-4-31b run when a key is present, and a
+        clearly-badged mock otherwise. Whatever the badge says is what the numbers are.
       </p>
       <a className="fdy-btn fdy-btn--primary fdy-rsi-card__link" href="/rsi/rsi_dashboard.html">
         Open the RSI verifier dashboard
@@ -511,6 +553,7 @@ export default function FoundryApp() {
             Snap a photo or use the sample. gemma-4-31b's vision proposes a grid; a deterministic gate judges it before
             anything trusts it — an unsupported proposal is <em>voided</em>, never repaired into something plausible.
           </p>
+          <PerceiverResultStrip />
           <GateBenchStrip />
         </div>
         <div className="fdy-actions">

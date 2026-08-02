@@ -24,13 +24,22 @@ import { dirname, join } from 'node:path'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const WEB = join(ROOT, 'apps', 'origin-web')
 
-// Served HTML entries (the vite rollup inputs) — the pages a visitor actually reaches.
-const SERVED = [
-  'index.html', 'app.html', 'auth.html', 'brief.html', 'capture.html', 'clip.html',
-  'foundry.html', 'passport.html', 'proof.html', 'security.html', 'soc.html',
-  'trust.html', 'verify.html', 'reference-check.html', 'simulation.html', 'operations.html', 'labs.html',
-  'proving-ground.html',
-]
+// Served HTML entries — DERIVED from disk, not hand-listed. The old hardcoded
+// 18-name list silently missed reference-check-vs-runtime.html (19 pages
+// shipped), and a gate whose population is a stale list reports clean on pages
+// it never read. Every root-level .html in the app is scanned; scanning a page
+// vite happens not to build is harmless, missing a served one is not.
+import { readdirSync } from 'node:fs'
+const SERVED = readdirSync(join(ROOT, 'apps', 'origin-web')).filter((f) => f.endsWith('.html')).sort()
+
+// Prose surfaces OUTSIDE the HTML entry set that still speak for Origin in
+// public — found ungated by the 2026-08-01 external audit:
+//   * public/llms.txt is advertised in robots.txt as THE summary for AI agents
+//     — the copy most likely to be ingested verbatim by LLM-assisted diligence.
+//   * public/rsi/rsi_dashboard.html is 50KB of claim-laden prose linked from
+//     /foundry, and it was carrying four affirmative "is safe" claims when
+//     first scanned.
+const EXTRA_PROSE = ['public/llms.txt', 'public/rsi/rsi_dashboard.html']
 
 // 1. BANNED — regex + human label. Matched case-insensitively against visible text.
 const BANNED = [
@@ -137,6 +146,18 @@ for (const file of SERVED) {
     if (m) note(`${file}: BANNED overclaim — ${label} (matched "${m[0].trim()}")`)
     const mm = meta.match(re)
     if (mm) note(`${file} <meta/title>: BANNED overclaim — ${label} (matched "${mm[0].trim()}")`)
+  }
+}
+
+// Extra public prose surfaces (llms.txt is plain text; the RSI dashboard is HTML).
+for (const rel of EXTRA_PROSE) {
+  const path = join(WEB, rel)
+  if (!existsSync(path)) { note(`${rel}: MISSING — listed as a public prose surface but not on disk`); continue }
+  const raw = readFileSync(path, 'utf8')
+  const text = rel.endsWith('.html') ? visibleText(raw) : raw
+  for (const [re, label] of BANNED) {
+    const m = text.match(re)
+    if (m) note(`${rel}: BANNED overclaim — ${label} (matched "${m[0].trim()}")`)
   }
 }
 

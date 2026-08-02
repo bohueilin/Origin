@@ -531,11 +531,11 @@
         <div class="cf-fam"><span>Finish tasks over-refused<small style="display:block;color:#667085">oracle finish &rarr; policy refuse</small></span><b>12</b></div>
         <div class="cf-fam"><span>Escalate tasks over-refused<small style="display:block;color:#667085">oracle escalate &rarr; policy refuse</small></span><b>12</b></div>
         <div class="cf-fam"><span>Refuse tasks correctly refused<small style="display:block;color:#667085">customer-declared restricted/hazard zones</small></span><b>12</b></div>
-        <p class="sub" style="margin-top:12px;color:#5b4412"><b>Why this matters:</b> Origin does not hide a weak policy behind a good-looking average. The customer Gym shows the model is safe but too conservative: it refuses the dangerous tasks and also refuses too many valid finish/escalate tasks.</p>
+        <p class="sub" style="margin-top:12px;color:#5b4412"><b>Why this matters:</b> Origin does not hide a weak policy behind a good-looking average. The customer Gym shows the model over-refuses: it refuses every hazard-crossing task the oracle flags — and also too many valid finish/escalate tasks.</p>
       </div>
       <div>
         <h3 style="margin-top:0">Calibration plan</h3>
-        <p class="sub">The saved budget policy is safe but over-conservative on this customer site. Add more customer-specific finish and escalate examples, especially reachable non-restricted tasks, blocked-path escalation tasks, and safe completion tasks near but not inside restricted zones.</p>
+        <p class="sub">The saved budget policy clears every refuse gate but over-refuses on this customer site. Add more customer-specific finish and escalate examples, especially reachable non-restricted tasks, blocked-path escalation tasks, and safe completion tasks near but not inside restricted zones.</p>
         <div class="cf-fam"><span>Recommended additional rows</span><b>84<small style="display:block;color:#667085;font-size:11px;font-weight:700">F 36 / E 36 / R 12</small></b></div>
         <div class="cf-fam"><span>Reachable non-restricted pickup/dropoff tasks near but not inside restricted zones.</span><b>case</b></div><div class="cf-fam"><span>Safe completion tasks adjacent to human-only cells to reduce blanket refusal.</span><b>case</b></div><div class="cf-fam"><span>Blocked-path escalation tasks where refusal would be too conservative and finish would be unsafe.</span><b>case</b></div>
         <p class="sub" style="margin-top:12px;color:#5b4412"><b>Training hook:</b> interface_only_no_training_in_this_sprint. Customer approval is required before training on customer-owned data.</p>
@@ -549,7 +549,7 @@
       </span>
       <b>36<small style="display:block;color:#667085;font-size:11px;font-weight:700">F 12 / E 12 / R 12</small></b>
     </div>
-    <p class="sub" style="margin-top:14px;color:#5b4412"><b>Honest read:</b> Policy catches customer-declared refuse cases but over-refuses finish/escalate tasks. This customer-owned Gym says the policy is safe-conservative, not yet autonomous for the site, and needs customer-specific calibration before live authority.</p>
+    <p class="sub" style="margin-top:14px;color:#5b4412"><b>Honest read:</b> Policy catches customer-declared refuse cases but over-refuses finish/escalate tasks. This customer-owned Gym says the policy refuses conservatively under the oracle — not yet autonomous for the site, and needing customer-specific calibration before live authority.</p>
   </div>
 	    </section>
 
@@ -621,7 +621,7 @@
         <p class="sub" style="margin-top:12px;color:#5b4412"><b>Next action:</b> train only after the customer authorization file flips training_allowed:true and includes an approval artifact. Until then, this is calibration evidence and an eval harness, not a trained customer policy.</p>
       </div>
     </div>
-    <p class="sub" style="margin-top:14px;color:#5b4412"><b>Honest read:</b> the saved learned policy is safe but over-conservative on this customer slice. The candidate shows the calibration data has the right information to reduce false refusals while preserving FAR/refuse-recall gates, but it is deliberately labeled as a deterministic not-trained candidate.</p>
+    <p class="sub" style="margin-top:14px;color:#5b4412"><b>Honest read:</b> the saved learned policy clears the refuse gates but over-refuses on this customer slice. The candidate shows the calibration data has the right information to reduce false refusals while preserving FAR/refuse-recall gates, but it is deliberately labeled as a deterministic not-trained candidate.</p>
   </div>
 	    </section>
 

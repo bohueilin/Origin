@@ -1,0 +1,30 @@
+{
+  "kind": "perceiver-gridrefs-ab-provenance",
+  "date": "2026-08-01",
+  "companion_to": "perceiver-gridrefs-ab-2026-08-01.json",
+  "note": "Dated artifacts are immutable; this companion adds provenance and two corrections the original should have carried.",
+  "provenance": {
+    "model": "gemma-4-31b via Cerebras (serverless inference API)",
+    "temperature": 0.1,
+    "reasoning_effort": "none",
+    "max_tokens": 3000,
+    "dataset": "origin-synthetic-floors-v2, SEED_BASE 500000 (scripts/perceiver-bench.mjs), 24 floors x 3 styles, balanced 8/8/8 finish/refuse/escalate",
+    "producing_commit": "cd4b731",
+    "reproduce": "node scripts/perceiver-bench.mjs --floors 24 --arms A0,A0R,A1,A2 --api-base <server-with-CEREBRAS_API_KEY> (~288 requests, paced ~2.5s)",
+    "raw_responses": "bench-out/ is gitignored; per-arm aggregates and paired deltas in the companion_to file are the retained record."
+  },
+  "corrections": [
+    {
+      "id": "arm-attribution",
+      "wrong": "Headline copy attributed anchors-exact 94.4% to \"grid references\". 94.4% is arm A2 (refs + counting prompt).",
+      "right": "Grid references ALONE (arm A1) measure 90.1% anchors-exact vs 5.6% baseline. A2 measures 94.4%, but the counting prompt's marginal gain over A1 is not significant (paired sign test p = 0.45). Quote 90.1% for the refs lever, or credit both arms explicitly."
+    },
+    {
+      "id": "dims-denominator",
+      "wrong": "\"dims-match 100%\" without the denominator.",
+      "right": "100% is 71 of 71 SCORED parses; 1 of 72 was VOIDed by the deterministic gate and excluded from geometry means (counted as unparsed). The gate catching one bad parse mid-benchmark is disclosure, not noise."
+    }
+  ],
+  "statistical_note": "Pooled n=72 per arm is 24 floors x 3 style replicates; replicates of one floor are not independent, so the effective independent n is nearer 24. With 60 paired wins / 0 losses on anchors the direction is not in doubt; treat the p-values as bounded by the clustering rather than exact.",
+  "noise_floor_note": "A0R-vs-A0 is all-ties on anchorsExact and dimsMatch; role-F1 metrics show small nonzero run-to-run jitter (e.g. obstaclesF1 +1/-5/=66). \"All ties\" applies to the two discrete metrics only."
+}

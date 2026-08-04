@@ -3,6 +3,7 @@
 // grants, and wallets — never the agent runtime resolving a secret. No secret is
 // ever written here: grants hold references, the audit log holds redacted metadata.
 import { insforge } from '../insforge'
+import { NOT_CONFIGURED, readFail, rowsFrom, type ReadResult } from '../readResult'
 import { redact } from './redact'
 import { REPRESENTATIVE_VAULT, REPRESENTATIVE_VAULT_NAME, type VaultItem } from './mockVault'
 import { evaluatePolicy, type SessionKeyPolicy } from '../wallet/sessionPolicy'
@@ -78,12 +79,10 @@ export interface NewGrantInput {
   trifectaExternalComms?: boolean
 }
 
-export async function listGrants(): Promise<CredentialGrant[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.from(T_GRANTS).select('*').order('created_at', { ascending: false })
-  if (error || !data) return []
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any[]).map(rowToGrant)
+export async function listGrants(): Promise<ReadResult<CredentialGrant>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.from(T_GRANTS).select('*').order('created_at', { ascending: false })
+  return rowsFrom(res, rowToGrant, 'agent permissions')
 }
 
 export async function createGrant(input: NewGrantInput): Promise<CredentialGrant | null> {
@@ -155,12 +154,10 @@ function rowToIntegration(r: any): IntegrationConnection {
   return { id: r.id, provider: r.provider, status: r.status ?? 'active', metadata: r.metadata_json ?? {}, createdAt: ms(r.created_at), revokedAt: r.revoked_at ? ms(r.revoked_at) : null }
 }
 
-export async function listIntegrations(): Promise<IntegrationConnection[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.from(T_INTEGRATIONS).select('*').order('created_at', { ascending: false })
-  if (error || !data) return []
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any[]).map(rowToIntegration)
+export async function listIntegrations(): Promise<ReadResult<IntegrationConnection>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.from(T_INTEGRATIONS).select('*').order('created_at', { ascending: false })
+  return rowsFrom(res, rowToIntegration, 'your linked vaults')
 }
 
 export async function connectIntegration(provider: string, label: string, vault?: string): Promise<IntegrationConnection | null> {
@@ -228,12 +225,10 @@ function rowToWallet(r: any): WalletConnection {
   return { id: r.id, address: r.wallet_address, network: r.network, provider: r.provider ?? 'manual', status: r.status ?? 'active', verifiedAt: r.verified_at ? ms(r.verified_at) : null, chainId: r.chain_id ?? null, createdAt: ms(r.created_at), revokedAt: r.revoked_at ? ms(r.revoked_at) : null }
 }
 
-export async function listWallets(): Promise<WalletConnection[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.from(T_WALLETS).select('*').order('created_at', { ascending: false })
-  if (error || !data) return []
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any[]).map(rowToWallet)
+export async function listWallets(): Promise<ReadResult<WalletConnection>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.from(T_WALLETS).select('*').order('created_at', { ascending: false })
+  return rowsFrom(res, rowToWallet, 'your wallets')
 }
 
 export async function connectWallet(address: string, network: string): Promise<WalletConnection | null> {
@@ -269,12 +264,11 @@ export interface AuditRow {
   createdAt: number
 }
 
-export async function listAudit(limit = 100): Promise<AuditRow[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.from(T_AUDIT).select('*').order('created_at', { ascending: false }).limit(limit)
-  if (error || !data) return []
+export async function listAudit(limit = 100): Promise<ReadResult<AuditRow>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.from(T_AUDIT).select('*').order('created_at', { ascending: false }).limit(limit)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any[]).map((r) => ({ id: r.id, actorType: r.actor_type, actorId: r.actor_id ?? null, eventType: r.event_type, targetType: r.target_type ?? null, targetId: r.target_id ?? null, metadata: r.metadata_json ?? {}, createdAt: ms(r.created_at) }))
+  return rowsFrom(res, (r: any) => ({ id: r.id, actorType: r.actor_type, actorId: r.actor_id ?? null, eventType: r.event_type, targetType: r.target_type ?? null, targetId: r.target_id ?? null, metadata: r.metadata_json ?? {}, createdAt: ms(r.created_at) }), 'the audit log')
 }
 
 /** Append a redacted owner-action audit event. The table is append-only at the RLS
@@ -312,12 +306,10 @@ function rowToApproval(r: any): ApprovalRequest {
   return { id: r.id, grantId: r.grant_id ?? null, agentId: r.agent_id, scope: r.scope as CredentialScope, targetDomain: r.target_domain, action: r.action, reason: r.reason ?? null, status: r.status ?? 'pending', createdAt: ms(r.created_at), expiresAt: ms(r.expires_at) }
 }
 
-export async function listApprovalRequests(): Promise<ApprovalRequest[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.from(T_APPROVALS).select('*').order('created_at', { ascending: false }).limit(100)
-  if (error || !data) return []
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any[]).map(rowToApproval)
+export async function listApprovalRequests(): Promise<ReadResult<ApprovalRequest>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.from(T_APPROVALS).select('*').order('created_at', { ascending: false }).limit(100)
+  return rowsFrom(res, rowToApproval, 'pending approvals')
 }
 
 /** Approve a step-up request. The grant's `approval_policy` is unchanged — approval is
@@ -349,12 +341,10 @@ function rowToWalletAction(r: any): WalletActionRequest {
   return { id: r.id, agentId: r.agent_id, actionType: r.action_type, destinationAddress: r.destination_address ?? null, amount: r.amount ?? null, asset: r.asset ?? null, network: r.network ?? null, status: r.status ?? 'prepared', createdAt: ms(r.created_at) }
 }
 
-export async function listWalletActions(): Promise<WalletActionRequest[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.from(T_WALLET_ACTIONS).select('*').order('created_at', { ascending: false }).limit(100)
-  if (error || !data) return []
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any[]).map(rowToWalletAction)
+export async function listWalletActions(): Promise<ReadResult<WalletActionRequest>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.from(T_WALLET_ACTIONS).select('*').order('created_at', { ascending: false }).limit(100)
+  return rowsFrom(res, rowToWalletAction, 'wallet transactions awaiting approval')
 }
 
 export interface NewWalletDraft { agentId: string; walletConnectionId: string; destination: string; amount: string; asset: string; network: string }
@@ -408,12 +398,10 @@ function rowToSessionKey(r: any): SessionKey {
   }
 }
 
-export async function listSessionKeys(): Promise<SessionKey[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.from(T_SESSION_KEYS).select('*').order('created_at', { ascending: false }).limit(100)
-  if (error || !data) return []
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any[]).map(rowToSessionKey)
+export async function listSessionKeys(): Promise<ReadResult<SessionKey>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.from(T_SESSION_KEYS).select('*').order('created_at', { ascending: false }).limit(100)
+  return rowsFrom(res, rowToSessionKey, 'agent session keys')
 }
 
 export interface NewSessionKey {
@@ -456,7 +444,11 @@ export interface GovernedPrepareResult { ok: boolean; request?: WalletActionRequ
 export async function prepareWalletActionGoverned(d: NewWalletDraft): Promise<GovernedPrepareResult> {
   if (!insforge) return { ok: false, error: 'not configured' }
   const keys = await listSessionKeys()
-  const key = keys.find((k) => k.walletConnectionId === d.walletConnectionId && k.agentId === d.agentId && k.status === 'active')
+  // An unreadable policy is NOT "this agent has no policy". Letting the draft through on a
+  // failed read would queue a transfer with no bound at all — exactly the bound the session
+  // key exists to impose. Refuse and say why.
+  if (!keys.ok) return { ok: false, error: `${keys.error} The draft was refused rather than queued without its spend limits.` }
+  const key = keys.rows.find((k) => k.walletConnectionId === d.walletConnectionId && k.agentId === d.agentId && k.status === 'active')
   if (key) {
     // Sum prior approved spend for this wallet+asset within the rolling window.
     const since = new Date(Date.now() - key.windowSeconds * 1000).toISOString()

@@ -14,6 +14,7 @@ import {
 import { listVaultItems } from '../credentials/store'
 import { type VaultItem } from '../credentials/mockVault'
 import { brokerRequest, effectiveStatus } from '../credentials/store'
+import { applyRead } from '../readResult'
 import { isStepUpRequired } from '../credentials/grantStepUp'
 import { GrantStepUp } from './GrantStepUp'
 import type { CredentialGrant, CredentialScope } from '../credentials/types'
@@ -167,10 +168,12 @@ function FleetHeader({ fleet, robots, items, representative, onAssignedAll }: { 
 // ---- Robot chip ---------------------------------------------------------------
 
 function RobotChip({ robot, active, colorIndex, onClick }: { robot: Robot; active: boolean; colorIndex: number; onClick: () => void }) {
+  // null = not known. A failed read leaves it unknown ("·") rather than claiming zero
+  // credentials, which on a permissions matrix would read as "this robot can reach nothing".
   const [count, setCount] = useState<number | null>(null)
   useEffect(() => {
     let alive = true
-    void listRobotGrants(robot.id).then((gs) => { if (alive) setCount(gs.filter((g) => effectiveStatus(g) === 'active').length) })
+    void listRobotGrants(robot.id).then((r) => { if (alive && r.ok) setCount(r.rows.filter((g) => effectiveStatus(g) === 'active').length) })
     return () => { alive = false }
   }, [robot.id])
   return (
@@ -186,9 +189,10 @@ function RobotChip({ robot, active, colorIndex, onClick }: { robot: Robot; activ
 
 function RobotDetail({ robot, items, colorIndex }: { robot: Robot; items: VaultItem[]; colorIndex: number }) {
   const [grants, setGrants] = useState<CredentialGrant[] | null>(null)
+  const [error, setError] = useState('')
   const [assigning, setAssigning] = useState(false)
-  const reload = async () => setGrants(await listRobotGrants(robot.id))
-  useEffect(() => { let alive = true; void listRobotGrants(robot.id).then((g) => { if (alive) setGrants(g) }); return () => { alive = false } }, [robot.id])
+  const reload = async () => { applyRead(await listRobotGrants(robot.id), setGrants, setError) }
+  useEffect(() => { let alive = true; void listRobotGrants(robot.id).then((r) => { if (alive) applyRead(r, setGrants, setError) }); return () => { alive = false } }, [robot.id])
 
   const active = (grants ?? []).filter((g) => effectiveStatus(g) === 'active')
 
@@ -212,7 +216,8 @@ function RobotDetail({ robot, items, colorIndex }: { robot: Robot; items: VaultI
       )}
 
       <h3 className="cset-subh">Assigned credentials</h3>
-      {grants === null ? <div className="cset-loading">Loading…</div>
+      {error ? <div className="cset-loaderr" role="alert"><span>{error}</span><button className="cset-link" onClick={reload}>Retry</button></div>
+        : grants === null ? <div className="cset-loading">Loading…</div>
         : active.length === 0 ? <div className="cset-empty">No credentials assigned. Use “Assign credentials” to give this robot scoped, brokered access.</div>
         : <div className="cset-list">{active.map((g) => <AssignedRow key={g.id} g={g} robotAgentId={robot.agentId} onChange={reload} />)}</div>}
     </div>

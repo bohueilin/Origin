@@ -85,9 +85,21 @@ export function AccountSettings({ onClose }: { onClose: () => void }) {
   const auth = useAuth()
   const [tab, setTab] = useState<Tab>('overview')
   const [role, setRole] = useState<Role>('user')
+  // Null until the lookup answers. A non-null value means the lookup FAILED — which is
+  // not the same as "you are a regular user" and must not be rendered as one.
+  const [roleError, setRoleError] = useState<string | null>(null)
+  const [roleNonce, setRoleNonce] = useState(0)
   const shellRef = useDialog<HTMLDivElement>(onClose)
 
-  useEffect(() => { let alive = true; void getMyRole().then((r) => { if (alive) setRole(r) }); return () => { alive = false } }, [])
+  useEffect(() => {
+    let alive = true
+    void getMyRole().then((r) => {
+      if (!alive) return
+      setRole(r.role)
+      setRoleError(r.ok ? null : r.error)
+    })
+    return () => { alive = false }
+  }, [roleNonce])
   // Admin tab is hidden for non-staff. (The DB also rejects admin RPCs from non-staff —
   // this is convenience, not the gate.)
   const visibleTabs = TABS.filter((t) => !t.staffOnly || isStaff(role))
@@ -99,7 +111,17 @@ export function AccountSettings({ onClose }: { onClose: () => void }) {
           <div className="cset-rail-head">
             <strong>{auth.user?.name || 'Account'}</strong>
             <span>{auth.user?.email}</span>
-            <span className={`cset-role-badge role-${role}`}>{roleLabel(role)}</span>
+            {roleError ? (
+              // Say it out loud. A failed lookup used to render as a confident "User"
+              // badge with the Admin tab quietly missing — indistinguishable from a
+              // genuine demotion, and the reason the portal looked broken for a month.
+              <span className="cset-role-unknown" role="alert">
+                Couldn’t confirm your role — staff tools are hidden until it resolves.{' '}
+                <button type="button" className="cset-link" onClick={() => setRoleNonce((n) => n + 1)}>Retry</button>
+              </span>
+            ) : (
+              <span className={`cset-role-badge role-${role}`}>{roleLabel(role)}</span>
+            )}
           </div>
           <nav className="cset-nav" aria-label="Settings sections">
             {visibleTabs.map((t) => (

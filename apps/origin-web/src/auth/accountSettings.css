@@ -170,6 +170,9 @@
 .cset-role-badge.role-admin { color: #1d4ed8; background: #e6eeff; }
 .cset-role-badge.role-super_admin { color: #6d28d9; background: #efe9fb; }
 .cset-rail-head .cset-role-badge { margin-top: 6px; align-self: flex-start; }
+/* Role lookup FAILED — deliberately not styled as a badge. A badge asserts a fact;
+   this has to read as an unresolved error, or it becomes the silent demotion again. */
+.cset-role-unknown { margin-top: 6px; font: 500 11.5px/1.45 inherit; color: #a03123; }
 .cset-role-select { font: 600 12.5px/1 inherit; color: #2f2b22; background: #fff; border: 1px solid #e2ddd0; border-radius: 8px; padding: 7px 9px; cursor: pointer; }
 .cset-subnav { display: inline-flex; gap: 3px; background: #f2efe6; border: 1px solid #e8e3d7; border-radius: 10px; padding: 3px; margin-bottom: 14px; }
 .cset-subnav button { font: 600 12.5px/1 inherit; color: #57534a; background: transparent; border: 0; border-radius: 7px; padding: 7px 13px; cursor: pointer; }

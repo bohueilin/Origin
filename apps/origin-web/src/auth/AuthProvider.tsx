@@ -52,23 +52,70 @@ function msg(error: any): string {
 // then forwards to `next` (AuthPage), so the destination UX is unchanged.
 const REDIRECT = typeof window !== 'undefined' ? `${window.location.origin}/auth` : 'https://origin-physical-ai.pages.dev/auth'
 
-// Only hit the auth endpoint when there's actually a session to restore: a stored token,
-// or an OAuth code in the URL to exchange. Without this, signed-out visitors fire repeated
-// /auth/refresh calls that 401 — noisy in devtools and wasteful on every public page load.
+// Our own record that a session was successfully established. See below for why the SDK
+// cannot tell us this on its own.
+const SESSION_HINT = 'origin.auth.session'
+// A rejected non-owner sign-in, carried across the /auth → /admin document navigation.
+const DENIED_KEY = 'origin.auth.denied'
+
+function readDenied(): string | null {
+  if (typeof window === 'undefined') return null
+  try { return sessionStorage.getItem(DENIED_KEY) } catch { return null }
+}
+
+/**
+ * Should we ask the server to restore a session on this page load?
+ *
+ * Only hit the auth endpoint when there plausibly IS one. Without this, signed-out
+ * visitors fire repeated /auth/refresh calls that 401 — noisy and wasteful on every
+ * public page load.
+ *
+ * THIS FUNCTION SHIPPED BROKEN. It probed localStorage for 'insforge_access_token',
+ * 'insforge-token' and 'insforge_refresh_token'. The InsForge BROWSER client writes
+ * localStorage ZERO times — its TokenManager is explicitly in-memory, and those key
+ * names exist only in the SDK's Next.js SSR cookie helpers. So the probe was false BY
+ * CONSTRUCTION on every fresh load, not merely false when signed out.
+ *
+ * Nothing surfaced it until /admin became a real page: it is the first surface that
+ * needs a session to survive a full document navigation. The result was a loop —
+ * /auth exchanged the OAuth code fine, redirected to /admin, and /admin then decided
+ * there was nothing to restore and painted the signed-out card. Forever.
+ *
+ * The two signals below actually exist after a navigation:
+ *   1. SESSION_HINT — our own marker, written when refresh() confirms a user. Primary,
+ *      because it is entirely under our control. (The SDK's csrfToken field is optional
+ *      in its response type, so a cookie-only gate could deadlock the same way if the
+ *      server ever omits it.)
+ *   2. insforge_csrf_token — the SDK's first-party cookie on THIS origin, covering the
+ *      cases our marker misses: cleared storage, or a session opened in another tab.
+ *
+ * The real credential, the refresh token, is an httpOnly cookie — deliberately invisible
+ * to JavaScript, so no client-side check can ever observe it directly. These are hints
+ * that a restore is WORTH ATTEMPTING; the server remains the only authority on whether
+ * one succeeds.
+ */
 function hasRestorableSession(): boolean {
   if (typeof window === 'undefined') return false
   if (OAUTH_RETURN) return true // just came back from a Google round-trip (param captured pre-strip)
   try {
-    const ls = window.localStorage
-    if (ls.getItem('insforge_access_token') || ls.getItem('insforge-token') || ls.getItem('insforge_refresh_token')) return true
-  } catch { /* storage blocked — fall through */ }
-  const p = new URLSearchParams(window.location.search)
-  return p.has('insforge_code') || p.has('code')
+    if (window.localStorage.getItem(SESSION_HINT) === '1') return true
+  } catch { /* storage blocked — fall through to the cookie */ }
+  if (typeof document !== 'undefined') {
+    return document.cookie.split(';').some((c) => c.trim().startsWith('insforge_csrf_token='))
+  }
+  return false
+}
+
+function markSession(live: boolean): void {
+  try {
+    if (live) window.localStorage.setItem(SESSION_HINT, '1')
+    else window.localStorage.removeItem(SESSION_HINT)
+  } catch { /* storage blocked — the cookie signal still covers this load */ }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [deniedEmail, setDeniedEmail] = useState<string | null>(null)
+  const [deniedEmail, setDeniedEmail] = useState<string | null>(readDenied)
   // Ready immediately unless there's a session to restore — so signed-out visitors never
   // block on (or trigger) an auth call.
   const [ready, setReady] = useState(() => !AUTH_ENABLED || !hasRestorableSession())
@@ -81,16 +128,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Owner-only: any other account that signed in is rejected and signed back out, so it
       // never reaches the app as a live user.
       if (u && !isOwnerEmail(u.email)) {
+        // Persist the denial: /auth redirects to a DIFFERENT document, so React state
+        // cannot carry it across. Without this, a rejected visitor lands on /admin and
+        // sees neutral "sign in" copy that gives no hint their account was refused —
+        // and clicking it just repeats the rejection.
+        try { sessionStorage.setItem(DENIED_KEY, u.email || 'unknown') } catch { /* ignore */ }
         setDeniedEmail(u.email)
         setUser(null)
+        markSession(false)
         try { await insforge.auth.signOut() } catch { /* ignore */ }
         return false
       }
-      if (u) setDeniedEmail(null)
+      if (u) {
+        setDeniedEmail(null)
+        try { sessionStorage.removeItem(DENIED_KEY) } catch { /* ignore */ }
+      }
       setUser(u)
+      markSession(Boolean(u))
       return Boolean(u)
     } catch {
       setUser(null)
+      // Deliberately NOT clearing the hint: a network blip or a transient 5xx is not
+      // proof the session is gone, and clearing here would lock the operator out until
+      // they signed in again. Only an authoritative answer — a denial or an explicit
+      // sign-out — retracts the marker.
       return false
     }
   }, [])
@@ -166,6 +227,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback<AuthState['signOut']>(async () => {
     if (insforge) { try { await insforge.auth.signOut() } catch { /* ignore */ } }
     setUser(null)
+    // Authoritative: retract the hint so later loads don't chase a session that is gone.
+    markSession(false)
+    try { sessionStorage.removeItem(DENIED_KEY) } catch { /* ignore */ }
   }, [])
 
   const value = useMemo<AuthState>(

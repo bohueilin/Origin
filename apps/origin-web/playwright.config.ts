@@ -40,7 +40,20 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     url: `http://localhost:${PORT}`,
-    env: { PORT: String(PORT), VITE_DISABLE_OPTIONAL_BACKEND_FETCHES: '1' },
+    env: {
+      PORT: String(PORT),
+      VITE_DISABLE_OPTIONAL_BACKEND_FETCHES: '1',
+      // Auth must be ENABLED for the session-restore contract to be testable at all.
+      // Without these, `insforge` is null, AuthProvider short-circuits, and every
+      // assertion about auth behaviour passes vacuously — which is exactly how the
+      // /admin sign-in loop shipped: the one existing "makes no auth-refresh calls"
+      // test was green because the page under test could not make an auth call in the
+      // first place. Both values are PUBLIC (the anon key is RLS-guarded and already
+      // ships in the client bundle); tests stub the network with page.route, so no
+      // request actually leaves the machine.
+      VITE_INSFORGE_URL: 'https://82fs5fqk.us-west.insforge.app',
+      VITE_INSFORGE_ANON_KEY: 'anon_d727beb831e1f5c4ee7c36f0484a51375574f443d4f3421add387932f9c0b44d',
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },

@@ -12,8 +12,12 @@ export const AUTH_ENABLED = Boolean(url && anonKey)
 // Capture the OAuth callback BEFORE createClient() runs: the SDK's detectAuthCallback()
 // strips `insforge_code` from the URL synchronously on init, so a later read would miss
 // it. AuthProvider uses this to know it must load the session after a Google round-trip.
+//
+// Matches ONLY `insforge_code`. A bare `code=` used to count too, but the SDK consumes
+// exactly one param name — so `/admin?code=SPRING` from a campaign link made a
+// signed-out visitor fire a burst of doomed auth calls that could never succeed.
 export const OAUTH_RETURN =
-  typeof window !== 'undefined' && /[?&](insforge_code|code)=/.test(window.location.search)
+  typeof window !== 'undefined' && /[?&]insforge_code=/.test(window.location.search)
 
 // `functionsUrl` pins edge-function calls to the project base host
 // (`${VITE_INSFORGE_URL}/functions/<slug>`) instead of the SDK's default `…functions.insforge.app`

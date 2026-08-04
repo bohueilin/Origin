@@ -206,12 +206,23 @@ a:hover { text-decoration: underline; }
 .site-nav { display: flex; gap: 22px; margin-left: auto; }
 .site-nav a { color: var(--ink-soft); font-weight: 500; font-size: 15px; }
 .site-nav a:hover { color: var(--ink); text-decoration: none; }
+/* The primary CTA now lives INSIDE the nav, so the plain `.site-nav a` colour
+   would win over `.btn--primary` and paint dark-grey text on the blue pill
+   (axe measured 1.43:1). Restore the button's own foreground. */
+.site-nav a.btn--primary,
+.site-nav a.btn--primary:hover { color: #fff; }
 .site-header__cta { margin-left: 8px; display: flex; align-items: center; gap: 14px; }
 .site-header__login { color: var(--ink-soft); font-weight: 600; font-size: 14px; white-space: nowrap; }
 .site-header__login:hover { color: var(--ink); text-decoration: none; }
 .nav-mobile-only { display: none; }
+/* The primary CTA lives inside .site-nav, which collapses at <=960px — so a
+   compact twin sits in the header and is the ONLY one visible below that width.
+   Without it the primary action was 0x0 from 960px down (audit finding M8), and
+   /reference-check has no sticky bar to fall back on. */
+.site-header__cta-mobile { display: none; }
 @media (max-width: 960px) {
   .site-nav { display: none; }
+  .site-header__cta-mobile { display: inline-flex; min-height: 44px; }
   .site-header__cta { margin-left: auto; }
   .brand__sub { display: none; }
   .site-header__burger { display: flex; }
@@ -247,6 +258,15 @@ a:hover { text-decoration: underline; }
   margin-top: 22px; font-size: clamp(17px, 1.9vw, 21px); color: var(--ink-soft);
   max-width: 52ch; line-height: 1.55;
 }
+/* Hero product contract: lede carries the product sentence, status carries the
+   maturity boundary, actions hold the single primary path. Same scale as .lede
+   so the investor-ready hero keeps the established rhythm. */
+.hero__lede {
+  margin-top: 22px; font-size: clamp(17px, 1.9vw, 21px); color: var(--ink-soft);
+  max-width: 52ch; line-height: 1.55;
+}
+.hero__status { margin-top: 14px; font-size: 13.5px; color: var(--steel); max-width: 52ch; }
+.hero__actions { margin-top: 30px; }
 .hero__cta { margin-top: 30px; }
 .hero__cta-sub { margin-top: 14px; font-size: 13.5px; color: var(--ink-soft); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .hero__cta-sub a, .hero__cta-sub .linklike { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
@@ -811,9 +831,12 @@ a:hover { text-decoration: underline; }
      home-indicator iPhone that is ~98px, so a flat 76px left the last ~22px of
      footer sitting UNDER the fixed bar. Reserve the inset too. */
   body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
-  /* the long header CTA button is redundant once the sticky bar + burger show —
-     hiding it keeps the header row from overflowing on phones (≤~430px). */
-  .site-header__cta .btn--primary { display: none; }
+  /* The long header CTA is redundant once the sticky bar + burger show, EXCEPT for
+     the compact primary CTA: the sticky bar exists only on the homepage and does not
+     link /reference-check, so hiding this left the primary action unreachable on
+     phones (audit finding M8). Keep it, compact, and let the label shrink. */
+  .site-header__cta .btn--primary:not(.site-header__cta-mobile) { display: none; }
+  .site-header__cta-mobile { padding-inline: 12px; font-size: 13px; white-space: nowrap; }
 }
 
 /* ============================================================
@@ -1095,7 +1118,18 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .prooftwo .card--shows { border-color: #bfe3d3; }
 .prooftwo .card--not { border-color: #edc6c2; background: #fdf5f4; }
 .prooftwo h3 { display: flex; align-items: center; gap: 7px; }
+/* Text links inside prose must be distinguishable without relying on colour alone
+   (WCAG 1.4.1). Scoped to prose containers and excludes button affordances so
+   .btn pills are not underlined. Focus rings are untouched. */
+:where(.section, .hero, .site-footer, .modal) :is(p, figcaption, li, span) a:not(.btn) {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
 .honesty-line { font-size: 13px; color: var(--steel); margin-top: 12px; }
+/* Founder credibility now sits inside the Trust section (contract section 6:
+   trust + limitations + founder), so it needs a sub-heading rather than its own band. */
+.trust__founder-h { margin: 30px 0 0; font: 700 19px/1.25 'Space Grotesk', sans-serif; color: var(--ink); }
 
 /* Interactive 90-second demo (progressive enhancement: 8 panels readable with JS off) */
 .demo { margin-top: 30px; display: block; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; background: var(--paper-2); box-shadow: var(--sh-md); }
@@ -1107,6 +1141,15 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .demo__dot.is-on span { background: var(--signal); color: #fff; }
 .demo__dot:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
 .demo__screen { padding: 24px; min-height: 200px; display: grid; align-content: center; }
+/* Progressive enhancement: the panels carry a static `hidden` attribute so the
+   enhanced tablist starts in a valid ARIA state, but with JS OFF every stage must
+   still be readable — Attest and Reverify are the two the pitch rests on. */
+.demo:not(.is-enhanced) .demo__panel[hidden] { display: block; }
+/* Spec: interactive controls need >=44x44 CSS px on mobile. axe's wcag2a/wcag2aa
+   tag set excludes WCAG 2.2 target-size, so no automated gate caught this. */
+@media (max-width: 700px) {
+  .demo__dot { min-height: 44px; }
+}
 .demo.is-enhanced .demo__panel { display: none; }
 .demo.is-enhanced .demo__panel.is-on { display: block; animation: demoIn .35s ease; }
 @keyframes demoIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

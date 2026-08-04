@@ -26,8 +26,7 @@ test('home carries the agent-evidence thesis, one h1, clean console', async ({ p
   await page.goto('/')
   await expect(page).toHaveTitle(/Origin/)
   await expect(page.locator('h1')).toHaveCount(1)
-  await expect(page.locator('h1')).toHaveText('The reference check for AI agents.')
-  await expect(page.getByRole('heading', { name: 'Capability is not permission.' })).toBeVisible()
+  await expect(page.locator('h1')).toHaveText('Get your agent through security review — and prove what it did.')
   await page.waitForTimeout(800)
   expect(errors.filter((e) => !benign(e)), errors.join('\n')).toHaveLength(0)
 })
@@ -36,15 +35,15 @@ test('home content is in the server HTML (crawler-readable, not client-rendered)
   const res = await page.request.get('/')
   expect(res.status()).toBe(200)
   const html = await res.text()
-  expect(html).toContain('The evidence layer for AI agents')
-  expect(html).toContain('The reference check for AI agents.')
-  expect(html).toContain('Capability is not permission.')
-  expect(html).toContain('Prototype in private pilot; not compliance certification.')
+  expect(html).toContain('The evidence layer for high-consequence AI agents')
+  expect(html).toContain('Get your agent through security review — and prove what it did.')
+  expect(html).toContain('Prototype in private pilot. Synthetic sandbox evidence; not compliance certification.')
   expect(html).toContain('Book an Agent Evidence Review')
   expect(html).toContain('tamper-evident')
   expect(html).toContain('application/ld+json')
   // the old robotics thesis must be gone
   expect(html).not.toMatch(/work order|no-go zone|AMR-|Aisle \d/i)
+  expect(html).not.toMatch(/turn floor work orders|physical-ai autonomy layer/i)
 })
 
 test('social + SEO meta present on the home', async ({ page }) => {
@@ -65,17 +64,20 @@ test('signed-out home makes no auth-refresh calls', async ({ page }) => {
   expect(auth, auth.join('\n')).toHaveLength(0)
 })
 
-test('interactive 90-second demo steps and reaches the blocked + sealed states', async ({ page }) => {
+// The approved investor-ready design replaced the eight-step runtime-proxy
+// walkthrough with the five implemented reference-check stages, so this test now
+// pins the same property (the demo steps and reaches its terminal proof states)
+// against Attest and Reverify instead of Block and Seal.
+test('interactive reference-check demo steps and reaches the attested + VOID states', async ({ page }) => {
   await page.goto('/')
   const demo = page.locator('[data-demo]')
   await expect(demo).toBeVisible()
   // progressive enhancement kicked in
   await expect(demo).toHaveClass(/is-enhanced/)
-  // step to the block panel via the rail
-  await page.locator('[data-demo-step="7"]').click()
-  await expect(page.locator('[data-demo-panel="7"]')).toContainText('BLOCKED')
-  await page.locator('[data-demo-step="8"]').click()
-  await expect(page.locator('[data-demo-panel="8"]')).toContainText('SEALED')
+  await page.locator('[data-demo-step="4"]').click()
+  await expect(page.locator('[data-demo-panel="4"]')).toContainText('ISSUED')
+  await page.locator('[data-demo-step="5"]').click()
+  await expect(page.locator('[data-demo-panel="5"]')).toContainText('VOID')
 })
 
 test('reference check communicates selection, verdict, and drift invalidation accessibly', async ({ page }) => {

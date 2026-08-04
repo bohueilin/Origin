@@ -158,7 +158,7 @@ export function ReferenceCheckPage() {
       {/* 1 · agent */}
       <div className="rc-card">
         <p className="rc-step">1 · Your agent</p>
-        <p className="rc-hint">These values are hashed into the attestation — change the model, tools, context, or harness later and it <b>voids</b> (a certificate can’t be carried onto a different agent).</p>
+        <p className="rc-hint">These values are hashed into the attestation — change the model, tools, context, or harness later and it <b>voids</b> (an attestation can’t be carried onto a different agent).</p>
         <div className="rc-fields">
           <label className="rc-field"><span>Model</span><input value={agent.model} onChange={(e) => setAgent({ ...agent, model: e.target.value })} /></label>
           <label className="rc-field"><span>Tools (comma-separated)</span><input value={agent.tools} onChange={(e) => setAgent({ ...agent, tools: e.target.value })} /></label>
@@ -231,7 +231,9 @@ export function ReferenceCheckPage() {
             <p className="rc-hint"><b>What {result.level} permits:</b> {VRL_DECISIONS[result.level].scope}. Human approval on {VRL_DECISIONS[result.level].approval}; monitoring {VRL_DECISIONS[result.level].monitoring}; <b>voids on</b> {VRL_DECISIONS[result.level].voids}.</p>
           ) : null}
 
-          <div className="rc-scroll">
+          {/* tabindex/role: a horizontally scrollable region must be reachable by
+              keyboard (axe scrollable-region-focusable). */}
+          <div className="rc-scroll" tabIndex={0} role="region" aria-label="Scenario results (scrollable)">
             <table className="rc-table">
               <thead><tr><th>Proposed action</th><th>Attributes</th><th>Your agent</th><th>Oracle</th><th>Verdict</th></tr></thead>
               <tbody>

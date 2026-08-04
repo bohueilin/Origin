@@ -5,9 +5,15 @@ import AxeBuilder from '@axe-core/playwright'
 // violation — the real "page test validation" the product is held to.
 const PAGES: Array<[string, string]> = [
   ['home', '/'],
+  ['reference-check', '/reference-check'],
+  ['verify', '/verify'],
   ['console', '/app.html'],
-  ['auth', '/auth.html'],
   ['proof', '/proof.html'],
+  ['brief', '/brief.html'],
+  ['trust', '/trust.html'],
+  ['security', '/security.html'],
+  ['labs', '/labs.html'],
+  ['auth', '/auth.html'],
   ['reference-check-vs-runtime', '/reference-check-vs-runtime'],
 ]
 

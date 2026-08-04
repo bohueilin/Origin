@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Origin — one-page brief</title>
-    <meta name="description" content="A one-page brief on Origin, the evidence layer for AI agents: runtime policy enforcement, a tool-call proxy, and a tamper-evident evidence package that helps teams get high-consequence agents through security review." />
+    <meta name="description" content="A one-page brief on Origin, the evidence layer for high-consequence AI agents: a deterministic, configuration-bound Agent Reference Check that issues a tamper-evident Origin Attestation a reviewer can re-verify offline." />
     <link rel="canonical" href="https://origin-physical-ai.pages.dev/brief" />
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#f6f5f2" />
@@ -82,6 +82,8 @@
       .rung p { font-size: 12.5px; }
       .rung code, .brief code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; background: var(--paper-3); border: 1px solid var(--line-2); border-radius: 5px; padding: 1px 5px; color: var(--ink); word-break: break-all; }
 
+      /* Links in prose must be distinguishable without colour alone (WCAG 1.4.1). */
+      .brief__foot a, .brief__meta a, .brief__lede a, .brief__card p a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
       .brief__foot { margin-top: 30px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 18px; font-size: 13px; color: var(--steel); }
       .brief__note { margin-top: 18px; font-size: 12.5px; color: var(--steel); font-style: italic; }
       .brief__print-only { display: none; }
@@ -137,10 +139,17 @@
       <p class="brief__eyebrow">The evidence layer for AI agents</p>
       <h1>Get your agent through security review — and prove what it did.</h1>
       <p class="brief__lede">
-        Origin enforces runtime policy before an AI agent takes a side effect, routes every tool call
-        through a controlled proxy, requires human approval where policy demands it, and produces a
-        tamper-evident, hash-chained evidence package showing what happened, why it was allowed, and
-        who owned the risk.
+        Origin is the evidence layer for high-consequence AI agents. Its first product is a
+        configuration-bound <b>Agent Reference Check</b>: it binds an exact agent configuration —
+        model, tools, policy, budget, scenario battery — runs a deterministic battery against it,
+        grades the result with a deterministic oracle rather than an LLM, and issues a tamper-evident
+        <b>Origin Attestation</b> a security reviewer can re-verify offline. Change one bound field and
+        the attestation returns VOID.
+      </p>
+      <p class="brief__lede">
+        A runtime gate and controlled tool-call proxy are the proposed pilot architecture, not
+        deployed general enforcement. Evidence shown today is synthetic sandbox evidence from a
+        private-pilot prototype; it is not compliance certification.
       </p>
 
       <div class="brief__grid">
@@ -283,7 +292,7 @@
             <span class="rung__id">TR-A003<span class="rung__tag rung__tag--soon">When earned</span></span>
             <p>The first external design-partner trace — forthcoming. We won't show data for it until it exists.</p>
           </div>
-          <p style="margin-top:12px;font-size:12.5px;color:var(--steel)">The prototype runs; it is not production SaaS. Tamper-evident means alteration is detectable by replay and digest checks. Review-ready, not reviewer-accepted. Decision-support, not a guarantee of approval.</p>
+          <p style="margin-top:12px;font-size:12.5px;color:var(--steel)">The prototype runs; it is not production SaaS. Tamper-evident means alteration is detectable by replay and digest checks. Review-ready — built to be checked by a reviewer, never a claim that one has signed off. Decision-support, not a guarantee of approval.</p>
         </div>
       </div>
 

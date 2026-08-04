@@ -93,7 +93,26 @@
       .verdict { margin-top: 12px; font-size: 13px; font-weight: 700; color: var(--warn); background: #fbf4e3; border: 1px solid #ecd9ad; border-radius: 9px; padding: 9px 12px; }
       .proxy--held { color: var(--warn); }
       .approvals { display: flex; gap: 8px; margin-top: 12px; }
-      .approvals .btn { pointer-events: none; }
+      /* Static, non-interactive representations of a completed simulated decision.
+         Deliberately NOT named .btn: an element that does not execute must not
+         look like a control a visitor can press. */
+      .sim-state {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        padding: 5px 10px;
+        border: 1px solid var(--line-2);
+        border-radius: 999px;
+        background: var(--paper-3);
+        color: var(--ink-soft);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .sim-state--selected {
+        border-color: #bfe3d3;
+        background: #eaf6f0;
+        color: var(--verify);
+      }
       .log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; }
       .log li { display: flex; gap: 9px; color: var(--ink-soft); }
       .log time { color: var(--steel); font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; flex: none; }
@@ -314,10 +333,10 @@
               <div class="p__h" id="r-ap-h">Approval queue</div>
               <div class="p__b">
                 <p>Risk owner · <b>payments on-call</b></p>
-                <div class="approvals">
-                  <span class="btn btn--primary btn--sm">Approve</span>
-                  <span class="btn btn--ghost btn--sm">Hold</span>
-                  <span class="btn btn--ghost btn--sm">Deny</span>
+                <div class="approvals" aria-label="Simulated approval state">
+                  <span class="sim-state sim-state--selected">Simulated approval state: Approved</span>
+                  <span class="sim-state">Hold was not selected</span>
+                  <span class="sim-state">Deny was not selected</span>
                 </div>
                 <p style="margin-top:10px;font-size:12px;color:var(--steel)">Approved for this one action, at 09:41:26. Who, when, and scope are recorded.</p>
               </div>
@@ -353,7 +372,9 @@
               <div class="p__h" id="r-ex-h">Evidence package</div>
               <div class="p__b">
                 <p>Reviewer summary + JSON — what happened, why it was allowed, who owned the risk.</p>
-                <span class="btn btn--primary btn--sm">Export evidence package</span>
+                <button type="button" class="btn btn--primary btn--sm" data-download-simulated-evidence>
+                  Download simulated evidence JSON
+                </button>
                 <details class="json">
                   <summary>View evidence JSON · simulated</summary>
                   <pre>{
@@ -465,10 +486,10 @@
               <div class="p__h" id="d-ap-h">Approval queue</div>
               <div class="p__b">
                 <p>Risk owner · <b>platform on-call</b></p>
-                <div class="approvals">
-                  <span class="btn btn--primary btn--sm">Approve</span>
-                  <span class="btn btn--ghost btn--sm">Hold</span>
-                  <span class="btn btn--ghost btn--sm">Deny</span>
+                <div class="approvals" aria-label="Simulated approval state">
+                  <span class="sim-state sim-state--selected">Simulated approval state: Approved</span>
+                  <span class="sim-state">Hold was not selected</span>
+                  <span class="sim-state">Deny was not selected</span>
                 </div>
                 <p style="margin-top:10px;font-size:12px;color:var(--steel)">Approved for this one restart, at 14:07:12. Who, when, and scope are recorded.</p>
               </div>
@@ -504,7 +525,9 @@
               <div class="p__h" id="d-ex-h">Evidence package</div>
               <div class="p__b">
                 <p>Reviewer summary + JSON — what happened, why it was allowed, who owned the risk.</p>
-                <span class="btn btn--primary btn--sm">Export evidence package</span>
+                <button type="button" class="btn btn--primary btn--sm" data-download-simulated-evidence>
+                  Download simulated evidence JSON
+                </button>
                 <details class="json">
                   <summary>View evidence JSON · simulated</summary>
                   <pre>{
@@ -612,10 +635,10 @@
               <div class="p__h" id="s-ap-h">Approval queue</div>
               <div class="p__b">
                 <p>Risk owner · <b>data-protection on-call</b></p>
-                <div class="approvals">
-                  <span class="btn btn--primary btn--sm">Approve</span>
-                  <span class="btn btn--ghost btn--sm">Hold</span>
-                  <span class="btn btn--ghost btn--sm">Deny</span>
+                <div class="approvals" aria-label="Simulated approval state">
+                  <span class="sim-state sim-state--selected">Simulated approval state: Approved</span>
+                  <span class="sim-state">Hold was not selected</span>
+                  <span class="sim-state">Deny was not selected</span>
                 </div>
                 <p style="margin-top:10px;font-size:12px;color:var(--steel)">Single-record export approved at 11:22:40. The bulk export has <b>no approval path</b> to offer.</p>
               </div>
@@ -651,7 +674,9 @@
               <div class="p__h" id="s-ex-h">Evidence package</div>
               <div class="p__b">
                 <p>Reviewer summary + JSON — what happened, why it was allowed, who owned the risk.</p>
-                <span class="btn btn--primary btn--sm">Export evidence package</span>
+                <button type="button" class="btn btn--primary btn--sm" data-download-simulated-evidence>
+                  Download simulated evidence JSON
+                </button>
                 <details class="json">
                   <summary>View evidence JSON · simulated</summary>
                   <pre>{
@@ -728,6 +753,34 @@
         var initial = tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })[0] || tabs[0];
         select(initial, false);
       })();
+    </script>
+    <script>
+      // Real, local, no-network download of the simulated evidence a visitor can
+      // already read on screen. It reads the scenario's own <details class="json">
+      // block, so the file can never drift from what is displayed.
+      document.querySelectorAll('[data-download-simulated-evidence]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const scenario = button.closest('.scen')
+          const source = scenario?.querySelector('details.json pre')?.textContent?.trim()
+          if (!source) return
+
+          // Never throw on malformed displayed JSON: fall back to the exact text
+          // shown on screen rather than silently doing nothing.
+          let payload = source
+          try { payload = JSON.stringify(JSON.parse(source), null, 2) + '\n' } catch (_) { /* keep raw */ }
+          const blob = new Blob([payload], { type: 'application/json' })
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = 'origin-' + scenario.id.replace('scen-', '') + '-simulated-evidence.json'
+          // Append before click and revoke async — some browsers abort a download
+          // whose object URL is revoked synchronously, or whose anchor is detached.
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          setTimeout(function () { URL.revokeObjectURL(url) }, 0)
+        })
+      })
     </script>
   </body>
 </html>

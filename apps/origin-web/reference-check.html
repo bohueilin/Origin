@@ -82,6 +82,11 @@
       .rc-verdict__meta { color: var(--ink-soft); }
       .rc-verdict--ok { color: #1d7a4c; background: #e6f4ec; }
       .rc-verdict--warn { color: #a03123; background: #fbe9e6; }
+      /* Grid/flex items default to min-width:auto, so the wide results table
+         stretched .rc-scroll (and every sibling) instead of scrolling inside it.
+         At 390px that pushed the page to 788px and put the drift button ~130px
+         off-screen — the primary CTA destination was unusable on a phone. */
+      .rc-grid > *, .rc-card, .rc-scroll { min-width: 0; }
       .rc-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 16px; }
       .rc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
       .rc-table th, .rc-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -105,17 +110,13 @@
         <nav class="site-nav" id="site-nav" aria-label="Primary">
           <a href="/#product">Product</a>
           <a href="/#demo">Demo</a>
-          <a href="/verify">Verify</a>
-          <a href="/proving-ground">Proving ground</a>
+          <a href="/#evidence">Evidence</a>
           <a href="/trust">Trust</a>
-          <a href="/brief">Brief</a>
-          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
+          <a href="/labs">Labs</a>
+          <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
         </nav>
         <div class="site-header__cta">
-          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
-          <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">
-            Check an agent
-          </a>
+          <a class="btn btn--primary btn--sm site-header__cta-mobile" href="/reference-check" data-analytics="nav_cta_click_mobile">Run reference check</a>
           <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
             <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
           </button>

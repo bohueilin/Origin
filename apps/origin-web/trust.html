@@ -116,18 +116,14 @@
         <nav class="site-nav" id="site-nav" aria-label="Primary">
           <a href="/#product">Product</a>
           <a href="/#demo">Demo</a>
-          <a href="/verify">Verify</a>
-          <a href="/proving-ground">Proving ground</a>
+          <a href="/#evidence">Evidence</a>
           <a href="/trust">Trust</a>
-          <a href="/brief">Brief</a>
-          <a class="nav-mobile-only" href="/auth" data-analytics="login_click">Sign in</a>
+          <a href="/labs">Labs</a>
+          <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
         </nav>
 
         <div class="site-header__cta">
-          <a class="site-header__login" href="/auth" data-analytics="login_click">Sign in</a>
-          <a class="btn btn--primary btn--sm" href="/#offer" data-analytics="nav_cta_click">
-            Book an Agent Evidence Review
-          </a>
+          <a class="btn btn--primary btn--sm site-header__cta-mobile" href="/reference-check" data-analytics="nav_cta_click_mobile">Run reference check</a>
           <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
             <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
           </button>
@@ -143,13 +139,15 @@
           <h1 id="trust-title">Built for reviewers, not just builders.</h1>
           <p class="section__lede leadin">
             This page states Origin's posture plainly for security and procurement review. Origin is
-            decision-support and evidence infrastructure — it enforces runtime policy on AI agents, routes
-            side effects through a controlled proxy, and produces a tamper-evident evidence package. It is
+            decision-support and evidence infrastructure — it runs a deterministic, configuration-bound
+            reference check over an exact agent configuration and produces a tamper-evident attestation a
+            reviewer can re-verify offline. A runtime gate and controlled proxy are proposed pilot
+            architecture, not deployed general enforcement. It is
             <b>not</b> legal or compliance certification, and it does not guarantee approval.
           </p>
           <p class="mono-note" style="margin-top: 14px;">
             The prototype runs; it is not production SaaS. "Tamper-evident" means alteration is detectable
-            by replay and digest checks; "review-ready" does not mean "reviewer-accepted." Specifics below are pilot defaults, finalized per
+            by replay and digest checks; "review-ready" means a reviewer can check it, and never that a reviewer has signed off. Specifics below are pilot defaults, finalized per
             engagement in the Data Processing Agreement (DPA).
           </p>
 
@@ -205,7 +203,7 @@
             const detail = (s.detail || '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))
             return `<tr><td style="color:${color};font-weight:600;padding-right:10px">${mark}</td>`
               + `<td style="padding-right:16px;white-space:nowrap">${s.name}</td>`
-              + `<td style="opacity:.75">${detail}</td></tr>`
+              + `<td>${detail}</td></tr>`
           }).join('')
           const when = new Date(data.generated_at).toISOString().slice(0, 10)
           const banner = data.all_green
@@ -214,7 +212,7 @@
           document.getElementById('gates-scoreboard').innerHTML =
             `<div style="margin-bottom:10px">${banner} · ${data.suites.length} suites · `
             + `reproduced ${when} by <code>make gates-all</code>, enforced in CI on every push.</div>`
-            + `<div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
+            + `<div style="overflow-x:auto" tabindex="0" role="region" aria-label="Gate results table (scrollable)"><table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
             + `<tbody>${rows}</tbody></table></div>`
         } catch {
           /* keep the static reproduce note */
@@ -276,7 +274,7 @@
             Pilot defaults, finalized in the DPA. Placeholders below are marked and confirmed per engagement.
           </p>
           <div class="card" style="margin-top: 24px;">
-            <div class="trust-scroll">
+            <div class="trust-scroll" tabindex="0" role="region" aria-label="Trust details (scrollable)">
               <table class="trust-table">
                 <thead>
                   <tr><th scope="col">Data class</th><th scope="col">Default retention</th><th scope="col">Notes</th></tr>
@@ -379,8 +377,8 @@
                 <span class="status status--now"><span class="status__txt">Available now</span></span>
               </div>
               <ul class="deflist">
-                <li><span class="dl-mark">✓</span><span>Runtime policy enforcement on proposed actions.</span></li>
-                <li><span class="dl-mark">✓</span><span>The controlled proxy path — the only route to a side effect.</span></li>
+                <li><span class="dl-mark">✓</span><span>A deterministic reference check over the bound configuration.</span></li>
+                <li><span class="dl-mark">✓</span><span>An Origin Attestation that re-verifies offline and voids on configuration drift.</span></li>
                 <li><span class="dl-mark">✓</span><span>Append-only, hash-chained audit records.</span></li>
                 <li><span class="dl-mark">✓</span><span>The exportable evidence package for review.</span></li>
               </ul>

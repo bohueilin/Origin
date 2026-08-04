@@ -45,13 +45,13 @@
     <main>
       <h1>Privacy Policy</h1>
       <p class="updated">Last updated: July 2026</p>
-      <p class="intro">This Privacy Policy explains what information Origin (“we”) collects, how we use it, and the choices you have. Origin is the evidence layer for AI agents. It enforces runtime policy before an AI agent takes a side effect, routes every tool call through a controlled proxy, and produces a tamper-evident, hash-chained evidence package showing what an agent did, why it was allowed, and who owned the risk — so teams can get high-consequence agents through security review. Origin is currently available through a founder-led pilot program. The prototype runs; it is not production SaaS. By using Origin, you agree to this Policy.</p>
+      <p class="intro">This Privacy Policy explains what information Origin (“we”) collects, how we use it, and the choices you have. Origin is the evidence layer for high-consequence AI agents. It enforces runtime policy before an AI agent takes a side effect, routes every tool call through a controlled proxy, and produces a tamper-evident, hash-chained evidence package showing what an agent did, why it was allowed, and who owned the risk — so teams can get high-consequence agents through security review. Origin is currently available through a founder-led pilot program. The prototype runs; it is not production SaaS. By using Origin, you agree to this Policy.</p>
 
       <h2>Information we collect</h2>
       <ul>
         <li><strong>Account information</strong> — your name and email when you create an account, and authentication data handled by our identity provider.</li>
         <li><strong>Agent workflow metadata</strong> — the agent workflows, policies, scopes, budgets, and approval rules you configure so the Service can enforce what an agent is allowed to do.</li>
-        <li><strong>Tool-call requests and responses</strong> — the proposed and executed tool calls that pass through the controlled proxy, including their parameters and results, so the Service can evaluate and record each side effect.</li>
+        <li><strong>Tool-call requests and responses</strong> — in a pilot deployment, the proposed and executed tool calls that pass through a controlled proxy, including their parameters and results, so the Service can evaluate and record each side effect.</li>
         <li><strong>Policy decisions</strong> — the verdict returned for each proposed action (allow, cap, require-approval, deny, or pause) and the inputs that produced it.</li>
         <li><strong>Approval metadata</strong> — the named risk owner, the approval or denial, and the time it was recorded when a risky action is escalated to a human.</li>
         <li><strong>Audit logs</strong> — the append-only, hash-chained record of every proposal, verdict, approval, action, block, and exception that forms the evidence package.</li>
@@ -62,8 +62,8 @@
 
       <h2>How we use information</h2>
       <ul>
-        <li>To enforce runtime policy — evaluating each proposed agent action and returning a deterministic verdict before any side effect occurs.</li>
-        <li>To route every tool call through the controlled proxy, which is the only path to a side effect, and to record what passed through it.</li>
+        <li>To run the deterministic reference check — binding an agent configuration and returning deterministic verdicts over a scenario battery. (A runtime policy gate evaluating live proposed actions is proposed pilot architecture, not a deployed capability.)</li>
+        <li>Where a controlled tool-call proxy is used in a pilot, to record what passed through it. The proxy is proposed pilot architecture and is not deployed as general production enforcement.</li>
         <li>To produce the tamper-evident, hash-chained evidence package showing what an agent did, why it was allowed, and who owned the risk.</li>
         <li>To operate, maintain, and secure the Service and your account.</li>
         <li>To surface human-in-the-loop controls — human approval for risky actions, scope and budget limits, and kill switches to pause a workflow or revoke a scope.</li>

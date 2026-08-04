@@ -337,11 +337,12 @@ form?.addEventListener('submit', async (e) => {
     const el = form.elements.namedItem(n) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null
     return el ? el.value.trim() : ''
   }
-  const role = val('role')
-  // "What does it touch?" is a checkbox group — collect the checked values.
-  const touches = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="touches"]:checked'))
-    .map((c) => c.value)
-    .join(', ')
+  // The visible form is four fields (name, work email, company, blocker). Role,
+  // agent, touches, sign-off, workaround, and urgency were removed to cut
+  // friction; val() already returns '' for absent controls, so nothing throws —
+  // but we deliberately DO NOT send those keys rather than sending empty strings
+  // that would look like answered-and-blank in the CRM.
+  const role = ''
 
   // Primary path: POST to the Cloudflare Pages Function (/api/lead), which
   // forwards securely to our team. If it isn't reachable/configured to deliver,
@@ -353,9 +354,8 @@ form?.addEventListener('submit', async (e) => {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        name: val('name'), email: val('email'), company: val('company'), role,
-        agent: val('agent'), touches, blocker: val('blocker'), signoff: val('signoff'),
-        workaround: val('workaround'), urgency: val('urgency'), intent,
+        name: val('name'), email: val('email'), company: val('company'),
+        blocker: val('blocker'), intent,
         cta_source: val('cta_source'), role_path: val('role_path'),
         page_path: val('page_path'), opened_at: val('opened_at'), company_website: '',
       }),
@@ -378,13 +378,7 @@ form?.addEventListener('submit', async (e) => {
       `Name: ${val('name')}`,
       `Email: ${val('email')}`,
       `Company: ${val('company')}`,
-      `Role: ${role}`,
-      `Agent: ${val('agent')}`,
-      `Touches: ${touches}`,
       `Blocker: ${val('blocker')}`,
-      `Signs off: ${val('signoff')}`,
-      `Workaround: ${val('workaround')}`,
-      `Urgency: ${val('urgency')}`,
     ].join('\n')
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
@@ -428,14 +422,11 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
   const nextBtn = demo.querySelector<HTMLButtonElement>('[data-demo-next]')
   if (panels.length < 2) return
   const CAPS = [
-    'The agent proposes a risky action.',
-    'The policy gate evaluates scope, budget, and approval rules.',
-    'The verdict returns require-approval.',
-    'The tool-call proxy holds — the only path to the side effect.',
-    'A human approves; who, when, and scope are recorded.',
-    'The proxy executes only the approved action.',
-    'A second, over-scope action is blocked and recorded.',
-    'The evidence package is sealed — hash-chain valid.',
+    'The exact configuration is bound into a digest.',
+    'A deterministic battery exercises allow, deny, and escalate.',
+    'The oracle grades FAR, FRR, catastrophic failures, and readiness.',
+    'Origin issues a configuration-bound sandbox attestation.',
+    'The artifact verifies offline — until a bound field changes.',
   ]
   demo.classList.add('is-enhanced')
   const N = panels.length
@@ -447,14 +438,43 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
     window.clearInterval(timer); timer = 0
     if (playBtn) { playBtn.innerHTML = '&#9654; Play'; playBtn.setAttribute('aria-pressed', 'false') }
   }
+  // activate() is the ONE place tab state changes: selection, roving tabindex,
+  // panel visibility (both the class the CSS animates and the `hidden` attribute
+  // assistive tech honours), and the caption.
   const render = () => {
-    panels.forEach((p, i) => p.classList.toggle('is-on', i === step))
-    dots.forEach((d, i) => { d.classList.toggle('is-on', i === step); d.setAttribute('aria-selected', String(i === step)) })
-    if (cap) cap.textContent = `Step ${step + 1} of ${N} · ${CAPS[step] ?? ''}`
+    panels.forEach((p, i) => {
+      const on = i === step
+      p.classList.toggle('is-on', on)
+      p.toggleAttribute('hidden', !on)
+    })
+    dots.forEach((d, i) => {
+      const on = i === step
+      d.classList.toggle('is-on', on)
+      d.setAttribute('aria-selected', String(on))
+      d.tabIndex = on ? 0 : -1
+    })
+    if (cap) cap.textContent = `Stage ${step + 1} of ${N} · ${CAPS[step] ?? ''}`
     prevBtn?.toggleAttribute('disabled', step === 0)
     nextBtn?.toggleAttribute('disabled', step === N - 1)
   }
   const go = (i: number) => { step = Math.max(0, Math.min(N - 1, i)); render() }
+
+  // WAI-ARIA tabs keyboard contract: Left/Right wrap, Home/End jump to the ends.
+  dots.forEach((d) => {
+    d.addEventListener('keydown', (event: KeyboardEvent) => {
+      const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End']
+      if (!keys.includes(event.key)) return
+      event.preventDefault()
+      stop()
+      const next = event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? dots.length - 1
+          : (step + (event.key === 'ArrowRight' ? 1 : -1) + dots.length) % dots.length
+      go(next)
+      dots[next].focus()
+    })
+  })
   const play = () => {
     if (timer) { stop(); return }
     if (playBtn) { playBtn.innerHTML = '&#10073;&#10073; Pause'; playBtn.setAttribute('aria-pressed', 'true') }

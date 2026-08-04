@@ -212,9 +212,6 @@ a:hover { text-decoration: underline; }
 .site-nav a.btn--primary,
 .site-nav a.btn--primary:hover { color: #fff; }
 .site-header__cta { margin-left: 8px; display: flex; align-items: center; gap: 14px; }
-.site-header__login { color: var(--ink-soft); font-weight: 600; font-size: 14px; white-space: nowrap; }
-.site-header__login:hover { color: var(--ink); text-decoration: none; }
-.nav-mobile-only { display: none; }
 /* The primary CTA lives inside .site-nav, which collapses at <=960px — so a
    compact twin sits in the header and is the ONLY one visible below that width.
    Without it the primary action was 0x0 from 960px down (audit finding M8), and
@@ -227,7 +224,6 @@ a:hover { text-decoration: underline; }
   .brand__sub { display: none; }
   .site-header__burger { display: flex; }
   /* burger active → move Log in into the menu so the header row can't overflow at 375px */
-  .site-header__login { display: none; }
   .site-nav.is-open .nav-mobile-only { display: block; }
   /* burger-opened dropdown nav */
   .site-nav.is-open {
@@ -254,20 +250,17 @@ a:hover { text-decoration: underline; }
   font-size: clamp(34px, 5.4vw, 60px); letter-spacing: -0.03em;
   max-width: 15ch;
 }
-.hero .lede {
+.hero .lede,
+.hero__lede {
   margin-top: 22px; font-size: clamp(17px, 1.9vw, 21px); color: var(--ink-soft);
   max-width: 52ch; line-height: 1.55;
 }
 /* Hero product contract: lede carries the product sentence, status carries the
    maturity boundary, actions hold the single primary path. Same scale as .lede
    so the investor-ready hero keeps the established rhythm. */
-.hero__lede {
-  margin-top: 22px; font-size: clamp(17px, 1.9vw, 21px); color: var(--ink-soft);
-  max-width: 52ch; line-height: 1.55;
-}
+
 .hero__status { margin-top: 14px; font-size: 13.5px; color: var(--steel); max-width: 52ch; }
 .hero__actions { margin-top: 30px; }
-.hero__cta { margin-top: 30px; }
 .hero__cta-sub { margin-top: 14px; font-size: 13.5px; color: var(--ink-soft); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .hero__cta-sub a, .hero__cta-sub .linklike { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .hero__cta-sub a:hover, .hero__cta-sub .linklike:hover { color: var(--ink); }
@@ -993,7 +986,6 @@ a:hover { text-decoration: underline; }
   /* comfortable touch on the walkthrough's own controls + header/trust links */
   .walk__mode { min-height: 44px; }
   .walk__tab { min-height: 44px; }
-  .site-header__login { padding: 11px 4px; }
   .truststrip__link { padding: 11px 0; display: inline-block; }
 }
 

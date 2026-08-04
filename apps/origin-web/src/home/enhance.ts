@@ -232,14 +232,6 @@ const INTENT_COPY: Record<string, { title: string; sub: string; cta: string }> =
   'design-partner': { title: 'Become a design partner', sub: 'Run your agent (or a representative policy) through the gym and get a signed, config-bound reference check. Real-customer evidence stays blocked by default until you authorize it.', cta: 'Start as a design partner' },
 }
 
-// Prefill the role field when a CTA opens the modal. Values match the <select> options.
-const INTENT_ROLE: Record<string, string> = {
-  review: 'Engineering / platform',
-  blocker: 'Security / review',
-  investor: 'Investor',
-  'design-partner': 'Engineering / platform',
-}
-
 function openLead(trigger: HTMLElement): void {
   if (!dialog) return
   lastFocused = trigger
@@ -248,8 +240,6 @@ function openLead(trigger: HTMLElement): void {
   if (titleEl) titleEl.textContent = copy.title
   if (subEl) subEl.textContent = copy.sub
   if (intentEl) intentEl.value = intent
-  const roleSel = document.getElementById('lead-role') as HTMLSelectElement | null
-  if (roleSel) roleSel.value = INTENT_ROLE[intent] || ''
   if (submitEl) submitEl.textContent = copy.cta
   // reset to form view
   if (successEl) successEl.hidden = true
@@ -342,7 +332,6 @@ form?.addEventListener('submit', async (e) => {
   // friction; val() already returns '' for absent controls, so nothing throws —
   // but we deliberately DO NOT send those keys rather than sending empty strings
   // that would look like answered-and-blank in the CRM.
-  const role = ''
 
   // Primary path: POST to the Cloudflare Pages Function (/api/lead), which
   // forwards securely to our team. If it isn't reachable/configured to deliver,
@@ -369,9 +358,9 @@ form?.addEventListener('submit', async (e) => {
 
   showSuccess(delivered)
   if (delivered) {
-    track('lead_form_submit_success', { intent, role })
+    track('lead_form_submit_success', { intent })
   } else {
-    track('lead_form_submit_error', { intent, role })
+    track('lead_form_submit_error', { intent })
     const subject = `Origin — ${intent} request`
     const body = [
       `Interest: ${intent}`,
@@ -438,7 +427,7 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
     window.clearInterval(timer); timer = 0
     if (playBtn) { playBtn.innerHTML = '&#9654; Play'; playBtn.setAttribute('aria-pressed', 'false') }
   }
-  // activate() is the ONE place tab state changes: selection, roving tabindex,
+  // render() is the ONE place tab state changes: selection, roving tabindex,
   // panel visibility (both the class the CSS animates and the `hidden` attribute
   // assistive tech honours), and the caption.
   const render = () => {

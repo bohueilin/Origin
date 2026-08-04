@@ -70,6 +70,37 @@ export async function adminUpdateTicket(id: string, status: string): Promise<boo
   return !error
 }
 
+// ---- Review requests (the public lead form's queue) --------------------------
+// These are the "submitted items" an operator actually works. They arrive through
+// the /api/lead Pages Function, which writes them server-side with the admin key —
+// there is no client INSERT policy on `leads`, and no client may SELECT them either,
+// so this RPC is the only read path and it is staff-gated inside the database.
+export interface Lead {
+  id: string
+  name: string
+  email: string
+  company: string | null
+  blocker: string | null
+  intent: string
+  cta_source: string | null
+  page_path: string | null
+  status: string
+  created_at: string
+}
+
+export async function adminListLeads(): Promise<{ ok: boolean; leads: Lead[]; error?: string }> {
+  if (!insforge) return { ok: false, leads: [], error: 'not configured' }
+  const { data, error } = await insforge.database.rpc('admin_list_leads')
+  if (error) return { ok: false, leads: [], error: error.message }
+  return { ok: true, leads: (data as Lead[]) ?? [] }
+}
+
+export async function adminUpdateLead(id: string, status: string): Promise<boolean> {
+  if (!insforge) return false
+  const { error } = await insforge.database.rpc('admin_update_lead', { lead_id: id, new_status: status })
+  return !error
+}
+
 export async function adminListAudit(): Promise<{ ok: boolean; entries: AuditEntry[]; error?: string }> {
   if (!insforge) return { ok: false, entries: [] }
   const { data, error } = await insforge.database.rpc('admin_list_audit')

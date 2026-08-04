@@ -333,10 +333,12 @@ form?.addEventListener('submit', async (e) => {
   // but we deliberately DO NOT send those keys rather than sending empty strings
   // that would look like answered-and-blank in the CRM.
 
-  // Primary path: POST to the Cloudflare Pages Function (/api/lead), which
-  // forwards securely to our team. If it isn't reachable/configured to deliver,
-  // fall back to composing a mailto so demand is never silently dropped.
-  let delivered = false
+  // Primary path: POST to the Cloudflare Pages Function (/api/lead). It reports two
+  // independent outcomes — `stored` (the row is in the admin queue) and `delivered`
+  // (a human was notified). EITHER one means we have the request, so the mailto
+  // fallback only fires when BOTH failed. Keying off `delivered` alone used to push
+  // a visitor into their mail client even when the request was already queued.
+  let received = false
   if (submitEl) { submitEl.disabled = true; submitEl.textContent = 'Sending…' }
   try {
     const res = await fetch('/api/lead', {
@@ -350,14 +352,14 @@ form?.addEventListener('submit', async (e) => {
       }),
     })
     if (res.ok) {
-      const j = (await res.json().catch(() => ({}))) as { delivered?: boolean }
-      delivered = !!j.delivered
+      const j = (await res.json().catch(() => ({}))) as { stored?: boolean; delivered?: boolean }
+      received = !!j.stored || !!j.delivered
     }
-  } catch { delivered = false }
+  } catch { received = false }
   if (submitEl) submitEl.disabled = false
 
-  showSuccess(delivered)
-  if (delivered) {
+  showSuccess(received)
+  if (received) {
     track('lead_form_submit_success', { intent })
   } else {
     track('lead_form_submit_error', { intent })

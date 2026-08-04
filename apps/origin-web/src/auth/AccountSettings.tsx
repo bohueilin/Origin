@@ -20,7 +20,7 @@ import type { ApprovalPolicy, CredentialGrant, CredentialScope } from '../creden
 import { describePolicy } from '../wallet/sessionPolicy'
 import { useDialog } from './useDialog'
 import { getMyRole, roleLabel, isStaff, type Role } from '../roleStore'
-import { adminListAccounts, adminAssignRole, listMyTickets, adminListTickets, adminUpdateTicket, adminListAudit, adminListUserTemplates, adminViewTemplate, type AdminAccount, type SupportTicket, type AdminTicket, type AuditEntry, type UserTemplate, type TemplateDetail } from '../adminStore'
+import { adminListAccounts, adminAssignRole, listMyTickets, adminListTickets, adminUpdateTicket, adminListAudit, adminListLeads, adminUpdateLead, adminListUserTemplates, adminViewTemplate, type AdminAccount, type SupportTicket, type AdminTicket, type AuditEntry, type Lead, type UserTemplate, type TemplateDetail } from '../adminStore'
 import { SupportForm } from '../components/SupportForm'
 import { hasInjectedWallet, linkWalletWithSiwe } from '../wallet/siwe'
 import './accountSettings.css'
@@ -908,10 +908,12 @@ function SupportTab() {
 }
 
 // ---- Admin (staff only; every action is server-verified + audited) ------------
-type AdminView = 'accounts' | 'tickets' | 'audit'
+type AdminView = 'leads' | 'accounts' | 'tickets' | 'audit'
 
 function AdminTab({ role }: { role: Role }) {
-  const [view, setView] = useState<AdminView>('accounts')
+  // Review requests open first: they are the inbound queue with a person waiting on
+  // the other end, so they should be the first thing an operator sees.
+  const [view, setView] = useState<AdminView>('leads')
   return (
     <div className="cset-panel">
       <header className="cset-h">
@@ -919,14 +921,56 @@ function AdminTab({ role }: { role: Role }) {
         <p>You see only what you need to help — never raw secrets — and <strong>every account or template you open is recorded</strong> in the audit log.{role === 'super_admin' ? ' As super admin you can also assign roles.' : ''}</p>
       </header>
       <div className="cset-subnav" role="group" aria-label="Admin sections">
+        <button className={view === 'leads' ? 'on' : ''} onClick={() => setView('leads')}>Review requests</button>
         <button className={view === 'accounts' ? 'on' : ''} onClick={() => setView('accounts')}>Accounts</button>
         <button className={view === 'tickets' ? 'on' : ''} onClick={() => setView('tickets')}>Support queue</button>
         <button className={view === 'audit' ? 'on' : ''} onClick={() => setView('audit')}>Audit log</button>
       </div>
+      {view === 'leads' && <AdminLeads />}
       {view === 'accounts' && <AdminAccounts role={role} />}
       {view === 'tickets' && <AdminTickets />}
       {view === 'audit' && <AdminAudit />}
     </div>
+  )
+}
+
+/**
+ * The inbound queue from the public "Book an Agent Evidence Review" form.
+ *
+ * These used to exist only as an email, which meant there was no queue at all —
+ * nothing to triage, nothing to count, no way to tell a worked request from a
+ * forgotten one. Every submission is now a row, and the status here is the record
+ * of what was done about it.
+ */
+function AdminLeads() {
+  const [leads, setLeads] = useState<Lead[] | null>(null)
+  const [error, setError] = useState('')
+  const reload = async () => { const r = await adminListLeads(); if (!r.ok) { setError(r.error || 'Could not load review requests.'); setLeads([]) } else { setError(''); setLeads(r.leads) } }
+  useEffect(() => { let alive = true; void (async () => { const r = await adminListLeads(); if (!alive) return; if (!r.ok) { setError(r.error || 'Could not load review requests.'); setLeads([]) } else setLeads(r.leads) })(); return () => { alive = false } }, [])
+  async function setStatus(id: string, status: string) { await adminUpdateLead(id, status); await reload() }
+  return (
+    <ListOrEmpty rows={leads} empty="No review requests yet." error={error || undefined} onRetry={reload}>
+      {(leads ?? []).map((l) => (
+        <div key={l.id} className="cset-item col">
+          <div className="cset-item-row">
+            <div className="cset-item-main">
+              <strong>{l.name}{l.company ? ` · ${l.company}` : ''}</strong>
+              <span className="cset-meta">
+                <a href={`mailto:${l.email}`}>{l.email}</a> · {l.intent}
+                {l.cta_source ? ` · from ${l.cta_source}` : ''}{l.page_path ? ` (${l.page_path})` : ''} · {fmtDate(Date.parse(l.created_at))}
+              </span>
+            </div>
+            <div className="cset-item-actions">
+              <select className="cset-role-select" value={l.status} onChange={(e) => setStatus(l.id, e.target.value)} aria-label={`Status for ${l.name}`}>
+                <option value="new">New</option><option value="contacted">Contacted</option>
+                <option value="qualified">Qualified</option><option value="archived">Archived</option>
+              </select>
+            </div>
+          </div>
+          {l.blocker && <p className="cset-meta cset-ticket-body">{l.blocker}</p>}
+        </div>
+      ))}
+    </ListOrEmpty>
   )
 }
 

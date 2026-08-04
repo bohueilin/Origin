@@ -11,13 +11,27 @@ export function roleLabel(r: Role): string {
   return r === 'super_admin' ? 'Super Admin' : r === 'admin' ? 'Admin' : 'User'
 }
 
-/** Read the signed-in user's own role. RLS returns only their row; default 'user'. */
+/**
+ * Read the signed-in user's own role.
+ *
+ * Goes through `ensure_my_role()` rather than a bare `user_roles` read. The table
+ * read returned 'user' for any account with no row yet — including the owner on a
+ * freshly provisioned project, which is exactly how the admin tab silently vanished
+ * after a backend migration. The RPC derives the role server-side (the owner is
+ * super_admin by construction) and upserts the caller's census row on the way out,
+ * so `user_roles` stays complete without anyone remembering to seed it.
+ *
+ * Fail-closed: anything uncertain → 'user'.
+ */
 export async function getMyRole(): Promise<Role> {
   if (!insforge) return 'user'
   try {
-    const { data, error } = await insforge.database.from('user_roles').select('role').limit(1)
-    if (error || !data || !(data as unknown[]).length) return 'user'
-    const r = (data as Array<{ role?: string }>)[0]?.role
+    const { data, error } = await insforge.database.rpc('ensure_my_role')
+    if (error) return 'user'
+    // The RPC returns a scalar, but a PostgREST-style client may hand it back
+    // wrapped in a row/array depending on the call path — normalize all shapes.
+    const raw = Array.isArray(data) ? (data[0] as unknown) : data
+    const r = typeof raw === 'string' ? raw : (raw as { ensure_my_role?: string } | null)?.ensure_my_role
     return r === 'admin' || r === 'super_admin' ? r : 'user'
   } catch {
     return 'user'

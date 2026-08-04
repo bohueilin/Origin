@@ -35,6 +35,12 @@ type Step = 'details' | 'password' | 'verify'
 
 const NEXT_KEY = 'origin.auth.next'
 
+// Where signing in actually takes you. This was '/app.html' — a static page that
+// mounts no JS module at all, so a successful sign-in landed on a page with nothing
+// account-aware on it and looked like it had failed. The admin portal is the real
+// destination for the owner: accounts, review requests, support queue, audit log.
+const DEFAULT_NEXT = '/admin'
+
 export function AuthPage() {
   const auth = useAuth()
   // `next` survives the OAuth round trip in sessionStorage, because the redirect URL must
@@ -42,8 +48,13 @@ export function AuthPage() {
   const next = useMemo(() => {
     const fromUrl = new URLSearchParams(window.location.search).get('next')
     if (fromUrl) return fromUrl
-    try { return sessionStorage.getItem(NEXT_KEY) || '/app.html' } catch { return '/app.html' }
+    try { return sessionStorage.getItem(NEXT_KEY) || DEFAULT_NEXT } catch { return DEFAULT_NEXT }
   }, [])
+
+  // Expose the computed destination so the reachability gate can assert it without a
+  // real OAuth session — the sign-in landing page is otherwise only observable by
+  // completing a Google round trip, which cannot run headless.
+  useEffect(() => { document.body.setAttribute('data-auth-default-next', next) }, [next])
   // OAuth must land on an allowlisted absolute URL that MOUNTS AuthProvider, because the
   // authorization code is exchanged there. /passport does mount it; /app does NOT (app.html
   // carries no module script), so the old `next.includes('passport') ? '/passport' : '/app'`

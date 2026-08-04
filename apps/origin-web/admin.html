@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Operator surface, not a public page: never index it, and no analytics tag —
+         admin sessions are not marketing traffic. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Origin admin portal — accounts, roles, the support queue, review requests, and the admin audit log." />
+    <meta name="theme-color" content="#faf9f5" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Admin portal — Origin</title>
+  </head>
+  <body>
+    <div id="admin-root"></div>
+    <noscript>
+      <div style="max-width:460px;margin:64px auto;padding:0 24px;font-family:'Inter',system-ui,sans-serif;color:#1a1813;line-height:1.6">
+        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:28px">Admin portal</h1>
+        <p>The admin portal needs JavaScript. Enable it, then <a href="/auth?next=/admin" style="color:#1d4ed8">sign in</a>.</p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/adminMain.tsx"></script>
+  </body>
+</html>

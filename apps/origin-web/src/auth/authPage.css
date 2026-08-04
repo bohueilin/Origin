@@ -12,6 +12,11 @@ body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webk
 
 .ap-shell { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
 @media (max-width: 880px) { .ap-shell { grid-template-columns: 1fr; } }
+/* /admin's signed-out gate reuses this card without the brand canvas beside it —
+   one column, centred, so the lone card isn't pinned to the left half. */
+.ap-shell--solo { grid-template-columns: minmax(0, 1fr); }
+.ap-shell--solo .ap-form-col { max-width: 520px; margin: 0 auto; width: 100%; }
+.ap-shell--solo .ap-submit { display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
 
 /* ---- form column ---- */
 .ap-form-col { display: flex; flex-direction: column; padding: 32px 40px 28px; min-height: 100vh; }

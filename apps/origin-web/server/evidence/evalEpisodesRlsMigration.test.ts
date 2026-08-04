@@ -73,7 +73,20 @@ describe('eval_episodes migration set', () => {
     const all = sources.map((s) => s.sql).join('\n')
     expect(all).toMatch(/ALTER TABLE public\.eval_episodes ENABLE ROW LEVEL SECURITY/)
     expect(all).toMatch(/REVOKE ALL ON TABLE public\.eval_episodes FROM anon, authenticated/)
-    expect(all).not.toMatch(/CREATE POLICY/i)
+
+    // Scoped to eval_episodes, which is what this suite is about. The check used to
+    // ban `CREATE POLICY` across the ENTIRE migration set — correct only while
+    // eval_episodes was effectively the only table. The admin-portal schema added
+    // genuinely user-scoped tables (user_roles, support_tickets, user_templates)
+    // whose read-own policies are the CORRECT posture, so a global ban would have
+    // forced the weaker design of dropping RLS policies to keep a test green.
+    // eval_episodes keeps its stricter posture: NO client policy at all — the server
+    // writes it with admin credentials and clients never touch it directly.
+    const policyTargets = [...all.matchAll(/CREATE\s+POLICY\s+\S+\s+ON\s+(\S+)/gi)].map((m) => m[1])
+    expect(policyTargets).not.toContain('public.eval_episodes')
+
+    // Still global, and still right: a policy that admits every row defeats RLS on
+    // ANY table, so this stays a whole-set guard.
     expect(all).not.toMatch(/USING\s*\(\s*true\s*\)/i)
   })
 

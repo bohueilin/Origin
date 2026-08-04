@@ -94,6 +94,18 @@ test('evidence console does not style simulated states as working buttons', asyn
   await expect(page.getByRole('button', { name: /Download simulated evidence JSON/i }).first()).toBeVisible()
 })
 
+test('the header shows exactly ONE primary CTA at every viewport', async ({ page }) => {
+  // Two "Run reference check" buttons shipped once: home.css changed without a
+  // ?v= bump, so returning visitors kept CSS that lacked the rule hiding the
+  // mobile twin on desktop. scripts/css-version-lint.mjs prevents the cause;
+  // this pins the symptom regardless of cause.
+  for (const route of ['/', '/reference-check', '/trust', '/labs']) {
+    await page.goto(route)
+    const visible = page.locator('.site-header a[href="/reference-check"]:visible')
+    await expect(visible, route).toHaveCount(1)
+  }
+})
+
 test('home has no horizontal overflow and keeps the primary action reachable', async ({ page }) => {
   await page.goto('/')
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)

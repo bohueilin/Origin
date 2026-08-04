@@ -55,6 +55,16 @@ export function AuthPage() {
   // real OAuth session — the sign-in landing page is otherwise only observable by
   // completing a Google round trip, which cannot run headless.
   useEffect(() => { document.body.setAttribute('data-auth-default-next', next) }, [next])
+
+  // The key is a one-shot baton for a single OAuth round trip, so reading it consumes it.
+  // It used to be cleared only on the already-signed-in path below, which never runs when
+  // the callback lands somewhere that isn't this page — and it doesn't: a passport-bound
+  // sign-in returns to /passport, which mounts AuthProvider but not AuthPage. The value
+  // then sat in sessionStorage indefinitely, and the next unrelated sign-in silently
+  // redirected to /passport instead of /admin. Cleared in an effect rather than inside the
+  // useMemo above because StrictMode double-invokes render, and a read that mutates would
+  // hand the second pass a different answer than the first.
+  useEffect(() => { try { sessionStorage.removeItem(NEXT_KEY) } catch { /* nothing to clean up */ } }, [])
   // OAuth must land on an allowlisted absolute URL that MOUNTS AuthProvider, because the
   // authorization code is exchanged there. /passport does mount it; /app does NOT (app.html
   // carries no module script), so the old `next.includes('passport') ? '/passport' : '/app'`
@@ -70,7 +80,14 @@ export function AuthPage() {
     [next],
   )
 
-  const [mode, setMode] = useState<Mode>('signup')
+  // Until the visitor picks a view, the denial picks it for them: someone who was just
+  // refused is here to retry with a different account, not to create one — and with
+  // SIGNUPS_OPEN false the sign-up view disables the very Google button the denial notice
+  // tells them to press. Derived rather than synced in an effect, so it is right on the
+  // FIRST paint and stays right when the denial only arrives later (refresh() rejecting
+  // the account mid-flight on an OAuth return). An explicit choice always wins.
+  const [chosenMode, setChosenMode] = useState<Mode | null>(null)
+  const mode: Mode = chosenMode ?? (auth.deniedEmail ? 'signin' : 'signup')
   const [step, setStep] = useState<Step>('details')
   const [first, setFirst] = useState('')
   const [last, setLast] = useState('')
@@ -82,16 +99,14 @@ export function AuthPage() {
   const [error, setError] = useState('')
   const [note, setNote] = useState('')
 
-  // Already signed in → go straight to the destination.
+  // Already signed in → go straight to the destination. (The key is already gone by now:
+  // the one-shot effect above consumes it on mount, whatever happens next.)
   useEffect(() => {
-    if (auth.ready && auth.user) {
-      try { sessionStorage.removeItem(NEXT_KEY) } catch { /* nothing to clean up */ }
-      window.location.replace(next)
-    }
+    if (auth.ready && auth.user) window.location.replace(next)
   }, [auth.ready, auth.user, next])
 
   const go = () => window.location.assign(next)
-  const switchMode = (m: Mode) => { setMode(m); setStep('details'); setError(''); setNote(''); setPassword(''); setConfirm(''); setOtp('') }
+  const switchMode = (m: Mode) => { setChosenMode(m); setStep('details'); setError(''); setNote(''); setPassword(''); setConfirm(''); setOtp('') }
 
   // password strength (sign-up)
   const pwChecks = PW_RULES.map((r) => ({ ...r, ok: r.test(password) }))
@@ -106,8 +121,13 @@ export function AuthPage() {
     // Hard gate (not just the disabled attribute): no account creation while paused.
     if (mode === 'signup' && !SIGNUPS_OPEN) { setError('Account creation is paused during the closed private pilot.'); return }
     setError(''); setBusy(true)
-    // Persist the destination before we leave the origin; the callback URL carries no query.
-    try { sessionStorage.setItem(NEXT_KEY, next) } catch { /* private mode — fall back to /app.html */ }
+    // Persist the destination before we leave the origin ONLY when the callback comes back
+    // here, since /auth is the page that reads it and forwards. When the callback returns
+    // straight to /passport, that page IS the destination — nothing ever reads the key, so
+    // writing it would strand exactly the stale value the one-shot read above exists to kill.
+    if (googleRedirect.endsWith('/auth')) {
+      try { sessionStorage.setItem(NEXT_KEY, next) } catch { /* private mode — falls back to DEFAULT_NEXT */ }
+    }
     const { error } = await auth.signInWithGoogle({ redirectTo: googleRedirect })
     setBusy(false)
     if (error) setError(error)
@@ -159,6 +179,12 @@ export function AuthPage() {
     : mode === 'signup' ? (step === 'password' ? 'Set a secure password for your account.' : 'Origin Evidence Console access is invite-only during private pilot. Account creation is paused during the closed pilot. Book an Agent Evidence Review to request access.')
     : 'Invited teams use the Console to review policy verdicts, approvals, proxy events, blocked actions, and evidence packages.'
 
+  // `ap-paused-note` is the id of the paused-signups note — and the denial notice takes
+  // that note's place in the ternary below. Anything pointing an aria-describedby at it
+  // has to agree about when it is on screen, or a screen-reader user is handed a
+  // reference to an element that is not in the document and hears nothing.
+  const pausedNote = !auth.deniedEmail && mode === 'signup' && !SIGNUPS_OPEN
+
   return (
     <div className="ap-shell">
       <main className="ap-form-col">
@@ -177,7 +203,7 @@ export function AuthPage() {
                 <strong>Access is restricted.</strong> You signed in as <b>{auth.deniedEmail}</b>, which isn’t an
                 approved account. Origin is owner-only while we build — use the owner Google account.
               </div>
-            ) : mode === 'signup' && !SIGNUPS_OPEN ? (
+            ) : pausedNote ? (
               <div className="ap-paused" role="note" id="ap-paused-note">
                 🔒 <strong>Private pilot only.</strong> Account creation is paused during the closed pilot. Invited teams use the Console to review policy verdicts, approvals, proxy events, blocked actions, and evidence packages.{' '}
                 <a className="ap-link" href="/#offer" data-analytics="auth_return_to_demo">Book an Agent Evidence Review →</a>
@@ -190,7 +216,7 @@ export function AuthPage() {
             {step === 'details' && (
               <>
                 <button type="button" className="ap-google" onClick={onGoogle} disabled={busy || (mode === 'signup' && !SIGNUPS_OPEN)}
-                  aria-describedby={mode === 'signup' && !SIGNUPS_OPEN ? 'ap-paused-note' : undefined}>
+                  aria-describedby={pausedNote ? 'ap-paused-note' : undefined}>
                   <GoogleMark /> Continue with Google
                 </button>
                 <div className="ap-or"><span>or</span></div>
@@ -262,7 +288,7 @@ export function AuthPage() {
               {note && step !== 'verify' && <div className="ap-note">{note}</div>}
 
               <button className="ap-submit" type="submit" disabled={busy || createDisabled}
-                aria-describedby={mode === 'signup' && !SIGNUPS_OPEN ? 'ap-paused-note' : undefined}>
+                aria-describedby={pausedNote ? 'ap-paused-note' : undefined}>
                 {busy ? 'Working…'
                   : step === 'verify' ? 'Verify & continue'
                   : mode === 'signup'

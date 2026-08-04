@@ -26,11 +26,7 @@ import type { ScenarioSpec } from '../scenarios/types'
 import { fetchOrderContext } from '../orderContext'
 import type { OrderContext } from '../orderContext'
 import type { DiscordSendResult } from '../discordClient'
-import { useAuth } from '../../auth/AuthProvider'
-
-// Only the logged-in Origin owner may TRIGGER actions on the public site; everyone else
-// (anonymous or any other account) is view-only. Display stays fully live for all viewers.
-const OWNER_EMAIL = 'bohueilin@gmail.com'
+import { isOwnerEmail, useAuth } from '../../auth/AuthProvider'
 
 const STAGES: { key: SessionStatus | 'planning'; label: string }[] = [
   { key: 'planning', label: 'Intent + grant' },
@@ -42,8 +38,17 @@ const STAGES: { key: SessionStatus | 'planning'; label: string }[] = [
 export function App() {
   const pp = usePassport()
   const snap = pp.snapshot
-  const { user } = useAuth()
-  const isOwner = (user?.email ?? '').trim().toLowerCase() === OWNER_EMAIL
+  const auth = useAuth()
+  // Only the logged-in Origin owner may TRIGGER actions on the public site; everyone else
+  // (anonymous or any other account) is view-only. Display stays fully live for all viewers.
+  // The owner test is imported, not restated: AuthProvider is the one place that decides who
+  // the owner is, and it is the thing that signs everyone else back out.
+  const isOwner = isOwnerEmail(auth.user?.email)
+  // Wait for the session to resolve before saying anything about it. While a restore is
+  // in flight `isOwner` is false only because the answer has not arrived yet, and painting
+  // the read-only notice in that gap tells the owner their own session failed, then takes
+  // it back a moment later.
+  const readOnly = auth.ready && !isOwner
   const approvalsRef = useRef<HTMLDivElement>(null)
   const reviewApprovals = () => approvalsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
@@ -118,7 +123,7 @@ export function App() {
     return (
       <div className="pp-app">
         <TopBar />
-        {!isOwner && <ReadOnlyBanner />}
+        {readOnly && <ReadOnlyBanner deniedEmail={auth.deniedEmail} />}
         <Home onRun={startRun} canRun={isOwner} />
         <Footer />
       </div>
@@ -136,7 +141,7 @@ export function App() {
         status={snap.status}
       />
 
-      {!isOwner && <ReadOnlyBanner />}
+      {readOnly && <ReadOnlyBanner deniedEmail={auth.deniedEmail} />}
 
       <div className="pp-controlbar">
         <div className="pp-stages">
@@ -283,14 +288,27 @@ function Footer() {
 
 // Persistent view-only notice for anonymous visitors and non-owner accounts. Everything still
 // renders — only the triggers are inert.
-function ReadOnlyBanner() {
+//
+// The two audiences need different words. An anonymous visitor has not tried anything, so
+// "sign in" is the next step. Someone whose account was REFUSED has already tried: they
+// authenticated, AuthProvider checked the address and signed them straight back out. Handing
+// them the anonymous copy hides that entirely — same pixels, same "Sign in →", which returns
+// them to the flow that just rejected them and rejects them again. Name the account and offer
+// the only move that can actually succeed.
+function ReadOnlyBanner({ deniedEmail }: { deniedEmail: string | null }) {
   return (
     <div className="pp-readonly" role="status">
       <span className="pp-readonly-ico" aria-hidden="true">🔒</span>
       <span className="pp-readonly-tx">
-        Read-only preview — sign in as the Origin owner to run Passport live.
+        {deniedEmail ? (
+          <>Read-only preview — <b>{deniedEmail}</b> isn’t the Origin owner account, so the run controls stay off.</>
+        ) : (
+          <>Read-only preview — sign in as the Origin owner to run Passport live.</>
+        )}
       </span>
-      <a className="pp-readonly-link" href="/auth?next=/passport">Sign in →</a>
+      <a className="pp-readonly-link" href="/auth?next=/passport">
+        {deniedEmail ? 'Use a different account →' : 'Sign in →'}
+      </a>
     </div>
   )
 }

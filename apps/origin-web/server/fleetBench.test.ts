@@ -31,6 +31,35 @@ describe('runFleetBench', () => {
     }
   })
 
+  it('accounts for every draw: attempts covers trials + unhosted redraws, never silently', () => {
+    for (const cls of FLEET_CORRUPTIONS) {
+      const c = report.classes[cls]
+      expect(c.unhosted).toBeGreaterThanOrEqual(0)
+      // attempts = every scenario drawn for this class, including escape-hatch
+      // plans (observational lane) and unhosted redraws — so it bounds both.
+      expect(c.attempts).toBeGreaterThanOrEqual(c.trials + c.unhosted)
+    }
+  })
+
+  it('a fully-filled class is not underfilled and its catchRate is a number', () => {
+    for (const cls of FLEET_CORRUPTIONS) {
+      expect(report.classes[cls].underfilled).toBe(false)
+      expect(typeof report.classes[cls].catchRate).toBe('number')
+    }
+  })
+
+  it('when the draw cap fires, the class says so: underfilled=true, and catchRate is null (not 0) when nothing was evaluable', () => {
+    const starved = runFleetBench({ trialsPerClass: 5, seed: 20260731, maxDrawsPerClass: 0 })
+    for (const cls of FLEET_CORRUPTIONS) {
+      const c = starved.classes[cls]
+      expect(c.trials).toBe(0)
+      expect(c.underfilled).toBe(true)
+      // 'nothing was evaluable' must be distinguishable from 'caught nothing'
+      expect(c.catchRate).toBeNull()
+    }
+    expect(starved.falseVoidRate).toBe(0)
+  })
+
   it('reports the escape-hatch observation honestly: counts, no invented expectation', () => {
     expect(report.escapeHatch.plans).toBeGreaterThanOrEqual(0)
     expect(report.escapeHatch.verdicts.VALID ?? 0).toBeGreaterThanOrEqual(0)

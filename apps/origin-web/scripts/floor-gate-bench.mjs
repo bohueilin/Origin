@@ -41,6 +41,12 @@ try {
     }
     console.log(`floor-gate-bench: artifact matches source (digest ${report.digest.slice(0, 16)}…).`)
   } else {
+    // Regression gate runs BEFORE the write: writing first meant a failed run
+    // still left a regressed artifact on disk for a careless commit to publish.
+    if (report.falseVoidRate !== 0) {
+      console.error('floor-gate-bench: FAIL — the gate voided a clean/benign floor. That is a regression; refusing to publish.')
+      process.exit(1)
+    }
     writeFileSync(OUT, serialized)
     const voidClasses = Object.values(report.classes).filter((c) => c.expected === 'VOID')
     console.log(
@@ -48,10 +54,6 @@ try {
         `VOID catch ${Math.round((voidClasses.reduce((s, c) => s + c.catchRate, 0) / voidClasses.length) * 100)}%, ` +
         `false-VOID rate ${report.falseVoidRate} — digest ${report.digest.slice(0, 16)}… → ${OUT}`,
     )
-    if (report.falseVoidRate !== 0) {
-      console.error('floor-gate-bench: FAIL — the gate voided a clean/benign floor. That is a regression; do not publish.')
-      process.exit(1)
-    }
   }
 } finally {
   rmSync(tmp, { recursive: true, force: true })

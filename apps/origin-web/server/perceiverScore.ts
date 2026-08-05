@@ -11,7 +11,8 @@
 
 import { bfsOracle, type WarehouseTask } from '../src/warehouse.ts'
 import { applyEmbodiment } from '../src/environmentPlan.ts'
-import { genFloor, type BenchFloor } from './gateBench.ts'
+import { sha256 } from '../src/passport/hash.ts'
+import { genFloor, canonical, type BenchFloor } from './gateBench.ts'
 
 export interface RoleScore {
   precision: number
@@ -20,6 +21,25 @@ export interface RoleScore {
   gtCount: number
   parsedCount: number
 }
+
+/** Why a row went unparsed. Gate refusals and infra failures are different
+ *  facts — collapsing them (the old behavior) hid infra loss inside "unparsed"
+ *  and made per-row recovery impossible. `network` is bench-synthesized (fetch
+ *  threw); the rest mirror the endpoint's ParseFallbackReason. Unrecognized
+ *  shapes report `unknown` — never an invented cause. */
+export const UNPARSED_CAUSES = [
+  'gate_void',
+  'gate_escalate',
+  'no_image',
+  'no_key',
+  'bad_image',
+  'oversize',
+  'api_error',
+  'bad_json',
+  'network',
+  'unknown',
+] as const
+export type UnparsedCause = (typeof UNPARSED_CAUSES)[number]
 
 export type ParseScore =
   | {
@@ -31,7 +51,7 @@ export type ParseScore =
       gtVerdict: string
       parsedVerdict: string
     }
-  | { kind: 'unparsed' }
+  | { kind: 'unparsed'; cause?: UnparsedCause }
 
 export interface AggregateReport {
   n: number
@@ -48,6 +68,9 @@ export interface AggregateReport {
   anchorAccuracy: number
   dimsMatchRate: number
   verdictAgreementRate: number
+  /** Per-cause split of `unparsed` (only observed causes appear). Cause-less
+   *  unparsed rows count under `unknown` — a row never disappears from the split. */
+  unparsedBreakdown: Partial<Record<UnparsedCause, number>>
 }
 
 const key = (c: { x: number; y: number }): string => `${c.x},${c.y}`
@@ -95,8 +118,27 @@ function floorVerdict(floor: BenchFloor): string {
   return porous.label === 'finish' ? 'refuse' : 'escalate'
 }
 
-export function scoreParse(gt: BenchFloor, parsed: BenchFloor | null): ParseScore {
-  if (!parsed) return { kind: 'unparsed' }
+/** Map a parse-floor endpoint response to the cause its row records when it
+ *  cannot be scored. Fallback wins over gate verdict (a fallback means no real
+ *  parse ran, so any gate field is vestigial). Returns null for scoreable rows. */
+export function deriveUnparsedCause(res: {
+  siteMap?: unknown
+  fallback?: unknown
+  gate?: { verdict?: unknown } | null
+}): UnparsedCause | null {
+  if (res.siteMap) return null
+  if (typeof res.fallback === 'string') {
+    return (UNPARSED_CAUSES as readonly string[]).includes(res.fallback) && !res.fallback.startsWith('gate_')
+      ? (res.fallback as UnparsedCause)
+      : 'unknown'
+  }
+  if (res.gate?.verdict === 'VOID') return 'gate_void'
+  if (res.gate?.verdict === 'ESCALATE') return 'gate_escalate'
+  return 'unknown'
+}
+
+export function scoreParse(gt: BenchFloor, parsed: BenchFloor | null, cause?: UnparsedCause): ParseScore {
+  if (!parsed) return cause ? { kind: 'unparsed', cause } : { kind: 'unparsed' }
   const anchorsExact = (['start', 'item', 'drop'] as const).filter((a) => key(gt[a]) === key(parsed[a])).length
   const gtVerdict = floorVerdict(gt)
   const parsedVerdict = floorVerdict(parsed)
@@ -131,6 +173,12 @@ export function aggregateScores(scores: ParseScore[]): AggregateReport {
   const obstacles = roleMean('obstacles')
   const hazards = roleMean('hazards')
   const humanOnly = roleMean('humanOnly')
+  const unparsedBreakdown: Partial<Record<UnparsedCause, number>> = {}
+  for (const s of scores) {
+    if (s.kind !== 'unparsed') continue
+    const c = s.cause ?? 'unknown'
+    unparsedBreakdown[c] = (unparsedBreakdown[c] ?? 0) + 1
+  }
   return {
     n: scores.length,
     scored: scored.length,
@@ -140,8 +188,40 @@ export function aggregateScores(scores: ParseScore[]): AggregateReport {
     anchorAccuracy: mean((s) => (s.anchorsExact === 3 ? 1 : 0)),
     dimsMatchRate: mean((s) => (s.dimsMatch ? 1 : 0)),
     verdictAgreementRate: mean((s) => (s.verdictAgreement ? 1 : 0)),
+    unparsedBreakdown,
   }
 }
+
+// ---- run-validity guard + report self-digest (bench emission helpers) -------
+
+export interface MinScoredViolation {
+  arm: string
+  scored: number
+  n: number
+  fraction: number
+}
+
+/** Arms whose scored fraction fell below the floor. Unparsed rows shrink the
+ *  denominator of every headline mean, so a run that lost too many rows to
+ *  infra is not comparable — the bench must refuse to report it, not flatter
+ *  it. Strict-below: exactly at the floor passes. A zero-row arm measured
+ *  nothing and is flagged under any positive floor (no division by zero). */
+export function checkMinScored(
+  arms: Record<string, { scored: number; n: number }>,
+  minFraction: number,
+): MinScoredViolation[] {
+  const out: MinScoredViolation[] = []
+  for (const [arm, { scored, n }] of Object.entries(arms)) {
+    const fraction = n > 0 ? scored / n : 0
+    if (n === 0 ? minFraction > 0 : fraction < minFraction) out.push({ arm, scored, n, fraction })
+  }
+  return out
+}
+
+/** Canonical-JSON sha256 self-digest of a report body — same canon as
+ *  gateBench's pinned reports, so a hand-assembled /trust companion can cite
+ *  the exact raw report it transcribed. */
+export const reportDigest = (body: unknown): string => sha256(canonical(body))
 
 // ---- scenario floors: the dataset must be able to FAIL the verdict metric ---
 //

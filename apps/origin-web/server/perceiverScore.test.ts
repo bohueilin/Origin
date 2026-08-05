@@ -6,7 +6,16 @@
 // scorer on labeled synthetic pairs. VOIDs are counted, never averaged away.
 
 import { describe, expect, it } from 'vitest'
-import { scoreParse, aggregateScores, aggregateScoresBy, pairedCompare, genScenarioFloor } from './perceiverScore'
+import {
+  scoreParse,
+  aggregateScores,
+  aggregateScoresBy,
+  pairedCompare,
+  genScenarioFloor,
+  deriveUnparsedCause,
+  checkMinScored,
+  reportDigest,
+} from './perceiverScore'
 import { genFloor } from './gateBench'
 
 const gt = genFloor(3)
@@ -49,6 +58,35 @@ describe('scoreParse', () => {
   it('a VOID/refused parse is recorded as unparsed, never given a geometry score', () => {
     const s = scoreParse(gt, null)
     expect(s.kind).toBe('unparsed')
+  })
+
+  it('an unparsed row carries its cause when one is given, and omits the field when not', () => {
+    expect(scoreParse(gt, null, 'gate_void')).toEqual({ kind: 'unparsed', cause: 'gate_void' })
+    expect(scoreParse(gt, null)).toEqual({ kind: 'unparsed' })
+  })
+})
+
+describe('deriveUnparsedCause — WHY a row went unparsed, recoverable per row not just per arm', () => {
+  it('a response that produced a siteMap has no unparsed cause', () => {
+    expect(deriveUnparsedCause({ siteMap: { width: 6 } })).toBe(null)
+  })
+
+  it('endpoint fallback reasons pass through verbatim (bad_json, api_error, network, no_key)', () => {
+    for (const f of ['bad_json', 'api_error', 'network', 'no_key'] as const) {
+      expect(deriveUnparsedCause({ fallback: f })).toBe(f)
+    }
+  })
+
+  it('a gate refusal with no fallback maps to its verdict: VOID → gate_void, ESCALATE → gate_escalate', () => {
+    expect(deriveUnparsedCause({ gate: { verdict: 'VOID' } })).toBe('gate_void')
+    expect(deriveUnparsedCause({ gate: { verdict: 'ESCALATE' } })).toBe('gate_escalate')
+  })
+
+  it('a fallback wins over a gate verdict, and unrecognized shapes report unknown — never an invented cause', () => {
+    expect(deriveUnparsedCause({ fallback: 'bad_json', gate: { verdict: 'VOID' } })).toBe('bad_json')
+    expect(deriveUnparsedCause({})).toBe('unknown')
+    expect(deriveUnparsedCause({ fallback: 'some_future_reason' })).toBe('unknown')
+    expect(deriveUnparsedCause({ gate: { verdict: 'VALID' } })).toBe('unknown')
   })
 })
 
@@ -160,6 +198,62 @@ describe('aggregateScores', () => {
     expect(agg.meanRoleF1.humanOnly).toBe(0) // reported as 0-with-0-support, never as a free 1.0
     expect(agg.roleSupport.obstacles).toBeGreaterThan(0)
     expect(agg.meanRoleF1.obstacles).toBe(1)
+  })
+
+  it('breaks unparsed down by cause; a causeless unparsed counts as unknown, never disappears', () => {
+    const scores = [
+      scoreParse(gt, perfect),
+      scoreParse(gt, null, 'gate_void'),
+      scoreParse(gt, null, 'gate_void'),
+      scoreParse(gt, null, 'bad_json'),
+      scoreParse(gt, null),
+    ]
+    const agg = aggregateScores(scores)
+    // existing shape intact: scored/unparsed counts unchanged by the breakdown
+    expect(agg.n).toBe(5)
+    expect(agg.scored).toBe(1)
+    expect(agg.unparsed).toBe(4)
+    expect(agg.unparsedBreakdown).toEqual({ gate_void: 2, bad_json: 1, unknown: 1 })
+  })
+
+  it('a fully scored run reports an empty breakdown', () => {
+    expect(aggregateScores([scoreParse(gt, perfect)]).unparsedBreakdown).toEqual({})
+  })
+})
+
+describe('checkMinScored — losing hard rows must fail the run, not flatter the headline means', () => {
+  it('flags every arm whose scored fraction sits below the floor, with the fraction on the record', () => {
+    const v = checkMinScored({ A0: { scored: 4, n: 10 }, A1: { scored: 10, n: 10 } }, 0.9)
+    expect(v).toEqual([{ arm: 'A0', scored: 4, n: 10, fraction: 0.4 }])
+  })
+
+  it('exactly at the floor passes — the guard is strict-below', () => {
+    expect(checkMinScored({ A0: { scored: 9, n: 10 } }, 0.9)).toEqual([])
+  })
+
+  it('a zero-row arm measured nothing: flagged under any positive floor, no division by zero', () => {
+    expect(checkMinScored({ A0: { scored: 0, n: 0 } }, 0.9)).toEqual([{ arm: 'A0', scored: 0, n: 0, fraction: 0 }])
+  })
+
+  it('a floor of 0 disables the guard', () => {
+    expect(checkMinScored({ A0: { scored: 0, n: 10 }, A1: { scored: 0, n: 0 } }, 0)).toEqual([])
+  })
+})
+
+describe('reportDigest — canonical-JSON sha256 self-digest, same discipline as gateBench', () => {
+  it('is 64 hex chars and independent of key order', () => {
+    const a = reportDigest({ x: 1, y: [1, 2, { z: 'a' }] })
+    const b = reportDigest({ y: [1, 2, { z: 'a' }], x: 1 })
+    expect(a).toMatch(/^[0-9a-f]{64}$/)
+    expect(a).toBe(b)
+  })
+
+  it('changes when any value changes', () => {
+    expect(reportDigest({ x: 1 })).not.toBe(reportDigest({ x: 2 }))
+  })
+
+  it('drops undefined values instead of serializing them (canonical form)', () => {
+    expect(reportDigest({ x: 1, y: undefined })).toBe(reportDigest({ x: 1 }))
   })
 })
 

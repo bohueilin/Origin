@@ -5,6 +5,8 @@
 //   node scripts/perceiver-bench.mjs                                  # dataset only
 //   node scripts/perceiver-bench.mjs --floors 24 --api-base http://localhost:8787
 //   node scripts/perceiver-bench.mjs --floors 24 --arms A0,A0R,A1,A2 --api-base …
+//   --min-scored 0.9   run-validity floor: fraction of rows each live arm must
+//                      score, else the run exits nonzero with NO report written
 //
 // Arms (fixed table — the experiment design is pre-registered, not ad hoc):
 //   A0  refs off, legend    → the baseline
@@ -34,6 +36,10 @@ const flag = (name) => {
 }
 const FLOORS = Number(flag('--floors') ?? 24)
 const API = flag('--api-base')?.replace(/\/+$/, '') ?? null
+// Run-validity floor: any live arm scoring under this fraction voids the run
+// (unparsed rows shrink the means' denominator — a lossy run flatters itself).
+const MIN_SCORED = Number(flag('--min-scored') ?? 0.9)
+if (!Number.isFinite(MIN_SCORED) || MIN_SCORED < 0 || MIN_SCORED > 1) throw new Error('--min-scored must be a fraction in [0, 1]')
 const ARMS_TABLE = {
   A0: { gridRefs: false, variant: 'legend' },
   A0R: { gridRefs: false, variant: 'legend' },
@@ -55,7 +61,9 @@ const bundle = (entry) => {
   return out
 }
 const { renderFloorPng, styleHint, RENDER_STYLES } = await import(bundle('server/floorRender.ts'))
-const { scoreParse, aggregateScoresBy, pairedCompare, genScenarioFloor } = await import(bundle('server/perceiverScore.ts'))
+const { scoreParse, aggregateScoresBy, pairedCompare, genScenarioFloor, deriveUnparsedCause, checkMinScored, reportDigest } = await import(
+  bundle('server/perceiverScore.ts')
+)
 
 // ---- 1. manufacture the paired dataset (v2: refs on AND off per floor/style) --
 // Scenario floors (not plain genFloor): the set mixes finish / refuse /
@@ -80,35 +88,34 @@ writeFileSync(
   join(OUT, 'labels.jsonl'),
   rows.map((r) => JSON.stringify({ ...r, files: { plain: `images/floor-${r.id.split('-')[0].padStart(4, '0')}-${r.style}.png`, refs: `images/floor-${r.id.split('-')[0].padStart(4, '0')}-${r.style}-refs.png` } })).join('\n') + '\n',
 )
-writeFileSync(
-  join(OUT, 'manifest.json'),
-  JSON.stringify(
-    {
-      dataset: 'origin-synthetic-floors-v2',
-      pairs: rows.length * 2,
-      floors: FLOORS,
-      styles: RENDER_STYLES,
-      grid_refs: [false, true],
-      seed_base: SEED_BASE,
-      // Verdict diversity, on the record: a set that is all-'finish' cannot
-      // fail the verdict-agreement metric.
-      gt_verdicts: gtVerdicts,
-      rights: {
-        // Provenance is backed by construction — the code below this comment
-        // demonstrably generates every byte. It is the only claim made here:
-        // ownership/licensing conclusions are legal judgments this manifest
-        // cannot evidence and deliberately does not assert.
-        provenance: 'Fully synthetic. Layouts procedurally generated (server/perceiverScore.ts genScenarioFloor); images rendered from those layouts (server/floorRender.ts). No third-party imagery, scans, floor plans, or datasets were used as inputs.',
-        labeled_synthetic: true,
-        note: 'This manifest documents provenance only; it is not a license grant or legal advice.',
-      },
-      regenerate: 'node scripts/perceiver-bench.mjs — layouts and pixel content are deterministic from seed_base. (PNG bytes can differ across zlib builds; decoded pixels do not.)',
-    },
-    null,
-    2,
-  ) + '\n',
-)
+// Manifest carries a canonical-JSON sha256 self-digest so any downstream
+// transcription (e.g. a hand-assembled /trust companion) can cite the exact
+// dataset build it derives from.
+const manifestBody = {
+  dataset: 'origin-synthetic-floors-v2',
+  pairs: rows.length * 2,
+  floors: FLOORS,
+  styles: RENDER_STYLES,
+  grid_refs: [false, true],
+  seed_base: SEED_BASE,
+  // Verdict diversity, on the record: a set that is all-'finish' cannot
+  // fail the verdict-agreement metric.
+  gt_verdicts: gtVerdicts,
+  rights: {
+    // Provenance is backed by construction — the code below this comment
+    // demonstrably generates every byte. It is the only claim made here:
+    // ownership/licensing conclusions are legal judgments this manifest
+    // cannot evidence and deliberately does not assert.
+    provenance: 'Fully synthetic. Layouts procedurally generated (server/perceiverScore.ts genScenarioFloor); images rendered from those layouts (server/floorRender.ts). No third-party imagery, scans, floor plans, or datasets were used as inputs.',
+    labeled_synthetic: true,
+    note: 'This manifest documents provenance only; it is not a license grant or legal advice.',
+  },
+  regenerate: 'node scripts/perceiver-bench.mjs — layouts and pixel content are deterministic from seed_base. (PNG bytes can differ across zlib builds; decoded pixels do not.)',
+}
+const manifest = { ...manifestBody, digest: reportDigest(manifestBody) }
+writeFileSync(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n')
 console.log(`dataset v2: ${rows.length} (floor,style) rows × refs on/off → ${rows.length * 2} images → ${OUT}`)
+console.log(`manifest digest: ${manifest.digest}`)
 
 // ---- 2. optionally run the requested arms against a live Perceiver ----------
 if (!API) {
@@ -150,10 +157,15 @@ async function runArm(armName) {
     }
     if (res.fallback) fallbacks[res.fallback] = (fallbacks[res.fallback] ?? 0) + 1
     if (res.gate?.verdict) gateVerdicts[res.gate.verdict] = (gateVerdicts[res.gate.verdict] ?? 0) + 1
+    // Per-row cause: a gate VOID, a bad_json refusal, and a retried-out
+    // api_error are different facts — each unparsed row records which one it
+    // was, instead of collapsing into arm-level counters only.
+    const cause = deriveUnparsedCause(res)
     results.push({
       id: row.id,
       condition: { style: row.style, gridRefs: arm.gridRefs, variant: arm.variant },
-      score: scoreParse(row.ground_truth, res.siteMap ?? null),
+      ...(cause ? { unparsed_cause: cause } : {}),
+      score: scoreParse(row.ground_truth, res.siteMap ?? null, cause ?? undefined),
     })
     process.stdout.write('.')
   }
@@ -186,6 +198,22 @@ for (const [x, y] of wantPairs) {
 }
 const noiseFloor = arms.A0R && arms.A0 ? pairedCompare(arms.A0R.results, arms.A0.results) : null
 
+// Run-validity guard, BEFORE any report exists: a run that lost too many rows
+// to infra (api_error/network/no_key) still shrinks the scored denominator, so
+// its headline means are not comparable. Refuse to write a report at all.
+const lowMeasured = checkMinScored(
+  Object.fromEntries(Object.entries(arms).map(([k, v]) => [k, { scored: v.grouped.overall.scored, n: v.grouped.overall.n }])),
+  MIN_SCORED,
+)
+if (lowMeasured.length > 0) {
+  console.error(`\nMIN-SCORED GUARD FAILED (--min-scored ${MIN_SCORED}): NO REPORT WRITTEN.`)
+  for (const v of lowMeasured) {
+    console.error(`  arm ${v.arm}: scored ${v.scored}/${v.n} (${(v.fraction * 100).toFixed(1)}%) — see that arm's fallbacks / unparsedBreakdown for the cause split`)
+  }
+  console.error('Headline means over a partially-measured run flatter themselves via denominator shrinkage. Fix the infra and re-run (or lower --min-scored deliberately).')
+  process.exit(1)
+}
+
 const report = {
   bench: 'perceiver-bench@2',
   scope:
@@ -197,8 +225,13 @@ const report = {
   paired,
   noiseFloor,
 }
-writeFileSync(join(OUT, 'perceiver-report.json'), JSON.stringify(report, null, 2) + '\n')
+// Self-digest of the report body (canonical JSON, sha256) — the transcription
+// seam: a hand-assembled companion (preregistration/caveats/notes) can cite
+// raw_report_digest to pin exactly which raw run it transcribed.
+const finalReport = { ...report, raw_report_digest: reportDigest(report) }
+writeFileSync(join(OUT, 'perceiver-report.json'), JSON.stringify(finalReport, null, 2) + '\n')
 console.log(JSON.stringify({ ...report, arms: Object.fromEntries(Object.entries(report.arms).map(([k, v]) => [k, v.grouped.overall])) }, null, 2))
+console.log(`raw_report_digest: ${finalReport.raw_report_digest}`)
 const anyScored = Object.values(arms).some((a) => a.grouped.overall.scored > 0)
 if (!anyScored) {
   console.error('\nNo parses were scored in any arm (see fallbacks). Set CEREBRAS_API_KEY on the target and re-run.')

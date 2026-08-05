@@ -85,6 +85,20 @@ jobs:
         working-directory: apps/origin-web
         run: node scripts/reachability-lint.mjs --max 78
 
+      # ci.yml gates honesty-lint and the bench artifact checks, but this job is
+      # the gate a manual deploy actually waits on (`needs: build`) — without
+      # them here, a drifted public/trust bench artifact or an overclaim could
+      # ship through deploy with no red light. Re-run the same gates at the
+      # exact SHA being deployed.
+      - name: Honesty lint (overclaim tripwire — same gate as ci.yml)
+        run: node scripts/honesty-lint.mjs
+
+      - name: Bench artifacts re-derive from source (floor gate + fleet verifier)
+        working-directory: apps/origin-web
+        run: |
+          npm run --silent bench:gate:check
+          npm run --silent bench:fleet:check
+
       - name: Build origin-web
         # InsForge auth — PUBLIC values (the anon key is RLS-guarded and already ships in the
         # client bundle), so they're safe to inline here. Without them AUTH_ENABLED is false.

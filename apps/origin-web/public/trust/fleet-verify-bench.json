@@ -7,59 +7,80 @@
   "classes": {
     "clean": {
       "trials": 100,
+      "attempts": 101,
+      "unhosted": 0,
       "expected": "VALID",
       "got": {
         "VALID": 100
       },
-      "catchRate": 1
+      "catchRate": 1,
+      "underfilled": false
     },
     "teleport": {
       "trials": 100,
+      "attempts": 100,
+      "unhosted": 0,
       "expected": "VOID",
       "got": {
         "VOID": 100
       },
-      "catchRate": 1
+      "catchRate": 1,
+      "underfilled": false
     },
     "wall_drive": {
       "trials": 100,
+      "attempts": 119,
+      "unhosted": 19,
       "expected": "VOID",
       "got": {
         "VOID": 100
       },
-      "catchRate": 1
+      "catchRate": 1,
+      "underfilled": false
     },
     "unsafe_drive": {
       "trials": 100,
+      "attempts": 161,
+      "unhosted": 60,
       "expected": "VOID",
       "got": {
         "VOID": 100
       },
-      "catchRate": 1
+      "catchRate": 1,
+      "underfilled": false
     },
     "vertex_inject": {
       "trials": 100,
+      "attempts": 101,
+      "unhosted": 0,
       "expected": "VOID",
       "got": {
         "VOID": 100
       },
-      "catchRate": 1
+      "catchRate": 1,
+      "underfilled": false
     },
     "swap_inject": {
       "trials": 100,
+      "attempts": 271,
+      "unhosted": 170,
       "expected": "VOID",
       "got": {
         "VOID": 100
       },
-      "catchRate": 1
+      "catchRate": 1,
+      "underfilled": false
     },
     "start_mismatch": {
       "trials": 100,
+      "attempts": 101,
+      "unhosted": 0,
       "expected": "VOID",
       "got": {
         "VOID": 100
       },
-      "catchRate": 1
+      "catchRate": 1,
+      "underfilled": false
     }
   },
   "falseVoidRate": 0,
@@ -70,5 +91,5 @@
     },
     "note": "Observational: schedules the planner itself flagged (fullyDeconflicted:false), judged by the independent verifier. Reported as measured — no expected verdict."
   },
-  "digest": "3a3e7878cfba25e438c03b8c6aea2c7806461811ca005cedc6deb3ec7778150a"
+  "digest": "4892aeaa8ec776a1805a76189be0fd834c2be4030ae0092d822370b9fd884c79"
 }

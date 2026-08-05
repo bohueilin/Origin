@@ -38,6 +38,20 @@ try {
     }
     console.log(`fleet-bench: artifact matches source (digest ${report.digest.slice(0, 16)}…).`)
   } else {
+    // Regression gates run BEFORE the write: writing first meant a failed run
+    // still left a regressed artifact on disk for a careless commit to publish.
+    const underfilled = Object.entries(report.classes).filter(([, c]) => c.underfilled)
+    if (underfilled.length > 0) {
+      console.error(
+        `fleet-bench: FAIL — underfilled class(es) ${underfilled.map(([cls]) => cls).join(', ')}: ` +
+          'the draw cap fired before trialsPerClass evaluable trials completed. Refusing to publish a partial report.',
+      )
+      process.exit(1)
+    }
+    if (report.falseVoidRate !== 0) {
+      console.error('fleet-bench: FAIL — the verifier voided a clean fully-deconflicted plan. Regression; refusing to publish.')
+      process.exit(1)
+    }
     writeFileSync(OUT, serialized)
     const voidClasses = Object.values(report.classes).filter((c) => c.expected === 'VOID')
     console.log(
@@ -45,10 +59,6 @@ try {
         `violation catch ${Math.round((voidClasses.reduce((s, c) => s + c.catchRate, 0) / voidClasses.length) * 100)}%, ` +
         `false-VOID rate ${report.falseVoidRate}, escape-hatch plans observed ${report.escapeHatch.plans} — digest ${report.digest.slice(0, 16)}… → ${OUT}`,
     )
-    if (report.falseVoidRate !== 0) {
-      console.error('fleet-bench: FAIL — the verifier voided a clean fully-deconflicted plan. Regression; do not publish.')
-      process.exit(1)
-    }
   }
 } finally {
   rmSync(tmp, { recursive: true, force: true })

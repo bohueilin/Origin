@@ -45,7 +45,25 @@ export interface FleetBenchReport {
   scope: string
   seed: number
   trialsPerClass: number
-  classes: Record<FleetCorruption, { trials: number; expected: 'VALID' | 'VOID'; got: Partial<Record<'VALID' | 'VOID', number>>; catchRate: number }>
+  classes: Record<
+    FleetCorruption,
+    {
+      trials: number
+      // Every scenario drawn for this class (completed trials + escape-hatch
+      // plans + unhosted redraws) — no draw is silently discarded.
+      attempts: number
+      // Scenarios that could not host this corruption class (corrupt() → null).
+      unhosted: number
+      expected: 'VALID' | 'VOID'
+      got: Partial<Record<'VALID' | 'VOID', number>>
+      // null when trials === 0: 'nothing was evaluable' must never read as
+      // 'caught nothing' (catchRate 0).
+      catchRate: number | null
+      // true when the draw cap fired before trialsPerClass completed — the
+      // runner script refuses to publish such a report.
+      underfilled: boolean
+    }
+  >
   falseVoidRate: number
   escapeHatch: { plans: number; verdicts: Partial<Record<'VALID' | 'VOID', number>>; note: string }
   digest: string
@@ -176,8 +194,11 @@ function corrupt(cls: FleetCorruption, base: FleetScheduleInput, rnd: () => numb
   }
 }
 
-export function runFleetBench(opts: { trialsPerClass: number; seed: number }): FleetBenchReport {
+export function runFleetBench(opts: { trialsPerClass: number; seed: number; maxDrawsPerClass?: number }): FleetBenchReport {
   const { trialsPerClass, seed } = opts
+  // Safety valve: bound the redraw loop so a class no scenario can host cannot
+  // spin forever. Overridable only as a test seam; the artifact script never sets it.
+  const maxDraws = opts.maxDrawsPerClass ?? trialsPerClass * 200
   const classes = {} as FleetBenchReport['classes']
   let falseVoids = 0
   let cleanTrials = 0
@@ -188,10 +209,14 @@ export function runFleetBench(opts: { trialsPerClass: number; seed: number }): F
     const got: Partial<Record<'VALID' | 'VOID', number>> = {}
     let caught = 0
     let done = 0
-    let cursor = 0
-    while (done < trialsPerClass) {
-      cursor += 1
-      const scenario = genScenario(seed + cursor * 13 + FLEET_CORRUPTIONS.indexOf(cls) * 100003)
+    let attempts = 0
+    let unhosted = 0
+    // The cap is checked BEFORE each draw so an unhostable class terminates
+    // even when every draw redraws (the old post-trial check never ran on a
+    // continue, so all-unhosted looped forever).
+    while (done < trialsPerClass && attempts < maxDraws) {
+      attempts += 1
+      const scenario = genScenario(seed + attempts * 13 + FLEET_CORRUPTIONS.indexOf(cls) * 100003)
       if (!scenario.fullyDeconflicted) {
         // Observational lane — count once per encountered escape-hatch plan.
         escapePlans += 1
@@ -199,9 +224,12 @@ export function runFleetBench(opts: { trialsPerClass: number; seed: number }): F
         escapeVerdicts[v] = (escapeVerdicts[v] ?? 0) + 1
         continue
       }
-      const rnd = mulberry(seed * 7 + cursor * 31)
+      const rnd = mulberry(seed * 7 + attempts * 31)
       const corrupted = corrupt(cls, scenario.schedule, rnd)
-      if (corrupted === null) continue // scenario cannot host this class — draw again
+      if (corrupted === null) {
+        unhosted += 1 // scenario cannot host this class — draw again, but on the record
+        continue
+      }
       const verdict = verifyFleetSchedule(corrupted).verdict
       got[verdict] = (got[verdict] ?? 0) + 1
       if (verdict === EXPECTED[cls]) caught += 1
@@ -210,9 +238,16 @@ export function runFleetBench(opts: { trialsPerClass: number; seed: number }): F
         if (verdict === 'VOID') falseVoids += 1
       }
       done += 1
-      if (cursor > trialsPerClass * 200) break // safety valve; report whatever completed
     }
-    classes[cls] = { trials: done, expected: EXPECTED[cls], got, catchRate: done ? caught / done : 0 }
+    classes[cls] = {
+      trials: done,
+      attempts,
+      unhosted,
+      expected: EXPECTED[cls],
+      got,
+      catchRate: done ? caught / done : null,
+      underfilled: done < trialsPerClass,
+    }
   }
 
   const body = {

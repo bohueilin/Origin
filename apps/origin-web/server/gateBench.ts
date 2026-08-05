@@ -89,7 +89,9 @@ function mulberry(seed: number): () => number {
   }
 }
 
-const canonical = (v: unknown): string => {
+/** Canonical JSON: sorted keys, undefined dropped — the digestable form. Also
+ *  reused by perceiverScore's report self-digest (one canon, not two). */
+export const canonical = (v: unknown): string => {
   if (v === null || typeof v !== 'object') return JSON.stringify(v) ?? 'null'
   if (Array.isArray(v)) return `[${v.map((x) => canonical(x === undefined ? null : x)).join(',')}]`
   const o = v as Record<string, unknown>

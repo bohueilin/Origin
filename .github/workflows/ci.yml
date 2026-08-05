@@ -160,6 +160,12 @@ jobs:
       - name: reward:diff (every exploit driven to 0, every gold preserved)
         working-directory: apps/origin-web
         run: npm run --silent reward:diff
+      - name: bench:gate:check (published floor-gate bench artifact re-derives from source)
+        working-directory: apps/origin-web
+        run: npm run --silent bench:gate:check
+      - name: bench:fleet:check (published fleet-verify bench artifact re-derives from source)
+        working-directory: apps/origin-web
+        run: npm run --silent bench:fleet:check
       - name: /verify selftest (the public offline re-checker's real logic)
         run: node apps/origin-web/src/verify/selftest.mjs
 

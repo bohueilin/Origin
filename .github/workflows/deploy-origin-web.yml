@@ -99,6 +99,10 @@ jobs:
           npm run --silent bench:gate:check
           npm run --silent bench:fleet:check
 
+      - name: CSS cache-buster matches content (the two-header-CTAs bug's tripwire)
+        working-directory: apps/origin-web
+        run: npm run --silent css:version
+
       - name: Build origin-web
         # InsForge auth — PUBLIC values (the anon key is RLS-guarded and already ships in the
         # client bundle), so they're safe to inline here. Without them AUTH_ENABLED is false.

@@ -15,8 +15,10 @@ import type {
 import { assertNoSecret, redact } from './redact'
 import { evaluateRuleOfTwo } from './ruleOfTwo'
 
-// High-risk scopes require step-up approval on first use.
-const HIGH_RISK: CredentialScope[] = ['website_login', 'wallet_prepare']
+// High-risk scopes require step-up approval on first use. Exported because the
+// deployed edge function declares its own copy (single-file deploy — it cannot
+// import this); server/ruleOfTwoConformance.test.ts asserts set equality.
+export const HIGH_RISK: CredentialScope[] = ['website_login', 'wallet_prepare']
 
 function normDomain(d: string): string {
   return d.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '')

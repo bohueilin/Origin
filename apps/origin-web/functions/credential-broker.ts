@@ -28,7 +28,34 @@ import {
   type LeaseView,
 } from './_onePasswordBroker.ts'
 
+// Keep in sync with src/credentials/broker.ts's HIGH_RISK — pinned by
+// server/ruleOfTwoConformance.test.ts (set equality).
 const HIGH_RISK = ['website_login', 'wallet_prepare']
+
+// ---- RULE-OF-TWO-CONFORMANCE-BLOCK-START ----
+// The deployed Rule-of-Two decision. This block is EXTRACTED AND EXECUTED by
+// server/ruleOfTwoConformance.test.ts, which drives it and the canonical
+// src/credentials/ruleOfTwo.ts over all 16 exposure/approval combinations and asserts
+// identical verdicts and identical escalation wording.
+//
+// Why a duplicated block instead of an import: this file deploys as a SINGLE source
+// file (`functions deploy --file`), so it cannot import from src/. The block therefore
+// stays dependency-free and self-contained — do not add imports or outer-scope
+// references to it, or the conformance test (and the deploy) break.
+function ruleOfTwoDecision(privateData, untrustedContent, externalComms, humanApproved) {
+  const LABELS = { privateData: 'private data', untrustedContent: 'untrusted content', externalComms: 'external communication' }
+  const exposure = { privateData: Boolean(privateData), untrustedContent: Boolean(untrustedContent), externalComms: Boolean(externalComms) }
+  const present = Object.keys(LABELS).filter((k) => exposure[k])
+  const count = present.length
+  const requiresHuman = count >= 3 && !humanApproved
+  const reason = count >= 3
+    ? (humanApproved
+        ? 'all three trifecta exposures present — permitted only because a human approved this action'
+        : 'lethal trifecta: private data + untrusted content + external communication present at once — a human must approve before the agent may act')
+    : `within the Rule of Two budget (${count}/2 of the trifecta: ${present.map((k) => LABELS[k]).join(', ') || 'none'})`
+  return { count, withinBudget: count <= 2, requiresHuman, present, reason }
+}
+// ---- RULE-OF-TWO-CONFORMANCE-BLOCK-END ----
 const ALLOWED_ORIGINS = ['http://localhost:5275', 'https://origin-physical-ai.pages.dev']
 const RATE_LIMIT_PER_MIN = 30
 
@@ -295,9 +322,9 @@ export default async function (req: Request): Promise<Response> {
 
   // 8b. Rule of Two — all three lethal-trifecta exposures at once forces a human in the
   // loop (private data + untrusted content + external communication), regardless of scope.
-  const trifectaCount = [g.trifecta_private_data, g.trifecta_untrusted_content, g.trifecta_external_comms].filter(Boolean).length
-  if (trifectaCount >= 3 && !approved) {
-    return stepUp('lethal trifecta: private data + untrusted content + external communication present at once — a human must approve before the agent may act')
+  const ruleOfTwo = ruleOfTwoDecision(g.trifecta_private_data, g.trifecta_untrusted_content, g.trifecta_external_comms, approved)
+  if (ruleOfTwo.requiresHuman) {
+    return stepUp(ruleOfTwo.reason)
   }
 
   // 9. step-up: explicit policy, or a high-risk scope on first use

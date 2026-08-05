@@ -166,6 +166,15 @@ jobs:
       - name: bench:fleet:check (published fleet-verify bench artifact re-derives from source)
         working-directory: apps/origin-web
         run: npm run --silent bench:fleet:check
+      - name: css:version (home.css ?v= matches the stylesheet's content hash)
+        # home.css ships with a one-year immutable cache; the ?v= query is the only
+        # buster. An unbumped edit shipped once and returning visitors got NEW HTML
+        # against OLD CSS (two header CTAs). The lint makes ?v= the content hash —
+        # but it ran only in the local `npm run gates`, so CI stayed fully green on
+        # exactly that mistake. Fourth instance of the declared-but-unwired gate
+        # pattern (bench:gate, bench:fleet, honesty-lint were the first three).
+        working-directory: apps/origin-web
+        run: npm run --silent css:version
       - name: /verify selftest (the public offline re-checker's real logic)
         run: node apps/origin-web/src/verify/selftest.mjs
 

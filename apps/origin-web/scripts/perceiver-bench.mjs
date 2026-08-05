@@ -22,7 +22,7 @@
 // PAIRED same-floor same-style deltas with an exact sign test.
 
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs'
+import { mkdirSync, writeFileSync, mkdtempSync, rmSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
 
@@ -61,9 +61,19 @@ const bundle = (entry) => {
   return out
 }
 const { renderFloorPng, styleHint, RENDER_STYLES } = await import(bundle('server/floorRender.ts'))
-const { scoreParse, aggregateScoresBy, pairedCompare, genScenarioFloor, deriveUnparsedCause, checkMinScored, reportDigest } = await import(
+const { scoreParse, aggregateScoresBy, pairedCompare, genScenarioFloor, deriveUnparsedCause, checkMinScored, reportDigest, runArtifactName, resolveWriteOnce } = await import(
   bundle('server/perceiverScore.ts')
 )
+
+// Write-once for run artifacts: never overwrite different bytes (see the
+// contract's comment in perceiverScore.ts — the 2026-08-01 raw report was lost
+// to exactly this clobber).
+const writeRunArtifact = (path, content) => {
+  const exists = existsSync(path)
+  const action = resolveWriteOnce(exists, exists ? readFileSync(path, 'utf8') : null, content)
+  if (action === 'write') writeFileSync(path, content)
+  return action
+}
 
 // ---- 1. manufacture the paired dataset (v2: refs on AND off per floor/style) --
 // Scenario floors (not plain genFloor): the set mixes finish / refuse /
@@ -214,8 +224,25 @@ if (lowMeasured.length > 0) {
   process.exit(1)
 }
 
+// Per-row rows are a FIRST-CLASS run artifact (published alongside the report,
+// Q1a decision 2026-08-04): they are what lets a third party recompute every
+// aggregate instead of trusting it. Rows and report are dated + digest-named
+// and write-once — the undated clobbering perceiver-report.json is retired.
+const ranAt = new Date().toISOString()
+const day = ranAt.slice(0, 10)
+const rowsBody = {
+  kind: 'perceiver-rows',
+  bench: 'perceiver-bench@2',
+  ran_at: ranAt,
+  scope: 'Per-row scores behind the same-run report. Row ids are (floor,style) dataset ids; unparsed rows carry unparsed_cause.',
+  arms: Object.fromEntries(Object.entries(arms).map(([k, v]) => [k, v.results])),
+}
+const rowsDigest = reportDigest(rowsBody)
+const rowsFile = runArtifactName('rows', day, rowsDigest)
+
 const report = {
   bench: 'perceiver-bench@2',
+  ran_at: ranAt,
   scope:
     'Synthetic rendered plans (origin-synthetic-floors-v2), scored by the deterministic scorer. Deltas are PAIRED same-floor same-style comparisons; the A0R-vs-A0 noise floor bounds what an identical config produces. Numbers hold under THIS scorer on THIS dataset — no broader claim.',
   api: API,
@@ -224,14 +251,20 @@ const report = {
   arms: Object.fromEntries(Object.entries(arms).map(([k, v]) => [k, { condition: v.condition, grouped: v.grouped, gateVerdicts: v.gateVerdicts, fallbacks: v.fallbacks }])),
   paired,
   noiseFloor,
+  rows: { file: rowsFile, digest: rowsDigest },
 }
 // Self-digest of the report body (canonical JSON, sha256) — the transcription
 // seam: a hand-assembled companion (preregistration/caveats/notes) can cite
-// raw_report_digest to pin exactly which raw run it transcribed.
+// raw_report_digest to pin exactly which raw run it transcribed, and the rows
+// digest above pins which per-row data produced these aggregates.
 const finalReport = { ...report, raw_report_digest: reportDigest(report) }
-writeFileSync(join(OUT, 'perceiver-report.json'), JSON.stringify(finalReport, null, 2) + '\n')
+const reportFile = runArtifactName('report', day, finalReport.raw_report_digest)
+writeRunArtifact(join(OUT, rowsFile), JSON.stringify(rowsBody, null, 2) + '\n')
+writeRunArtifact(join(OUT, reportFile), JSON.stringify(finalReport, null, 2) + '\n')
 console.log(JSON.stringify({ ...report, arms: Object.fromEntries(Object.entries(report.arms).map(([k, v]) => [k, v.grouped.overall])) }, null, 2))
 console.log(`raw_report_digest: ${finalReport.raw_report_digest}`)
+console.log(`run artifacts (write-once): ${reportFile} + ${rowsFile}`)
+console.log(`to publish: copy BOTH into public/trust/ (dated, immutable) — the report cites the rows file by digest`)
 const anyScored = Object.values(arms).some((a) => a.grouped.overall.scored > 0)
 if (!anyScored) {
   console.error('\nNo parses were scored in any arm (see fallbacks). Set CEREBRAS_API_KEY on the target and re-run.')

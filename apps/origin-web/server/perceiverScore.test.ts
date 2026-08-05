@@ -15,6 +15,8 @@ import {
   deriveUnparsedCause,
   checkMinScored,
   reportDigest,
+  runArtifactName,
+  resolveWriteOnce,
 } from './perceiverScore'
 import { genFloor } from './gateBench'
 
@@ -280,5 +282,36 @@ describe('genScenarioFloor — the dataset must be able to FAIL the verdict metr
         expect(anchors.has(`${c.x},${c.y}`)).toBe(false)
       }
     }
+  })
+})
+
+// ---- Run-artifact naming + write-once (Q1a: per-row publication, no clobber) ----
+//
+// 2026-08-04: a 2-floor smoke run overwrote bench-out/perceiver-report.json and
+// with it the last copy of the 2026-08-01 headline experiment's raw report — its
+// aggregates are now permanently attested-only. These tests pin the contract
+// that makes that class of loss impossible: run outputs are named by date +
+// content digest and are never overwritten with different bytes.
+describe('runArtifactName', () => {
+  it('embeds kind, day, and a digest prefix', () => {
+    const d = 'a'.repeat(64)
+    expect(runArtifactName('report', '2026-08-04', d)).toBe('perceiver-report-2026-08-04-aaaaaaaa.json')
+    expect(runArtifactName('rows', '2026-08-04', d)).toBe('perceiver-rows-2026-08-04-aaaaaaaa.json')
+  })
+  it('rejects malformed days and short digests', () => {
+    expect(() => runArtifactName('report', '20260804', 'a'.repeat(64))).toThrow()
+    expect(() => runArtifactName('report', '2026-08-04', 'abc')).toThrow()
+  })
+})
+
+describe('resolveWriteOnce', () => {
+  it('writes when the path is free', () => {
+    expect(resolveWriteOnce(false, null, '{"a":1}')).toBe('write')
+  })
+  it('skips when identical bytes already exist (same digest, same name — harmless)', () => {
+    expect(resolveWriteOnce(true, '{"a":1}', '{"a":1}')).toBe('skip-identical')
+  })
+  it('refuses to overwrite different bytes — the 08-01 loss can never recur', () => {
+    expect(() => resolveWriteOnce(true, '{"a":1}', '{"a":2}')).toThrow(/refus/i)
   })
 })

@@ -1,0 +1,13 @@
+{
+  "kind": "perceiver-rederivability-note",
+  "date": "2026-08-04",
+  "applies_to": [
+    "perceiver-baseline-2026-07-30.json",
+    "perceiver-baseline-2026-08-01.json",
+    "perceiver-gridrefs-ab-2026-08-01.json",
+    "perceiver-gridrefs-ab-2026-08-01-provenance.json"
+  ],
+  "statement": "The per-row results behind these artifacts' aggregates no longer exist: bench-out/ was never committed (gitignored by design at the time), and its last copy was overwritten by an unrelated smoke run on 2026-08-04. The aggregates, paired deltas, and verdict counts in the dated artifacts above are therefore ATTESTED-ONLY: they cannot be independently recomputed from retained data. What remains re-derivable: the dataset (floors, renders, ground-truth labels) regenerates deterministically from SEED_BASE 500000 at the recorded producing commit, and the full pipeline can be re-run against a live model at API cost (statistically, not bit-for-bit, reproducible; ~288 requests for the A/B design).",
+  "policy_change": "As of producing commit for this note, perceiver bench runs emit per-row results as a first-class artifact: dated, content-digest-named, write-once (never overwritten), cited by digest from the run report, and published to /trust alongside it. See docs/EVALUATION-CONVENTIONS.md.",
+  "scope": "Applies to the perceiver artifacts listed above only. floor-gate-bench.json and fleet-verify-bench.json are unaffected: both re-derive fully offline via their --check commands (byte-identity, no model, no network)."
+}

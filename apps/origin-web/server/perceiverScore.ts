@@ -223,6 +223,28 @@ export function checkMinScored(
  *  the exact raw report it transcribed. */
 export const reportDigest = (body: unknown): string => sha256(canonical(body))
 
+// ---- Run-artifact naming + write-once ---------------------------------------
+//
+// Run outputs (report, per-row rows) are named by day + content-digest prefix and
+// may never be overwritten with different bytes. This exists because a 2-floor
+// smoke run on 2026-08-04 clobbered bench-out/perceiver-report.json — the last
+// copy of the 2026-08-01 headline experiment's raw report — leaving its published
+// aggregates permanently unrecomputable. Digest-in-name makes a colliding name
+// imply identical content; resolveWriteOnce enforces the invariant anyway.
+
+export function runArtifactName(kind: 'report' | 'rows', day: string, digest: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error(`runArtifactName: day must be YYYY-MM-DD, got ${JSON.stringify(day)}`)
+  if (!/^[0-9a-f]{16,}$/.test(digest)) throw new Error('runArtifactName: digest must be a hex digest (>= 16 chars)')
+  return `perceiver-${kind}-${day}-${digest.slice(0, 8)}.json`
+}
+
+/** Pure write-once policy: 'write' | 'skip-identical', or throws on a clobber attempt. */
+export function resolveWriteOnce(exists: boolean, existing: string | null, next: string): 'write' | 'skip-identical' {
+  if (!exists) return 'write'
+  if (existing === next) return 'skip-identical'
+  throw new Error('write-once: refusing to overwrite an existing run artifact with different bytes')
+}
+
 // ---- scenario floors: the dataset must be able to FAIL the verdict metric ---
 //
 // genFloor's floors are (by construction) almost always oracle-'finish', so a

@@ -5,6 +5,7 @@ import subprocess
 
 import pytest
 
+from chronos.releases.gate import evaluate_gate
 from chronos.releases.models import ReleaseError, digest_json
 from chronos.releases.proofset import build_proofset
 from chronos.releases import release_results as release_results_module
@@ -321,9 +322,7 @@ def test_release_evaluation_seals_from_real_result_contract(tmp_path):
     assert record["release_proof_ref"].endswith(".json")
 
 
-def test_release_results_generator_materializes_candidate_and_cases(
-    monkeypatch, tmp_path
-):
+def generator_inputs(tmp_path):
     ps = proofset()
     controls = [control("control-a"), control("control-b"), control("control-c")]
     harden_run = fake_harden_run(tmp_path)
@@ -334,6 +333,28 @@ def test_release_results_generator_materializes_candidate_and_cases(
         solution.parent.mkdir(parents=True, exist_ok=True)
         solution.write_text("class SalesAnalyzer: pass\n", encoding="utf-8")
         item["solution_ref"] = str(solution.relative_to(tmp_path))
+    return ps, controls, harden_run_path
+
+
+def gate_kwargs(record, ps):
+    return {
+        "proof_set": ps,
+        "environment_v2": record["environment_v2"],
+        "grader_v2_digest": record["grader_v2_digest"],
+        "patch_ref": record["patch_ref"],
+        "fixer_run_ref": record["fixer_run_ref"],
+        "v1_results": record["v1_results"],
+        "v2_results": record["v2_results"],
+        "evaluator_context_refs": record["evaluator_context_refs"],
+        "subversion_results": record["subversion_results"],
+        "release_candidate_ref": record["release_candidate_ref"],
+    }
+
+
+def test_release_results_generator_materializes_candidate_and_cases(
+    monkeypatch, tmp_path
+):
+    ps, controls, harden_run_path = generator_inputs(tmp_path)
 
     def fake_run_docker(*, app, tests, image):
         reward = (
@@ -362,6 +383,9 @@ def test_release_results_generator_materializes_candidate_and_cases(
 
     assert record["release_candidate_ref"].endswith(".json")
     assert record["environment_v2"].startswith("task:")
+    by_case_v2 = {item["case_id"]: item for item in record["v2_results"]}
+    assert by_case_v2["wit-001"]["reward"] == 0.0
+    assert by_case_v2["control-a"]["reward"] == 1.0
     assert {item["case_id"] for item in record["v1_results"]} == {
         "wit-001",
         "control-a",
@@ -391,6 +415,76 @@ def test_release_results_generator_materializes_candidate_and_cases(
         )
         == tmp_path / "artifacts" / "release-results" / f"{ps['proof_set_id']}.json"
     )
+
+
+def test_missing_reward_line_is_not_a_verdict_and_gate_fails_closed(
+    monkeypatch, tmp_path
+):
+    ps, controls, harden_run_path = generator_inputs(tmp_path)
+
+    def outage_docker(*, app, tests, image):
+        # apt/pip/mongod outage: exit 0 from `cat` never happens; no reward line at all.
+        return subprocess.CompletedProcess(
+            ["docker"],
+            0,
+            stdout="E: Failed to fetch http://deb.debian.org/... Connection timed out\n",
+            stderr="",
+        )
+
+    monkeypatch.setattr(release_results_module, "_run_docker", outage_docker)
+
+    record = generate_release_results(
+        repo_root=tmp_path,
+        proof_set=ps,
+        witnesses=[witness()],
+        controls=controls,
+        harden_run_ref=harden_run_path,
+        artifact_root=tmp_path / "artifacts",
+        control_solution_target="query.py",
+    )
+
+    by_case_v2 = {item["case_id"]: item for item in record["v2_results"]}
+    assert by_case_v2["wit-001"]["reward"] is None
+    assert all(item["status"] != "blocked" for item in record["subversion_results"])
+
+    with pytest.raises(ReleaseError) as excinfo:
+        evaluate_gate(**gate_kwargs(record, ps))
+    assert excinfo.value.error_class == "case_incomplete"
+
+
+def test_nonzero_returncode_forces_missing_verdict_despite_stray_reward_line(
+    monkeypatch, tmp_path
+):
+    ps, controls, harden_run_path = generator_inputs(tmp_path)
+
+    def killed_docker(*, app, tests, image):
+        # Container died mid-run; the stray bare "0" in partial output is not a verdict.
+        return subprocess.CompletedProcess(
+            ["docker"],
+            137,
+            stdout="Reading package lists...\n0\n",
+            stderr="Killed\n",
+        )
+
+    monkeypatch.setattr(release_results_module, "_run_docker", killed_docker)
+
+    record = generate_release_results(
+        repo_root=tmp_path,
+        proof_set=ps,
+        witnesses=[witness()],
+        controls=controls,
+        harden_run_ref=harden_run_path,
+        artifact_root=tmp_path / "artifacts",
+        control_solution_target="query.py",
+    )
+
+    by_case_v2 = {item["case_id"]: item for item in record["v2_results"]}
+    assert by_case_v2["wit-001"]["reward"] is None
+    assert all(item["status"] != "blocked" for item in record["subversion_results"])
+
+    with pytest.raises(ReleaseError) as excinfo:
+        evaluate_gate(**gate_kwargs(record, ps))
+    assert excinfo.value.error_class == "case_incomplete"
 
 
 def test_release_candidate_requires_terminal_fixed_iteration(tmp_path):

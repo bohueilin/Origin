@@ -312,11 +312,13 @@ def _case_result(
     *,
     case_id: str,
     case_kind: str,
-    reward: float,
+    reward: float | None,
     environment: str,
     grader: str,
     trace_ref: str,
 ) -> dict[str, Any]:
+    # reward None means "no verdict"; missing_fields treats it as absent, so the
+    # gate's case_incomplete path fires instead of crediting a killed witness.
     return {
         "case_id": case_id,
         "case_kind": case_kind,
@@ -378,9 +380,14 @@ class _DockerVerifierRunner:
             solution_text=_empty_submission(),
             mutations=_subversion_mutations(case_id),
         )
+        if reward is None:
+            # No verdict must not read as "blocked"; validate_subversion_results rejects it.
+            status = "incomplete"
+        else:
+            status = "blocked" if not reward_success(reward) else "survived"
         return {
             "case_id": case_id,
-            "status": "blocked" if not reward_success(reward) else "survived",
+            "status": status,
             "reward": reward,
             "trace_ref": trace_ref,
         }
@@ -413,7 +420,7 @@ class _DockerVerifierRunner:
         solution_ref: Path | None = None,
         solution_text: str | None = None,
         mutations: dict[str, str] | None = None,
-    ) -> tuple[float, str]:
+    ) -> tuple[float | None, str]:
         with tempfile.TemporaryDirectory(prefix="chronos-release-eval-") as tmp:
             tmp_root = Path(tmp)
             app = tmp_root / "app"
@@ -432,6 +439,9 @@ class _DockerVerifierRunner:
                 mutation_path.write_text(text, encoding="utf-8")
             completed = _run_docker(app=app, tests=tests, image=self.docker_image)
             reward = _parse_reward(completed.stdout)
+            if completed.returncode != 0:
+                # Partial output can carry a stray 0/1 line; a dead container has no verdict.
+                reward = None
             trace_ref = self._write_trace(case_id, completed, reward, mutations or {})
             return reward, trace_ref
 
@@ -439,7 +449,7 @@ class _DockerVerifierRunner:
         self,
         case_id: str,
         completed: subprocess.CompletedProcess[str],
-        reward: float,
+        reward: float | None,
         mutations: dict[str, str],
     ) -> str:
         record = {
@@ -560,12 +570,18 @@ def _conftest_hook() -> str:
     )
 
 
-def _parse_reward(stdout: str) -> float:
+def _parse_reward(stdout: str) -> float | None:
+    """Return the bare reward line, or None when no verdict was emitted.
+
+    Absence of a verdict is not a verdict: an infrastructure failure that
+    prints no reward line must not read as reward 0.0 ("witness killed").
+    """
+
     for line in reversed(stdout.splitlines()):
         stripped = line.strip()
         if stripped in {"0", "1", "0.0", "1.0"}:
             return float(stripped)
-    return 0.0
+    return None
 
 
 def _tree_digest(root: Path) -> str:

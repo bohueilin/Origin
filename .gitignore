@@ -45,3 +45,8 @@ site-to-gym/
 # PUBLIC repo — that file must never be committed. The public anon_ key is a
 # different value and belongs in the deploy workflow.
 .insforge/
+
+# Working strategy/design docs kept out of the public repo. These are the founder's
+# planning material, not product source; one `git add -A` would publish them.
+# Ignored rather than deleted so the move-to-private decision stays open.
+docs/superpowers/

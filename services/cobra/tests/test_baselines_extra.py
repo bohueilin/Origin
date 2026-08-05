@@ -2,7 +2,9 @@
 
 from types import SimpleNamespace
 
-from cobra.baselines import compare_verdicts, llm_grade, raw_llm_breaches
+import pytest
+
+from cobra.baselines import JudgeParseError, compare_verdicts, llm_grade, raw_llm_breaches
 from cobra.substrate import Task
 
 
@@ -53,6 +55,17 @@ def test_llm_grade_parses_pass_and_fail():
     assert llm_grade(_task(), "x", client=_Judge(["PASS"])) == 1
     assert llm_grade(_task(), "x", client=_Judge(["FAIL"])) == 0
     assert llm_grade(_task(), "x", client=_Judge(["pass, looks correct"])) == 1
+
+
+def test_llm_grade_raises_on_unparseable_reply():
+    # A refusal / markdown fence / truncation is a parse failure, not a FAIL verdict — silently
+    # scoring 0 would record it as the judge rejecting.
+    with pytest.raises(JudgeParseError):
+        llm_grade(_task(), "x", client=_Judge(["I cannot grade this without more context."]))
+    with pytest.raises(JudgeParseError):
+        llm_grade(_task(), "x", client=_Judge(["```\nPASS\n```"]))
+    with pytest.raises(JudgeParseError):
+        llm_grade(_task(), "x", client=_Judge([""]))
 
 
 def test_compare_verdicts_runs_both_graders():

@@ -2,6 +2,8 @@
 
 import json
 
+import pytest
+
 from cobra.rollout import (
     Rollout,
     RolloutReport,
@@ -88,6 +90,56 @@ def test_rg_real_scorers_label_solve_and_cheat():
     assert (r_naive(task, solve), r_hardened(task, solve), t_oracle(task, solve)) == (1, 1, 1)
     # cheat: gold appears (lenient pays out) but cue-hardened + oracle reject the wrong conclusion.
     assert (r_naive(task, cheat), r_hardened(task, cheat), t_oracle(task, cheat)) == (1, 0, 0)
+
+
+def test_real_scorers_oracle_error_propagates(monkeypatch):
+    # Eval honesty: an oracle-side infrastructure failure must RAISE — a label authority that
+    # cannot answer must not guess (a silent 0 would relabel the row a cheat).
+    import cobra.suite as suite
+
+    def boom(*a, **k):
+        raise OSError("sandbox spawn failed")
+
+    monkeypatch.setattr(suite, "score_solution", boom)
+    _, _, t_oracle = real_scorers()
+    with pytest.raises(OSError):
+        t_oracle(_task(), GOLD)
+
+
+def test_real_scorers_grader_error_still_scores_zero(monkeypatch):
+    # Graders keep the guard: an (possibly adversarial) grader that crashes must not pass.
+    import cobra.templates as templates
+
+    def boom(*a, **k):
+        raise OSError("grader crashed")
+
+    monkeypatch.setattr(templates, "grade", boom)
+    r_naive, r_hardened, _ = real_scorers()
+    assert r_naive(_task(), GOLD) == 0 and r_hardened(_task(), GOLD) == 0
+
+
+def test_rg_real_scorers_oracle_error_propagates(monkeypatch):
+    import cobra.substrate as substrate
+
+    def boom(*a, **k):
+        raise OSError("oracle infra down")
+
+    monkeypatch.setattr(substrate, "rg_oracle", boom)
+    _, _, t_oracle = rg_real_scorers()
+    with pytest.raises(OSError):
+        t_oracle(RGTask("gsm_symbolic", 42, 0, "q", "70"), "the total is 70")
+
+
+def test_rg_real_scorers_grader_error_still_scores_zero(monkeypatch):
+    import cobra.templates as templates
+
+    def boom(*a, **k):
+        raise OSError("grader crashed")
+
+    monkeypatch.setattr(templates, "grade", boom)
+    r_naive, r_hardened, _ = rg_real_scorers()
+    task = RGTask("gsm_symbolic", 42, 0, "q", "70")
+    assert r_naive(task, "70") == 0 and r_hardened(task, "70") == 0
 
 
 def test_build_models_skips_missing_keys():

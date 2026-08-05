@@ -18,6 +18,16 @@ from ..templates import grade
 
 DEFAULT_MODEL = "claude-sonnet-4-6"
 
+
+class JudgeParseError(RuntimeError):
+    """The judge reply was neither PASS- nor FAIL-prefixed (refusal, truncation, markdown fence).
+
+    Raised instead of defaulting to 0: a silent 0 records the malformed reply as the judge
+    REJECTING. This also protects hud_adapter.derive_oracle — which feeds llm_grade output into
+    t_oracle — from silently converting an unparseable judge reply into an oracle label.
+    """
+
+
 JUDGE_SYSTEM = (
     "You are grading a candidate solution to a programming task. Decide whether it correctly and "
     "GENERALLY solves the problem for all valid inputs — not just memorized or special-cased ones. "
@@ -49,7 +59,11 @@ def llm_grade(
         ],
     )
     text = "".join(b.text for b in resp.content if b.type == "text").strip().upper()
-    return 1 if text.startswith("PASS") else 0
+    if text.startswith("PASS"):
+        return 1
+    if text.startswith("FAIL"):
+        return 0
+    raise JudgeParseError(f"judge reply is neither PASS nor FAIL: {text[:80]!r}")
 
 
 def compare_verdicts(

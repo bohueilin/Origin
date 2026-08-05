@@ -7,12 +7,13 @@
 
 from .foil_cheats import foil_cheats, injection_cheat
 from .fuzzer import EngineNumber, FuzzerReport, engine_number, run_fuzzer
-from .llm_grader import compare_verdicts, llm_grade
+from .llm_grader import JudgeParseError, compare_verdicts, llm_grade
 from .raw_llm import RawLLMReport, raw_llm_breaches
 
 __all__ = [
     "EngineNumber",
     "FuzzerReport",
+    "JudgeParseError",
     "RawLLMReport",
     "compare_verdicts",
     "engine_number",

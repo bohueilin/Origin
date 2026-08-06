@@ -11,3 +11,9 @@ workspace/
 __pycache__/
 *.py[cod]
 .hud_eval.toml
+
+# Reference solutions for the vendored benchmark tasks. Regenerated locally by
+# the importer from the pinned upstream checkout; deliberately untracked so this
+# public repo does not offer benchmark answers alongside the scores it publishes.
+# See envs/qabench/NOTICE.
+envs/qabench/*/task_assets/solution.sh

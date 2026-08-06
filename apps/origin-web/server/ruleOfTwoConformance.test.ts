@@ -12,6 +12,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { transformSync } from 'esbuild'
 import { describe, expect, it } from 'vitest'
 import { evaluateRuleOfTwo } from '../src/credentials/ruleOfTwo.ts'
 import { HIGH_RISK } from '../src/credentials/broker.ts'
@@ -41,8 +42,11 @@ describe('Rule-of-Two conformance (edge function vs canonical module)', () => {
   })
 
   it('agrees with evaluateRuleOfTwo on every exposure combination, both approval states', () => {
-    const block = extractBlock()
-    const decide = new Function(`${block}; return ruleOfTwoDecision;`)() as (
+    // The block is TypeScript (deno type-checks the deployed file), so strip the
+    // annotations before executing it. esbuild does exactly the transform the deploy
+    // runtime does, so what runs here is what runs in production.
+    const js = transformSync(extractBlock(), { loader: 'ts', format: 'cjs' }).code
+    const decide = new Function(`${js}; return ruleOfTwoDecision;`)() as (
       p?: boolean, u?: boolean, e?: boolean, approved?: boolean,
     ) => { requiresHuman: boolean; reason: string }
 

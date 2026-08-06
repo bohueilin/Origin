@@ -42,17 +42,30 @@ const HIGH_RISK = ['website_login', 'wallet_prepare']
 // file (`functions deploy --file`), so it cannot import from src/. The block therefore
 // stays dependency-free and self-contained — do not add imports or outer-scope
 // references to it, or the conformance test (and the deploy) break.
-function ruleOfTwoDecision(privateData, untrustedContent, externalComms, humanApproved) {
-  const LABELS = { privateData: 'private data', untrustedContent: 'untrusted content', externalComms: 'external communication' }
-  const exposure = { privateData: Boolean(privateData), untrustedContent: Boolean(untrustedContent), externalComms: Boolean(externalComms) }
-  const present = Object.keys(LABELS).filter((k) => exposure[k])
-  const count = present.length
+// This block is real TypeScript — `deno check` type-checks this file in CI. The
+// conformance test transpiles the extracted block with esbuild before executing it,
+// so annotations here are free; what the block may NOT have is imports or any
+// reference to outer scope.
+function ruleOfTwoDecision(
+  privateData: boolean,
+  untrustedContent: boolean,
+  externalComms: boolean,
+  humanApproved: boolean,
+): { count: number; withinBudget: boolean; requiresHuman: boolean; present: string[]; reason: string } {
+  const trifecta: Array<{ key: string; label: string; on: boolean }> = [
+    { key: 'privateData', label: 'private data', on: Boolean(privateData) },
+    { key: 'untrustedContent', label: 'untrusted content', on: Boolean(untrustedContent) },
+    { key: 'externalComms', label: 'external communication', on: Boolean(externalComms) },
+  ]
+  const hits = trifecta.filter((t) => t.on)
+  const present = hits.map((t) => t.key)
+  const count = hits.length
   const requiresHuman = count >= 3 && !humanApproved
   const reason = count >= 3
     ? (humanApproved
         ? 'all three trifecta exposures present — permitted only because a human approved this action'
         : 'lethal trifecta: private data + untrusted content + external communication present at once — a human must approve before the agent may act')
-    : `within the Rule of Two budget (${count}/2 of the trifecta: ${present.map((k) => LABELS[k]).join(', ') || 'none'})`
+    : `within the Rule of Two budget (${count}/2 of the trifecta: ${hits.map((t) => t.label).join(', ') || 'none'})`
   return { count, withinBudget: count <= 2, requiresHuman, present, reason }
 }
 // ---- RULE-OF-TWO-CONFORMANCE-BLOCK-END ----

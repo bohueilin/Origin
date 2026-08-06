@@ -9,8 +9,8 @@
 // Pages Function behind it.
 
 import { describe, expect, it } from 'vitest'
-import { onRequestPost } from './parse-floor'
-import type { ParseFloorResponse } from '../../../src/foundry/types'
+import { onRequestPost } from './parse-floor.ts'
+import type { ParseFloorResponse } from '../../../src/foundry/types.ts'
 
 const call = async (body: string, env: Record<string, string | undefined> = {}): Promise<Response> =>
   onRequestPost({

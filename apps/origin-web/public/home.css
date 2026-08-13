@@ -82,7 +82,7 @@ img, svg { max-width: 100%; }
 a { color: var(--signal-ink); text-decoration: none; }
 a:hover { text-decoration: underline; }
 /* inline links inside body copy must be distinguishable without color (WCAG 1.4.1) */
-.section__lede a, .tc p a, .proofslot__note a, p a:not(.btn):not(.truststrip__link):not(.routecard) { text-decoration: underline; text-underline-offset: 2px; }
+.section__lede a, .tc p a, .proofslot__note a, figcaption a, p a:not(.btn):not(.truststrip__link):not(.routecard) { text-decoration: underline; text-underline-offset: 2px; }
 
 /* focus — visible everywhere */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {

@@ -48,3 +48,7 @@ html, body { margin: 0; background: #0c0b08; }
 .clip__verdict b { color: var(--fast); }
 
 .clip__live { font: 600 12.5px/1 ui-monospace, monospace; color: #d6534a; letter-spacing: 0.04em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .clip__caret { animation: none; opacity: 1; }
+}

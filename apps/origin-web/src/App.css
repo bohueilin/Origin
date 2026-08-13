@@ -4849,6 +4849,11 @@ select.field-input {
   .voice-spinner {
     animation: none;
   }
+  .bs-dot,
+  .bs-cursor {
+    animation: none;
+    opacity: 1;
+  }
 }
 .voice-success .voice-hint {
   font-size: 15px;

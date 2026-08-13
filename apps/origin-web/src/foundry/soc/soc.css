@@ -183,3 +183,7 @@
   .soc-acc__row { grid-template-columns: 1fr auto auto; }
   .soc-acc__track { grid-column: 1 / -1; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .soc-attack__caret { animation: none; opacity: 1; }
+}

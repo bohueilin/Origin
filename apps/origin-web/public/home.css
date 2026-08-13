@@ -147,6 +147,10 @@ a:hover { text-decoration: underline; }
   background: transparent; color: var(--on-dark); border-color: var(--line-dark);
 }
 .btn--ghost-on-dark:hover { border-color: var(--on-dark); background: rgba(255,255,255,.05); }
+.btn:disabled, .btn[aria-disabled="true"] {
+  opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; pointer-events: none;
+}
+.btn[aria-busy="true"] { opacity: 1; cursor: progress; pointer-events: none; }
 
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
 .cta-row--center { justify-content: center; }

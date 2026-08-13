@@ -206,7 +206,7 @@ export function ReferenceCheckPage() {
           </div>
         )}
         <div className="rc-actions">
-          <button className="btn btn--primary" onClick={run} disabled={busy}>{busy ? 'Running the check…' : 'Run the reference check'}</button>
+          <button className="btn btn--primary" onClick={run} disabled={busy} aria-busy={busy}>{busy ? 'Running the check…' : 'Run the reference check'}</button>
         </div>
         {error ? <p className="rc-error" role="alert">Error: {error}</p> : null}
       </div>

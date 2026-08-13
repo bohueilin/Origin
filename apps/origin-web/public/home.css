@@ -131,7 +131,7 @@ a:hover { text-decoration: underline; }
   transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
   white-space: nowrap;
 }
-.btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn:hover { text-decoration: none; }
 .btn:active { transform: translateY(0); }
 .btn--sm { padding: 9px 16px; font-size: 14px; }
 .btn--lg { padding: 16px 28px; font-size: 16px; }
@@ -550,7 +550,6 @@ a:hover { text-decoration: underline; }
   padding: 9px 18px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--paper-2); color: var(--ink);
   transition: border-color .12s ease, background .12s ease, transform .12s ease;
 }
-.chip:hover { border-color: var(--signal); background: var(--signal-wash); transform: translateY(-1px); }
 
 /* ============================================================
    Final CTA
@@ -713,7 +712,7 @@ a:hover { text-decoration: underline; }
   font-size: 22px; padding-left: 4px; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
   transition: transform .15s ease, background .15s ease;
 }
-.visionfilm__play:hover .visionfilm__play-icon, .visionfilm__play:focus-visible .visionfilm__play-icon { transform: scale(1.06); background: rgba(255,255,255,.26); }
+.visionfilm__play:focus-visible .visionfilm__play-icon { transform: scale(1.06); background: rgba(255,255,255,.26); }
 .visionfilm__play-label { font-weight: 600; font-size: 14px; letter-spacing: .01em; }
 .visionfilm__cap { margin-top: 10px; font-size: 12.5px; color: var(--on-dark-soft); }
 
@@ -756,7 +755,14 @@ a:hover { text-decoration: underline; }
 /* Audience route cards */
 .audience__cards { margin-top: 30px; }
 .routecard { text-align: left; display: flex; flex-direction: column; gap: 8px; background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--sh-sm); cursor: pointer; font-family: var(--font-sans); transition: border-color .12s ease, transform .12s ease, box-shadow .12s ease; }
-.routecard:hover { border-color: var(--signal); transform: translateY(-3px); box-shadow: var(--sh-md); }
+/* Transform-carrying hover lifts only on devices that actually hover —
+   on touch, tap-fired hover states stick until the next tap elsewhere. */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { transform: translateY(-1px); }
+  .chip:hover { border-color: var(--signal); background: var(--signal-wash); transform: translateY(-1px); }
+  .visionfilm__play:hover .visionfilm__play-icon { transform: scale(1.06); background: rgba(255,255,255,.26); }
+  .routecard:hover { border-color: var(--signal); transform: translateY(-3px); box-shadow: var(--sh-md); }
+}
 .routecard__role { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--ink); }
 .routecard__desc { font-size: 14px; color: var(--ink-soft); flex: 1; }
 .routecard__go { font-size: 14px; font-weight: 600; color: var(--signal-ink); margin-top: 4px; }

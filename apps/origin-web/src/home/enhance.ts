@@ -339,7 +339,7 @@ form?.addEventListener('submit', async (e) => {
   // fallback only fires when BOTH failed. Keying off `delivered` alone used to push
   // a visitor into their mail client even when the request was already queued.
   let received = false
-  if (submitEl) { submitEl.disabled = true; submitEl.textContent = 'Sending…' }
+  if (submitEl) { submitEl.disabled = true; submitEl.setAttribute('aria-busy', 'true'); submitEl.textContent = 'Sending…' }
   try {
     const res = await fetch('/api/lead', {
       method: 'POST',
@@ -356,7 +356,7 @@ form?.addEventListener('submit', async (e) => {
       received = !!j.stored || !!j.delivered
     }
   } catch { received = false }
-  if (submitEl) submitEl.disabled = false
+  if (submitEl) { submitEl.disabled = false; submitEl.removeAttribute('aria-busy') }
 
   showSuccess(received)
   if (received) {

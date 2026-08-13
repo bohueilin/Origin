@@ -6,6 +6,7 @@
 
 /* ---------- Design tokens ---------- */
 :root {
+  color-scheme: light;
   /* surfaces */
   --paper:      #f6f5f2;   /* page background (off-white) */
   --paper-2:    #ffffff;   /* card */

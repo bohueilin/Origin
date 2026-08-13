@@ -80,7 +80,6 @@
   transition: border-color 240ms ease, box-shadow 240ms ease, transform 200ms ease, opacity 240ms ease, filter 240ms ease;
 }
 button.dc-node { cursor: pointer; font: inherit; color: inherit; }
-.dc-node:focus-visible { outline: none; }
 .dc-node-root { background: linear-gradient(165deg, var(--dc-panel), var(--dc-bg-2)); border-color: var(--dc-line-2); }
 .dc-node-traced {
   border-color: var(--dc-accent);

@@ -205,13 +205,16 @@
               + `<td style="padding-right:16px;white-space:nowrap">${s.name}</td>`
               + `<td>${detail}</td></tr>`
           }).join('')
-          const when = new Date(data.generated_at).toISOString().slice(0, 10)
-          const banner = data.all_green
-            ? `<b style="color:#1a7f4b">ALL GATES GREEN</b>`
-            : `<b style="color:#b3261e">gates failing — see CI</b>`
+          const when = (data.generated_at || '').slice(0, 10)
+          const ageDays = (Date.now() - Date.parse(data.generated_at)) / 86400000
+          const stale = !Number.isFinite(ageDays) || ageDays > 14
+          const bannerLine = stale
+            ? `<b style="color:var(--warn)">Snapshot from ${when} — stale; regenerate with <code>make gates-all</code>.</b>`
+            : (data.all_green
+                ? `${when} · <b style="color:var(--verify)">ALL GATES GREEN</b> · ${data.suites.length} suites — reproduced by <code>make gates-all</code>, enforced in CI on every push.`
+                : `${when} · <b style="color:#b3261e">gates failing — see CI</b> · ${data.suites.length} suites — reproduced by <code>make gates-all</code>, enforced in CI on every push.`)
           document.getElementById('gates-scoreboard').innerHTML =
-            `<div style="margin-bottom:10px">${banner} · ${data.suites.length} suites · `
-            + `reproduced ${when} by <code>make gates-all</code>, enforced in CI on every push.</div>`
+            `<div style="margin-bottom:10px">${bannerLine}</div>`
             + `<div style="overflow-x:auto" tabindex="0" role="region" aria-label="Gate results table (scrollable)"><table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
             + `<tbody>${rows}</tbody></table></div>`
         } catch {

@@ -35,8 +35,11 @@ Target: frontier-lab / YC quality. Audience: YC partners + high-trust safety/rob
 - Preferred terms: "Most economical" (not "Cheapest overall"); "readiness license"; "earn permission."
 
 ## Tokens (don't introduce a new palette)
-`--accent #2f6df6` · `--pos #0f9d6e` · `--warn #b97400` · `--neg #e5484d` · `--panel #fff` ·
-`--line #e3e8f1` · `--bg #f6f8fc` · `--code-bg #eef2f8`. Display font: Space Grotesk.
+`--paper #f6f5f2` · `--paper-2 #fff` · `--ink #16181d` · `--ink-soft #464e5a` · `--steel #626b78` ·
+`--line #e3e2dd` · `--signal #2a56e8` · `--signal-ink #1c40c2` · `--verify #0f7a57` ·
+`--warn #9a6300` · `--danger #b23a30` · radii 14/10px · Inter + Space Grotesk.
+Console surfaces (`src/App.css`) use the warm `--con-*` palette; never let both `:root` token
+sets collide on one page.
 
 ## Verify-before-done (every change)
 build ✅ + lint ✅ (zero new errors) + touched pytest ✅ → live on localhost (desktop + 375px, zero

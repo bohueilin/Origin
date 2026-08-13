@@ -118,7 +118,12 @@
       }
     
       /* No-JS burger fallback: these static pages do not load enhance.ts */
-      @media (max-width: 960px) { .site-nav { display: flex; } .site-header__burger { display: none; } }
+      @media (max-width: 960px) {
+        .site-nav { display: flex; flex-wrap: wrap; gap: 8px 18px; min-width: 0; }
+        .site-header__burger, .site-header__cta-mobile { display: none; }
+        /* home.css fixes the header row at 66px; let the wrapped nav grow it */
+        .site-header__inner { height: auto; min-height: 66px; padding: 12px 0; }
+      }
     </style>
   </head>
   <body>
@@ -127,7 +132,7 @@
     <!-- ===================== SiteHeader ===================== -->
     <header class="site-header">
       <div class="shell site-header__inner">
-        <a class="brand" href="#main" aria-label="Origin — home">
+        <a class="brand" href="/" aria-label="Origin — home">
           <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
           <span class="brand__name">Origin</span>
         </a>

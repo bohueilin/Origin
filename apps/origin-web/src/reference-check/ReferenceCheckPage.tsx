@@ -271,7 +271,7 @@ export function ReferenceCheckPage() {
       <div className="rc-card rc-card--cta">
         <p className="rc-step">Want a reference check on your real agent?</p>
         <p className="rc-hint">This runs Origin’s synthetic battery. To check your actual agent against your own policy and environment — as a design partner — book an evidence review.</p>
-        <div className="rc-actions"><a className="btn btn--primary" href="/#contact" data-analytics="refcheck_book_click">Book an evidence review</a></div>
+        <div className="rc-actions"><a className="btn btn--ghost" href="/#contact" data-analytics="refcheck_book_click">Book an evidence review</a></div>
       </div>
     </div>
   )

@@ -3156,6 +3156,7 @@ select.field-input {
     scroll-behavior: auto !important;
     transition-duration: 0.001ms !important;
     animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
 
@@ -4848,11 +4849,6 @@ select.field-input {
   .voice-pulse,
   .voice-spinner {
     animation: none;
-  }
-  .bs-dot,
-  .bs-cursor {
-    animation: none;
-    opacity: 1;
   }
 }
 .voice-success .voice-hint {
@@ -7049,4 +7045,12 @@ select.field-input {
 .rtc-rec-em { margin: 0; font-size: 12.5px; font-weight: 600; color: #8a5600; background: #fbf3e0; border: 1px solid #ecd9ad; border-radius: 8px; padding: 9px 12px; line-height: 1.5; max-width: 82ch; }
 @media (max-width: 760px) {
   .rtc-rec-digests div { grid-template-columns: 1fr; gap: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bs-dot,
+  .bs-cursor {
+    animation: none;
+    opacity: 1;
+  }
 }

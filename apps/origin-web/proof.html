@@ -151,10 +151,40 @@
       .proof__cta { margin-top: 44px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 26px; }
       .proof__foot { margin-top: 20px; font-size: 13px; color: var(--ink-soft); }
       .proof__foot a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 2px; }
+    
+      /* No-JS burger fallback: these static pages do not load enhance.ts */
+      @media (max-width: 960px) { .site-nav { display: flex; } .site-header__burger { display: none; } }
     </style>
   </head>
   <body>
-    <main class="proof">
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- ===================== SiteHeader ===================== -->
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="#main" aria-label="Origin — home">
+          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <span class="brand__name">Origin</span>
+        </a>
+
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="/#product">Product</a>
+          <a href="/#demo">Demo</a>
+          <a href="/#evidence">Evidence</a>
+          <a href="/trust">Trust</a>
+          <a href="/labs">Labs</a>
+          <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
+        </nav>
+
+        <div class="site-header__cta">
+          <a class="btn btn--primary btn--sm site-header__cta-mobile" href="/reference-check" data-analytics="nav_cta_click_mobile">Run reference check</a>
+          <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main class="proof" id="main">
       <div class="proof__top">
         <a class="proof__brand" href="/" aria-label="Origin — home">
           <img src="/origin-logo.png" alt="" />

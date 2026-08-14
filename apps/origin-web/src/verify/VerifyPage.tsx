@@ -62,7 +62,7 @@ function DetectionTable() {
         credential or receipt in its payload, so the outer signature wins). Each kind routes to the
         matching verifier from the same SDK the test suite gates.
       </p>
-      <div className="vfy-scroll">
+      <div className="vfy-scroll" tabIndex={0} role="region" aria-label="Artifact detection table (scrollable)">
         <table className="vfy-table">
           <thead>
             <tr>

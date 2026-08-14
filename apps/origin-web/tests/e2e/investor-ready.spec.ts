@@ -42,7 +42,7 @@ test('home presents one implemented product and one primary path', async ({ page
   await expect(nav.getByRole('link', { name: /Foundry|Proving ground|Sign in/i })).toHaveCount(0)
 
   await expect(page.getByRole('link', { name: 'Run the synthetic reference check', exact: true })).toHaveAttribute('href', '/reference-check')
-  await expect(page.getByRole('link', { name: 'Watch the 90-second demo', exact: true })).toHaveAttribute('href', '#demo')
+  await expect(page.getByRole('link', { name: 'Step through the 5-stage demo', exact: true })).toHaveAttribute('href', '#demo')
   // Count AND order. The count-only version passed while the sections sat in the
   // wrong sequence (audit finding M7) — the spec fixes the order, so pin it.
   await expect(page.locator('[data-investor-section]')).toHaveCount(7)

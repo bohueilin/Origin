@@ -49,6 +49,17 @@ html, body { margin: 0; background: #0c0b08; }
 
 .clip__live { font: 600 12.5px/1 ui-monospace, monospace; color: #d6534a; letter-spacing: 0.04em; }
 
+.clip__error { width: min(900px, 100%); font: 600 clamp(18px, 3vw, 28px)/1.4 'Space Grotesk', sans-serif; color: #efe9dc; }
+
+@media (max-width: 600px) {
+  .clip { padding: 28px 16px; gap: 20px; }
+  .clip__lane { flex-wrap: wrap; }
+  .clip__lane > * { min-width: 0; }
+  .clip__badge { white-space: normal; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .clip__caret { animation: none; opacity: 1; }
+  .clip__lane, .clip__verdict, .clip__bar-fill { transition: none; }
+  .clip__lane--cb.is-on { animation: none; }
 }

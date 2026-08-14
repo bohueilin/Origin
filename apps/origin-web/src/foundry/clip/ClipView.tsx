@@ -14,6 +14,7 @@ export default function ClipView() {
   const [typed, setTyped] = useState(0)
   const [phase, setPhase] = useState<Phase>('idle')
   const [gpuFill, setGpuFill] = useState(0)
+  const [err, setErr] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -22,6 +23,22 @@ export default function ClipView() {
       tos.push(window.setTimeout(() => { if (!cancelled) fn() }, ms))
     }
     let d: LatencyResponse | null = null
+    const runStatic = async () => {
+      if (cancelled) return
+      if (!d) {
+        try {
+          d = await latency()
+        } catch (e) {
+          if (!cancelled) setErr(e instanceof Error ? e.message : 'Latency data failed to load.')
+          return
+        }
+        if (cancelled) return
+        setData(d)
+      }
+      setTyped(d.attackText.length)
+      setGpuFill(100)
+      setPhase('verdict')
+    }
     const run = async () => {
       if (cancelled) return
       setTyped(0)
@@ -30,7 +47,8 @@ export default function ClipView() {
       if (!d) {
         try {
           d = await latency()
-        } catch {
+        } catch (e) {
+          if (!cancelled) setErr(e instanceof Error ? e.message : 'Latency data failed to load.')
           return
         }
         if (cancelled) return
@@ -46,7 +64,8 @@ export default function ClipView() {
       at(typeDone + 900, () => setPhase('verdict'))
       at(typeDone + 5200, () => { void run() }) // loop
     }
-    void run()
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) void runStatic()
+    else void run()
     return () => { cancelled = true; tos.forEach((t) => clearTimeout(t)) }
   }, [])
 
@@ -60,33 +79,45 @@ export default function ClipView() {
         <div className="clip__attack">
           <span className="clip__attack-tag">incoming prompt injection</span>
           <div className="clip__attack-text">
-            {data ? data.attackText.slice(0, typed) : 'loading…'}
-            <span className="clip__caret" />
+            {err ? '—' : data ? data.attackText.slice(0, typed) : 'loading…'}
+            {!err && <span className="clip__caret" />}
           </div>
         </div>
 
         <div className={`clip__lane clip__lane--cb${phase === 'blocked' || phase === 'gpu' || phase === 'verdict' ? ' is-on' : ''}`}>
           <span className="clip__badge clip__badge--cb">🛑 Cerebras Guardian</span>
           <span className="clip__lane-val">
-            {phase === 'blocked' || phase === 'gpu' || phase === 'verdict'
-              ? `BLOCKED in ${data?.cerebras.totalMs}ms · TTFT ${data?.cerebras.ttftMs}ms`
-              : '…'}
+            {err
+              ? '—'
+              : phase === 'blocked' || phase === 'gpu' || phase === 'verdict'
+                ? `BLOCKED in ${data?.cerebras.totalMs}ms · TTFT ${data?.cerebras.ttftMs}ms`
+                : '…'}
           </span>
         </div>
 
         <div className={`clip__lane clip__lane--gpu${phase === 'gpu' || phase === 'verdict' ? ' is-on' : ''}`}>
           <span className="clip__badge clip__badge--gpu">⏳ {data?.gpu.label ?? 'GPU model'}</span>
           <div className="clip__bar"><div className="clip__bar-fill" style={{ width: `${gpuFill}%` }} /></div>
-          <span className="clip__lane-val">{phase === 'gpu' || phase === 'verdict' ? `responded at ${data?.gpu.totalMs}ms` : 'still thinking…'}</span>
+          <span className="clip__lane-val">{err ? '—' : phase === 'gpu' || phase === 'verdict' ? `responded at ${data?.gpu.totalMs}ms` : 'still thinking…'}</span>
         </div>
       </div>
 
-      <div className={`clip__verdict${phase === 'verdict' ? ' is-on' : ''}`}>
-        The defense reacted <b>before the attack finished typing.</b>
-        {ratio && <> {ratio}× faster than a GPU model.</>} Per-step verification is free — only on Cerebras.
-      </div>
+      {err
+        ? <div className="clip__error" role="alert">
+            Illustrative preview unavailable — the latency comparison could not be loaded. No timing claim is shown.
+          </div>
+        : <div className={`clip__verdict${phase === 'verdict' ? ' is-on' : ''}`}>
+            The defense reacted <b>before the attack finished typing.</b>
+            {ratio && <> {ratio}× faster than a GPU model.</>} Per-step verification is free — only on Cerebras.
+          </div>}
 
-      <div className="clip__live">{data?.cerebras?.ok ? '● live · measured this run' : '● illustrative · no live key on this server'}</div>
+      <div className="clip__live">
+        {err
+          ? '● unavailable · the latency backend is not reachable from this page'
+          : data?.cerebras?.ok
+            ? '● live · measured this run'
+            : '● illustrative · no live key on this server'}
+      </div>
     </div>
   )
 }

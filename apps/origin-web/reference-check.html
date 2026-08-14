@@ -48,37 +48,37 @@
       @media (max-width: 560px) { .rc-scenarios { grid-template-columns: 1fr; } }
       .rc-scn { text-align: left; border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px; background: var(--surface, #fff); cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
       .rc-scn.is-on { border-color: var(--signal); box-shadow: 0 0 0 2px color-mix(in srgb, var(--signal) 22%, transparent); }
-      .rc-scn b { font-size: 14.5px; color: var(--ink); }
+      .rc-scn b { font-size: var(--fs-15); color: var(--ink); }
       .rc-scn span { font-size: 12px; color: var(--ink-soft); }
       .rc-card { border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; background: var(--surface, #fff); }
       .rc-card--cta { background: var(--tint, #f4f6f9); }
       .rc-step { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--signal-ink); margin: 0 0 8px; }
-      .rc-hint { font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); margin: 0 0 14px; }
+      .rc-hint { font-size: var(--fs-14); line-height: 1.55; color: var(--ink-soft); margin: 0 0 14px; }
       .rc-hint b { color: var(--ink); }
       .rc-hint--warn { color: #a03123; }
       .rc-hint--warn b { color: #a03123; }
       .rc-fields { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
       @media (max-width: 560px) { .rc-fields { grid-template-columns: 1fr; } }
-      .rc-field { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--ink); }
+      .rc-field { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-13); font-weight: 600; color: var(--ink); }
       .rc-field input, .rc-toggle--select select {
-        font: inherit; font-size: 13.5px; font-weight: 500; padding: 8px 11px;
+        font: inherit; font-size: var(--fs-14); font-weight: 500; padding: 8px 11px;
         border: 1px solid var(--line); border-radius: 9px; background: var(--surface, #fff); color: var(--ink);
       }
       .rc-presets { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); margin-bottom: 16px; }
       @media (max-width: 680px) { .rc-presets { grid-template-columns: 1fr; } }
       .rc-preset { text-align: left; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--surface, #fff); cursor: pointer; display: flex; flex-direction: column; gap: 5px; }
       .rc-preset.is-on { border-color: var(--signal); box-shadow: 0 0 0 2px color-mix(in srgb, var(--signal) 22%, transparent); }
-      .rc-preset b { font-size: 13.5px; color: var(--ink); }
+      .rc-preset b { font-size: var(--fs-14); color: var(--ink); }
       .rc-preset span { font-size: 12px; color: var(--ink-soft); line-height: 1.45; }
       .rc-toggles { display: flex; flex-direction: column; gap: 11px; margin-bottom: 6px; }
-      .rc-toggle { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 500; color: var(--ink); cursor: pointer; }
+      .rc-toggle { display: flex; align-items: center; gap: 9px; font-size: var(--fs-14); font-weight: 500; color: var(--ink); cursor: pointer; }
       .rc-toggle input[type="checkbox"] { accent-color: var(--signal); width: 16px; height: 16px; margin: 0; cursor: pointer; flex: none; }
       .rc-toggle--select { justify-content: space-between; font-weight: 600; }
       .rc-actions { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 16px; }
       .rc-error { color: #a03123; font-size: 13px; margin-top: 10px; }
       .rc-verdict { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 16px 20px; border-radius: 12px; border: 1.5px solid currentColor; }
       .rc-verdict b { font-size: 26px; letter-spacing: .02em; }
-      .rc-verdict span { font-size: 13.5px; }
+      .rc-verdict span { font-size: var(--fs-14); }
       .rc-verdict__meta { color: var(--ink-soft); }
       .rc-verdict--ok { color: #1d7a4c; background: #e6f4ec; }
       .rc-verdict--warn { color: #a03123; background: #fbe9e6; }

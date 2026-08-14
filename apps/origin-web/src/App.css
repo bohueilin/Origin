@@ -7063,3 +7063,23 @@ select.field-input {
     opacity: 1;
   }
 }
+
+/* ── Cascade repair: pages that load BOTH home.css and this bundle ──────────
+   proving-ground.html resolves the generic `.btn` above (0,1,0; later file)
+   over home.css `.btn--primary` (0,1,0; earlier file): the primary CTA
+   measured white-on-#f2efe6 = 1.15:1. Re-assert the home.css primary skin,
+   scoped to the shared header and the proving-ground mount. The #2149c9
+   hover hex mirrors home.css `.btn--primary:hover`. */
+.site-header .btn--primary,
+#pg-root .btn--primary {
+  background: var(--signal, #2a56e8);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--sh-sm);
+}
+.site-header .btn--primary:hover,
+#pg-root .btn--primary:hover {
+  background: #2149c9;
+  border-color: #2149c9;
+  box-shadow: var(--sh-md);
+}

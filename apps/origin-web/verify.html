@@ -45,7 +45,8 @@
 
     <style>
       /* Local helpers for the verifier panels, layered on the shared design system. */
-      .vfy-grid { display: grid; gap: 22px; margin-top: 26px; }
+      .vfy-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; margin-top: 26px; }
+      .vfy-grid > *, .vfy-scroll { min-width: 0; max-width: 100%; }
       .vfy-actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 14px 0 4px; }
       .vfy-log { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
       .vfy-log li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }

@@ -80,6 +80,7 @@ body {
 .hero__copy, .hero__visual { min-width: 0; }
 
 h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(2.125rem, 4vw, 3rem); }
 p { margin: 0; }
 img, svg { max-width: 100%; }
 

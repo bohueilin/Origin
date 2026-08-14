@@ -17,11 +17,15 @@ const VERDICT_STYLE: Record<string, { label: string; cls: string }> = {
   refuse: { label: 'REFUSE', cls: 'sim-verdict--bad' },
 }
 
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+
 export function SimulationPage() {
   const [seed, setSeed] = useState(20260713)
   const [robots, setRobots] = useState(4)
   const [view, setView] = useState<'2d' | '3d'>('2d')
-  const [playing, setPlaying] = useState(true)
+  const [playing, setPlaying] = useState(() => !prefersReducedMotion())
   const [frameIdx, setFrameIdx] = useState(0)
   const [sigil, setSigil] = useState<{ thumb: string; obj: unknown } | null>(null)
 
@@ -43,6 +47,10 @@ export function SimulationPage() {
   // (re)build the active renderer for the current view/scene. Playback state is reset by the
   // handlers that change the scene (below), not here, to avoid setState-in-effect churn.
   useEffect(() => {
+    if (prefersReducedMotion() && frame.current === 0 && result.frames.length > 0) {
+      frame.current = result.frames.length - 1
+      setFrameIdx(frame.current)
+    }
     if (view === '2d' && canvasRef.current) {
       r2d.current = new Warehouse2DRenderer(canvasRef.current)
       r2d.current.render(scene, result, frame.current)
@@ -82,7 +90,13 @@ export function SimulationPage() {
     return () => cancelAnimationFrame(raf.current)
   }, [playing, view, scene, result])
 
-  const resetPlayback = () => { frame.current = 0; acc.current = 0; setFrameIdx(0); setSigil(null); setPlaying(true) }
+  const resetPlayback = () => { frame.current = 0; acc.current = 0; setFrameIdx(0); setSigil(null); setPlaying(!prefersReducedMotion()) }
+  const togglePlay = () => {
+    if (!playing && frame.current >= result.frames.length - 1) {
+      frame.current = 0; acc.current = 0; setFrameIdx(0)
+    }
+    setPlaying(!playing)
+  }
   const reset = () => { frame.current = 0; setFrameIdx(0); setPlaying(true) }
   const stepOnce = () => { setPlaying(false); frame.current = Math.min(frame.current + 1, result.frames.length - 1); setFrameIdx(frame.current) }
   const regenerate = () => { setSeed((s) => (s * 1664525 + 1013904223) >>> 0); resetPlayback() }
@@ -115,7 +129,7 @@ export function SimulationPage() {
           <button className={view === '3d' ? 'is-on' : ''} onClick={() => setView('3d')}>3D</button>
         </div>
         <div className="sim-btns">
-          <button className="btn btn--primary btn--sm" onClick={() => setPlaying((p) => !p)}>{playing ? 'Pause' : 'Play'}</button>
+          <button className="btn btn--primary btn--sm" onClick={togglePlay}>{playing ? 'Pause' : 'Play'}</button>
           <button className="btn btn--ghost btn--sm" onClick={stepOnce}>Step</button>
           <button className="btn btn--ghost btn--sm" onClick={reset}>Restart</button>
           <button className="btn btn--ghost btn--sm" onClick={regenerate}>New layout</button>

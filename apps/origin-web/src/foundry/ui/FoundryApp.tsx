@@ -17,6 +17,10 @@ import { evaluateDrawnSite, type DrawnSiteEval } from '../../siteEval'
 import type { ZoneScope } from '../../credentials/types'
 import type { DescriptiveSiteMap } from '../../workflowDraft'
 
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+
 function SourceBadge({ source, model }: { source: FoundrySource; model?: string }) {
   const label = source === 'cerebras' ? 'gemma-4-31b · Cerebras' : source === 'gemini' ? model || 'GPU baseline' : 'deterministic mock'
   return <span className={`fdy-badge fdy-badge--${source}`}>{label}</span>
@@ -376,6 +380,10 @@ function TrainingPanel() {
   const [shown, setShown] = useState(0)
   useEffect(() => {
     if (!run) return
+    if (prefersReducedMotion()) {
+      const t = setTimeout(() => setShown(MOCK_CURVE.length), 0)
+      return () => clearTimeout(t)
+    }
     const t = setInterval(() => setShown((s) => (s >= MOCK_CURVE.length ? s : s + 1)), 420)
     return () => clearInterval(t)
   }, [run])
@@ -500,6 +508,10 @@ export default function FoundryApp() {
   // Reveal the trace step-by-step so the loop reads as live.
   useEffect(() => {
     if (!quorum) return
+    if (prefersReducedMotion()) {
+      const t = setTimeout(() => setRevealed(quorum.steps.length), 0)
+      return () => clearTimeout(t)
+    }
     const t = setInterval(() => setRevealed((r) => (r >= quorum.steps.length ? r : r + 1)), 360)
     return () => clearInterval(t)
   }, [quorum])

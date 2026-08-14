@@ -12,6 +12,10 @@ import { signSigil, generateSigningKey, keyThumbprint } from '@origin/verifier-c
 import { canonical, sha256 } from '@origin/evidence/env-evidence'
 
 const FPS = 7
+
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
 const LEVEL_CLS: Record<string, string> = { L0: 'ops-bad', L1: 'ops-bad', L2: 'ops-warn', L3: 'ops-ok', L4: 'ops-ok' }
 const VERDICT_DOT: Record<string, string> = { finish: '#0f9d6e', escalate: '#b97400', refuse: '#e5484d' }
 
@@ -51,6 +55,11 @@ export function OperationsPage() {
   }, [scene, result])
 
   useEffect(() => {
+    if (prefersReducedMotion()) {
+      frame.current = result.frames.length - 1
+      r2d.current?.render(scene, result, frame.current)
+      return
+    }
     const step = (ts: number) => {
       raf.current = requestAnimationFrame(step)
       if (!lastTs.current) lastTs.current = ts

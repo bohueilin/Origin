@@ -18,6 +18,10 @@ import type { FrozenWorkflow } from '../workflowDraft'
 import { signSigil, generateSigningKey, keyThumbprint } from '@origin/verifier-core/sigil'
 import { canonical, sha256 } from '@origin/evidence/env-evidence'
 
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+
 const LEVEL_ORDER = ['L0', 'L1', 'L2', 'L3', 'L4'] as const
 const VERDICT_DOT: Record<string, string> = { finish: '#0f9d6e', escalate: '#b97400', refuse: '#e5484d' }
 
@@ -43,7 +47,7 @@ export function ProvingGroundPage() {
   const approve = (f: FrozenWorkflow) => {
     setFrozen(f)
     setSigil(null)
-    requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' }))
   }
 
   const signCredential = async () => {

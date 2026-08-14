@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-13T19:06:29Z",
+  "generated_at": "2026-08-14T19:34:32Z",
   "all_green": true,
   "suites": [
-    {"name": "ts:build (workspaces)", "result": "PASS", "detail": "✓ built in 63ms"},
-    {"name": "ts:build (chronos-ui)", "result": "PASS", "detail": "✓ built in 520ms"},
+    {"name": "ts:build (workspaces)", "result": "PASS", "detail": "✓ built in 66ms"},
+    {"name": "ts:build (chronos-ui)", "result": "PASS", "detail": "✓ built in 489ms"},
     {"name": "ts:origin-web (+evidence+verifier-core globs)", "result": "PASS", "detail": "Tests  622 passed (622)"},
     {"name": "ts:janus", "result": "PASS", "detail": "Tests  168 passed (168)"},
     {"name": "ts:@origin/evidence", "result": "PASS", "detail": "Tests  13 passed (13)"},

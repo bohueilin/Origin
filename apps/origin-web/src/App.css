@@ -2682,6 +2682,7 @@ select.field-input {
   margin-top: 18px;
 }
 .align-panel {
+  min-width: 0;
   border: 1px solid var(--con-line);
   border-radius: 18px;
   padding: 16px;
@@ -3140,7 +3141,7 @@ select.field-input {
   .workflow-map-grid,
   .provenance-strip,
   .capture-selects {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .flow-shell h1 {
     font-size: 32px;
@@ -3473,6 +3474,7 @@ select.field-input {
 /* ── Site builder: header + clear-all ───────────────────────── */
 .smp-head {
   display: flex;
+  min-width: 0;
   align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
@@ -3509,7 +3511,7 @@ select.field-input {
 }
 .smp-save-btn:hover { filter: brightness(1.05); }
 /* My Plans — a dropdown template selector (cloud-synced when signed in). */
-.smp-plans-row { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px; width: 100%; }
+.smp-plans-row { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px; width: 100%; min-width: 0; }
 .smp-plans-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 180px; }
 .smp-plans-label { font: 800 10px/1 inherit; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 .smp-plans-select {
@@ -3746,6 +3748,7 @@ select.field-input {
 }
 .smp-fleet-steppers {
   display: flex;
+  min-width: 0;
   flex-wrap: wrap;
   gap: 8px;
 }
@@ -3797,6 +3800,12 @@ select.field-input {
 }
 .smp-add-fleet span {
   font-size: 15px;
+}
+
+@media (max-width: 600px) {
+  .smp-plans-field,
+  .smp-stepper,
+  .smp-fleet-steppers .smp-stepper { min-width: 0; }
 }
 
 /* Fleet badge on a grid / sim cell — spelled out, bottom-centre. */

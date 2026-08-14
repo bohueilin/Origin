@@ -34,7 +34,8 @@
     <link rel="stylesheet" href="/home.css?v=8a12197a" />
 
     <style>
-      .pg-wrap { display: grid; gap: 26px; margin-top: 8px; }
+      .pg-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px; margin-top: 8px; }
+      .pg-wrap > * { min-width: 0; }
       .pg-h { font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); margin: 0 0 10px; }
       .pg-stage { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--surface, #fff); }
       .pg-stage__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }

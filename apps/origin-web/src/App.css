@@ -2514,7 +2514,7 @@ select.field-input {
 .smp-rtype-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .smp-rtype-chip {
   font: 600 11.5px/1 inherit; color: var(--text-soft); background: var(--panel); border: 1px solid var(--con-line);
-  border-radius: 8px; padding: 6px 9px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 8px; padding: 6px 9px; min-height: 32px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
 }
 .smp-rtype-chip b { font: 800 10px/1 var(--mono, monospace); color: var(--muted); }
 .smp-rtype-chip.on { background: var(--accent, #2f6df6); color: #fff; border-color: var(--accent, #2f6df6); }
@@ -3638,6 +3638,7 @@ select.field-input {
   color: var(--text-soft);
   border-radius: 9px;
   padding: 5px 11px 5px 5px;
+  min-height: 32px;
   font-size: 12.5px;
   font-weight: 700;
   cursor: pointer;
@@ -6500,9 +6501,12 @@ select.field-input {
 .fpv-cap { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; color: var(--text-soft); }
 .fpv-cap-label { font-weight: 600; color: var(--text); font-size: 14px; }
 .fpv-cap-meta { font-size: 12px; color: var(--muted); }
-.fpv-dots { display: inline-flex; gap: 7px; }
-.fpv-dot { width: 9px; height: 9px; border-radius: 50%; border: none; padding: 0; background: var(--con-line); cursor: pointer; }
-.fpv-dot.on { background: var(--accent); }
+.fpv-dots { display: inline-flex; gap: 0; }
+.fpv-dot {
+  width: 9px; height: 9px; padding: 10px; box-sizing: content-box; background-clip: content-box;
+  border-radius: 50%; border: none; background-color: var(--con-line); cursor: pointer;
+}
+.fpv-dot.on { background-color: var(--accent); }
 @media (max-width: 760px) { .fpv-body-2 { grid-template-columns: 1fr; } }
 
 /* ---------- #3 spacing before robot embodiment ---------- */

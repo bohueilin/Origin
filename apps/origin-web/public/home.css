@@ -996,8 +996,8 @@ a:hover { text-decoration: underline; }
   .chip { min-height: 44px; }
   .modal__close { width: 40px; height: 40px; }
   .site-nav a { padding: 8px 0; display: inline-block; }
-  .site-footer__nav a { padding: 9px 0; }
-  .site-footer__legal-links a { padding: 8px 0; display: inline-block; }
+  .site-footer__nav a { padding: 11px 0; }
+  .site-footer__legal-links a { padding: 12px 0; display: inline-block; }
   /* comfortable touch on the walkthrough's own controls + header/trust links */
   .walk__mode { min-height: 44px; }
   .walk__tab { min-height: 44px; }

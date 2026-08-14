@@ -40,7 +40,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=ed2cf934" />
+    <link rel="stylesheet" href="/home.css?v=531f69b0" />
 
     <style>
       .rc-grid { display: grid; gap: 22px; margin-top: 26px; }
@@ -61,7 +61,7 @@
       @media (max-width: 560px) { .rc-fields { grid-template-columns: 1fr; } }
       .rc-field { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-13); font-weight: 600; color: var(--ink); }
       .rc-field input, .rc-toggle--select select {
-        font: inherit; font-size: var(--fs-14); font-weight: 500; padding: 8px 11px;
+        font: inherit; font-size: var(--fs-14); font-weight: 500; padding: 8px 11px; min-height: 44px;
         border: 1px solid var(--line); border-radius: 9px; background: var(--surface, #fff); color: var(--ink);
       }
       .rc-presets { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); margin-bottom: 16px; }
@@ -70,8 +70,8 @@
       .rc-preset.is-on { border-color: var(--signal); box-shadow: 0 0 0 2px color-mix(in srgb, var(--signal) 22%, transparent); }
       .rc-preset b { font-size: var(--fs-14); color: var(--ink); }
       .rc-preset span { font-size: 12px; color: var(--ink-soft); line-height: 1.45; }
-      .rc-toggles { display: flex; flex-direction: column; gap: 11px; margin-bottom: 6px; }
-      .rc-toggle { display: flex; align-items: center; gap: 9px; font-size: var(--fs-14); font-weight: 500; color: var(--ink); cursor: pointer; }
+      .rc-toggles { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+      .rc-toggle { display: flex; align-items: center; gap: 9px; min-height: 44px; font-size: var(--fs-14); font-weight: 500; color: var(--ink); cursor: pointer; }
       .rc-toggle input[type="checkbox"] { accent-color: var(--signal); width: 16px; height: 16px; margin: 0; cursor: pointer; flex: none; }
       .rc-toggle--select { justify-content: space-between; font-weight: 600; }
       .rc-actions { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 16px; }

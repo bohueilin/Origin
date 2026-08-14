@@ -242,7 +242,7 @@ export function App() {
 function TopBar({ crumb, onBack, status }: { crumb?: string; onBack?: () => void; status?: SessionStatus }) {
   return (
     <header className="pp-top">
-      <div className="pp-top-brand" onClick={onBack} role={onBack ? 'button' : undefined}>
+      <div className="pp-top-brand">
         <img className="pp-top-mark" src="/origin-logo.png" alt="" aria-hidden="true" />
         <span className="pp-top-name">Passport</span>
         <span className="pp-top-sub">delegated autonomy you can trust</span>

@@ -202,6 +202,12 @@ test('TR-A002 is a real, tamper-evident SHA-256 hash chain (12 events, verifiabl
   }
 })
 
+test('proving ground keeps a single h1', async ({ page }) => {
+  await page.goto('/proving-ground')
+  await expect(page.locator('h1')).toHaveCount(1)
+  await expect(page.locator('h1')).toHaveText('Draw the floor. Deploy the fleet. Earn the level.')
+})
+
 test('the evidence console (/app) is a simulated, scenario-switchable preview', async ({ page }) => {
   await page.goto('/app.html')
   await expect(page.locator('h1')).toHaveCount(1)

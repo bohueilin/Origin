@@ -487,7 +487,7 @@ export function ReflectAlign({
           {backLabel}
         </button>
         <div className="flow-kicker">Review &amp; confirm</div>
-        <h1>Does this match the real workflow?</h1>
+        <h2 className="flow-title">Does this match the real workflow?</h2>
         <p className="flow-sub">
           Origin drafted the floor, the plan, and the safety calls below from what you submitted. Fix
           anything that’s wrong — none of it is graded yet. When you approve, this exact version is
@@ -565,7 +565,17 @@ export function ReflectAlign({
                     key={fi}
                     className={`smp-fleet ${active ? 'on' : ''}`}
                     style={{ '--smp-c': color } as CSSProperties}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={active}
                     onClick={() => setActiveFleet(fi)}
+                    onKeyDown={(e) => {
+                      if (e.target !== e.currentTarget) return
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setActiveFleet(fi)
+                      }
+                    }}
                   >
                     <div className="smp-fleet-head">
                       <span className="smp-fleet-dot" style={{ background: color }} aria-hidden="true" />

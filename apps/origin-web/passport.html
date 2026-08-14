@@ -46,9 +46,18 @@
       rel="stylesheet"
     />
     <title>Passport — delegated autonomy you can trust · Origin</title>
+    <style>
+      .skip-link {
+        position: fixed; top: -60px; left: 12px; z-index: 100;
+        background: #16181d; color: #fff; padding: 10px 16px; border-radius: 8px;
+        transition: top .15s ease;
+      }
+      .skip-link:focus { top: 12px; text-decoration: none; }
+    </style>
   </head>
   <body>
-    <div id="passport-root"></div>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <main id="main"><div id="passport-root"></div></main>
     <script type="module" src="/src/passport/main.tsx"></script>
   </body>
 </html>

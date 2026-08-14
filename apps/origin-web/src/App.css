@@ -1700,7 +1700,7 @@ body {
 /* Stacked flow screens (capture / understand / reflect / illustrate). */
 .flow-shell > .back { margin-bottom: 24px; }
 .flow-shell > .flow-kicker { margin-top: 0; }
-.flow-shell > h1 { margin-top: 14px; }
+.flow-shell > h1, .flow-shell > .flow-title { margin-top: 14px; }
 
 /* ---------- intake form ---------- */
 .intake-grid {
@@ -2300,7 +2300,7 @@ select.field-input {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.flow-shell h1 {
+.flow-shell h1, .flow-shell .flow-title {
   margin: 16px 0 0;
   max-width: 780px;
   font-size: 42px;
@@ -3143,7 +3143,7 @@ select.field-input {
   .capture-selects {
     grid-template-columns: minmax(0, 1fr);
   }
-  .flow-shell h1 {
+  .flow-shell h1, .flow-shell .flow-title {
     font-size: 32px;
   }
   .capture-card {

@@ -62,7 +62,7 @@ export function FloorPlanViewer({
             </div>
             <figcaption className="fpv-cap">
               <span className="fpv-cap-label">{cur.label}</span>
-              <span className="fpv-dots" aria-hidden="true">
+              <span className="fpv-dots">
                 {SCENE_VIEWS.map((v, i) => (
                   <button
                     key={v.label}

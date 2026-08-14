@@ -26,11 +26,41 @@
       .evidence-list li { margin:8px 0; }
       main a { text-decoration:underline; text-underline-offset:2px; }
       @media (max-width:700px) { .mode-grid { grid-template-columns:1fr; } }
+      /* No-JS burger fallback: these static pages do not load enhance.ts */
+      @media (max-width: 960px) {
+        .site-header__inner { display: grid; grid-template-columns: auto 1fr; height: auto; min-height: 66px; padding: 12px 0; row-gap: 8px; align-items: center; }
+        .site-nav { grid-column: 1 / -1; margin-left: 0; display: flex; flex-wrap: wrap; gap: 0 16px; }
+        .site-nav a { min-height: 44px; display: inline-flex; align-items: center; }
+        .site-header__burger, .site-header__cta, .site-header__cta-mobile { display: none; }
+      }
     </style>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <header class="site-header"><div class="shell site-header__inner"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" /><span class="brand__name">Origin</span></a></div></header>
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/" aria-label="Origin — home">
+          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <span class="brand__name">Origin</span>
+        </a>
+
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <a href="/#product">Product</a>
+          <a href="/#demo">Demo</a>
+          <a href="/#evidence">Evidence</a>
+          <a href="/trust">Trust</a>
+          <a href="/labs">Labs</a>
+          <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
+        </nav>
+
+        <div class="site-header__cta">
+          <a class="btn btn--primary btn--sm site-header__cta-mobile" href="/reference-check" data-analytics="nav_cta_click_mobile">Run reference check</a>
+          <button type="button" class="site-header__burger" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </header>
     <main id="main">
       <section class="section"><div class="shell">
         <p class="kicker">Technical explainer · source-backed</p>

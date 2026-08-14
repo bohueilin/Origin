@@ -36,6 +36,7 @@
       .labs-card .labs-verifier b { color: var(--ink); }
       .labs-card__cta { margin-top: auto; padding-top: 12px; }
       .labs-status { display: inline-block; font-size: var(--fs-11); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-soft); }
+      .site-nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; }
     </style>
   </head>
   <body>
@@ -51,7 +52,7 @@
           <a href="/#demo">Demo</a>
           <a href="/#evidence">Evidence</a>
           <a href="/trust">Trust</a>
-          <a href="/labs">Labs</a>
+          <a href="/labs" aria-current="page">Labs</a>
           <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
         </nav>
         <div class="site-header__cta">

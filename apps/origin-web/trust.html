@@ -99,6 +99,7 @@
       .packet-card__action .btn { width: 100%; justify-content: center; }
 
       @media (prefers-reduced-motion: reduce) { .status { transition: none; } }
+      .site-nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; }
     </style>
   </head>
 
@@ -117,7 +118,7 @@
           <a href="/#product">Product</a>
           <a href="/#demo">Demo</a>
           <a href="/#evidence">Evidence</a>
-          <a href="/trust">Trust</a>
+          <a href="/trust" aria-current="page">Trust</a>
           <a href="/labs">Labs</a>
           <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
         </nav>

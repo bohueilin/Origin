@@ -2,7 +2,7 @@
   "name": "@origin/verifier-core",
   "version": "0.0.0",
   "private": true,
-  "description": "Origin Verifier SDK — the environment/verifier evidence layer over @origin/evidence: Sigil signed receipts, Merkle-batched receipts, proof-carrying policy versions, Crucible config-bound credentials, the IAM gym, checkpoint/resume, environment promotion, the deterministic tool registry + MCP adapter, and the shared EpisodeTrace/ScoreReceipt builder. Subpath exports are the API (no root barrel).",
+  "description": "Origin Verifier SDK — the environment/verifier evidence layer over @origin/evidence: Sigil signed receipts, Merkle-batched receipts, proof-carrying policy versions, Crucible config-bound credentials, the IAM gym, the over-grant analyzer, checkpoint/resume, environment promotion, the deterministic tool registry + MCP adapter, and the shared EpisodeTrace/ScoreReceipt builder. Subpath exports are the API (no root barrel).",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -21,6 +21,10 @@
     "./crucible": {
       "types": "./crucible.d.mts",
       "default": "./crucible.mjs"
+    },
+    "./overGrant": {
+      "types": "./overGrant.d.mts",
+      "default": "./overGrant.mjs"
     },
     "./iamGym": {
       "types": "./iamGym.d.mts",
@@ -64,7 +68,9 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "comment:sql:conformance": "NOT in `npm run gates` — needs node:sqlite (Node >= 22.5) and CI runs Node 20. Local/developer check; skips with a notice where the module is absent.",
+    "sql:conformance": "node sql/over-grant/conformance.mjs"
   },
   "dependencies": {
     "@origin/evidence": "*"

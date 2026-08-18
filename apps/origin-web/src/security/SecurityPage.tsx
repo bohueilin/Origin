@@ -1,6 +1,6 @@
 // /security — the security cores, live in the browser.
 // =============================================================================
-// Four panels, each driving the REAL @origin/verifier-core engine client-side (no server, no
+// Five panels, each driving the REAL @origin/verifier-core engine client-side (no server, no
 // mocks of the engines themselves — the data is synthetic and labeled as such):
 //
 //   1. Origin Attestation — sign → verify → tamper → VOID → wrong-signer → rejected
@@ -8,6 +8,9 @@
 //   3. Policy chain     — hash-chained versions; decisions bind to the version in force
 //   4. Reference check  — the IAM gym + Crucible: config-bound credential from the
 //                         deterministic oracle; drift → VOID; over-grants cap the readiness level
+//   5. Over-grant       — the analyzer pointed at an authorization LOG rather than a policy:
+//                         five metrics over a synthetic fleet, and the delegation coupling —
+//                         widen one edge deep in the tree, watch the root's blast radius grow
 //
 // Unblocked by the isomorphic sha256 in @origin/evidence (§9.2): these
 // modules now load in a browser bundle because the evidence core no longer
@@ -40,6 +43,16 @@ import {
 } from '@origin/verifier-core/iamGym'
 import type { IamReferenceCheck } from '@origin/verifier-core/iamGym'
 import { verifyCredential } from '@origin/verifier-core/crucible'
+import {
+  generateCorpus,
+  analyzeOverGrant,
+  scoreAgainstGroundTruth,
+  effectiveScopes,
+  blastRadius,
+  resources as overGrantResources,
+  isSensitive,
+} from '@origin/verifier-core/overGrant'
+import type { OverGrantCorpus } from '@origin/verifier-core/overGrant'
 import { computeLicenseFromVerdicts } from '../license'
 import type { LicenseVerdict } from '../license'
 
@@ -469,6 +482,168 @@ function ReferenceCheckPanel() {
   )
 }
 
+// ── 5 · Over-grant analyzer ──────────────────────────────────────────────────
+// The IAM gym above scores a POLICY against a fixed battery. This scores OBSERVED AUTHORITY against
+// what was actually exercised — the same oracle discipline pointed at an authorization log.
+//
+// The demo arc is the coupling, because that is the part a table of numbers cannot show: on a clean
+// fleet, effective authority (own grants ∪ every descendant's) equals each identity's own grant, so
+// the union adds nothing. Widen ONE delegation edge four hops down and the blast radius measured at
+// the ROOT grows — which is why attenuation is the precondition that makes the other metrics mean
+// something, not a hygiene checkbox.
+const OG_SEED = 20260818
+const OG_ROOTS = 400
+const OG_DEPTH = 4
+const pct1 = (n: number) => `${(n * 100).toFixed(1)}%`
+
+function OverGrantPanel() {
+  const [steps, setSteps] = useState<Step[]>([])
+  const [corpus, setCorpus] = useState<OverGrantCorpus | null>(null)
+  const [surface, setSurface] = useState<number | null>(null)
+
+  const analyze = () => {
+    // violationRate 0 — every child narrows, which is what a macaroon-model attenuating token does
+    const clean = generateCorpus({ seed: OG_SEED, roots: OG_ROOTS, depth: OG_DEPTH, violationRate: 0 })
+    const r = analyzeOverGrant(clean)
+    const m = r.metrics
+    // the no-op property, checked rather than asserted
+    const eff = effectiveScopes(clean)
+    const noOp = clean.identities.every((i) => eff.get(i.id)!.size === i.granted.length)
+    setCorpus(clean)
+    setSurface(m.gur.overGrantSurface)
+    setSteps([
+      info(
+        'fleet',
+        `${clean.identities.length} SYNTHETIC agent identities · ${m.amv.delegationEdges} delegation edges · ${clean.events.length} tool-call events · seed ${OG_SEED}`,
+      ),
+      bad(
+        `GUR ${m.gur.fleetGur.toFixed(3)}`,
+        `${m.gur.scopesExercised} of ${m.gur.scopesGranted} granted scopes were ever exercised — an over-grant surface of ${pct1(m.gur.overGrantSurface)}. A denied call is not use, and the fleet number is Σused ÷ Σgranted, never the mean of per-identity ratios.`,
+      ),
+      info(
+        `BRI mean ${pct1(m.bri.meanBri)}`,
+        `p95 ${pct1(m.bri.p95Bri)}, max ${pct1(m.bri.maxBri)} of the ${m.bri.sensitiveResources} sensitive resources reachable from a single identity`,
+      ),
+      m.amv.violatingEdgeCount === 0
+        ? ok('AMV 0', `no delegation edge widened authority across ${m.amv.delegationEdges} edges — a structural zero, earned over real edges`)
+        : bad(`AMV ${m.amv.violatingEdgeCount}`, `${m.amv.violatingEdgeCount} edges widened authority`),
+      noOp
+        ? ok('effective authority is a no-op', 'every child narrows, so an ancestor reaches exactly its own grant and nothing more')
+        : bad('union grew', 'a descendant added authority its ancestor never held'),
+      info(
+        `TRP ${m.trp.exposedIdentities}/${m.trp.taintedIdentities}`,
+        `tainted identities holding both a sensitive read and an egress capability — ${m.trp.paths} source→sink pairs. Structural exposure, not a detected exfiltration.`,
+      ),
+      info(
+        `SAH ${m.sah.medianStalenessRatio.toFixed(2)}`,
+        `median age-of-last-use ÷ TTL over the ${m.sah.exercisedScopes} scopes actually in use; median usage span ÷ TTL ${m.sah.medianSpanToTtl.toFixed(2)} — the just-in-time conversion signal`,
+      ),
+    ])
+  }
+
+  const widenOne = () => {
+    if (!corpus) return
+    const eff = effectiveScopes(corpus)
+    // a leaf four hops from its root, so the widened scope has to travel to be felt
+    const deep = corpus.identities.find((i) => i.id.split('.').length >= 3)
+    if (!deep) return
+    const rootId = deep.id.split('.')[0]
+    const rootEff = eff.get(rootId)!
+    const target = overGrantResources.find((r) => isSensitive(r) && ![...rootEff].some((s) => s.startsWith(`${r.id}:`)))
+    if (!target) return
+
+    const before = blastRadius(corpus, eff).perIdentity.find((p) => p.id === rootId)!
+    const widened: OverGrantCorpus = {
+      ...corpus,
+      identities: corpus.identities.map((i) =>
+        i.id === deep.id ? { ...i, granted: [...i.granted, `${target.id}:read`].sort() } : i,
+      ),
+    }
+    const after = analyzeOverGrant(widened)
+    const afterRoot = after.metrics.bri.perIdentity.find((p) => p.id === rootId)!
+    setCorpus(widened)
+    setSteps((prev) => [
+      ...prev,
+      info(
+        'widen one edge',
+        `granted ${deep.id} the scope ${target.id}:read — one scope its parent never held, ${deep.id.split('.').length - 1} hops below ${rootId}`,
+      ),
+      after.metrics.amv.violatingEdgeCount === 1
+        ? ok('AMV 0 → 1', `the analyzer names the edge and the scope that widened it, out of ${after.metrics.amv.delegationEdges} edges`)
+        : bad('MISSED', `expected exactly 1 violating edge, got ${after.metrics.amv.violatingEdgeCount}`),
+      afterRoot.reachable > before.reachable
+        ? bad(
+            `blast radius at the ROOT ${pct1(before.bri)} → ${pct1(afterRoot.bri)}`,
+            `${rootId} never held ${target.id}:read, and its own grant is unchanged — the authority arrived from a descendant. This is why attenuation is the precondition for the other metrics, not a hygiene checkbox.`,
+          )
+        : bad('MISSED', 'the root’s reachable set did not move'),
+    ])
+  }
+
+  const scorePlanted = () => {
+    const planted = generateCorpus({ seed: OG_SEED, roots: OG_ROOTS, depth: OG_DEPTH, violationRate: 0.06 })
+    const score = scoreAgainstGroundTruth(analyzeOverGrant(planted), planted.planted)
+    setSteps((prev) => [
+      ...prev,
+      info(
+        'ground truth',
+        `a fresh corpus with ${score.amv.planted} deliberately widened edges and ${score.dormant.planted} scopes granted-but-never-used, both known in advance`,
+      ),
+      score.amv.catchRate === 1 && score.amv.falsePositives === 0
+        ? ok(
+            `caught ${score.amv.caught}/${score.amv.planted}`,
+            'every planted violation recovered, zero false positives — a metric you cannot score against ground truth is a dashboard, not a verifier',
+          )
+        : bad('detection regressed', `catch ${score.amv.catchRate}, ${score.amv.falsePositives} false positives`),
+      score.dormant.exact
+        ? ok(`dormant scopes exact`, `${score.dormant.measured} measured = ${score.dormant.planted} planted — the GUR denominator lands on the nose`)
+        : bad('denominator off', `${score.dormant.measured} measured vs ${score.dormant.planted} planted`),
+    ])
+  }
+
+  return (
+    <DemoCard
+      kicker="Over-grant analyzer · authorization-risk metrics from a tool-call log"
+      title="How much authority is held and never used — and what one hijacked identity could reach."
+      lede="The reference check above scores a policy. This scores the authority a fleet actually holds, against what it actually exercised: five metrics, each with a stated denominator, over a synthetic agent fleet and its RPC log. Then widen a single delegation edge and watch the blast radius move at the root."
+    >
+      <div className="sec-actions">
+        <button className="btn btn--primary btn--sm" onClick={analyze}>
+          Analyze the fleet
+        </button>
+        <button className="btn btn--ghost btn--sm" onClick={widenOne} disabled={!corpus}>
+          Widen one delegation edge
+        </button>
+        <button className="btn btn--ghost btn--sm" onClick={scorePlanted}>
+          Score against planted ground truth
+        </button>
+      </div>
+      {surface != null ? (
+        <div className="sec-badge-row">
+          <span className="sec-rsl">
+            {pct1(surface)} <small>over-grant surface</small>
+          </span>
+          <span className="sec-note" style={{ marginTop: 0 }}>
+            granted authority never exercised in the window · synthetic fleet, seed {OG_SEED}
+          </span>
+        </div>
+      ) : null}
+      <Log steps={steps} />
+      <p className="sec-note">
+        The corpus is <b>SYNTHETIC</b> and seeded — these numbers measure the analyzer, not any real
+        deployment, and no claim is made about any customer's authorization data. The published
+        artifact re-derives byte-for-byte from its seed; definitions, denominators, and limits are in{' '}
+        <code>docs/OVER-GRANT-METRICS.md</code>.
+      </p>
+      <div className="sec-actions" style={{ marginTop: 4 }}>
+        <a className="btn btn--ghost btn--sm" href="/trust/over-grant-bench.json">
+          The published artifact &rarr;
+        </a>
+      </div>
+    </DemoCard>
+  )
+}
+
 // ── page ─────────────────────────────────────────────────────────────────────
 export function SecurityPage() {
   return (
@@ -477,6 +652,7 @@ export function SecurityPage() {
       <MerklePanel />
       <PolicyPanel />
       <ReferenceCheckPanel />
+      <OverGrantPanel />
     </div>
   )
 }

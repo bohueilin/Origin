@@ -1,0 +1,64 @@
+{
+  "analyzer": "over-grant-analyzer-v1",
+  "corpus": "over-grant-corpus-v1",
+  "scope": "SYNTHETIC agent fleet and tool-call log generated from the seed — not a real fleet and not customer data. Measures the deterministic over-grant analyzer only. Byte-identical recompute from the seed (free-bit).",
+  "seed": 20260818,
+  "windowDays": 30,
+  "fleet": {
+    "identities": 9690,
+    "delegationEdges": 7690,
+    "events": 56934,
+    "resources": 20,
+    "sensitiveResources": 9,
+    "egressResources": 4
+  },
+  "metrics": {
+    "gur": {
+      "scopesGranted": 41974,
+      "scopesExercised": 15473,
+      "fleetGur": 0.3686329632629723,
+      "overGrantSurface": 0.6313670367370277
+    },
+    "bri": {
+      "sensitiveResources": 9,
+      "meanBri": 0.1933379199633043,
+      "p95Bri": 0.5555555555555556,
+      "maxBri": 0.8888888888888888
+    },
+    "amv": {
+      "delegationEdges": 7690,
+      "violatingEdgeCount": 445,
+      "violatingScopes": 445,
+      "violationRate": 0.05786736020806242
+    },
+    "trp": {
+      "taintedIdentities": 1687,
+      "exposedIdentities": 450,
+      "exposureRate": 0.26674570243034973,
+      "paths": 1368
+    },
+    "sah": {
+      "scopes": 41974,
+      "exercisedScopes": 15473,
+      "medianStalenessRatio": 0.1,
+      "medianSpanToTtl": 0.18888888888888888,
+      "dormantScopes": 26501
+    }
+  },
+  "groundTruth": {
+    "amv": {
+      "planted": 445,
+      "caught": 445,
+      "catchRate": 1,
+      "falsePositives": 0,
+      "falsePositiveRate": 0
+    },
+    "dormant": {
+      "planted": 26501,
+      "measured": 26501,
+      "exact": true
+    }
+  },
+  "corpusDigest": "3d67042808bce8009d4f1f604e2f706f98bc2c2653e0e39f1131354070b1bdf5",
+  "digest": "dd9974ed7a68d281458faedfa6a7cc96e6ba9ff1b1a164e170e83cbb6fc65610"
+}

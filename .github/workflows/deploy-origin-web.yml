@@ -93,11 +93,12 @@ jobs:
       - name: Honesty lint (overclaim tripwire — same gate as ci.yml)
         run: node scripts/honesty-lint.mjs
 
-      - name: Bench artifacts re-derive from source (floor gate + fleet verifier)
+      - name: Bench artifacts re-derive from source (floor gate + fleet verifier + over-grant)
         working-directory: apps/origin-web
         run: |
           npm run --silent bench:gate:check
           npm run --silent bench:fleet:check
+          npm run --silent bench:overgrant:check
 
       - name: CSS cache-buster matches content (the two-header-CTAs bug's tripwire)
         working-directory: apps/origin-web

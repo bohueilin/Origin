@@ -219,9 +219,10 @@ const successEl = document.getElementById('lead-success') as HTMLElement | null
 const submitEl = document.getElementById('lead-submit') as HTMLButtonElement | null
 let lastFocused: HTMLElement | null = null
 
-// PLACEHOLDER domain email — replace with the real MX-backed inbox. The primary
-// lead path is the /api/lead Pages Function; this is only the mailto fallback.
-const CONTACT_EMAIL = 'hello@originphysical.ai'
+// Founder inbox, deliverable today. Swap to the company address once the custom
+// domain lands — never ship an address whose domain has no MX. The primary lead
+// path is the /api/lead Pages Function; this is only the mailto fallback.
+const CONTACT_EMAIL = 'bohueilin@gmail.com'
 
 const INTENT_COPY: Record<string, { title: string; sub: string; cta: string }> = {
   review: { title: 'Book an Agent Evidence Review', sub: 'Tell us about the agent that’s stuck in review. We follow up to learn — not to pitch.', cta: 'Request review' },
@@ -500,9 +501,28 @@ if (chainRoot && window.crypto?.subtle) {
   const out = chainRoot.querySelector<HTMLElement>('[data-chain-out]')
   const runBtn = chainRoot.querySelector<HTMLButtonElement>('[data-chain-run]')
   const tamperBtn = chainRoot.querySelector<HTMLButtonElement>('[data-chain-tamper]')
-  const entries = Array.from(document.querySelectorAll<HTMLElement>('.log li'))
-    .map((li) => (li.textContent || '').replace(/\s+/g, ' ').trim())
+  // The tamper has to happen to the record the reader is LOOKING AT. Editing an in-memory
+  // clone (what this did before) produced a red TAMPER verdict over a visibly unchanged
+  // audit trail — a reviewer clicking "Alter one entry" saw nothing move and was asked to
+  // take the mismatch on faith. On a page whose product is "verify it yourself", that is a
+  // one-click refutation. So: mutate the DOM, then re-read the DOM to build the chain.
+  const logItems = Array.from(document.querySelectorAll<HTMLElement>('.log li'))
+  const pristineHTML = logItems.map((li) => li.innerHTML)
+  const readRows = (): string[] =>
+    logItems.map((li) => (li.textContent || '').replace(/\s+/g, ' ').trim())
+  // Captured once, before any edit: the chain as it was sealed when the record was written.
+  const sealedRows = readRows()
+  const TAMPER_AT = 2 // the "Approved · payments on-call" entry
   let tampered = false
+
+  const applyTamper = () => {
+    const li = logItems[TAMPER_AT]
+    if (!li) return
+    li.innerHTML = tampered
+      ? pristineHTML[TAMPER_AT].replace('Approved', 'Approved (altered)')
+      : pristineHTML[TAMPER_AT]
+    li.classList.toggle('log--altered', tampered)
+  }
 
   const sha256 = async (text: string): Promise<string> => {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))
@@ -526,10 +546,8 @@ if (chainRoot && window.crypto?.subtle) {
 
   const verify = async () => {
     render('Recomputing…', 'busy')
-    const rows = entries.slice()
-    if (tampered && rows.length > 2) rows[2] = rows[2].replace('Approved', 'Approved (altered)')
-    const sealed = await buildChain(entries)          // what was sealed when written
-    const recomputed = await buildChain(rows)          // what the bytes say now
+    const sealed = await buildChain(sealedRows)        // what was sealed when written
+    const recomputed = await buildChain(readRows())    // what the bytes on screen say now
     const bad = recomputed.findIndex((h, i) => h !== sealed[i])
     if (bad === -1) {
       render(`chain intact · ${sealed.length}/${sealed.length} links verified · head ${sealed[sealed.length - 1].slice(0, 12)}…`, 'ok')
@@ -541,6 +559,7 @@ if (chainRoot && window.crypto?.subtle) {
   runBtn?.addEventListener('click', () => { void verify(); track('hero_chain_verify') })
   tamperBtn?.addEventListener('click', () => {
     tampered = !tampered
+    applyTamper()
     if (tamperBtn) tamperBtn.textContent = tampered ? 'Restore the record' : 'Alter one entry'
     void verify()
     track('hero_chain_tamper')

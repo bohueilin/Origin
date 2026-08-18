@@ -717,7 +717,22 @@ export function ReflectAlign({
               </div>
             </div>
 
-            <div className="site-grid" style={{ gridTemplateColumns: `repeat(${siteMap.width}, 1fr)` }}>
+            {/* Fixed 44px tracks inside a keyboard-reachable scroller. `1fr` tracks
+                collapsed to their 43.6px min-content floor on a phone, so a 12-wide map
+                laid out 589px inside a 231px column and `overflow-x: clip` on body
+                DESTROYED the excess: 45 of 108 cells were painted off-viewport and
+                untappable at 375px (54 of 108 at 320px). Drawing the floor is this
+                page's primary interaction, so the cells must stay reachable AND stay at
+                the 44px touch target. The wrapper carries role/tabIndex/aria-label so the
+                horizontal scroll is operable by keyboard, matching the /trust scoreboard
+                scroller pattern. */}
+            <div
+              className="site-grid-scroll"
+              role="region"
+              aria-label="Floor plan grid (scrollable)"
+              tabIndex={0}
+            >
+              <div className="site-grid" style={{ gridTemplateColumns: `repeat(${siteMap.width}, 44px)` }}>
               {Array.from({ length: siteMap.width * siteMap.height }, (_, i) => {
                 const x = i % siteMap.width
                 const y = Math.floor(i / siteMap.width)
@@ -747,6 +762,7 @@ export function ReflectAlign({
                   </button>
                 )
               })}
+              </div>
             </div>
 
             <p className="smp-hint">

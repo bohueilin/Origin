@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from 'react'
 import { SCENE_VIEWS } from '../staerAdapter'
+import { useDialog } from '../auth/useDialog'
 
 export function FloorPlanViewer({
   title,
@@ -23,22 +24,29 @@ export function FloorPlanViewer({
   const n = SCENE_VIEWS.length
   const go = (d: number) => setView((v) => (v + d + n) % n)
 
+  // aria-modal="true" tells assistive tech that everything outside this node is inert.
+  // Without focus management, Tab walked the user straight into that hidden content and
+  // close dropped focus on <body> — a keyboard dead-end (fails 2.4.3 / 4.1.2). useDialog
+  // moves focus in, traps Tab, closes on Escape, and restores focus to the trigger.
+  const ref = useDialog<HTMLDivElement>(onClose)
+
+  // Arrow navigation only — Escape now belongs to useDialog, which scopes it to the
+  // topmost dialog rather than firing on every window keydown.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-      else if (e.key === 'ArrowRight') go(1)
+      if (e.key === 'ArrowRight') go(1)
       else if (e.key === 'ArrowLeft') go(-1)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onClose])
+  }, [])
 
   const cur = SCENE_VIEWS[view]
 
   return (
     <div className="fpv-backdrop" role="dialog" aria-modal="true" aria-label={title} onClick={onClose}>
-      <div className="fpv-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="fpv-modal" ref={ref} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
         <div className="fpv-head">
           <div>
             <div className="fpv-title">{title}</div>

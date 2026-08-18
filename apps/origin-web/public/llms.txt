@@ -64,4 +64,4 @@
 - Run the verifiers live (attestation / Merkle / policy / IAM reference check): https://origin-physical-ai.pages.dev/security
 - Verify a credential yourself (offline, in-browser): https://origin-physical-ai.pages.dev/verify
 - One-page brief: https://origin-physical-ai.pages.dev/brief
-- Contact: hello@originphysical.ai
+- Contact: bohueilin@gmail.com

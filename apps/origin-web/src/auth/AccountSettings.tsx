@@ -913,7 +913,7 @@ function SupportTab() {
         <p>File a ticket and we’ll help. You can also reach us by phone or email. Your tickets are private to your account.</p>
       </header>
       <SupportForm onFiled={reload} />
-      <p className="cset-meta cset-support-contact">✉️ <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a></p>
+      <p className="cset-meta cset-support-contact">✉️ <a href="mailto:bohueilin@gmail.com">bohueilin@gmail.com</a></p>
       <h3 className="cset-subh">Your tickets</h3>
       <ListOrEmpty rows={tickets} empty="No tickets yet. File one above if you need a hand.">
         {(tickets ?? []).map((t) => (

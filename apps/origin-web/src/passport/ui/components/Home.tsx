@@ -47,8 +47,15 @@ export function Home({ onRun, canRun = true }: { onRun: (s: ScenarioSpec) => voi
   return (
     <div className="pp-home">
       <section className="pp-hero">
+        {/* Every value this page renders comes from src/passport/fixtures/index.ts
+            ("Local demo fixtures — fictional but believable. No real PII, no real
+            endpoints."). "Live demo" beside a glowing green dot is the universal
+            connected/running signifier and it was the first thing the reader met, with
+            the only accurate disclosure a full page away in the footer. Name the run
+            for what it is, here, first. "secrets never exposed" is dropped: it is an
+            unqualified security absolute about a run that holds no secret. */}
         <div className="pp-hero-pill">
-          <span className="pp-hero-dot" /> Live demo · scoped, revocable permissions · secrets never exposed
+          <span className="pp-hero-dot" /> Local demo · static fixtures, no real accounts, tools, or money · scoped, revocable permissions
         </div>
         <h1 className="pp-hero-title">Capability is not permission.</h1>
         <p className="pp-hero-lede">
@@ -106,6 +113,11 @@ export function Home({ onRun, canRun = true }: { onRun: (s: ScenarioSpec) => voi
             <input
               id="pp-req"
               className="pp-request-input"
+              /* The control that dispatches every run on this page had no accessible
+                 name at all — no <label htmlFor>, no aria-label, no aria-labelledby —
+                 so a screen reader announced an unnamed edit field (fails 4.1.2/3.3.2).
+                 The placeholder is a hint, not a name: it disappears on first keystroke. */
+              aria-label="What should the agent do?"
               placeholder={voice.listening ? 'Listening… speak now' : 'e.g. Plan me a FIFA catch-up night and order my usual DoorDash…'}
               value={shown}
               onChange={(e) => setText(e.target.value)}

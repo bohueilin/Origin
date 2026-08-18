@@ -13,7 +13,7 @@
 import { test, expect } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 
-const HERO = 'Get your agent through security review — and prove what it did.'
+const HERO = 'Get your agent through security review, and prove what it did.'
 
 // The approved design keeps the existing mobile burger, so on the mobile project
 // the primary nav is collapsed until it is opened. Open it before asserting on
@@ -32,7 +32,10 @@ test('home presents one implemented product and one primary path', async ({ page
   await expect(page.locator('h1')).toHaveCount(1)
   await expect(page.locator('h1')).toHaveText(HERO)
   await expect(page.getByText('The evidence layer for high-consequence AI agents', { exact: true })).toBeVisible()
-  await expect(page.getByText('Prototype in private pilot. Synthetic sandbox evidence; not compliance certification.', { exact: true })).toBeVisible()
+  // The hero's maturity boundary and buyer line were merged into one .hero__status line
+  // when the hero was cut from seven text blocks to four; the boundary itself is
+  // unchanged in substance and must stay visible in the hero, so keep pinning it.
+  await expect(page.getByText('For the owner of a high-consequence agent that a reviewer can’t yet approve: agents touching production, internal tools, code, PII, or money. Prototype in private pilot: synthetic sandbox evidence, not production SaaS, and not compliance certification.', { exact: true })).toBeVisible()
 
   await openPrimaryNav(page)
   const nav = page.getByRole('navigation', { name: 'Primary' })

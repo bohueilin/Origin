@@ -16,7 +16,7 @@
       }
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="stylesheet" href="/home.css?v=531f69b0" />
+    <link rel="stylesheet" href="/home.css?v=cb3fa491" />
     <style>
       .mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:24px; }
       .mode-card { border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--surface,#fff); }
@@ -65,7 +65,7 @@
       <section class="section"><div class="shell">
         <p class="kicker">Technical explainer · source-backed</p>
         <h1>Reference check vs runtime enforcement</h1>
-        <p class="section__lede leadin"><b>Origin is the evidence layer for AI agents:</b> prototype/private-pilot infrastructure for agent-platform, security, trust, and infrastructure teams. It tests proposed actions with deterministic verifiers, separates capability from permission, and produces evidence that can be independently rechecked.</p>
+        <p class="section__lede"><b>Origin is the evidence layer for AI agents:</b> prototype/private-pilot infrastructure for agent-platform, security, trust, and infrastructure teams. It tests proposed actions with deterministic verifiers, separates capability from permission, and produces evidence that can be independently rechecked.</p>
         <p class="mono-note">The model proposes. The environment verifies. The gate decides. The trace proves. Capability is not permission.</p>
         <div class="mode-grid">
           <article class="mode-card" id="reference-check"><span class="status">Implemented today</span><h2>Synthetic pre-access reference check</h2><p>The checked-in browser flow runs synthetic support and IAM task batteries against deterministic policy logic before production access. It mints configuration-bound evidence; changing a bound tool or configuration makes verification fail.</p><p><a href="/reference-check">Run the synthetic reference check →</a></p></article>

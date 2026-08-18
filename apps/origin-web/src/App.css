@@ -33,7 +33,17 @@
 }
 
 /* Global keyboard-focus ring — visible on every interactive control for keyboard
-   users, suppressed for mouse clicks (:focus-visible). Components may override. */
+   users, suppressed for mouse clicks (:focus-visible). Components may override.
+
+   The ring must be OPAQUE and OFFSET, matching public/home.css:93-97. The previous
+   `box-shadow: 0 0 0 3px rgba(47,109,246,.4)` composited to #a9c1f5 — 1.71:1 against
+   --bg #faf9f5 and 1.73:1 against --panel #fffefb, far under the 3:1 WCAG 1.4.11 floor
+   for a focus indicator, and it was the ONLY cue (unlike the field rule further down,
+   these controls get no compensating border flip). Solid --accent #2f6df6 measures
+   4.30:1 on --bg and 4.49:1 on --panel. An `outline` with offset is used rather than a
+   solid box-shadow because `.btn.primary` is filled with --accent — a ring abutting it
+   would sit at 1.00:1 against the control it surrounds; the offset clears the fill and
+   lands the ring on the page ground. */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -44,8 +54,8 @@ textarea:focus-visible,
 .sim-chip:focus-visible,
 .smp-tool:focus-visible,
 .smp-fleet:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.4);
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
   border-radius: 8px;
 }
 
@@ -1694,8 +1704,8 @@ body {
   background: color-mix(in srgb, var(--accent) 5%, #fff);
 }
 .btn.ghost.back:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.32);
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
 }
 /* Stacked flow screens (capture / understand / reflect / illustrate). */
 .flow-shell > .back { margin-bottom: 24px; }
@@ -2696,9 +2706,25 @@ select.field-input {
   font-size: 12.5px;
   line-height: 1.45;
 }
+/* The floor grid uses fixed 44px tracks (set inline in ReflectAlign, which owns the
+   column count) so cells never collapse below the touch target. This scroller is what
+   keeps a wide map reachable on a phone: body carries `overflow-x: clip`, so without an
+   own-axis scroller the overflow is destroyed rather than scrollable. */
+.site-grid-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+.site-grid-scroll:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
 .site-grid {
   display: grid;
   gap: 6px;
+  width: max-content;
 }
 .site-cell {
   aspect-ratio: 1;
@@ -2777,7 +2803,7 @@ select.field-input {
   background: var(--panel); color: var(--text); padding: 11px 13px; font: inherit; font-size: 14px;
   line-height: 1.45; box-shadow: var(--shadow-sm);
 }
-.sb-text:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.14); }
+.sb-text:focus { outline: 3px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
 
 /* the triad rule cards — verdict colour is the through-line */
 .triad-rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
@@ -2802,7 +2828,7 @@ select.field-input {
   width: 100%; resize: vertical; border: 1px solid var(--con-line); border-radius: 10px;
   background: var(--bg); color: var(--text); padding: 9px 11px; font: inherit; font-size: 13px; line-height: 1.45;
 }
-.triad-rule textarea:focus { outline: none; border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 16%, transparent); }
+.triad-rule textarea:focus { outline: 3px solid var(--c); outline-offset: 2px; border-color: var(--c); }
 
 @media (max-width: 860px) {
   .triad-rules { grid-template-columns: 1fr; }
@@ -3223,9 +3249,9 @@ select.field-input {
 .field-input:focus,
 .capture-card select:focus,
 .capture-selects select:focus {
-  outline: none;
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.16);
 }
 
 /* ---------- flow stepper ---------- */
@@ -3803,10 +3829,26 @@ select.field-input {
   font-size: 15px;
 }
 
+/* `min-width: 0` alone let three `flex: 1 1 0` steppers share a narrow column at ~61px
+   each while their intrinsic content is 111-131px. The `flex: none` 34px buttons then
+   painted far outside their own stepper box and overlapped: at 375px the centre of
+   "One more item in fleet 1" [234.2, 268.2] sat on top of "One fewer drop in fleet 1"
+   [233, 267], so tapping the centre of one control fired the other. Stack them instead
+   of crushing them, and take the buttons to the 44px target the marketing sheet already
+   enforces at public/home.css:994. */
 @media (max-width: 600px) {
-  .smp-plans-field,
+  .smp-plans-field { min-width: 0; }
+  .smp-fleet-steppers { flex-direction: column; }
   .smp-stepper,
-  .smp-fleet-steppers .smp-stepper { min-width: 0; }
+  .smp-fleet-steppers .smp-stepper {
+    min-width: 0;
+    width: 100%;
+    flex: 0 0 auto;
+  }
+  .smp-step-btn {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 /* Fleet badge on a grid / sim cell — spelled out, bottom-centre. */
@@ -6735,7 +6777,7 @@ select.field-input {
   color: var(--text);
   box-shadow: var(--shadow-sm);
 }
-.rtc-tab:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.4); }
+.rtc-tab:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 .rtc { margin-top: 18px; }
 .rtc-shell { max-width: 100%; }
@@ -6830,7 +6872,7 @@ select.field-input {
   background: var(--panel);
   box-shadow: var(--shadow-sm);
 }
-.rtc-order:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.4); }
+.rtc-order:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .rtc-order-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .rtc-order-ref { font: 700 13px/1 inherit; color: var(--text); font-variant-numeric: tabular-nums; }
 .rtc-order-intent { font-size: 14px; color: var(--text); font-weight: 600; line-height: 1.35; }

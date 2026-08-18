@@ -4,7 +4,7 @@ import { approvedCap, line, resultStr } from './helpers'
 export const fillMyNight: ScenarioSpec = {
   id: 'fill-my-night',
   title: 'Fill My Night',
-  tagline: 'Turn a free evening into a high-value build session — safely.',
+  tagline: 'Turn a free evening into a high-value build session, with every real-world action gated.',
   tools: [
     { name: 'Google Calendar', use: 'confirm 5–9 PM is free' },
     { name: 'Luma · Eventbrite', use: 'find a buildable hackathon' },

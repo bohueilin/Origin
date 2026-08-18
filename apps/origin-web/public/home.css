@@ -47,6 +47,11 @@
   /* type scale (16px root) */
   --fs-11: .6875rem;  --fs-12: .75rem;   --fs-13: .8125rem; --fs-14: .875rem;
   --fs-15: .9375rem;  --fs-16: 1rem;     --fs-17: 1.0625rem; --fs-19: 1.1875rem;
+  /* The ladder used to stop at 19px and jump straight to the display clamps (h2 caps at
+     40px), so nothing occupied 20-25px on a served page. The measurable cost was on the
+     homepage: .demo__panel h3 at 19px sat under an 18.5px .section__lede — a 1.027x
+     ratio, i.e. no hierarchy at all. One step fixes the one collapse that renders. */
+  --fs-22: 1.375rem;
 
   /* rhythm */
   --shell: 1120px;
@@ -79,7 +84,11 @@ body {
    or a wide child (e.g. a button row) stretches the track past the viewport. */
 .hero__copy, .hero__visual { min-width: 0; }
 
-h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; margin: 0; line-height: 1.12; }
+h1, h2 { font-family: var(--font-display); letter-spacing: -0.02em; margin: 0; line-height: 1.12; }
+/* h3 ships at body scale (17px .card h3, 22px .demo__panel h3), where display tracking
+   closes Space Grotesk's already-tight counters — -0.02em pulled ~13.6px out of a
+   41-character card title on /trust. Display wants -0.01..-0.03em; 15-19px wants ~0. */
+h3 { font-family: var(--font-display); letter-spacing: -.005em; margin: 0; line-height: 1.25; }
 h1 { font-size: clamp(2.125rem, 4vw, 3rem); }
 p { margin: 0; }
 img, svg { max-width: 100%; }
@@ -133,11 +142,12 @@ a:hover { text-decoration: underline; }
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+  transition: transform 120ms cubic-bezier(.23, 1, .32, 1), box-shadow .12s ease, background .12s ease, border-color .12s ease;
   white-space: nowrap;
 }
 .btn:hover { text-decoration: none; }
-.btn:active { transform: translateY(0); }
+/* Press feedback lives in the hover block below (so it out-ranks .btn:hover on source
+   order) and again ungated for touch/keyboard, where the hover block never matches. */
 .btn--sm { padding: 9px 16px; font-size: var(--fs-14); }
 .btn--lg { padding: 16px 28px; font-size: var(--fs-16); }
 .btn--primary {
@@ -162,7 +172,7 @@ a:hover { text-decoration: underline; }
 
 /* ---------- Kickers / section scaffolding ---------- */
 .kicker {
-  font-size: var(--fs-13); font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
+  font-size: var(--fs-13); font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
   color: var(--signal-ink); margin-bottom: 14px;
 }
 .kicker--on-dark { color: #8fa6ff; }
@@ -255,9 +265,17 @@ a:hover { text-decoration: underline; }
   align-items: center;
 }
 @media (max-width: 960px) { .hero__grid { grid-template-columns: 1fr; } }
+/* `max-width: 15ch` at a 60px display size forced a 62-character headline onto FOUR lines
+   at 1280px+ — huge type squeezed into a narrow column, which reads as a wall rather than
+   a statement. Fix both sides, as the pattern requires: widen the measure and ease the
+   scale, so the headline lands in two lines on a desktop and three on a laptop. */
 .hero h1 {
-  font-size: clamp(34px, 5.4vw, 60px); letter-spacing: -0.03em;
-  max-width: 15ch;
+  font-size: clamp(32px, 3.9vw, 48px); letter-spacing: -0.03em;
+  max-width: 20ch;
+  /* Even the rag out rather than leaving the last line an orphan. A 62-character
+     headline cannot reach two lines inside a two-column hero at any display size worth
+     having, so the goal here is three balanced lines, not a ragged four. */
+  text-wrap: balance;
 }
 .hero .lede,
 .hero__lede {
@@ -268,7 +286,7 @@ a:hover { text-decoration: underline; }
    maturity boundary, actions hold the single primary path. Same scale as .lede
    so the investor-ready hero keeps the established rhythm. */
 
-.hero__status { margin-top: 14px; font-size: var(--fs-14); color: var(--steel); max-width: 52ch; }
+.hero__status { margin-top: 18px; font-size: var(--fs-14); line-height: 1.55; color: var(--steel); max-width: 58ch; }
 .hero__actions { margin-top: 30px; }
 .hero__cta-sub { margin-top: 14px; font-size: var(--fs-14); color: var(--ink-soft); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .hero__cta-sub a, .hero__cta-sub .linklike { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
@@ -296,7 +314,10 @@ a:hover { text-decoration: underline; }
   padding: 12px 14px; border-bottom: 1px solid var(--line);
   background: linear-gradient(var(--paper-3), var(--paper-2));
 }
-.console__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--verify); box-shadow: 0 0 0 3px rgba(15,122,87,.16); }
+/* .console__dot (a green "live" indicator) was removed from the console bar markup:
+   the console renders literals, so a liveness signifier misled before the "Simulated"
+   pill could correct it. The pill now leads the bar, so it must not be pushed right. */
+.console__bar .pill--sim { margin-left: 0; }
 .console__title { font-weight: 700; font-family: var(--font-display); letter-spacing: -0.01em; }
 .console__scope { color: var(--steel); }
 .pill {
@@ -373,6 +394,11 @@ a:hover { text-decoration: underline; }
 .log--ok::before { background: var(--verify); }
 .log--warn::before { background: var(--warn); }
 .log--esc::before { background: var(--danger); }
+/* Set by the hero tamper control: the reader must SEE the entry change, otherwise the
+   red verdict is asserted over a visibly untouched record. Reuses the existing danger
+   tint pair (#fbecea / #edc6c2, as .tag--nogo and .demo__tag--block). */
+.log--altered { background: #fbecea; border-radius: 6px; padding-right: 6px; color: #9c342a; font-weight: 600; }
+.log--altered::before { background: var(--danger); }
 
 .console--compact { box-shadow: var(--sh-md); }
 .console--compact .console__bar { padding: 10px 12px; }
@@ -768,10 +794,15 @@ a:hover { text-decoration: underline; }
    on touch, tap-fired hover states stick until the next tap elsewhere. */
 @media (hover: hover) and (pointer: fine) {
   .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(1px) scale(.985); }
   .chip:hover { border-color: var(--signal); background: var(--signal-wash); transform: translateY(-1px); }
   .visionfilm__play:hover .visionfilm__play-icon { transform: scale(1.06); background: rgba(255,255,255,.26); }
   .routecard:hover { border-color: var(--signal); transform: translateY(-3px); box-shadow: var(--sh-md); }
 }
+/* Ungated twin: on touch and keyboard the hover block never matches, and .btn declares no
+   base transform, so the old `.btn:active { transform: translateY(0) }` was a no-op —
+   the site had no press confirmation anywhere. */
+.btn:active { transform: translateY(1px) scale(.985); }
 .routecard__role { font-family: var(--font-display); font-weight: 700; font-size: var(--fs-17); color: var(--ink); }
 .routecard__desc { font-size: var(--fs-14); color: var(--ink-soft); flex: 1; }
 .routecard__go { font-size: var(--fs-14); font-weight: 600; color: var(--signal-ink); margin-top: 4px; }
@@ -860,7 +891,6 @@ a:hover { text-decoration: underline; }
 .site-header__burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .site-header__burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
-.hero__buyer { margin-top: 10px; font-size: var(--fs-14); color: var(--steel); max-width: 48ch; }
 
 /* walkthrough task-lifecycle strip */
 .walk__lifecycle { margin: 22px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -1011,12 +1041,22 @@ a:hover { text-decoration: underline; }
 .reveal-ready [data-reveal] { transition: opacity .6s ease, transform .6s ease; }
 [data-reveal].is-in { opacity: 1; transform: none; }
 
-/* Respect reduced motion: no transitions/animations, everything visible & final */
+/* Respect reduced motion: movement is removed, feedback is kept.
+   `transition-duration: .001ms !important` on `*` cannot be overridden by any author
+   rule, so it did not only stop movement — it hard-cut the 120ms colour/border/background
+   transitions on .btn and .demo__dot and the focus transition on form inputs. A user who
+   asked for less MOVEMENT was receiving strictly less STATE FEEDBACK than the default,
+   a regression in the exact affordance the preference exists to protect. The
+   iteration-count clamp stays: it is the safety net that neutralises any future infinite
+   animation regardless of whether someone remembers to add an escape here. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  *, *::before, *::after { animation-iteration-count: 1 !important; }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
-  .btn:hover { transform: none; }
+  .btn:hover, .btn:active, .chip:hover, .routecard:hover { transform: none; }
+  .visionfilm__play:hover .visionfilm__play-icon { transform: none; }
+  .demo.is-enhanced .demo__panel.is-on { animation: none; }
+  .trace__rail-fill, .trace__dot::after { animation: none; }
 }
 
 /* ============================================================
@@ -1079,11 +1119,13 @@ a:hover { text-decoration: underline; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr)); gap: 18px; margin-top: 30px; }
 .cards--2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 .cards--3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+/* The rung that is NOT earned yet sits alone on a full-width row: the shape carries the
+   distinction, not just the badge. Dashed border = nothing to show here yet. */
+.card--pending { border-style: dashed; border-color: var(--line-2); background: transparent; box-shadow: none; }
 .card__k { display: block; font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); margin-bottom: 8px; }
 .card h3 { font-family: var(--font-display); font-size: var(--fs-17); line-height: 1.3; margin: 0 0 7px; color: var(--ink); }
 .card--tint { background: var(--signal-wash); border-color: #cfdcff; }
 .card--tint .card__k { color: var(--signal-ink); }
-.leadin { max-width: 760px; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 30px; }
 @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
 .deflist { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
@@ -1109,7 +1151,7 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .evpack { margin-top: 30px; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; box-shadow: var(--sh-md); background: var(--paper-2); }
 .evpack__bar { display: flex; align-items: center; gap: 9px; padding: 12px 16px; background: var(--graphite); color: var(--on-dark); }
 .evpack__bar b { font-family: var(--font-display); font-size: var(--fs-14); }
-.evpack__bar .pill--sim { margin-left: auto; }
+.evpack__bar .pill--sim { margin-left: 0; }
 .evpack__body { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0; }
 @media (max-width: 640px) { .evpack__body { grid-template-columns: 1fr; } }
 .evpack__col { padding: 18px 20px; }
@@ -1162,7 +1204,7 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 @keyframes demoIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .demo__panel { margin-bottom: 14px; }
 .demo.is-enhanced .demo__panel { margin-bottom: 0; }
-.demo__panel h3 { font-family: var(--font-display); font-size: var(--fs-19); margin: 0 0 9px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--ink); }
+.demo__panel h3 { font-family: var(--font-display); font-size: var(--fs-22); line-height: 1.25; letter-spacing: -.005em; margin: 0 0 9px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--ink); }
 .demo__tag { font-size: var(--fs-11); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
 .demo__tag--n { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
 .demo__tag--plan { color: var(--signal-ink); background: var(--signal-wash); border: 1px solid #bcccff; }
@@ -1234,8 +1276,11 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .chaincheck__row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .chaincheck__out {
   display: block; margin-top: 8px; font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-  font-size: var(--fs-13); line-height: 1.5; color: var(--steel, #6b7280); word-break: break-word;
+  font-size: var(--fs-13); line-height: 1.5; color: var(--steel); word-break: break-word;
 }
-.chaincheck__out[data-state="ok"]   { color: #0f7b4f; }
-.chaincheck__out[data-state="bad"]  { color: #b42318; font-weight: 600; }
+/* The one component that says PASS or TAMPERED about Origin's own record is the last one
+   that should be off-token. --verify is 4.89:1 and --danger 5.44:1 on --paper; the old
+   #6b7280 fallback was 4.43:1 and would have FAILED AA at 13px had it ever been used. */
+.chaincheck__out[data-state="ok"]   { color: var(--verify); }
+.chaincheck__out[data-state="bad"]  { color: var(--danger); font-weight: 600; }
 .chaincheck__out[data-state="busy"] { opacity: .7; }

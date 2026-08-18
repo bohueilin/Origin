@@ -141,20 +141,32 @@ export function LatencyPanel() {
       setBusy(false)
     }
   }, [])
+  // Elapsed replay time, tagged with the response object it was measured against. run()
+  // assigns a fresh object per run, so a new run reads 0 immediately instead of
+  // inheriting the previous run's clock until the first tick lands.
+  const [tick, setTick] = useState<{ src: LatencyResponse | null; ms: number }>({ src: null, ms: 0 })
   useEffect(() => {
     if (!data) return
-    const t = setInterval(() => setTyped((n) => (n >= data.attackText.length ? n : n + 1)), 26)
+    const t0 = performance.now()
+    const t = setInterval(() => {
+      setTick({ src: data, ms: performance.now() - t0 })
+      setTyped((n) => (n >= data.attackText.length ? n : n + 1))
+    }, 26)
     return () => clearInterval(t)
   }, [data])
+  const elapsedMs = tick.src === data ? tick.ms : 0
 
   const ratio = data && data.cerebras.totalMs && data.gpu.totalMs ? Math.round((data.gpu.totalMs / data.cerebras.totalMs) * 10) / 10 : null
-  const vetoVisible = data && typed > 4 // Cerebras is effectively instant — fires as you start typing
+  // Gate the veto on elapsed replay time vs the MEASURED latency, not on a character
+  // count. `typed > 4` fired at 5 x 26ms = ~130ms of animation regardless of
+  // data.cerebras.totalMs, which made the headline timing an artifact of the typewriter.
+  const vetoVisible = !!data && elapsedMs >= (data.cerebras.totalMs ?? 0)
 
   return (
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
-        <h2>Reacts before you finish typing</h2>
-        <p>An attacker injects a directive to disable the firewall. The Cerebras Guardian detects and blocks it before a GPU model has even returned its first token.</p>
+        <h2>Guardian verdict vs GPU first token</h2>
+        <p>An attacker injects a directive to disable the firewall. Both lanes are called for real and their latencies are measured per run; the sequence below is replayed at readable speed from those measurements, so the bars are a replay, not a live race.</p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Sending the attack…' : data ? 'Replay the attack' : 'Send the attack'}
@@ -646,7 +658,7 @@ function DecisionCard({ d }: { d: SocDecision }) {
         <span className="soc-card__id">{d.incidentId}</span>
         <span className="soc-card__title">{d.title}</span>
         {d.perception.injectionSuspected && <span className="soc-tag soc-tag--inj">injection suspected</span>}
-        <span className="soc-card__tok">{d.tokS ? `${d.tokS} tok/s` : d.source === 'mock' ? '~1,284 tok/s · sim' : ''}</span>
+        <span className="soc-card__tok">{d.tokS ? `${d.tokS} tok/s` : d.source === 'mock' ? 'no measurement · mock source' : ''}</span>
       </div>
       <div className="soc-row"><b>Agent proposes</b> <code className={isDestructive(d.proposed) ? 'soc-danger' : ''}>{actLabel(d.proposed)}</code> <em>{d.rationale}</em></div>
       <div className="soc-row">

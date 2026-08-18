@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Origin — one-page brief</title>
+    <title>Origin, one-page brief</title>
     <meta name="description" content="A one-page brief on Origin, the evidence layer for high-consequence AI agents: a deterministic, configuration-bound Agent Reference Check that issues a tamper-evident Origin Attestation a reviewer can re-verify offline." />
     <link rel="canonical" href="https://origin-physical-ai.pages.dev/brief" />
     <meta name="robots" content="noindex" />
@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/home.css?v=531f69b0" />
+    <link rel="stylesheet" href="/home.css?v=cb3fa491" />
     <style>
       /* ---- scoped to the brief; never touches home.css ---- */
       .brief { max-width: 940px; margin: 0 auto; padding: 40px 24px 64px; }
@@ -172,11 +172,10 @@
       </div>
 
       <p class="brief__eyebrow">The evidence layer for AI agents</p>
-      <h1>Get your agent through security review — and prove what it did.</h1>
+      <h1>Get your agent through security review, and prove what it did.</h1>
       <p class="brief__lede">
         Origin is the evidence layer for high-consequence AI agents. Its first product is a
-        configuration-bound <b>Agent Reference Check</b>: it binds an exact agent configuration —
-        model, tools, policy, budget, scenario battery — runs a deterministic battery against it,
+        configuration-bound <b>Agent Reference Check</b>: it binds an exact agent configuration, model, tools, policy, budget, scenario battery, runs a deterministic battery against it,
         grades the result with a deterministic oracle rather than an LLM, and issues a tamper-evident
         <b>Origin Attestation</b> a security reviewer can re-verify offline. Change one bound field and
         the attestation returns VOID.
@@ -189,7 +188,7 @@
 
       <div class="brief__grid">
         <div class="brief__card is-wide">
-          <h2>The evidence package — how one action is bounded and proven</h2>
+          <h2>The evidence package, how one action is bounded and proven</h2>
           <div class="brief__pipe" role="img" aria-label="Evidence pipeline: proposal, policy verdict, controlled proxy, approval or block, hash-chained audit trail, then a review-ready evidence package.">
             <div class="brief__step" data-tone="plan">
               <span class="n">01</span><span class="t">Proposal</span>
@@ -235,7 +234,7 @@
             <span>Bounded action</span><em>→</em>
             <span class="is-core">Audit digest</span>
           </div>
-          <p style="margin-top:12px">Watch one workflow run end to end. In scoped workflows the proxy is the configured path to a side effect. Flip one input and Origin blocks an over-scope action — and records the block. Side effects are sandboxed; any real-money path stays human-created and human-gated, so the agent never touches live money.</p>
+          <p style="margin-top:12px">Watch one workflow run end to end. In scoped workflows the proxy is the configured path to a side effect. Flip one input and Origin blocks an over-scope action, and records the block. Side effects are sandboxed; any real-money path stays human-created and human-gated, so the agent never touches live money.</p>
           <div class="blockline" role="note" style="margin-top:14px">
             <p class="blockline__t">The agent tried to exceed its scope. <b>Origin blocked it.</b> The block became evidence.</p>
           </div>
@@ -256,7 +255,7 @@
             <li>Each proposal, verdict, approval, action, block, and exception</li>
             <li>The tool-call proxy events (the only side-effect path)</li>
             <li>Who owned the risk, and when they approved</li>
-            <li>A hash-chained, tamper-evident audit digest — replayable and exportable</li>
+            <li>A hash-chained, tamper-evident audit digest, replayable and exportable</li>
           </ul>
         </div>
 
@@ -269,7 +268,7 @@
               <ul>
                 <li>The agent workflow you're trying to ship</li>
                 <li>The tools and systems it touches</li>
-                <li>What's blocking approval — and who signs off</li>
+                <li>What's blocking approval, and who signs off</li>
               </ul>
             </div>
             <div>
@@ -297,37 +296,37 @@
         <div class="brief__card">
           <h2>Not ready if</h2>
           <ul>
-            <li>No high-consequence workflow — the stakes don't warrant it</li>
-            <li>No reviewer or blocker — nothing is actually gating the launch</li>
+            <li>No high-consequence workflow, the stakes don't warrant it</li>
+            <li>No reviewer or blocker, nothing is actually gating the launch</li>
             <li>No tool-call path to route through a proxy</li>
             <li>No owner for approvals on risky actions</li>
             <li>No willingness to instrument the agent's events</li>
           </ul>
-          <p style="margin-top:10px">If any of these is true, we'll say so — early.</p>
+          <p style="margin-top:10px">If any of these is true, we'll say so, early.</p>
         </div>
 
         <div class="brief__card is-wide">
-          <h2>The evidence ladder — proof honesty</h2>
+          <h2>The evidence ladder, proof honesty</h2>
           <p>We publish evidence in rungs and never dress one up as another.</p>
           <div class="proofladder" aria-label="Proof-status ladder">
             <p class="proofladder__cap">Proof status</p>
-            <div class="proofladder__row"><span class="proofladder__id">TR-A001</span><span class="proofladder__label">Authored specimen — shows the evidence-package format</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
-            <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted sandbox trace — real, re-verifiable SHA-256 hash chain</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+            <div class="proofladder__row"><span class="proofladder__id">TR-A001</span><span class="proofladder__label">Authored specimen, shows the evidence-package format</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+            <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted sandbox trace, real, re-verifiable SHA-256 hash chain</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
             <div class="proofladder__row"><span class="proofladder__id">TR-A003</span><span class="proofladder__label">First external design-partner trace</span><span class="proofladder__status proofladder__status--pending">Not earned yet</span></div>
           </div>
           <div class="rung">
             <span class="rung__id">TR-A001<span class="rung__tag rung__tag--spec">Authored specimen</span></span>
-            <p>An authored evidence specimen that shows the package <em>format</em> only — illustrative, not a machine-emitted run. See <a href="/proof#tr-a001">/proof#tr-a001</a>.</p>
+            <p>An authored evidence specimen that shows the package <em>format</em> only, illustrative, not a machine-emitted run. See <a href="/proof#tr-a001">/proof#tr-a001</a>.</p>
           </div>
           <div class="rung">
             <span class="rung__id">TR-A002<span class="rung__tag rung__tag--now">Available now</span></span>
-            <p>A machine-emitted sandbox trace: <b>12 events</b>, a real <b>SHA-256 hash chain</b>, final digest <code>ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32</code>. Re-verifiable with <code>npm run proof:verify</code>; download at <a href="/proof/tr-a002.json">/proof/tr-a002.json</a>. Sandbox only — no live money, no customer data, not a performance claim. See <a href="/proof#tr-a002">/proof#tr-a002</a>.</p>
+            <p>A machine-emitted sandbox trace: <b>12 events</b>, a real <b>SHA-256 hash chain</b>, final digest <code>ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32</code>. Re-verifiable with <code>npm run proof:verify</code>; download at <a href="/proof/tr-a002.json">/proof/tr-a002.json</a>. Sandbox only, no live money, no customer data, not a performance claim. See <a href="/proof#tr-a002">/proof#tr-a002</a>.</p>
           </div>
           <div class="rung">
             <span class="rung__id">TR-A003<span class="rung__tag rung__tag--soon">When earned</span></span>
-            <p>The first external design-partner trace — forthcoming. We won't show data for it until it exists.</p>
+            <p>The first external design-partner trace, forthcoming. We won't show data for it until it exists.</p>
           </div>
-          <p style="margin-top:12px;font-size:var(--fs-13);color:var(--steel)">The prototype runs; it is not production SaaS. Tamper-evident means alteration is detectable by replay and digest checks. Review-ready — built to be checked by a reviewer, never a claim that one has signed off. Decision-support, not a guarantee of approval.</p>
+          <p style="margin-top:12px;font-size:var(--fs-13);color:var(--steel)">The prototype runs; it is not production SaaS. Tamper-evident means alteration is detectable by replay and digest checks. Review-ready, built to be checked by a reviewer, never a claim that one has signed off. Decision-support, not a guarantee of approval.</p>
         </div>
       </div>
 
@@ -342,7 +341,7 @@
         <a href="https://origin-physical-ai.pages.dev/">origin-physical-ai.pages.dev</a>
       </div>
 
-      <p class="brief__note">Origin is decision-support and evidence infrastructure — not legal or compliance certification. No customers, logos, or metrics are claimed here unless independently verifiable. Send this to your security or platform lead.</p>
+      <p class="brief__note">Origin is decision-support and evidence infrastructure, not legal or compliance certification. No customers, logos, or metrics are claimed here unless independently verifiable. Send this to your security or platform lead.</p>
 
       <div class="brief__foot">
         <span>Origin · the evidence layer for AI agents</span>

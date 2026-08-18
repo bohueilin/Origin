@@ -10,7 +10,7 @@ import react from '@vitejs/plugin-react'
 // sitemap/robots + the contact email across the whole dist at build time — no source edits.
 // Unset ⇒ complete no-op (output byte-identical to today).
 const DEFAULT_HOST = 'origin-physical-ai.pages.dev'
-const DEFAULT_EMAIL = 'hello@originphysical.ai'
+const DEFAULT_EMAIL = 'bohueilin@gmail.com'
 
 function siteUrlRewrite(): Plugin {
   const siteUrl = (process.env.SITE_URL || process.env.PUBLIC_SITE_URL || '').replace(/\/+$/, '')

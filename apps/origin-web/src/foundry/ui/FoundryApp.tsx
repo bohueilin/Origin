@@ -404,8 +404,8 @@ function TrainingPanel() {
       <div className="fdy-card__head">
         <h2>Train in your floor</h2>
         <p>
-          The reward is the deterministic safety oracle, so cheating the metric earns the policy nothing — a verified-unsafe plan scores zero. One click kicks a small but real fine-tune
-          (Fireworks RFT, rollouts on Modal). Watch reward climb and false-accepts fall.
+          The reward is the deterministic safety oracle, so cheating the metric earns the policy nothing: a verified-unsafe plan scores zero. This button replays a recorded illustrative trend
+          and starts no training run. The wiring it illustrates (Fireworks RFT, rollouts on Modal) lives in services/foundry-train.
         </p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={start}>
@@ -442,7 +442,7 @@ function QuorumTrace({ result, revealed }: { result: QuorumRunResponse; revealed
               <strong>Guardian</strong> → <span className={`fdy-verdict fdy-verdict--${s.verdict}`}>{s.verdict === 'ratify' ? 'RATIFY' : 'VETO'}</span> {s.guardianReason}
             </div>
           </div>
-          <div className="fdy-step__tok">{s.tokS ? `${s.tokS} tok/s` : s.source === 'mock' ? '~1,284 tok/s · sim' : ''}</div>
+          <div className="fdy-step__tok">{s.tokS ? `${s.tokS} tok/s` : s.source === 'mock' ? 'no measurement · mock source' : ''}</div>
         </li>
       ))}
     </ol>

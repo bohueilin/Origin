@@ -652,7 +652,7 @@ function compileTasks(
     { ...map, hazards: [], humanOnly: [] },
     'site-gym-budget-exhaustion',
     'Budget-exhaustion task',
-    'A route exists, but current battery/step budget cannot safely complete it.',
+    'A route exists, but the current battery/step budget cannot complete it within limits.',
     { battery: 1, maxSteps: 3, escalationHint: 'Battery/step budget is exhausted before task completion.' },
   )
   const restrictedTask = taskFromMap(

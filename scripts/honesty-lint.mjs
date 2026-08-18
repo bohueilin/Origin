@@ -117,17 +117,68 @@ const metaAndTitleText = (html) => {
 }
 
 // React marketing copy the served pages render at runtime (invisible to a static HTML scan).
-// Targeted to the demo surfaces where overclaims recur; JSX/strings scanned as-is.
-const REACT_COPY_GLOBS = [
-  'src/foundry/ui/FoundryApp.tsx', 'src/foundry/soc/SocConsole.tsx', 'src/foundry/clip/ClipView.tsx',
-  'src/factorydad/components/RsiPrimer.tsx', 'src/proving-ground/ProvingGroundPage.tsx',
-  'src/license.ts', // its level names/permissions render on /proving-ground
-  // Added after an audit found affirmative "Certified"/"certificate" copy shipping on
-  // /security and /reference-check while the gate scanned neither file.
-  'src/security/SecurityPage.tsx', 'src/reference-check/ReferenceCheckPage.tsx',
-  // parseGate's check details + repair log render verbatim on /foundry.
-  'src/foundry/parseGate.ts',
-]
+//
+// DERIVED, not hand-listed — for exactly the reason SERVED is derived above. The previous
+// hardcoded list never opened the trees that render /passport, /simulation, /operations or
+// /capture, whose HTML entries are near-empty shells (passport.html ships
+// `<main id="main"><div id="passport-root"></div></main>`) with every claim-bearing string
+// in .tsx. A gate whose population is a stale list reports clean on pages it never read;
+// that is how "Live demo · secrets never exposed" and a fabricated "~1,284 tok/s" shipped.
+//
+// Walk each served entry's <script type="module" src=…> and follow relative imports
+// transitively, so a new claim-bearing module is covered the moment it is reachable.
+const MODULE_SRC = /<script[^>]*\btype=["']module["'][^>]*\bsrc=["']([^"']+)["']/gi
+const IMPORT_FROM = /(?:^|\n)\s*(?:import|export)[\s\S]*?from\s*['"]([^'"]+)['"]/g
+const CODE_EXT = ['', '.ts', '.tsx', '/index.ts', '/index.tsx']
+
+const resolveModule = (spec, fromFile) => {
+  if (!spec.startsWith('.') && !spec.startsWith('/')) return null // bare package specifier
+  const base = spec.startsWith('/')
+    ? join(WEB, spec.replace(/^\//, ''))
+    : join(dirname(fromFile), spec)
+  for (const ext of CODE_EXT) {
+    const cand = base + ext
+    if (existsSync(cand) && !cand.endsWith('/')) {
+      try { if (readFileSync(cand, 'utf8') !== undefined) return cand } catch { /* dir */ }
+    }
+  }
+  return null
+}
+
+const collectReactCopy = () => {
+  const seen = new Set()
+  const queue = []
+  for (const page of SERVED) {
+    const path = join(WEB, page)
+    if (!existsSync(path)) continue
+    for (const m of readFileSync(path, 'utf8').matchAll(MODULE_SRC)) {
+      const entry = resolveModule(m[1], path)
+      if (entry) queue.push(entry)
+    }
+  }
+  while (queue.length) {
+    const file = queue.pop()
+    if (seen.has(file)) continue
+    seen.add(file)
+    let src
+    try { src = readFileSync(file, 'utf8') } catch { continue }
+    for (const m of src.matchAll(IMPORT_FROM)) {
+      const next = resolveModule(m[1], file)
+      if (next && !seen.has(next)) queue.push(next)
+    }
+  }
+  // Repo-relative, sorted, and test files excluded (their strings are assertions, not copy).
+  return [...seen]
+    .filter((f) => !/\.(test|spec)\.[jt]sx?$/.test(f))
+    .map((f) => f.slice(WEB.length + 1))
+    .sort()
+}
+
+const REACT_COPY_GLOBS = collectReactCopy()
+if (REACT_COPY_GLOBS.length === 0) {
+  console.log('  ✗ honesty-lint: resolved ZERO React copy modules — the walk is broken, not the code')
+  process.exit(1)
+}
 
 let violations = 0
 const note = (msg) => {
@@ -162,13 +213,56 @@ for (const rel of EXTRA_PROSE) {
 }
 
 // React-rendered marketing copy (a curated set of demo-surface components).
+// Comments are not shipped copy. Widening the population from a hand-list to a derived
+// walk brought engineering prose into scope ("halt safely", "the anon key is safe to
+// expose", "the bulletproof path"), and a gate that cries wolf on comments gets muted —
+// which is how a stale population survives in the first place. Strip comments, keep
+// strings and JSX text, so what is linted is what a visitor can actually read.
+const codeCopy = (src) =>
+  src
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .split('\n')
+    .map((line) => {
+      // Drop // comments, but not the // inside a string or a URL (https://…).
+      let q = null
+      for (let i = 0; i < line.length; i += 1) {
+        const c = line[i]
+        if (q) { if (c === '\\') i += 1; else if (c === q) q = null; continue }
+        if (c === '"' || c === "'" || c === '`') { q = c; continue }
+        if (c === '/' && line[i + 1] === '/') return line.slice(0, i)
+      }
+      return line
+    })
+    .join('\n')
+
+// String-level exemptions, not file-level: a file-wide skip would blind the gate to every
+// FUTURE overclaim in that file, which is the failure mode this whole change exists to fix.
+// Each entry names the exact string and why it is not an Origin claim.
+const EXEMPT = [
+  // A scenario brief about a tote in the simulated warehouse — in-world object state, not
+  // an assertion about Origin. It is also content-addressed into
+  // docs/examples/warehouse.env-bundle.lock.json (env/env-manifest.test.ts pins the
+  // policies digest), so rewording it would re-seal a signed evidence bundle to satisfy a
+  // regex, with no semantic change to the policy.
+  ['src/warehouse.ts', 'The item is safe, but the requested drop square is locked down for humans only.'],
+]
+
 for (const rel of REACT_COPY_GLOBS) {
   const path = join(WEB, rel)
   if (!existsSync(path)) continue
-  const src = readFileSync(path, 'utf8')
+  let src = codeCopy(readFileSync(path, 'utf8'))
+  for (const [file, phrase] of EXEMPT) if (file === rel) src = src.split(phrase).join(' ')
   for (const [re, label] of BANNED) {
     const m = src.match(re)
     if (m) note(`${rel} (React copy): BANNED overclaim — ${label} (matched "${m[0].trim()}")`)
+  }
+}
+
+// An exemption that no longer matches is a silent hole — fail loudly so the list stays true.
+for (const [file, phrase] of EXEMPT) {
+  const path = join(WEB, file)
+  if (!existsSync(path) || !readFileSync(path, 'utf8').includes(phrase)) {
+    note(`${file}: STALE honesty-lint exemption — "${phrase.slice(0, 48)}…" no longer present; remove it`)
   }
 }
 

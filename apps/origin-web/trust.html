@@ -21,7 +21,7 @@
       gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
     </script>
 
-    <title>Trust &amp; controls — Origin, the evidence layer for AI agents</title>
+    <title>Trust &amp; controls, Origin, the evidence layer for AI agents</title>
     <meta
       name="description"
       content="Origin trust center for security and procurement review: the data we collect, telemetry scope, retention defaults, access control, encryption in transit, hash-chained tamper-evident audit logs, incident escalation, the customer/Origin responsibility split, and the security packet available by request. Decision-support and evidence infrastructure — not legal or compliance certification."
@@ -41,7 +41,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=531f69b0" />
+    <link rel="stylesheet" href="/home.css?v=cb3fa491" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -138,9 +138,9 @@
         <div class="shell">
           <p class="kicker">Trust &amp; controls</p>
           <h1 id="trust-title">Built for reviewers, not just builders.</h1>
-          <p class="section__lede leadin">
+          <p class="section__lede">
             This page states Origin's posture plainly for security and procurement review. Origin is
-            decision-support and evidence infrastructure — it runs a deterministic, configuration-bound
+            decision-support and evidence infrastructure, it runs a deterministic, configuration-bound
             reference check over an exact agent configuration and produces a tamper-evident attestation a
             reviewer can re-verify offline. A runtime gate and controlled proxy are proposed pilot
             architecture, not deployed general enforcement. It is
@@ -166,15 +166,14 @@
       <section class="section" id="gated" aria-labelledby="gated-title">
         <div class="shell">
           <p class="kicker">Don't take our word for it</p>
-          <h2 id="gated-title">The whole thing is gated — every suite, every push.</h2>
-          <p class="section__lede leadin">
-            The deterministic oracle is the only judge, so we gate it like one. One command —
-            <code>make gates-all</code> — runs the TypeScript build, every TypeScript and Python test
+          <h2 id="gated-title">The whole thing is gated, every suite, every push.</h2>
+          <p class="section__lede">
+            The deterministic oracle is the only judge, so we gate it like one. One command, <code>make gates-all</code>, runs the TypeScript build, every TypeScript and Python test
             suite (including the property-based tests on the oracle itself), the evidence-verify
             scripts, and a machine honesty check, with real exit codes. The same surface is enforced
             in <a href="https://github.com/bohueilin/Origin/blob/main/.github/workflows/ci.yml">CI on
-            every push</a> — the same suites plus the evidence-verify scripts, a secret scan (gitleaks),
-            and the honesty-lint — with automated dependency updates via Dependabot. The scoreboard below
+            every push</a>. That run covers the same suites plus the evidence-verify scripts, a secret scan
+            (gitleaks), and the honesty-lint, with automated dependency updates via Dependabot. The scoreboard below
             is a machine-readable snapshot of the local <code>make gates-all</code> run.
           </p>
           <div id="gates-scoreboard" class="mono-note" style="margin-top: 18px;">
@@ -182,10 +181,10 @@
           </div>
           <p class="mono-note" style="margin-top: 14px;">
             Every number <b>in this scoreboard</b> is <b>reproducible under this verifier</b> by
-            <code>make gates-all</code> on the public repo — never "safe" or "correct." (Physical-AI
+            <code>make gates-all</code> on the public repo, never "safe" or "correct." (Physical-AI
             training metrics shown elsewhere are measured on a private pipeline and labeled as such.)
             Want to check a single credential yourself? Paste it into
-            <a href="/verify.html">/verify</a> — it re-verifies offline, in your browser.
+            <a href="/verify.html">/verify</a>, it re-verifies offline, in your browser.
           </p>
         </div>
       </section>
@@ -228,8 +227,8 @@
         <div class="shell">
           <p class="kicker">What Origin handles</p>
           <h2 id="data-title">Data we collect, and the telemetry we record.</h2>
-          <p class="section__lede leadin">
-            Scoped to what an engagement needs to enforce policy and produce evidence — not repurposed
+          <p class="section__lede">
+            Scoped to what an engagement needs to enforce policy and produce evidence, not repurposed
             across customers.
           </p>
           <div class="two-col">
@@ -239,14 +238,14 @@
                 <span class="status status--now"><span class="status__txt">Available now</span></span>
               </div>
               <ul class="deflist">
-                <li><span class="dl-mark">→</span><span><b>Account details</b> — the people and org set up to use Origin.</span></li>
-                <li><span class="dl-mark">→</span><span><b>Agent workflow metadata</b> — the definition of the workflow under review.</span></li>
-                <li><span class="dl-mark">→</span><span><b>Tool-call requests &amp; responses</b> — proposed side effects and their results.</span></li>
-                <li><span class="dl-mark">→</span><span><b>Policy decisions</b> — the verdict on each proposed action.</span></li>
-                <li><span class="dl-mark">→</span><span><b>Approval metadata</b> — who approved a risky action, and when.</span></li>
-                <li><span class="dl-mark">→</span><span><b>Audit logs</b> — the hash-chained record of the loop.</span></li>
-                <li><span class="dl-mark">→</span><span><b>Customer-system identifiers</b> — references to the tools and systems the agent touches.</span></li>
-                <li><span class="dl-mark">→</span><span><b>Usage &amp; security logs</b> — operational and security telemetry for the service.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Account details</b>, the people and org set up to use Origin.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Agent workflow metadata</b>, the definition of the workflow under review.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Tool-call requests &amp; responses</b>, proposed side effects and their results.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Policy decisions</b>, the verdict on each proposed action.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Approval metadata</b>, who approved a risky action, and when.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Audit logs</b>, the hash-chained record of the loop.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Customer-system identifiers</b>, references to the tools and systems the agent touches.</span></li>
+                <li><span class="dl-mark">→</span><span><b>Usage &amp; security logs</b>, operational and security telemetry for the service.</span></li>
               </ul>
             </div>
             <div class="card card--tint">
@@ -256,13 +255,13 @@
               </div>
               <p style="margin-bottom: 4px;">Each run of the loop records a bounded set of events:</p>
               <ul class="deflist">
-                <li><span class="dl-mark">✓</span><span><b>Proposal</b> — the action an agent asks to take.</span></li>
-                <li><span class="dl-mark">✓</span><span><b>Verdict</b> — allow · cap · require-approval · deny · pause.</span></li>
-                <li><span class="dl-mark">✓</span><span><b>Proxy execution</b> — the side effect run through the controlled path.</span></li>
-                <li><span class="dl-mark">✓</span><span><b>Block</b> — an over-scope or denied action, recorded.</span></li>
-                <li><span class="dl-mark">✓</span><span><b>Approval</b> — the risk owner's sign-off.</span></li>
-                <li><span class="dl-mark">✓</span><span><b>Exception</b> — errors and anomalies in the run.</span></li>
-                <li><span class="dl-mark">✓</span><span><b>Audit digest</b> — the hash-chained seal over the run.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Proposal</b>, the action an agent asks to take.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Verdict</b>, allow · cap · require-approval · deny · pause.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Proxy execution</b>, the side effect run through the controlled path.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Block</b>, an over-scope or denied action, recorded.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Approval</b>, the risk owner's sign-off.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Exception</b>, errors and anomalies in the run.</span></li>
+                <li><span class="dl-mark">✓</span><span><b>Audit digest</b>, the hash-chained seal over the run.</span></li>
               </ul>
             </div>
           </div>
@@ -274,7 +273,7 @@
         <div class="shell">
           <p class="kicker">Retention</p>
           <h2 id="retention-title">How long each class of data is kept.</h2>
-          <p class="section__lede leadin">
+          <p class="section__lede">
             Pilot defaults, finalized in the DPA. Placeholders below are marked and confirmed per engagement.
           </p>
           <div class="card" style="margin-top: 24px;">
@@ -305,7 +304,7 @@
           </div>
           <p class="mono-note" style="margin-top: 16px;">
             Deletion requests are honored at engagement end. The audit log retains the record of the
-            deletion — not the deleted payload.
+            deletion, not the deleted payload.
           </p>
         </div>
       </section>
@@ -357,7 +356,7 @@
         <div class="shell">
           <p class="kicker">Responsibility</p>
           <h2 id="responsibility-title">Who owns what.</h2>
-          <p class="section__lede leadin">
+          <p class="section__lede">
             Origin provides the enforcement and evidence layer. You stay in control of your agents and the
             systems they touch.
           </p>
@@ -400,9 +399,9 @@
         <div class="shell">
           <p class="kicker">For procurement</p>
           <h2 id="packet-title">Security packet, by request.</h2>
-          <p class="section__lede leadin">
+          <p class="section__lede">
             For vendor security and procurement review, we assemble a packet per engagement. Each item is
-            status-labelled below — most are provided by request or confirmed for your specific deployment,
+            status-labelled below, most are provided by request or confirmed for your specific deployment,
             and the DPA is finalized when the engagement is signed. We do not claim SOC 2, ISO, or any
             compliance certification.
           </p>
@@ -460,12 +459,12 @@
           </div>
           <p class="mono-note" style="margin-top: 20px;">
             Each artifact above is provided on request during a private pilot and finalized in the DPA per
-            engagement — none is a finished certification. Origin does not claim SOC 2, ISO, or any
+            engagement, none is a finished certification. Origin does not claim SOC 2, ISO, or any
             compliance certification.
           </p>
           <div class="cta-row" style="margin-top: 22px;">
             <a class="btn btn--primary" href="/#offer" data-analytics="trust_review_cta_click">Book an Agent Evidence Review</a>
-            <a class="btn btn--ghost" href="mailto:hello@originphysical.ai?subject=Origin%20security%20packet%20request" data-analytics="trust_packet_request">Request the full packet</a>
+            <a class="btn btn--ghost" href="mailto:bohueilin@gmail.com?subject=Origin%20security%20packet%20request" data-analytics="trust_packet_request">Request the full packet</a>
           </div>
         </div>
       </section>
@@ -475,9 +474,9 @@
         <div class="shell">
           <p class="kicker">The bottom line</p>
           <h2 id="closing-title">Vendor-neutral, exportable, honest about its limits.</h2>
-          <p class="section__lede leadin">
+          <p class="section__lede">
             Origin runs across clouds and model providers, and the evidence package is yours to export and
-            hand to a reviewer. It is decision-support and evidence infrastructure — <b>not</b> a compliance
+            hand to a reviewer. It is decision-support and evidence infrastructure, <b>not</b> a compliance
             certification, a legal defense, or a guarantee of approval. Tamper-evident means alteration is detectable.
           </p>
           <div class="cta-row" style="margin-top: 24px;">
@@ -513,7 +512,7 @@
             <a href="/#offer">Agent Evidence Review</a>
             <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
             <a href="/llms.txt">For AI agents</a>
-            <a href="mailto:hello@originphysical.ai">hello@originphysical.ai</a>
+            <a href="mailto:bohueilin@gmail.com">bohueilin@gmail.com</a>
           </div>
         </nav>
       </div>

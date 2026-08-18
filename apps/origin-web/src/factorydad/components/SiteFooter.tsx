@@ -9,8 +9,8 @@ import type { Bundle } from '../types'
 
 const SUPPORT_PHONE_DISPLAY = '+1 (415) 555-0199'
 const SUPPORT_PHONE_TEL = '+14155550199'
-const SUPPORT_EMAIL = 'hello@originphysical.ai'
-const SALES_EMAIL = 'hello@originphysical.ai'
+const SUPPORT_EMAIL = 'bohueilin@gmail.com'
+const SALES_EMAIL = 'bohueilin@gmail.com'
 
 export function SiteFooter({ bundle }: { bundle: Bundle }) {
   return (

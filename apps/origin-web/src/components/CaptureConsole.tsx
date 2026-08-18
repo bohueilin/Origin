@@ -217,7 +217,7 @@ export function CaptureConsole({
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [outcome, setOutcome] = useState(
-    'A robot assistant for my dad’s factory that can move totes safely without entering operator-only cells.',
+    'A robot assistant for my dad’s factory that can move totes without entering operator-only cells.',
   )
   const [description, setDescription] = useState(
     'Dad receives a tote, checks the lane, carries it to packing, and stops when a forklift lane or operator-only cell is active.',

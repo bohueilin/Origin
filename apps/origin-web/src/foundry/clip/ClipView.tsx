@@ -57,7 +57,10 @@ export default function ClipView() {
       const text = d.attackText
       const charMs = 34
       for (let i = 1; i <= text.length; i += 1) at(i * charMs, () => setTyped(i))
-      at(6 * charMs, () => setPhase('blocked')) // Cerebras blocks ~instantly (tens of ms)
+      // Drive the block from the MEASURED value, not from a character count. The
+      // previous `6 * charMs` fired at a fixed 204ms whatever d.cerebras.totalMs
+      // returned, which made the headline timing claim an artifact of the animation.
+      at(Math.max(1, Math.round(d.cerebras?.totalMs ?? 6 * charMs)), () => setPhase('blocked'))
       const typeDone = text.length * charMs
       for (let s = 1; s <= 30; s += 1) at((typeDone * s) / 30, () => setGpuFill(Math.round((s / 30) * 100)))
       at(typeDone + 250, () => setPhase('gpu'))
@@ -115,7 +118,10 @@ export default function ClipView() {
         {err
           ? '● unavailable · the latency backend is not reachable from this page'
           : data?.cerebras?.ok
-            ? '● live · measured this run'
+            // The inference completes before the typewriter starts, so the sequence a
+            // viewer watches is a replay of a real measurement, not a live race. The
+            // numbers are real; the playback is re-timed. Say both.
+            ? '● replay · timings measured this run, playback re-timed'
             : '● illustrative · no live key on this server'}
       </div>
     </div>

@@ -397,7 +397,9 @@ a:hover { text-decoration: underline; }
 /* Set by the hero tamper control: the reader must SEE the entry change, otherwise the
    red verdict is asserted over a visibly untouched record. Reuses the existing danger
    tint pair (#fbecea / #edc6c2, as .tag--nogo and .demo__tag--block). */
-.log--altered { background: #fbecea; border-radius: 6px; padding-right: 6px; color: #9c342a; font-weight: 600; }
+/* `.log li` (0,1,1) out-ranks a bare `.log--altered` (0,1,0), so the colour declaration
+   was dead and the altered row kept --ink-soft. Match the element to win. */
+.log li.log--altered { background: #fbecea; border-radius: 6px; padding-right: 6px; color: #9c342a; font-weight: 600; }
 .log--altered::before { background: var(--danger); }
 
 .console--compact { box-shadow: var(--sh-md); }

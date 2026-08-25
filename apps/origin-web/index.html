@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=974f1659" />
+    <link rel="stylesheet" href="/home.css?v=30e1a045" />
 
     <!-- Structured data for search engines & AI agents. Contact is the founder's
          deliverable inbox; swap to the company address once the custom domain lands
@@ -453,6 +453,14 @@
         </div>
       </section>
     </main>
+
+    <!-- Gate freshness. Progressive enhancement: enhance.ts fills this from the
+         committed public/trust/gates-summary.json, reusing the same 14-day staleness
+         rule /trust uses. Absent JS or absent summary, the strip stays hidden rather
+         than showing a number nobody can date. -->
+    <div class="shell">
+      <p class="gatesfresh" id="gates-freshness" hidden></p>
+    </div>
 
     <!-- ===================== Footer ===================== -->
     <footer class="site-footer">

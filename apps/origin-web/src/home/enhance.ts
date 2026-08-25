@@ -589,3 +589,50 @@ if (chainRoot && window.crypto?.subtle) {
     io.observe(heroCta)
   }
 }
+
+/**
+ * Gate freshness strip.
+ *
+ * The repo already generates public/trust/gates-summary.json on every `make gates-all`,
+ * and /trust renders the full scoreboard from it. The home page said nothing — so the
+ * cheapest credibility signal available was sitting in a file nobody visiting the front
+ * door would ever open.
+ *
+ * Same 14-day staleness rule /trust uses, deliberately: two different definitions of
+ * "fresh" on one site is how a trust page starts lying. If the summary is missing, or
+ * its date will not parse, the strip stays hidden — an undated number is worse than no
+ * number on a page whose whole argument is that its claims are checkable.
+ */
+{
+  const el = document.getElementById('gates-freshness')
+  if (el) {
+    void (async () => {
+      try {
+        const res = await fetch('/trust/gates-summary.json', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = (await res.json()) as { generated_at?: string; all_green?: boolean; suites?: { result: string }[] }
+        const when = (data.generated_at ?? '').slice(0, 10)
+        const ageDays = (Date.now() - Date.parse(data.generated_at ?? '')) / 86_400_000
+        if (!Number.isFinite(ageDays) || !when) return
+        const suites = data.suites?.length ?? 0
+        const passing = data.suites?.filter((s) => s.result === 'PASS').length ?? 0
+        const stale = ageDays > 14
+
+        const status = stale
+          ? `<span class="gatesfresh__stale">snapshot from ${when} — stale</span>`
+          : data.all_green
+            ? `<span class="gatesfresh__ok">all ${suites} suites green</span>`
+            : `<span class="gatesfresh__stale">${passing}/${suites} suites passing</span>`
+
+        el.innerHTML =
+          `<b>Verified ${when}</b>` +
+          `<span>${status}</span>` +
+          `<span>reproduced by <code>make gates-all</code>, enforced in CI on every push</span>` +
+          `<a href="/trust">See the full scoreboard &rarr;</a>`
+        el.hidden = false
+      } catch {
+        /* leave the strip hidden — never render an undated claim */
+      }
+    })()
+  }
+}

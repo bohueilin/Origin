@@ -1070,6 +1070,17 @@ a:hover { text-decoration: underline; }
 }
 
 
+/* Gate freshness strip — the cheapest credibility signal on the site, and the data
+   already exists. Deliberately quiet: this is a footnote a skeptic checks, not a
+   banner. Hidden until enhance.ts has real numbers to put in it. */
+.gatesfresh { margin: 0 0 26px; padding-top: 22px; border-top: 1px solid var(--line);
+  font-size: var(--fs-13); color: var(--steel); display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+.gatesfresh[hidden] { display: none; }
+.gatesfresh b { color: var(--ink-soft); font-weight: 600; }
+.gatesfresh .gatesfresh__ok { color: var(--verify); font-weight: 600; }
+.gatesfresh .gatesfresh__stale { color: var(--warn); font-weight: 600; }
+.gatesfresh a { color: var(--signal-ink); }
+
 /* ============================================================
    Repositioning helpers — "evidence layer for AI agents"
    ============================================================ */

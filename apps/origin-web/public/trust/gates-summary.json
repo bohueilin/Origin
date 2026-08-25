@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-08-18T04:37:14Z",
+  "generated_at": "2026-08-25T17:46:37Z",
   "all_green": true,
   "suites": [
-    {"name": "ts:build (workspaces)", "result": "PASS", "detail": "✓ built in 61ms"},
-    {"name": "ts:build (chronos-ui)", "result": "PASS", "detail": "✓ built in 431ms"},
-    {"name": "ts:origin-web (+evidence+verifier-core globs)", "result": "PASS", "detail": "Tests  622 passed (622)"},
+    {"name": "ts:build (workspaces)", "result": "PASS", "detail": "✓ built in 65ms"},
+    {"name": "ts:build (chronos-ui)", "result": "PASS", "detail": "✓ built in 552ms"},
+    {"name": "ts:origin-web (+evidence+verifier-core globs)", "result": "PASS", "detail": "Tests  639 passed (639)"},
     {"name": "ts:janus", "result": "PASS", "detail": "Tests  168 passed (168)"},
     {"name": "ts:@origin/evidence", "result": "PASS", "detail": "Tests  13 passed (13)"},
-    {"name": "ts:@origin/verifier-core", "result": "PASS", "detail": "Tests  23 passed (23)"},
+    {"name": "ts:@origin/verifier-core", "result": "PASS", "detail": "Tests  40 passed (40)"},
     {"name": "ev:verify:evidence", "result": "PASS", "detail": "ALL CHECKS PASSED"},
     {"name": "ev:proof:verify", "result": "PASS", "detail": "ALL CHECKS PASSED — TR-A002 hash chain verified (12 events, digest c"},
     {"name": "ev:env:verify", "result": "PASS", "detail": "VERIFIED — the score is reproducible under verifier 1.0.0 (reward 1,"},

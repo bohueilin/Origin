@@ -867,6 +867,15 @@ a:hover { text-decoration: underline; }
   /* .btn sets white-space: nowrap, which is right on desktop but clips inside this
      fixed bar at 320-360px — and body{overflow-x:clip} means it clips rather than
      scrolls, so the label is silently truncated. Allow wrapping here only. */
+  /* The bar duplicates the hero's primary action; pinned to the first viewport it put
+     five CTAs on one 375px screen, two of them the same button. enhance.ts adds
+     .is-docked once the hero CTA scrolls away, so it only appears where it does not
+     compete. The tuck is scoped to html.reveal-ready — a class enhance.ts sets ONLY
+     when motion is allowed — so no-JS and reduced-motion readers keep the bar exactly
+     as it was, and the more specific rule below wins for them. */
+  .mobilecta { transform: translateY(110%); transition: transform .22s cubic-bezier(0.23, 1, 0.32, 1); }
+  .mobilecta.is-docked { transform: none; }
+  html:not(.reveal-ready) .mobilecta { transform: none; }
   .mobilecta .btn { flex: 1; min-height: 44px; white-space: normal; line-height: 1.25; padding-inline: 10px; }
   /* The bar is 10 + 44 (min-height) + 10 + env(safe-area-inset-bottom). On a
      home-indicator iPhone that is ~98px, so a flat 76px left the last ~22px of

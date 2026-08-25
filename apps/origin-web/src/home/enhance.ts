@@ -565,3 +565,27 @@ if (chainRoot && window.crypto?.subtle) {
     track('hero_chain_tamper')
   })
 }
+
+/**
+ * Mobile quick-actions bar: hold it back until the hero's own CTA is off screen.
+ *
+ * The bar duplicates the hero's primary action. Pinned to the bottom of the first
+ * viewport it put five call-to-actions on one 375px screen — two of them the same
+ * blue "Run the reference check" button, six hundred pixels apart. The bar earns its
+ * place further down the page, where the hero CTA is gone; it just must not compete
+ * with the thing it is a copy of.
+ *
+ * Progressive enhancement, so the CSS keeps the bar VISIBLE by default and this only
+ * ever hides it: with this module absent the bar behaves exactly as it did before.
+ */
+{
+  const dock = document.querySelector<HTMLElement>('.mobilecta')
+  const heroCta = document.querySelector<HTMLElement>('[data-analytics="hero_reference_check_click"]')
+  if (dock && heroCta && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      ([entry]) => dock.classList.toggle('is-docked', !entry.isIntersecting),
+      { rootMargin: '-8px 0px 0px 0px' },
+    )
+    io.observe(heroCta)
+  }
+}

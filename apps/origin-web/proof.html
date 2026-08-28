@@ -32,7 +32,7 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/home.css?v=30e1a045" />
+    <link rel="stylesheet" href="/home.css?v=20180f42" />
     <style>
       /* Standalone page shell — same pattern as brief.html */
       .proof { max-width: 960px; margin: 0 auto; padding: 32px 24px 72px; }
@@ -534,7 +534,26 @@ node scripts/verify-tr-a002.mjs tr-a002.json
         © <span id="yr">2026</span> Origin · the evidence layer for AI agents ·
         <a href="/">Home</a> · <a href="/trust">Trust center</a> · <a href="/brief">Brief</a>
       </p>
-    </main>
+        <!-- Video band. GENERATED footage, labelled as such in the pill and the caption.
+         Poster-first, preload="none", plays once on scroll via src/shared/videoBand.ts,
+         and falls back to poster + native controls with no JS or under reduced motion. -->
+    <section class="section vband" aria-label="One altered link">
+      <div class="shell">
+        <figure class="vband__fig">
+          <div class="vband__wrap">
+            <video class="vband__v" data-band poster="/video/03-chain.jpg"
+                   width="1280" height="720" muted playsinline controls preload="none"
+                   aria-label="Abstract illustration: a chain of steel links on slate, one link a different alloy.">
+              <source src="/video/03-chain.mp4" type="video/mp4" />
+            </video>
+            <span class="pill pill--ill vband__pill">Illustration</span>
+          </div>
+          <figcaption class="vband__cap"><b>Illustration.</b> Generated footage, not a recording of the product. The hash chains described below are real and re-derivable; this clip is atmosphere.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+</main>
     <script>
       var y = document.getElementById('yr');
       if (y) y.textContent = new Date().getFullYear();
@@ -552,5 +571,6 @@ node scripts/verify-tr-a002.mjs tr-a002.json
         });
       });
     </script>
+    <script type="module" src="/src/shared/videoBand.ts"></script>
   </body>
 </html>

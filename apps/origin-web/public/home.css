@@ -946,6 +946,9 @@ a:hover { text-decoration: underline; }
    pilot package, integration, escalation, trust center, why-Origin
    ============================================================ */
 .pill--sim { background: #fbf4e3; color: var(--warn); border-color: #ecd9ad; }
+/* Generated footage, never a recording of the product. Same family as pill--sim so the
+   two read as one vocabulary of "this is not what it might look like". */
+.pill--ill { background: var(--paper-3); color: var(--steel); border-color: var(--line-2); }
 
 .hero__wedge { margin-top: 20px; font-size: var(--fs-15); color: var(--ink-soft); max-width: 48ch; padding-left: 14px; border-left: 3px solid var(--signal); }
 
@@ -1080,6 +1083,32 @@ a:hover { text-decoration: underline; }
 .gatesfresh .gatesfresh__ok { color: var(--verify); font-weight: 600; }
 .gatesfresh .gatesfresh__stale { color: var(--warn); font-weight: 600; }
 .gatesfresh a { color: var(--signal-ink); }
+
+/* ============================================================
+   Video band — a short generated clip as a section beat.
+
+   Never in the hero, never beside a measured number, never looping. The clip is
+   atmosphere; the evidence on this site is the verifier output, and the two must not
+   be confusable. Poster-first so nothing downloads until the reader scrolls to it.
+   ============================================================ */
+.vband { padding: clamp(28px, 4vw, 44px) 0; }
+.vband__fig { margin: 0; }
+.vband__wrap {
+  position: relative; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--line); background: var(--graphite);
+  aspect-ratio: 16 / 9;
+}
+.vband__v { display: block; width: 100%; height: 100%; object-fit: cover; }
+.vband__pill {
+  position: absolute; top: 12px; right: 12px; margin: 0;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(6px);
+}
+.vband__cap {
+  margin-top: 10px; font-size: var(--fs-13); line-height: 1.55; color: var(--steel);
+  max-width: 62ch;
+}
+.vband__cap b { color: var(--ink-soft); font-weight: 600; }
+@media (max-width: 720px) { .vband { padding-block: 22px; } }
 
 /* ============================================================
    Repositioning helpers — "evidence layer for AI agents"

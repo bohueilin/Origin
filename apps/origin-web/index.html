@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=30e1a045" />
+    <link rel="stylesheet" href="/home.css?v=20180f42" />
 
     <!-- Structured data for search engines & AI agents. Contact is the founder's
          deliverable inbox; swap to the company address once the custom domain lands
@@ -462,7 +462,26 @@
       <p class="gatesfresh" id="gates-freshness" hidden></p>
     </div>
 
-    <!-- ===================== Footer ===================== -->
+        <!-- Video band. GENERATED footage, labelled as such in the pill and the caption.
+         Poster-first, preload="none", plays once on scroll via src/shared/videoBand.ts,
+         and falls back to poster + native controls with no JS or under reduced motion. -->
+    <section class="section vband" aria-label="Evidence accumulating">
+      <div class="shell">
+        <figure class="vband__fig">
+          <div class="vband__wrap">
+            <video class="vband__v" data-band poster="/video/06-ledger.jpg"
+                   width="1280" height="720" muted playsinline controls preload="none"
+                   aria-label="Abstract illustration: sheets of paper stacking one at a time into a dense, settled pile.">
+              <source src="/video/06-ledger.mp4" type="video/mp4" />
+            </video>
+            <span class="pill pill--ill vband__pill">Illustration</span>
+          </div>
+          <figcaption class="vband__cap"><b>Illustration.</b> Generated footage, not a recording of the product. Every real verdict on this site is produced by the deterministic oracle and re-checkable at <a href="/verify">/verify</a>.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+<!-- ===================== Footer ===================== -->
     <footer class="site-footer">
       <div class="shell site-footer__inner">
         <div class="site-footer__brand">

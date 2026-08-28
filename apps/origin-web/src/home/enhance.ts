@@ -9,6 +9,10 @@
 
 export {} // ensure this file is treated as a module (required for `declare global`)
 
+// Video bands live on several static pages; enhance.ts already loads on three of
+// them, so importing here avoids a second module request on those.
+import './../shared/videoBand'
+
 type Gtag = (...args: unknown[]) => void
 declare global {
   interface Window { gtag?: Gtag; dataLayer?: unknown[] }

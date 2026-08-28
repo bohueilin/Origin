@@ -54,7 +54,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=820759fe" />
+    <link rel="stylesheet" href="/home.css?v=61eb1db9" />
 
     <style>
       /* Local helpers for the verifier panels, layered on the shared design system. */
@@ -157,7 +157,12 @@
       <!-- ===================== Paste + verify (React) ===================== -->
       <section class="section section--tint" aria-label="Paste and verify an artifact">
         <div class="shell">
-          <div id="verify-root"></div>
+          <div id="verify-root">
+          <div class="skel" aria-hidden="true">
+            <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
+            <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
+          </div>
+        </div>
         </div>
       </section>
     </main>

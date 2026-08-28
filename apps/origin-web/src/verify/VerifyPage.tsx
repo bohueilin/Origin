@@ -14,6 +14,7 @@
 // and nothing is persisted (no cookies, no localStorage).
 // =============================================================================
 import { useRef, useState } from 'react'
+import { decodeArtifact } from '../shared/shareLink'
 import { KIND_LABELS, parseArtifact, detectArtifact, verifyArtifact, tamperArtifact } from './detect.mjs'
 import type { ReportLine, ReportTone, VerifyReport } from './detect.mjs'
 import { makeExample } from './examples.mjs'
@@ -115,12 +116,32 @@ function DetectionTable() {
   )
 }
 
+// A shared /verify#a=… link, read once at first render. The artifact rides in the
+// FRAGMENT, so it never reaches a server and the "nothing you paste is uploaded" promise
+// still holds for a link someone forwarded.
+function sharedFromUrl(): { text: string; notes: string[]; error: string | null } {
+  const hash = typeof window === 'undefined' ? '' : window.location.hash
+  const fragment = hash.startsWith('#a=') ? hash.slice(3) : ''
+  if (!fragment) return { text: '', notes: [], error: null }
+  const artifact = decodeArtifact(fragment)
+  if (artifact === null) {
+    return { text: '', notes: [], error: 'That shared link could not be decoded. Paste the artifact itself below.' }
+  }
+  return {
+    text: JSON.stringify(artifact, null, 2),
+    notes: ['Loaded from a shared link. Nothing was uploaded — the artifact travelled in the URL fragment.'],
+    error: null,
+  }
+}
+
+const SHARED = sharedFromUrl()
+
 export function VerifyPage() {
-  const [text, setText] = useState('')
+  const [text, setText] = useState(SHARED.text)
   const [thumbprint, setThumbprint] = useState('')
   const [report, setReport] = useState<VerifyReport | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [notes, setNotes] = useState<string[]>([])
+  const [error, setError] = useState<string | null>(SHARED.error)
+  const [notes, setNotes] = useState<string[]>(SHARED.notes)
   const [tampered, setTampered] = useState(false)
   const [busy, setBusy] = useState(false)
   const [selectedExample, setSelectedExample] = useState<ExampleKind | null>(null)

@@ -1092,6 +1092,12 @@ a:hover { text-decoration: underline; }
 .gatesfresh .gatesfresh__stale { color: var(--warn); font-weight: 600; }
 .gatesfresh a { color: var(--signal-ink); }
 
+/* Delegation diagram — the interactive attenuation demo on /security. */
+.deleg { width: 100%; height: auto; display: block; margin: 4px 0 2px; }
+.deleg__l { font-family: var(--font-sans); font-size: 11px; font-weight: 600; fill: var(--ink-soft); }
+.deleg__ctl { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+.deleg__ctl .btn.is-on { border-color: var(--warn); color: var(--warn); background: #fbf4e3; }
+
 /* ============================================================
    Video band — a short generated clip as a section beat.
 

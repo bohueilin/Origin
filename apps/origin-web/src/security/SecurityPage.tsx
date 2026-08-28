@@ -496,6 +496,94 @@ const OG_ROOTS = 400
 const OG_DEPTH = 4
 const pct1 = (n: number) => `${(n * 100).toFixed(1)}%`
 
+// Six identities, laid out so the whole delegation tree reads at a glance. The
+// percentages are computed by the SAME blastRadius() the published bench uses -- widening
+// an edge really does change what the root can reach, it is not a typed-in number.
+const TREE = [
+  { id: 'root', parent: null, x: 300, y: 46, label: 'platform', granted: ['payroll:read', 'customer-pii:read', 'ledger:read', 'wire-transfer:read', 'source-secrets:read', 'dashboards:read'] },
+  { id: 'ops', parent: 'root', x: 168, y: 150, label: 'ops', granted: ['payroll:read', 'customer-pii:read', 'dashboards:read'] },
+  { id: 'fin', parent: 'root', x: 432, y: 150, label: 'finance', granted: ['ledger:read', 'wire-transfer:read'] },
+  { id: 'ops-a', parent: 'ops', x: 96, y: 254, label: 'payroll-bot', granted: ['payroll:read'], widen: 'hr-records:read' },
+  { id: 'ops-b', parent: 'ops', x: 240, y: 254, label: 'pii-bot', granted: ['customer-pii:read'], widen: 'prod-db:delete' },
+  { id: 'fin-a', parent: 'fin', x: 432, y: 254, label: 'ledger-bot', granted: ['ledger:read'], widen: 'audit-log:read' },
+] as const
+
+function DelegationPanel() {
+  const [widened, setWidened] = useState<ReadonlySet<string>>(new Set())
+  const at = (id: string) => TREE.find((n) => n.id === id)!
+
+  const corpus = {
+    seed: 1,
+    windowDays: 30,
+    resources: overGrantResources,
+    identities: TREE.map((n) => ({
+      id: n.id,
+      parent: n.parent,
+      owner: 'human-01',
+      tainted: false,
+      granted: widened.has(n.id) && 'widen' in n ? [...n.granted, n.widen].sort() : [...n.granted],
+      granted_day: 0,
+      ttl_days: 30,
+    })),
+    events: [],
+    planted: { violationEdges: [], dormantScopes: [] },
+  } as unknown as OverGrantCorpus
+
+  const root = blastRadius(corpus).perIdentity.find((p) => p.id === 'root')!
+  const sensitive = overGrantResources.filter(isSensitive).length
+  const pct = (n: number) => `${(n * 100).toFixed(1)}%`
+
+  const toggle = (id: string) =>
+    setWidened((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+
+  return (
+    <DemoCard
+      kicker="Attenuation"
+      title="Widen one edge. Watch the root's blast radius move."
+      lede="A correct capability token can only narrow as it is delegated, so an ancestor reaches exactly its own grant. Break that on any edge and authority flows back up the tree."
+    >
+      <svg viewBox="0 0 600 300" className="deleg" role="img" aria-label={`Delegation tree. Root reaches ${root.reachable} of ${sensitive} sensitive resources.`}>
+        {TREE.filter((n) => n.parent).map((n) => {
+          const p = at(n.parent!)
+          const bad = widened.has(n.id)
+          return (
+            <line key={`e-${n.id}`} x1={p.x} y1={p.y + 18} x2={n.x} y2={n.y - 18}
+              stroke={bad ? 'var(--warn)' : 'var(--line-2)'} strokeWidth={bad ? 3 : 1.5} />
+          )
+        })}
+        {TREE.map((n) => (
+          <g key={n.id}>
+            <circle cx={n.x} cy={n.y} r="18" fill={n.id === 'root' ? 'var(--signal)' : 'var(--paper-2)'}
+              stroke={widened.has(n.id) ? 'var(--warn)' : 'var(--line-2)'} strokeWidth={widened.has(n.id) ? 3 : 1.5} />
+            <text x={n.x} y={n.y + 34} textAnchor="middle" className="deleg__l">{n.label}</text>
+          </g>
+        ))}
+      </svg>
+
+      <div className="deleg__ctl">
+        {TREE.filter((n) => 'widen' in n).map((n) => (
+          <button key={n.id} type="button" className={`btn btn--ghost btn--sm${widened.has(n.id) ? ' is-on' : ''}`}
+            aria-pressed={widened.has(n.id)} onClick={() => toggle(n.id)}>
+            {widened.has(n.id) ? 'Narrow' : 'Widen'} {n.label}
+          </button>
+        ))}
+      </div>
+
+      <Log steps={[
+        widened.size === 0
+          ? ok('attenuation holds', `Every child narrows. The root reaches exactly its own grant: ${root.reachable} of ${sensitive} sensitive resources.`)
+          : bad(`${widened.size} edge${widened.size > 1 ? 's' : ''} widened`, `A descendant now holds a scope its parent never had, so the root inherits it.`),
+        info('blast radius at the root', `${root.reachable} / ${sensitive} sensitive resources reachable — BRI ${pct(root.bri)}`),
+      ]} />
+    </DemoCard>
+  )
+}
+
 function OverGrantPanel() {
   const [steps, setSteps] = useState<Step[]>([])
   const [corpus, setCorpus] = useState<OverGrantCorpus | null>(null)
@@ -652,6 +740,7 @@ export function SecurityPage() {
       <MerklePanel />
       <PolicyPanel />
       <ReferenceCheckPanel />
+      <DelegationPanel />
       <OverGrantPanel />
     </div>
   )

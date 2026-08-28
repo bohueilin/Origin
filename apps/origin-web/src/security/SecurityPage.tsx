@@ -54,6 +54,7 @@ import {
 } from '@origin/verifier-core/overGrant'
 import type { OverGrantCorpus } from '@origin/verifier-core/overGrant'
 import { computeLicenseFromVerdicts } from '../license'
+import { shareUrl } from '../shared/shareLink'
 import type { LicenseVerdict } from '../license'
 
 // ── tiny UI vocabulary ───────────────────────────────────────────────────────
@@ -381,6 +382,29 @@ const computeLevel = (verdicts: LicenseVerdict[]) => computeLicenseFromVerdicts(
 function ReferenceCheckPanel() {
   const [steps, setSteps] = useState<Step[]>([])
   const [result, setResult] = useState<IamReferenceCheck | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  // Hand the reader the artifact itself. A reviewer who can re-verify it offline, or
+  // forward it to someone who will, is doing the diligence the page is arguing for.
+  const download = () => {
+    if (!result) return
+    const blob = new Blob([JSON.stringify(result.credential, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `origin-attestation-${result.credential.config_digest.slice(0, 12)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const share = async () => {
+    if (!result) return
+    const link = shareUrl(result.credential, window.location.origin)
+    if (link === null) return
+    await navigator.clipboard.writeText(link).catch(() => {})
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 1800)
+  }
 
   const runHarnessed = () => {
     const r = issueIamReferenceCheck({
@@ -454,6 +478,12 @@ function ReferenceCheckPanel() {
         </button>
         <button className="btn btn--ghost btn--sm" onClick={drift} disabled={!result}>
           Drift the config
+        </button>
+        <button className="btn btn--ghost btn--sm" onClick={download} disabled={!result}>
+          Download the attestation
+        </button>
+        <button className="btn btn--ghost btn--sm" onClick={() => void share()} disabled={!result}>
+          {copied ? 'Link copied' : 'Copy a /verify link'}
         </button>
       </div>
       {result ? (

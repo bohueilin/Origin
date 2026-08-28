@@ -1098,6 +1098,18 @@ a:hover { text-decoration: underline; }
 .deleg__ctl { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
 .deleg__ctl .btn.is-on { border-color: var(--warn); color: var(--warn); background: #fbf4e3; }
 
+/* Loading skeleton for the three client-rendered surfaces. React replaces it on mount.
+   Deliberately STATIC: a shimmer is ambient infinite motion, which this site does not do,
+   and on a page that has not finished loading it also reads as activity that is not
+   happening. Structure alone is enough to say "content is coming, in this shape". */
+.skel { display: grid; gap: 14px; }
+.skel__card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-2);
+  padding: 22px; display: grid; gap: 12px; }
+.skel__bar { display: block; height: 12px; border-radius: 6px; background: var(--paper-3); }
+.skel__bar--kick { width: 22%; height: 9px; }
+.skel__bar--head { width: 62%; height: 22px; }
+.skel__bar--short { width: 45%; }
+
 /* ============================================================
    Video band — a short generated clip as a section beat.
 

@@ -35,8 +35,14 @@ test('home content is in the server HTML (crawler-readable, not client-rendered)
   const res = await page.request.get('/')
   expect(res.status()).toBe(200)
   const html = await res.text()
+  // Strip inline tags before matching. The guard is "this copy is in the SERVER html,
+  // not client-rendered" — semantic markup inside a heading (e.g. <em> on one word) does
+  // not weaken that, but a raw substring check treats it as a failure. Tags are replaced
+  // with nothing rather than a space, so text broken across elements in a way that would
+  // change reading order still fails.
+  const text = (await res.text()).replace(/<[^>]+>/g, '')
   expect(html).toContain('The evidence layer for high-consequence AI agents')
-  expect(html).toContain('Get your agent through security review, and prove what it did.')
+  expect(text).toContain('Get your agent through security review, and prove what it did.')
   expect(html).toContain('For the owner of a high-consequence agent that a reviewer can’t yet approve: agents touching production, internal tools, code, PII, or money. Prototype in private pilot: synthetic sandbox evidence, not production SaaS, and not compliance certification.')
   expect(html).toContain('Book an Agent Evidence Review')
   expect(html).toContain('tamper-evident')

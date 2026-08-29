@@ -36,6 +36,14 @@ const CARDS = [
     home: true, // rendered from the template verbatim — byte-identical to before
   },
   {
+    out: 'og/over-grant.jpg',
+    eyebrow: 'THE OVER-GRANT ANALYZER',
+    h1: 'How much authority is held — and never used?',
+    sub: 'Five authorization-risk metrics, computed live in your browser over a synthetic fleet',
+    status: 'Synthetic corpus · re-derivable from its seed',
+    rows: [['Over-grant surface', '63.1%', ''], ['Planted violations', '445/445', 'valid'], ['False positives', '0', 'valid']],
+  },
+  {
     out: 'og/security.jpg',
     eyebrow: 'RUN THE VERIFIERS YOURSELF',
     h1: 'Don’t take our word for it. Run the verifiers.',

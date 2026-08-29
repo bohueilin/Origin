@@ -538,7 +538,7 @@ const TREE = [
   { id: 'fin-a', parent: 'fin', x: 432, y: 254, label: 'ledger-bot', granted: ['ledger:read'], widen: 'audit-log:read' },
 ] as const
 
-function DelegationPanel() {
+export function DelegationPanel() {
   const [widened, setWidened] = useState<ReadonlySet<string>>(new Set())
   const at = (id: string) => TREE.find((n) => n.id === id)!
 
@@ -614,7 +614,7 @@ function DelegationPanel() {
   )
 }
 
-function OverGrantPanel() {
+export function OverGrantPanel() {
   const [steps, setSteps] = useState<Step[]>([])
   const [corpus, setCorpus] = useState<OverGrantCorpus | null>(null)
   const [surface, setSurface] = useState<number | null>(null)

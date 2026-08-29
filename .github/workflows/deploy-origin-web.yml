@@ -83,7 +83,7 @@ jobs:
       # with passing tests. This is the only check that notices.
       - name: Reachability (no new orphaned modules)
         working-directory: apps/origin-web
-        run: node scripts/reachability-lint.mjs --max 78
+        run: node scripts/reachability-lint.mjs --max 13
 
       # ci.yml gates honesty-lint and the bench artifact checks, but this job is
       # the gate a manual deploy actually waits on (`needs: build`) — without

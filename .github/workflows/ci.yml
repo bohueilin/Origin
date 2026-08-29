@@ -133,7 +133,7 @@ jobs:
       # and takes working features dark (c2fc5b3, b1c14ce).
       - name: Reachability (no new orphaned modules)
         working-directory: apps/origin-web
-        run: node scripts/reachability-lint.mjs --max 78
+        run: node scripts/reachability-lint.mjs --max 13
 
   evidence-verify:
     name: evidence-verify (the moat's re-derivation gates)

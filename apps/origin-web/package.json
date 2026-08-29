@@ -38,7 +38,7 @@
     "bench:overgrant": "node scripts/overgrant-bench.mjs",
     "bench:overgrant:check": "node scripts/overgrant-bench.mjs --check",
     "gates:full": "npm run gates && npm run test:e2e",
-    "reachability": "node scripts/reachability-lint.mjs --max 78",
+    "reachability": "node scripts/reachability-lint.mjs --max 13",
     "css:version": "node scripts/css-version-lint.mjs",
     "css:version:fix": "node scripts/css-version-lint.mjs --fix"
   },

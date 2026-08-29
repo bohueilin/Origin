@@ -124,6 +124,11 @@
 .cset-posture[data-tone="wait"] .cset-posture-dot { background: #e0982f; box-shadow: 0 0 0 4px rgba(224,152,47,.2); animation: cset-pulse 2s ease-in-out infinite; }
 @keyframes cset-pulse { 0%,100% { box-shadow: 0 0 0 4px rgba(224,152,47,.16); } 50% { box-shadow: 0 0 0 7px rgba(224,152,47,.26); } }
 @media (prefers-reduced-motion: reduce) { .cset-posture[data-tone="wait"] .cset-posture-dot { animation: none; } }
+/* A posture we could not read is its own state — not the calm neutral of an empty account. */
+.cset-posture[data-tone="stop"] { border-color: #f0d5cf; background: #fbf1ef; }
+.cset-posture[data-tone="stop"] .cset-posture-dot { background: #d2452f; box-shadow: 0 0 0 4px rgba(210,69,47,.18); }
+.cset-posture[data-tone="stop"] strong { color: #8a3a2e; }
+.cset-posture > .cset-link { margin-left: auto; flex: none; }
 
 .cset-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
 @media (max-width: 620px) { .cset-stats { grid-template-columns: repeat(2, 1fr); } }

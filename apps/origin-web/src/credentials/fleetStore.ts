@@ -11,6 +11,7 @@
 
 import { insforge } from '../insforge'
 import { createGrant, listGrants, revokeGrant, type IntegrationConnection, listIntegrations } from './store'
+import { readFail, readOk, type ReadResult } from '../readResult'
 import { REPRESENTATIVE_VAULT, type VaultItem, isRepresentative } from './mockVault'
 import type { CredentialGrant, CredentialScope, ApprovalPolicy } from './types'
 
@@ -143,28 +144,32 @@ export async function revokeRobotCredential(grantId: string): Promise<boolean> {
 
 /** The grants currently assigned to one robot — the matrix reads this to show "what can this
  *  robot reach right now". Filters the full grant list by agent_id (= robot.agentId), since
- *  the broker keys authority off that string. */
-export async function listRobotGrants(robotId: string): Promise<CredentialGrant[]> {
+ *  the broker keys authority off that string. Carries the read's ok/error through: "this
+ *  robot has no credentials" and "we could not read this robot's credentials" are different
+ *  answers, and a permissions matrix must never print the first when it means the second. */
+export async function listRobotGrants(robotId: string): Promise<ReadResult<CredentialGrant>> {
   const robot = getRobot(robotId)
-  if (!robot) return []
+  if (!robot) return readFail(`No robot ${robotId}.`)
   const all = await listGrants()
-  return all.filter((g) => g.agentId === robot.agentId)
+  if (!all.ok) return all
+  return readOk(all.rows.filter((g) => g.agentId === robot.agentId))
 }
 
 /** All grants for every robot in a fleet — used for the fleet-level summary counts. */
-export async function listFleetGrants(fleetId: string): Promise<Record<string, CredentialGrant[]>> {
+export async function listFleetGrants(fleetId: string): Promise<{ ok: boolean; byRobot: Record<string, CredentialGrant[]>; error?: string }> {
   const robots = listRobots(fleetId)
   const ids = new Set(robots.map((r) => r.agentId))
   const all = await listGrants()
-  const out: Record<string, CredentialGrant[]> = {}
-  for (const r of robots) out[r.id] = []
-  for (const g of all) {
+  const byRobot: Record<string, CredentialGrant[]> = {}
+  for (const r of robots) byRobot[r.id] = []
+  if (!all.ok) return { ok: false, byRobot, error: all.error }
+  for (const g of all.rows) {
     if (g.agentId && ids.has(g.agentId)) {
       const r = robots.find((x) => x.agentId === g.agentId)
-      if (r) out[r.id].push(g)
+      if (r) byRobot[r.id].push(g)
     }
   }
-  return out
+  return { ok: true, byRobot }
 }
 
 /** Is the broker linked to a live 1Password vault, or running representative? Reads the
@@ -174,7 +179,9 @@ export async function listFleetGrants(fleetId: string): Promise<Record<string, C
  *  cheap roster-side hint.) */
 export async function readVaultLink(): Promise<{ linked: boolean; vault: string | null; connection: IntegrationConnection | null }> {
   const conns = await listIntegrations()
-  const op = conns.find((c) => c.provider === 'onepassword' && c.status !== 'revoked')
+  // Fail-soft, and safely so: an unread connection list yields "not linked", which understates
+  // rather than overstates the link. (The authoritative live check is the catalog probe.)
+  const op = conns.rows.find((c) => c.provider === 'onepassword' && c.status !== 'revoked')
   const vault = op ? (op.metadata.vault as string | undefined) ?? null : null
   return { linked: Boolean(op && vault), vault, connection: op ?? null }
 }

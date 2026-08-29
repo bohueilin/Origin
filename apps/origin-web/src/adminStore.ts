@@ -3,6 +3,7 @@
 // so calling these as a non-admin (even directly) fails closed server-side. The UI gating
 // is convenience; the database is the real gate.
 import { insforge } from './insforge'
+import { NOT_CONFIGURED, loadFailure, readFail, readOneFail, readOneOk, rowsFrom, type ReadOneResult, type ReadResult } from './readResult'
 import type { Role } from './roleStore'
 
 export interface AdminAccount {
@@ -44,11 +45,10 @@ export async function fileTicket(subject: string, body: string, category: string
   return !error
 }
 
-export async function listMyTickets(): Promise<SupportTicket[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(50)
-  if (error || !data) return []
-  return data as SupportTicket[]
+export async function listMyTickets(): Promise<ReadResult<SupportTicket>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(50)
+  return rowsFrom(res, (t: SupportTicket) => t, 'your tickets')
 }
 
 // ---- Phase 2b: admin queue / audit / template viewer (all staff-gated server-side) ----
@@ -108,16 +108,18 @@ export async function adminListAudit(): Promise<{ ok: boolean; entries: AuditEnt
   return { ok: true, entries: (data as AuditEntry[]) ?? [] }
 }
 
-export async function adminListUserTemplates(userId: string): Promise<UserTemplate[]> {
-  if (!insforge) return []
-  const { data, error } = await insforge.database.rpc('admin_list_user_templates', { target_user: userId })
-  if (error || !data) return []
-  return data as UserTemplate[]
+export async function adminListUserTemplates(userId: string): Promise<ReadResult<UserTemplate>> {
+  if (!insforge) return readFail(NOT_CONFIGURED)
+  const res = await insforge.database.rpc('admin_list_user_templates', { target_user: userId })
+  return rowsFrom(res, (t: UserTemplate) => t, 'this account’s templates')
 }
 
-export async function adminViewTemplate(id: string): Promise<TemplateDetail | null> {
-  if (!insforge) return null
+/** A template that isn't there and a template we couldn't open are different answers:
+ *  the first is `ok` with a null row, the second is an error the operator must see. */
+export async function adminViewTemplate(id: string): Promise<ReadOneResult<TemplateDetail>> {
+  if (!insforge) return readOneFail(NOT_CONFIGURED)
   const { data, error } = await insforge.database.rpc('admin_view_template', { template_id: id })
-  if (error || !data || !(data as unknown[]).length) return null
-  return (data as TemplateDetail[])[0]
+  if (error) return readOneFail(loadFailure('that template', error.message))
+  if (!Array.isArray(data)) return readOneFail(loadFailure('that template'))
+  return readOneOk((data as TemplateDetail[])[0] ?? null)
 }

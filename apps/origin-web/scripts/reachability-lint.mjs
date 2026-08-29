@@ -43,6 +43,7 @@ const EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 const args = process.argv.slice(2);
 const asJson = args.includes('--json');
+const allRoots = args.includes('--all-roots');
 const maxIdx = args.indexOf('--max');
 const max = maxIdx >= 0 ? Number(args[maxIdx + 1]) : null;
 
@@ -88,6 +89,37 @@ function walk(dir, out = []) {
   return out;
 }
 
+/**
+ * --all-roots: the AUDIT view. The gate deliberately measures reach from the HTML
+ * mount points only — "can a user get here". But src/ is also imported by the Hono
+ * server, the Cloudflare Functions, the bench/OG scripts, the tests, the shared
+ * packages, and two CI files execute src/ modules directly. Deleting on the gate's
+ * say-so breaks the build (the 2026-08-20 sweep found this the hard way). This mode
+ * adds every one of those as roots, so what it reports as orphaned is orphaned from
+ * EVERYWHERE — the only list it is safe to delete from.
+ */
+function extraRoots() {
+  const out = [];
+  const dirs = [join(WEB, 'server'), join(WEB, 'functions'), join(WEB, 'scripts'), join(WEB, 'tests'), join(WEB, '..', '..', 'packages')];
+  for (const d of dirs) if (existsSync(d)) walk(d, out);
+  // Co-located unit tests run in CI, so what they import is ALIVE (test doubles
+  // included) — the first audit missed these and deleted a live module's mocks.
+  out.push(...walk(SRC).filter((f) => /\.(test|spec)\.[tj]sx?$/.test(f)));
+  // src/ modules named by path in CI, the deploy workflow, repo scripts, or package.json
+  // (e.g. src/verify/selftest.mjs runs directly in ci.yml).
+  const texts = [];
+  const wfDir = join(WEB, '..', '..', '.github', 'workflows');
+  if (existsSync(wfDir)) for (const f of readdirSync(wfDir)) texts.push(readFileSync(join(wfDir, f), 'utf8'));
+  const shDir = join(WEB, '..', '..', 'scripts');
+  if (existsSync(shDir)) for (const f of readdirSync(shDir)) { const p2 = join(shDir, f); if (statSync(p2).isFile()) texts.push(readFileSync(p2, 'utf8')); }
+  texts.push(readFileSync(join(WEB, 'package.json'), 'utf8'));
+  for (const t of texts) for (const m of t.matchAll(/src\/[A-Za-z0-9_./-]+\.(?:mjs|tsx?|jsx?)/g)) {
+    const f = join(WEB, m[0]);
+    if (existsSync(f)) out.push(f);
+  }
+  return out;
+}
+
 // ── crawl from the HTML entries ──
 const roots = [];
 const missingMounts = [];
@@ -102,6 +134,8 @@ for (const html of htmlEntries()) {
     else missingMounts.push(`${html}: <script src="${t}"> does not resolve`);
   }
 }
+
+if (allRoots) roots.push(...extraRoots());
 
 const reached = new Set();
 const queue = [...roots];

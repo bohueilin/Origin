@@ -7,8 +7,14 @@ import { insforge, AUTH_ENABLED, OAUTH_RETURN } from '../insforge'
 // Access is restricted to the Origin owner while features are still being built. Any other
 // account that authenticates (Google or email/password) is immediately signed back out in
 // refresh(), so ONLY this address ever holds a live session.
+//
+// Exported because the passport app gates its run controls on the same question. It
+// used to answer that question with its own copy of the address and its own
+// comparison — two implementations of one security predicate, free to drift apart
+// silently. There is exactly one owner test, and this is it.
 export const OWNER_EMAIL = 'bohueilin@gmail.com'
-const isOwnerEmail = (e?: string | null): boolean => (e ?? '').trim().toLowerCase() === OWNER_EMAIL
+// eslint-disable-next-line react-refresh/only-export-components
+export const isOwnerEmail = (e?: string | null): boolean => (e ?? '').trim().toLowerCase() === OWNER_EMAIL
 
 export interface AuthUser {
   id: string
@@ -120,8 +126,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // block on (or trigger) an auth call.
   const [ready, setReady] = useState(() => !AUTH_ENABLED || !hasRestorableSession())
 
-  const refresh = useCallback(async () => {
-    if (!insforge) return false
+  // Three outcomes, not two. 'none' means "no session yet" — the only answer worth
+  // retrying. 'denied' is authoritative: the server told us exactly who this is and we
+  // signed them straight back out, so asking again can only produce the same refusal.
+  const refresh = useCallback(async (): Promise<'live' | 'denied' | 'none'> => {
+    if (!insforge) return 'none'
     try {
       const { data } = await insforge.auth.getCurrentUser()
       const u = normalizeUser(data)
@@ -137,7 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null)
         markSession(false)
         try { await insforge.auth.signOut() } catch { /* ignore */ }
-        return false
+        return 'denied'
       }
       if (u) {
         setDeniedEmail(null)
@@ -145,33 +154,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       setUser(u)
       markSession(Boolean(u))
-      return Boolean(u)
+      return u ? 'live' : 'none'
     } catch {
       setUser(null)
       // Deliberately NOT clearing the hint: a network blip or a transient 5xx is not
       // proof the session is gone, and clearing here would lock the operator out until
       // they signed in again. Only an authoritative answer — a denial or an explicit
       // sign-out — retracts the marker.
-      return false
+      return 'none'
     }
   }, [])
 
   // Initial session load. The SDK exchanges an OAuth `insforge_code` on init (async), so on
   // a Google round-trip the token may not be stored yet when we first ask — retry briefly.
   // Skipped entirely for signed-out visitors so the public site makes no auth calls.
+  //
+  // The retry stays, but only for 'none'. A REFUSED account used to fall into it as well,
+  // and the cost landed on the visitor least equipped to interpret it: eight more doomed
+  // round trips, and `ready` pinned false for the whole 3.2s, so the notice that finally
+  // explains the refusal took ~3.7s to paint. Nothing could come of those retries — the
+  // account was identified and signed back out on the very first answer.
   useEffect(() => {
     if (!insforge || !hasRestorableSession()) return
     let alive = true
     ;(async () => {
-      let found = await refresh()
-      if (!found && OAUTH_RETURN) {
-        for (let i = 0; i < 8 && alive && !found; i++) {
+      let outcome = await refresh()
+      if (outcome === 'none' && OAUTH_RETURN) {
+        for (let i = 0; i < 8 && alive && outcome === 'none'; i++) {
           await new Promise((r) => setTimeout(r, 400))
-          found = await refresh()
+          outcome = await refresh()
         }
         // Tidy the URL after a successful OAuth login (drop any leftover query/echo) while
         // PRESERVING the page we landed on — OAuth may return to /passport, not just /app.
-        if (found && alive) window.history.replaceState({}, '', window.location.pathname)
+        if (outcome === 'live' && alive) window.history.replaceState({}, '', window.location.pathname)
       }
       if (alive) setReady(true)
     })()

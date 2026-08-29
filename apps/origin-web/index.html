@@ -57,7 +57,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=61eb1db9" />
+    <link rel="stylesheet" href="/home.css?v=661fbb87" />
 
     <!-- Structured data for search engines & AI agents. Contact is the founder's
          deliverable inbox; swap to the company address once the custom domain lands
@@ -372,6 +372,23 @@
             <a class="btn btn--primary" href="/proof" data-analytics="evidence_proof_link">Open the evidence traces</a>
           </div>
         </div>
+      
+        <!-- Recorded footage, not generated: scripts/rec-shot01.mjs films the live /verify
+             page, cuts the network mid-run, and nothing inside the run is trimmed or
+             re-timed. Poster-first; plays once on scroll via src/shared/videoBand.ts. -->
+        <figure class="vband__fig" style="margin-top: 26px">
+          <div class="vband__wrap">
+            <video class="vband__v" data-band poster="/video/shot01-tamper.jpg"
+                   width="1280" height="800" muted playsinline controls preload="none"
+                   aria-label="Screen recording: the live /verify page verifies an attestation, the network is disabled, one field is tampered and the verdict goes VOID, then restores to VALID — all offline.">
+              <source src="/video/shot01-tamper.mp4" type="video/mp4" />
+            </video>
+            <span class="pill pill--rec vband__pill">Recorded &middot; unedited</span>
+          </div>
+          <figcaption class="vband__cap"><b>One take on the live <a href="/verify">/verify</a> page.</b>
+            The network is disabled mid-run &mdash; the VOID and the closing VALID are computed
+            entirely in the browser. Re-film it yourself: <code>node scripts/rec-shot01.mjs</code>.</figcaption>
+        </figure>
       </section>
 <!-- ===================== Offer ===================== -->
       <section class="section section--tint" id="offer" data-investor-section aria-labelledby="offer-title">

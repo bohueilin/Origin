@@ -957,6 +957,9 @@ a:hover { text-decoration: underline; }
 /* Generated footage, never a recording of the product. Same family as pill--sim so the
    two read as one vocabulary of "this is not what it might look like". */
 .pill--ill { background: var(--paper-3); color: var(--steel); border-color: var(--line-2); }
+/* Real footage of the product, unedited. The counterpart to pill--ill: one vocabulary,
+   two honest tiers — generated atmosphere vs a recording of the thing itself. */
+.pill--rec { background: #e7f3ec; color: var(--verify); border-color: #bfe0cf; }
 
 .hero__wedge { margin-top: 20px; font-size: var(--fs-15); color: var(--ink-soft); max-width: 48ch; padding-left: 14px; border-left: 3px solid var(--signal); }
 

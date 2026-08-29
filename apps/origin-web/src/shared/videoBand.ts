@@ -1,11 +1,11 @@
 /**
  * Video band — plays a short atmospheric clip once, when it is actually on screen.
  *
- * These clips are GENERATED footage, not recordings of the product. Every band carries a
- * visible "Illustration" pill and a caption that says so in plain words: on a site whose
- * entire argument is that it does not dress one kind of evidence up as another, an
- * unlabelled generated clip beside real verdicts would be the single most expensive
- * thing we could ship.
+ * A band carries one of two tiers, and its pill says which in plain words: generated
+ * atmosphere ("Illustration", pill--ill) or an unedited recording of the product itself
+ * ("Recorded", pill--rec). On a site whose entire argument is that it does not dress one
+ * kind of evidence up as another, an unlabelled clip beside real verdicts would be the
+ * single most expensive thing we could ship — so the label is not optional.
  *
  * Progressive enhancement only. With this module absent the band still works — the poster
  * shows and the native controls play it on click. All this adds is: start it once when it

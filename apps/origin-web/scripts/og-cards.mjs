@@ -116,7 +116,7 @@ function render(card) {
   if (card.home) return template
   const section =
     `<section>\n` +
-    `      <div class="brand"><span class="mark">O</span>Origin</div>\n` +
+    `      <div class="brand"><span class="mark"></span>Origin</div>\n` +
     `      <p class="eyebrow">${card.eyebrow}</p>\n` +
     `      <h1>${card.h1}</h1>\n` +
     `      <p class="sub">${card.sub}</p>\n` +

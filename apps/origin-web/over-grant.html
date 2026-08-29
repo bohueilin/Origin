@@ -21,25 +21,25 @@
       gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
     </script>
 
-    <title>Security cores — run the evidence engines in your browser | Origin</title>
+    <title>The over-grant analyzer — authority held vs authority used | Origin</title>
     <meta
       name="description"
-      content="Run Origin's evidence engines live in your browser: sign an attestation, watch a tampered byte void it, and verify Merkle inclusion. Synthetic demo data."
+      content="Origin's over-grant analyzer, live in your browser: five authorization-risk metrics over a synthetic agent fleet, the widest standing grants, and the attenuation diagram."
     />
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
-    <meta property="og:url" content="https://origin-physical-ai.pages.dev/security" />
-    <meta property="og:title" content="Security cores — run the evidence engines in your browser | Origin" />
-    <meta property="og:description" content="Run Origin's evidence engines live in your browser: sign an attestation, watch a tampered byte void it, and verify Merkle inclusion. Synthetic demo data." />
-    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og/security.jpg" />
+    <meta property="og:url" content="https://origin-physical-ai.pages.dev/over-grant" />
+    <meta property="og:title" content="The over-grant analyzer | Origin" />
+    <meta property="og:description" content="Origin's over-grant analyzer, live in your browser: five authorization-risk metrics over a synthetic agent fleet, the widest standing grants, and the attenuation diagram." />
+    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og/over-grant.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Security cores — run the evidence engines in your browser | Origin" />
-    <meta name="twitter:description" content="Run Origin's evidence engines live in your browser: sign an attestation, watch a tampered byte void it, and verify Merkle inclusion. Synthetic demo data." />
-    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og/security.jpg" />
-    <link rel="canonical" href="https://origin-physical-ai.pages.dev/security" />
+    <meta name="twitter:title" content="The over-grant analyzer | Origin" />
+    <meta name="twitter:description" content="Origin's over-grant analyzer, live in your browser: five authorization-risk metrics over a synthetic agent fleet, the widest standing grants, and the attenuation diagram." />
+    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og/over-grant.jpg" />
+    <link rel="canonical" href="https://origin-physical-ai.pages.dev/over-grant" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
 
@@ -119,37 +119,37 @@
     </header>
 
     <main id="main">
-      <!-- ===================== Intro ===================== -->
-      <section class="section" aria-labelledby="security-title">
+      <section class="section" aria-labelledby="og-title">
         <div class="shell">
-          <p class="kicker">Security cores · live</p>
-          <h1 id="security-title">Don't take our word for it. Run the verifiers.</h1>
+          <p class="kicker">Over-grant analyzer &middot; live</p>
+          <h1 id="og-title">How much authority is held — and never used?</h1>
           <p class="section__lede">
-            Every panel below runs Origin's real evidence engines <b>in your browser</b> — the same
-            code the test suite gates. Sign a portable receipt and watch one flipped byte void it.
-            Prove a receipt sits inside a signed Merkle batch. Bind a decision to the exact policy
-            version it ran under. Issue a config-bound reference check from the deterministic oracle. The over-grant analyzer also has a page of its own: <a href="/over-grant">/over-grant</a>.
+            Five authorization-risk metrics — utilization, blast radius, attenuation violations,
+            taint reachability, standing authority — computed in your browser over a seeded
+            <b>synthetic</b> agent fleet by the same functions the published bench artifact
+            re-derives from. Definitions and denominators:
+            <a href="https://github.com/bohueilin/Origin/blob/main/docs/OVER-GRANT-METRICS.md">OVER-GRANT-METRICS.md</a> ·
+            the artifact: <a href="/trust/over-grant-bench.json">over-grant-bench.json</a>.
           </p>
-          <p class="mono-note" style="margin-top: 14px;">
-            Model proposes. Environment verifies. Gate decides. Trace proves. — All data on this page
-            is <b>synthetic demo data and labeled as such</b>. A green check means "reproducible under
-            this verifier," never "safe" or "correct." Verification is client-side; nothing is uploaded.
-          </p>
+
+          <!-- Recorded footage: scripts/rec-shot02.mjs films the live /security analyzer.
+               Poster-first; plays once on scroll via src/shared/videoBand.ts. -->
+          <figure class="vband__fig" style="margin-top: 26px">
+            <div class="vband__wrap">
+              <video class="vband__v" data-band poster="/video/shot02-overgrant.jpg"
+                     width="1280" height="800" muted playsinline controls preload="none"
+                     aria-label="Screen recording: the over-grant analyzer runs in the browser — 9,690 synthetic identities, one delegation edge widened, 445 of 445 planted violations recovered.">
+                <source src="/video/shot02-overgrant.mp4" type="video/mp4" />
+              </video>
+              <span class="pill pill--rec vband__pill">Recorded &middot; unedited</span>
+            </div>
+            <figcaption class="vband__cap"><b>One take on the live analyzer.</b> 9,690 synthetic
+              identities, 445/445 planted violations recovered, 0 false positives. Re-film it:
+              <code>node scripts/rec-shot02.mjs</code>.</figcaption>
+          </figure>
         </div>
       </section>
-
-      <!-- ===================== Live demos (React) ===================== -->
-      <section class="section section--tint" aria-label="Live verification demos">
-        <div class="shell">
-          <ul class="onpage-static" aria-label="On this page">
-              <li>Sigil signing — flip one byte and it voids</li>
-              <li>Merkle batch — eight receipts, one signature</li>
-              <li>Proof-carrying policy — yesterday’s decision, yesterday’s policy</li>
-              <li>Reference check — issued by the oracle, bound to the config</li>
-              <li>Attenuation — widen one edge, watch the blast radius move</li>
-              <li>Over-grant analyzer — authority held vs used (full page: /over-grant)</li>
-          </ul>
-          <div id="security-root">
+      <div id="overgrant-root">
           <div class="skel" aria-hidden="true">
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
@@ -199,6 +199,6 @@
     </footer>
 
     <script type="module" src="/src/home/enhance.ts"></script>
-    <script type="module" src="/src/securityMain.tsx"></script>
+    <script type="module" src="/src/overGrantMain.tsx"></script>
   </body>
 </html>

@@ -1095,6 +1095,18 @@ a:hover { text-decoration: underline; }
 .gatesfresh .gatesfresh__stale { color: var(--warn); font-weight: 600; }
 .gatesfresh a { color: var(--signal-ink); }
 
+/* On-page static summary — the crawlable answer to "what is on this page" for the
+   React-mounted surfaces. Unfurlers and text-only readers see it; sighted visitors get
+   a quiet list that the mounted app then dwarfs. */
+.onpage-static { margin: 18px 0 22px; padding-left: 1.1em; max-width: 62ch;
+  font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
+.onpage-static li { margin-block: 3px; }
+
+/* "What Origin is not" — the boundaries, given status instead of small grey type. */
+.notgrid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 26px; }
+.notgrid .card h3 { margin-bottom: 8px; }
+.notgrid .card p { font-size: var(--fs-15); line-height: 1.6; color: var(--ink-soft); }
+
 /* Delegation diagram — the interactive attenuation demo on /security. */
 .deleg { width: 100%; height: auto; display: block; margin: 4px 0 2px; }
 .deleg__l { font-family: var(--font-sans); font-size: 11px; font-weight: 600; fill: var(--ink-soft); }

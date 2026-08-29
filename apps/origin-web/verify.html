@@ -54,7 +54,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="/home.css?v=661fbb87" />
+    <link rel="stylesheet" href="/home.css?v=29cdd6e3" />
 
     <style>
       /* Local helpers for the verifier panels, layered on the shared design system. */
@@ -157,6 +157,13 @@
       <!-- ===================== Paste + verify (React) ===================== -->
       <section class="section section--tint" aria-label="Paste and verify an artifact">
         <div class="shell">
+          <ul class="onpage-static" aria-label="On this page">
+              <li>Paste any Origin artifact — kind is auto-detected</li>
+              <li>Digests and signatures recompute client-side</li>
+              <li>Tamper one field — see it void</li>
+              <li>Seven loadable synthetic examples</li>
+              <li>Nothing you paste is uploaded</li>
+          </ul>
           <div id="verify-root">
           <div class="skel" aria-hidden="true">
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>

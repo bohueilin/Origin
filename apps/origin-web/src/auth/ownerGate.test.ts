@@ -26,8 +26,13 @@ const sources = Object.entries(RAW)
   .map(([path, text]) => [path.startsWith('./') ? `auth/${path.slice(2)}` : path.replace(/^\.\.\//, ''), text] as const)
 
 describe('the owner gate', () => {
-  it('spells the owner address in exactly one source file', () => {
-    const holders = sources.filter(([, text]) => text.includes(OWNER_EMAIL)).map(([path]) => path)
+  it('declares the owner-gate constant in exactly one source file', () => {
+    // The LITERAL address may legitimately appear elsewhere — it doubles as the public
+    // contact address (mailto links, support copy, the lead-modal fallback), and the
+    // vite build rewrites those occurrences via CONTACT_EMAIL. What must be unique is
+    // the GATE: a constant named for the owner check. A second `const OWNER_EMAIL`
+    // is a second copy of a security predicate, which is one copy too many.
+    const holders = sources.filter(([, text]) => /\bconst\s+OWNER_EMAIL\b/.test(text)).map(([path]) => path)
     expect(holders).toEqual(['auth/AuthProvider.tsx'])
   })
 

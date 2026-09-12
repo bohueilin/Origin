@@ -32,6 +32,7 @@ interface LeadEnv {
 }
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+export const MAX_LEAD_BODY_BYTES = 16 * 1024
 
 // Mirrors the CHECK constraints in migrations/20260804023516_admin-portal-schema.sql.
 // Postgres REJECTS an over-long value rather than truncating it, so clipping here is
@@ -43,6 +44,25 @@ const json = (body: unknown, status = 200): Response =>
     status,
     headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
   })
+
+async function boundedJson(request: Request): Promise<Record<string, unknown> | null> {
+  const declared = Number(request.headers.get('content-length'))
+  if (Number.isFinite(declared) && declared > MAX_LEAD_BODY_BYTES) throw new RangeError('too_large')
+  const reader = request.body?.getReader()
+  if (!reader) return null
+  const chunks: Uint8Array[] = []
+  let size = 0
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    size += value.byteLength
+    if (size > MAX_LEAD_BODY_BYTES) throw new RangeError('too_large')
+    chunks.push(value)
+  }
+  const raw = new TextDecoder().decode(chunks.length === 1 ? chunks[0] : (() => { const out = new Uint8Array(size); let at = 0; for (const c of chunks) { out.set(c, at); at += c.length } return out })())
+  const value: unknown = JSON.parse(raw)
+  return value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null
+}
 
 /**
  * Write the lead to `public.leads` with the server-side admin key.
@@ -81,22 +101,28 @@ async function storeLead(row: Record<string, string>, env: LeadEnv): Promise<boo
 export const onRequestPost = async (ctx: { request: Request; env: LeadEnv }): Promise<Response> => {
   const { request, env } = ctx
 
-  let data: Record<string, string>
+  let data: Record<string, unknown> | null
   try {
-    data = (await request.json()) as Record<string, string>
-  } catch {
+    data = await boundedJson(request)
+  } catch (error) {
+    if (error instanceof RangeError) return json({ ok: false, error: 'body_too_large' }, 413)
+    return json({ ok: false, error: 'bad_json' }, 400)
+  }
+  if (!data) {
     return json({ ok: false, error: 'bad_json' }, 400)
   }
 
-  // Honeypot: a filled hidden field means a bot — accept silently, deliver nothing.
-  if ((data.company_website || '').trim() !== '') return json({ ok: true, delivered: true })
+  const field = (key: string): string => typeof data[key] === 'string' ? data[key] as string : ''
 
-  const name = (data.name || '').trim()
-  const email = (data.email || '').trim()
+  // Honeypot: a filled hidden field means a bot — accept silently, deliver nothing.
+  if (field('company_website').trim() !== '') return json({ ok: true, delivered: true })
+
+  const name = field('name').trim()
+  const email = field('email').trim()
   if (!name || !EMAIL_RE.test(email)) return json({ ok: false, error: 'invalid' }, 422)
 
-  const intent = (data.intent || 'demo').slice(0, 40)
-  const clip = (k: string, n: number) => (data[k] || '').slice(0, n)
+  const intent = (field('intent') || 'demo').slice(0, 40)
+  const clip = (k: string, n: number) => field(k).slice(0, n)
   const text = [
     `New Origin lead — ${intent}`,
     `Name: ${name}`,
@@ -165,3 +191,5 @@ export const onRequestPost = async (ctx: { request: Request; env: LeadEnv }): Pr
 // Friendly response for accidental GETs / health checks.
 export const onRequestGet = (): Response =>
   json({ ok: true, service: 'origin-lead', method: 'POST only' })
+
+export const onRequestHead = (): Response => new Response(null, { status: 200, headers: { 'cache-control': 'no-store' } })

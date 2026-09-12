@@ -20,8 +20,8 @@ import { handleParseFloor } from './foundryHandler.ts'
 import type { CerebrasConfig } from './config.ts'
 
 const chat = vi.mocked(cerebrasChat)
-const cfg: CerebrasConfig = { apiKey: 'test-key', model: 'gemma-4-31b', baseUrl: 'https://example.test/v1' }
-const cfgNoKey: CerebrasConfig = { model: 'gemma-4-31b', baseUrl: 'https://example.test/v1' }
+const cfg: CerebrasConfig = { apiKey: 'test-key', model: 'gemma-4-31b', baseUrl: 'https://example.test/v1', externalEnabled: true }
+const cfgNoKey: CerebrasConfig = { model: 'gemma-4-31b', baseUrl: 'https://example.test/v1', externalEnabled: true }
 const IMG = 'data:image/png;base64,AAAA'
 
 const timing = { tokS: 1400, ttftMs: 80, completionTokens: 200, totalMs: 300 }
@@ -55,8 +55,19 @@ describe('handleParseFloor — demo mode (no image)', () => {
 })
 
 describe('handleParseFloor — an uploaded image is never answered with a fake parse', () => {
+  it('rejects an image while external parsing is disabled before provider work', async () => {
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, { ...cfg, externalEnabled: false })
+    expect(res.fallback).toBe('external_parse_disabled')
+    expect(chat).not.toHaveBeenCalled()
+  })
+
+  it('requires affirmative consent before image validation or provider work', async () => {
+    const res = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    expect(res.fallback).toBe('consent_required')
+    expect(chat).not.toHaveBeenCalled()
+  })
   it('refuses when the key is missing: no siteMap, explicit reason', async () => {
-    const res = await handleParseFloor({ imageDataUri: IMG }, cfgNoKey)
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfgNoKey)
     expect(res.ok).toBe(false)
     expect(res.siteMap).toBeNull()
     expect(res.fallback).toBe('no_key')
@@ -66,7 +77,7 @@ describe('handleParseFloor — an uploaded image is never answered with a fake p
 
   it('refuses a non-image "imageDataUri" — the endpoint must not relay arbitrary URLs to the model provider', async () => {
     for (const uri of ['https://internal.example/secret.png', 'data:text/html;base64,AAAA', 'file:///etc/passwd', 'data:image/svg+xml;base64,AAAA']) {
-      const res = await handleParseFloor({ imageDataUri: uri }, cfg)
+      const res = await handleParseFloor({ imageDataUri: uri, uploadConsent: true }, cfg)
       expect(res.ok).toBe(false)
       expect(res.fallback).toBe('bad_image')
       expect(res.siteMap).toBeNull()
@@ -75,7 +86,7 @@ describe('handleParseFloor — an uploaded image is never answered with a fake p
   })
 
   it('refuses an oversize upload before spending a request', async () => {
-    const res = await handleParseFloor({ imageDataUri: `data:image/png;base64,${'A'.repeat(10_000_001)}` }, cfg)
+    const res = await handleParseFloor({ imageDataUri: `data:image/png;base64,${'A'.repeat(10_000_001)}`, uploadConsent: true }, cfg)
     expect(res.ok).toBe(false)
     expect(res.siteMap).toBeNull()
     expect(res.fallback).toBe('oversize')
@@ -84,7 +95,7 @@ describe('handleParseFloor — an uploaded image is never answered with a fake p
 
   it('refuses on an API error instead of substituting the sample', async () => {
     chat.mockResolvedValue({ ok: false, content: '', model: 'gemma-4-31b', source: 'cerebras', timing: null, code: 'upstream', error: 'boom' })
-    const res = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
     expect(res.ok).toBe(false)
     expect(res.siteMap).toBeNull()
     expect(res.fallback).toBe('api_error')
@@ -92,7 +103,7 @@ describe('handleParseFloor — an uploaded image is never answered with a fake p
 
   it('refuses non-JSON model output — voided, not repaired', async () => {
     chat.mockResolvedValue(reply('the floor looks nice'))
-    const res = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
     expect(res.ok).toBe(false)
     expect(res.siteMap).toBeNull()
     expect(res.fallback).toBe('bad_json')
@@ -102,7 +113,7 @@ describe('handleParseFloor — an uploaded image is never answered with a fake p
 describe('handleParseFloor — the gate judges real model output', () => {
   it('VOID: an out-of-bounds dock yields no map and the failing check by name', async () => {
     chat.mockResolvedValue(reply(JSON.stringify({ ...cleanGrid, start: { x: 99, y: 0 } })))
-    const res = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
     expect(res.ok).toBe(true) // the endpoint did its job: it gated
     expect(res.source).toBe('cerebras')
     expect(res.siteMap).toBeNull()
@@ -114,7 +125,7 @@ describe('handleParseFloor — the gate judges real model output', () => {
 
   it('VALID: a clean grid comes back with the map, the gate receipt, and an oracle verdict', async () => {
     chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
-    const res = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
     expect(res.ok).toBe(true)
     expect(res.siteMap).not.toBeNull()
     expect(res.gate?.verdict).toBe('VALID')
@@ -130,7 +141,7 @@ describe('handleParseFloor — the gate judges real model output', () => {
     // no reasoning; it needs output budget (a 16x16 grid's cell list alone can
     // pass 1500 tokens).
     chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
-    await handleParseFloor({ imageDataUri: IMG }, cfg)
+    await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
     const opts = chat.mock.calls[0][2] as { reasoningEffort?: string; maxTokens?: number }
     expect(opts.reasoningEffort).toBe('none')
     expect(opts.maxTokens).toBeGreaterThanOrEqual(2500)
@@ -139,13 +150,13 @@ describe('handleParseFloor — the gate judges real model output', () => {
   it('a long hint reaches the model untruncated up to the cap (the 300-char cap silently clipped every styleHint)', async () => {
     chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
     const hint700 = 'H'.repeat(700)
-    await handleParseFloor({ imageDataUri: IMG, hint: hint700 }, cfg)
+    await handleParseFloor({ imageDataUri: IMG, hint: hint700, uploadConsent: true }, cfg)
     const msg = chat.mock.calls[0][0][1].content as { type: string; text?: string }[]
     const text = msg.find((p) => p.type === 'text')?.text ?? ''
     expect(text).toContain(hint700) // untruncated below the cap
     chat.mockClear()
     chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
-    await handleParseFloor({ imageDataUri: IMG, hint: 'H'.repeat(2000) }, cfg)
+    await handleParseFloor({ imageDataUri: IMG, hint: 'H'.repeat(2000), uploadConsent: true }, cfg)
     const msg2 = chat.mock.calls[0][0][1].content as { type: string; text?: string }[]
     const text2 = msg2.find((p) => p.type === 'text')?.text ?? ''
     expect(text2).not.toContain('H'.repeat(801)) // still hard-bounded at 800
@@ -154,10 +165,10 @@ describe('handleParseFloor — the gate judges real model output', () => {
 
   it('real parses carry the RAW model proposal so the receipt binding re-verifies offline', async () => {
     chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
-    const valid = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const valid = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
     expect(valid.rawProposal).toEqual(cleanGrid) // input_digest is computed over exactly this
     chat.mockResolvedValue(reply(JSON.stringify({ ...cleanGrid, start: { x: 99, y: 0 } })))
-    const voided = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const voided = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
     expect(voided.rawProposal).toEqual({ ...cleanGrid, start: { x: 99, y: 0 } })
     // demo mode has no model proposal — nothing to bind
     const demo = await handleParseFloor({}, cfg)
@@ -167,7 +178,7 @@ describe('handleParseFloor — the gate judges real model output', () => {
   it('ESCALATE: a contradictory proposal returns the cleaned map flagged for review', async () => {
     const contradictory = { ...cleanGrid, obstacles: [{ x: 2, y: 2 }, cleanGrid.start, cleanGrid.item, cleanGrid.drop] }
     chat.mockResolvedValue(reply(JSON.stringify(contradictory)))
-    const res = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
     expect(res.ok).toBe(true)
     expect(res.siteMap).not.toBeNull()
     expect(res.gate?.verdict).toBe('ESCALATE')

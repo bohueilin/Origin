@@ -45,7 +45,7 @@ describe('POST /api/foundry/parse-floor (Cloudflare Pages Function)', () => {
   })
 
   it('an uploaded image with no CEREBRAS_API_KEY is refused, not answered with a sample', async () => {
-    const res = await call(JSON.stringify({ imageDataUri: 'data:image/png;base64,AAAA' }))
+    const res = await call(JSON.stringify({ imageDataUri: 'data:image/png;base64,AAAA', uploadConsent: true }), { PARSE_EXTERNAL_ENABLED: '1' })
     expect(res.status).toBe(200)
     const data = (await res.json()) as ParseFloorResponse
     expect(data.ok).toBe(false)

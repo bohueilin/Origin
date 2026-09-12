@@ -7,7 +7,7 @@ import type { SocRunResponse, SocRaceResponse } from '../src/foundry/soc/socType
 
 const config: AppConfig = {
   port: 0, isProd: false, nebius: {}, insforge: {}, minimax: {},
-  cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1' }, // no key → mock path
+  cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1', externalEnabled: false }, // no key → mock path
   gemini: { model: 'gemini-2.0-flash', baseUrl: 'https://example.test/v1' },
   episodeSecret: 'soc-test-secret', serviceAuthToken: undefined, vapiWebhookSecret: undefined, warnings: [],
 }

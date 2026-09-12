@@ -31,6 +31,8 @@ interface ParseFloorEnv {
   PARSE_DISABLED?: string
   /** Per-isolate requests/minute (default 20). */
   PARSE_RATE_PER_MIN?: string
+  /** Exact server-side enablement; browser flags never grant authority. */
+  PARSE_EXTERNAL_ENABLED?: string
 }
 
 // The handler refuses data URIs over 10MB; anything larger than that plus JSON
@@ -98,6 +100,7 @@ export const onRequestPost = async (ctx: { request: Request; env: ParseFloorEnv 
     apiKey: ctx.env.CEREBRAS_API_KEY,
     model: ctx.env.CEREBRAS_MODEL || 'gemma-4-31b',
     baseUrl: (ctx.env.CEREBRAS_BASE_URL || 'https://api.cerebras.ai/v1').replace(/\/+$/, ''),
+    externalEnabled: ctx.env.PARSE_EXTERNAL_ENABLED === '1',
   }
   return json(await handleParseFloor(body, cfg))
 }

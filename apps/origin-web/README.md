@@ -86,7 +86,7 @@ npm run gates      # build + lint + evidence check + tests (full gate)
 
 ## Privacy & safety
 
-- The hosted demo is **metadata-only** — nothing you submit is uploaded or parsed.
+- The public Foundry path uses a deterministic browser-local sample and does not upload an image. A separately authorized local/backend demo may transmit a selected image to Cerebras only after affirmative consent; Origin handler code does not intentionally persist it. Never submit personal, confidential, regulated, or customer data; provider terms and retention apply. Foundry is deterministic simulated evaluation, not robot training, deployment, or execution.
 - No secrets ship to the browser. Only `VITE_*` public configuration is bundled; any
   API keys stay server-side and are never committed (`.env*` is git-ignored).
 - The readiness license is a decision-support artifact, not a regulatory certification.

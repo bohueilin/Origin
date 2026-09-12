@@ -36,6 +36,8 @@ export interface CerebrasConfig {
   apiKey?: string
   model: string
   baseUrl: string
+  /** Explicit server-side authority for image transmission to Cerebras. */
+  externalEnabled: boolean
 }
 
 /**
@@ -116,6 +118,7 @@ export function loadConfig(cwd: string = process.cwd()): AppConfig {
     apiKey: get('CEREBRAS_API_KEY'),
     model: get('CEREBRAS_MODEL') || 'gemma-4-31b',
     baseUrl: (get('CEREBRAS_BASE_URL') || 'https://api.cerebras.ai/v1').replace(/\/+$/, ''),
+    externalEnabled: get('FOUNDRY_EXTERNAL_PARSE_ENABLED') === '1',
   }
   // The race baseline: prefer Fireworks (real GPU inference, OpenAI-compatible), then Gemini, else
   // illustrative. Override with BASELINE_* to point at any OpenAI-compatible GPU endpoint.

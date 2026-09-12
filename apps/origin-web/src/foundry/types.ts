@@ -30,7 +30,7 @@ export interface FoundryTiming {
  * sample is fine). Every other reason means an image WAS uploaded and the parse was
  * REFUSED (ok:false, siteMap:null): a sample floor never impersonates a parse.
  */
-export type ParseFallbackReason = 'no_image' | 'no_key' | 'bad_image' | 'oversize' | 'api_error' | 'bad_json'
+export type ParseFallbackReason = 'no_image' | 'external_parse_disabled' | 'consent_required' | 'no_key' | 'bad_image' | 'oversize' | 'api_error' | 'bad_json'
 
 export interface ParseFloorResponse {
   ok: boolean

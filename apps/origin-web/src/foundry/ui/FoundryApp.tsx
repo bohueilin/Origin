@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './foundry.css'
 import { FloorGrid } from './FloorGrid'
-import { parseFloor, quorumRun, speedRace, fileToDataUri } from '../foundryClient'
+import { parseFloor, quorumRun, speedRace, fileToDataUri, foundryCapabilities } from '../foundryClient'
 import { SpeedProofs } from '../soc/SocConsole'
 import type { ParseFloorResponse, QuorumRunResponse, SpeedRaceResponse, FoundrySource, QuorumMode } from '../types'
 import { gateParsedFloor, type ParseGateResult } from '../parseGate'
@@ -461,6 +461,7 @@ export default function FoundryApp() {
   const [revealed, setRevealed] = useState(0)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [uploadConsent, setUploadConsent] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const doParse = useCallback(async (imageDataUri?: string, hint?: string) => {
@@ -469,25 +470,26 @@ export default function FoundryApp() {
     setRevealed(0)
     setApiError(null)
     try {
-      setParse(await parseFloor({ imageDataUri, hint }))
+      setParse(await parseFloor({ imageDataUri, hint, uploadConsent }))
     } catch (e) {
       setApiError(e instanceof Error ? e.message : 'Parse failed.')
     } finally {
       setParsing(false)
     }
-  }, [])
+  }, [uploadConsent])
 
   const onUpload = useCallback(
     async (file: File) => {
       setUploadError(null)
       try {
+        if (!foundryCapabilities.browserExternalParse || !uploadConsent) throw new Error('External parsing is local/backend demo only and requires consent.')
         const uri = await fileToDataUri(file)
         await doParse(uri, file.name)
       } catch (e) {
         setUploadError(e instanceof Error ? e.message : 'Could not read that image.')
       }
     },
-    [doParse],
+    [doParse, uploadConsent],
   )
 
   const runLoop = useCallback(async () => {
@@ -568,6 +570,10 @@ export default function FoundryApp() {
           <PerceiverResultStrip />
           <GateBenchStrip />
         </div>
+        <label className="fdy-consent">
+          <input type="checkbox" checked={uploadConsent} onChange={(e) => setUploadConsent(e.target.checked)} />
+          I understand a selected image would leave this browser for Cerebras. Origin handler code does not intentionally persist it; do not upload personal, confidential, regulated, or customer data. <a href="/legal/privacy-policy.html">Privacy</a>
+        </label>
         <div className="fdy-actions">
           <input
             ref={fileRef}
@@ -579,13 +585,14 @@ export default function FoundryApp() {
               if (f) void onUpload(f)
             }}
           />
-          <button className="fdy-btn fdy-btn--primary" onClick={() => fileRef.current?.click()} disabled={parsing} aria-label="Upload a floor image (PNG or JPEG, under 7MB)">
+          <button className="fdy-btn fdy-btn--primary" onClick={() => fileRef.current?.click()} disabled={parsing || !uploadConsent || !foundryCapabilities.browserExternalParse} aria-label="Upload a floor image (PNG or JPEG, under 7MB)">
             {parsing ? 'Reading…' : 'Upload a floor image'}
           </button>
           <button className="fdy-btn" onClick={() => void doParse(undefined, 'sample')} disabled={parsing}>
             Use the sample floor
           </button>
         </div>
+        {!foundryCapabilities.browserExternalParse && <p className="fdy-upload-error">External parse, quorum, and speed are local/backend demo only.</p>}
         {uploadError && <p className="fdy-upload-error" role="alert">{uploadError}</p>}
 
         {/* An upload that could not be parsed is REFUSED with the reason — the

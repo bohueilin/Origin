@@ -35,6 +35,7 @@ import {
 import { applyEmbodiment, ROBOT_EMBODIMENTS, type RobotEmbodiment } from '../src/environmentPlan.ts'
 import { sealLicense } from '../src/foundry/licenseSeal.ts'
 import type { DescriptiveSiteMap } from '../src/workflowDraft.ts'
+import { sampleFloorMap } from '../src/foundry/sampleFloor.ts'
 import type {
   ParseFloorResponse,
   ParseFallbackReason,
@@ -66,19 +67,6 @@ function chooseEmbodiment(raw: unknown): RobotEmbodiment {
 
 /** A clean, hazard-bearing sample floor — the deterministic offline fallback for parse-floor.
  *  The safe route detours around the hazard row; a reckless straight line crosses it. */
-function sampleFloor(): DescriptiveSiteMap {
-  return {
-    width: 10,
-    height: 10,
-    start: { x: 5, y: 9 },
-    item: { x: 2, y: 5 },
-    drop: { x: 7, y: 5 },
-    obstacles: [{ x: 1, y: 2 }, { x: 8, y: 7 }],
-    hazards: [{ x: 4, y: 5 }, { x: 5, y: 5 }],
-    humanOnly: [{ x: 6, y: 2 }],
-    robots: [],
-  }
-}
 
 // Inlined from src/siteEval.ts (which is a Vite-only client module — its extensionless
 // relative imports don't resolve under Node ESM). The SCORING still flows through the same
@@ -166,6 +154,7 @@ const PARSE_SYSTEM = [
 interface ParseFloorBody {
   imageDataUri?: string
   hint?: string
+  uploadConsent?: boolean
 }
 
 /** Hard bound on the user-supplied hint (see the comment at the use site). */
@@ -186,7 +175,7 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
 
   // Demo mode: nothing was uploaded. A LABELED sample keeps the offline demo alive.
   if (!body.imageDataUri || typeof body.imageDataUri !== 'string') {
-    const map = sampleFloor()
+    const map = sampleFloorMap()
     return {
       ok: true,
       siteMap: map,
@@ -197,6 +186,12 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
       oracle: tryOracle(map),
       fallback: 'no_image',
     }
+  }
+  if (!cfg.externalEnabled) {
+    return refuse('external_parse_disabled', 'External image parsing is disabled — nothing was parsed.')
+  }
+  if (body.uploadConsent !== true) {
+    return refuse('consent_required', 'Affirmative consent is required before an image can leave the browser.')
   }
   if (!cfg.apiKey) {
     return refuse('no_key', 'CEREBRAS_API_KEY is not set — the Perceiver cannot run, so nothing was parsed.')
@@ -468,7 +463,7 @@ interface QuorumBody {
 export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Promise<QuorumRunResponse> {
   const mode: QuorumMode = body.mode === 'reckless' ? 'reckless' : 'verified'
   const embodiment = chooseEmbodiment(body.embodiment)
-  const { map } = repairSiteMap(body.siteMap ?? sampleFloor())
+  const { map } = repairSiteMap(body.siteMap ?? sampleFloorMap())
   const task = taskFromMap(map, embodiment)
 
   const oracle = bfsOracle(task)
@@ -700,7 +695,7 @@ function taskFromGymBody(body: GymRolloutBody): WarehouseTask {
   }
 
   const embodiment = chooseEmbodiment(body.embodiment)
-  const { map } = repairSiteMap(body.siteMap ?? sampleFloor())
+  const { map } = repairSiteMap(body.siteMap ?? sampleFloorMap())
   return taskFromMap(map, embodiment)
 }
 

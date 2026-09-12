@@ -16,7 +16,7 @@
 // Written before the implementation; expected to fail against the current handler.
 
 import { describe, expect, test, vi, afterEach } from 'vitest'
-import { onRequestPost } from './lead.ts'
+import { onRequestGet, onRequestHead, onRequestPost, MAX_LEAD_BODY_BYTES } from './lead.ts'
 
 interface Env {
   LEAD_WEBHOOK_URL?: string
@@ -162,6 +162,22 @@ describe('POST /api/lead — persistence', () => {
 })
 
 describe('POST /api/lead — validation still holds', () => {
+  test('rejects declared and streamed oversized bodies before outbound work', async () => {
+    const fetchSpy = vi.fn()
+    vi.stubGlobal('fetch', fetchSpy)
+    const declared = new Request('https://origin.test/api/lead', { method: 'POST', headers: { 'content-length': String(MAX_LEAD_BODY_BYTES + 1) }, body: '{}' })
+    expect((await onRequestPost({ request: declared, env: DB_ENV })).status).toBe(413)
+    const streamed = new Request('https://origin.test/api/lead', { method: 'POST', body: JSON.stringify({ ...VALID, blocker: 'x'.repeat(MAX_LEAD_BODY_BYTES) }) })
+    expect((await onRequestPost({ request: streamed, env: DB_ENV })).status).toBe(413)
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
+  test('GET and HEAD remain benign public lead probes', async () => {
+    expect(onRequestGet().status).toBe(200)
+    const head = onRequestHead()
+    expect(head.status).toBe(200)
+    expect(await head.text()).toBe('')
+  })
   test('the honeypot is accepted silently and writes nothing', async () => {
     const fetchSpy = vi.fn(async () => new Response('ok', { status: 200 }))
     vi.stubGlobal('fetch', fetchSpy)
@@ -184,7 +200,7 @@ describe('POST /api/lead — validation still holds', () => {
     const fetchSpy = vi.fn(async () => new Response(JSON.stringify([{ id: 'row-3' }]), { status: 201 }))
     vi.stubGlobal('fetch', fetchSpy)
 
-    await post({ ...VALID, company: 'C'.repeat(500), blocker: 'B'.repeat(20_000) }, DB_ENV)
+    await post({ ...VALID, company: 'C'.repeat(500), blocker: 'B'.repeat(9_000) }, DB_ENV)
 
     const rows = JSON.parse(String(dbCalls(fetchSpy)[0].init.body)) as Record<string, string>[]
     // Matches the CHECK constraints in migrations/20260804023516_admin-portal-schema.sql:

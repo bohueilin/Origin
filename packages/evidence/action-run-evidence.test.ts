@@ -64,4 +64,54 @@ describe('Action/Run Evidence', () => {
       completeness: { ...built.completeness, freshness: { ...built.completeness.freshness, max_age_ms: 0 } },
     }).ok).toBe(false)
   })
+
+  it.each([['nonce_digest', 'raw-secret-value'], ['token_digest', 'raw-secret-value'], ['credential_digest', 'raw-secret-value'], ['nonce_digest', null]])(
+    'rejects unsafe nested secret-like digest field %s',
+    (key, value) => {
+      const candidate = { ...input, proposal: { ...input.proposal, proposed_effect: { [key]: value } } }
+      expect(validateActionRunEvidence({ ...candidate, evidence_digest: 'f'.repeat(64), signature: null }).ok).toBe(false)
+      expect(() => buildActionRunEvidence(candidate)).toThrow(TypeError)
+    },
+  )
+
+  it('allows declared nullable and SHA-256 digest fields', () => {
+    const approved = {
+      ...input,
+      authorization: {
+        ...input.authorization,
+        approval_id: 'approval-1', approved_by: 'reviewer-1', nonce_digest: 'f'.repeat(64), expires_at: '2026-09-12T01:00:00.000Z',
+      },
+    }
+    expect(buildActionRunEvidence(approved).authorization.nonce_digest).toBe('f'.repeat(64))
+    expect(buildActionRunEvidence(input).provider_evidence.receipt_digest).toBeNull()
+  })
+
+  it('closes omission and duplicate entries to their approved shapes', () => {
+    const partial = {
+      ...input,
+      completeness: { ...input.completeness, coverage: 'partial', expected_count: 12, observed_count: 11 },
+    }
+    expect(() => buildActionRunEvidence({
+      ...partial,
+      completeness: { ...partial.completeness, omissions: [{ id_digest: '0'.repeat(64), reason: 'not-observed', extra: true }] },
+    })).toThrow(TypeError)
+    expect(() => buildActionRunEvidence({
+      ...partial,
+      completeness: { ...partial.completeness, duplicates: [{ id_digest: '0'.repeat(64), count: 2, extra: true }] },
+    })).toThrow(TypeError)
+  })
+
+  it('enforces authorization tuples and non-execution outcomes', () => {
+    const notAttempted = { status: 'not_attempted', attester: 'none', attested_at: null, statement_digest: null }
+    const fullApproval = { approval_id: 'approval-1', approved_by: 'reviewer-1', nonce_digest: 'f'.repeat(64), expires_at: '2026-09-12T01:00:00.000Z' }
+    expect(buildActionRunEvidence({ ...input, authorization: { ...input.authorization, ...fullApproval } }).authorization.approved_by).toBe('reviewer-1')
+    expect(buildActionRunEvidence({
+      ...input, execution_mode: 'live', authorization: { ...input.authorization, verdict: 'deny' }, outcome_attestation: notAttempted,
+    }).outcome_attestation.status).toBe('not_attempted')
+    expect(buildActionRunEvidence({
+      ...input, execution_mode: 'shadow', authorization: { ...input.authorization, verdict: 'approval_required', approval_id: 'approval-1', approved_by: null, nonce_digest: 'f'.repeat(64), expires_at: '2026-09-12T01:00:00.000Z' }, outcome_attestation: notAttempted,
+    }).authorization.verdict).toBe('approval_required')
+    expect(() => buildActionRunEvidence({ ...input, authorization: { ...input.authorization, approval_id: 'approval-1' } })).toThrow(TypeError)
+    expect(() => buildActionRunEvidence({ ...input, execution_mode: 'live', authorization: { ...input.authorization, verdict: 'deny' } })).toThrow(TypeError)
+  })
 })

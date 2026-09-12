@@ -10,6 +10,7 @@ const AUTHORIZATION_VERDICTS = new Set(['allow', 'deny', 'approval_required'])
 const ATTESTERS = new Set(['none', 'origin', 'provider', 'independent_verifier'])
 const COVERAGE = new Set(['complete', 'partial', 'unknown'])
 const FRESHNESS = new Set(['fresh', 'stale', 'unknown'])
+const NULLABLE_SECRET_DIGEST_PATHS = new Set(['evidence.authorization.nonce_digest'])
 
 const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
 const isPlainRecord = (value) => isRecord(value) && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null)
@@ -18,7 +19,7 @@ const nullableString = (value) => value === null || typeof value === 'string'
 const digest = (value) => typeof value === 'string' && HEX_64.test(value)
 const count = (value) => Number.isSafeInteger(value) && value >= 0
 const timestamp = (value) => typeof value === 'string' && ISO_UTC.test(value) && !Number.isNaN(Date.parse(value))
-const isForbiddenKey = (key) => !key.endsWith('_digest') && /(?:nonce|token|credential|secret|password|private[_-]?key|bearer)/i.test(key)
+const isSecretLikeKey = (key) => /(?:nonce|token|credential|secret|password|private[_-]?key|bearer)/i.test(key)
 
 function add(failures, condition, message) {
   if (!condition) failures.push(message)
@@ -50,8 +51,11 @@ function scanJson(value, path, failures) {
     return
   }
   for (const [key, child] of Object.entries(value)) {
-    if (isForbiddenKey(key)) failures.push(`${path}.${key}: raw secret-like fields are forbidden`)
-    scanJson(child, `${path}.${key}`, failures)
+    const childPath = `${path}.${key}`
+    const safeSecretDigest = key.endsWith('_digest') && (digest(child) || (child === null && NULLABLE_SECRET_DIGEST_PATHS.has(childPath)))
+    if (isSecretLikeKey(key) && !safeSecretDigest)
+      failures.push(`${path}.${key}: raw secret-like fields are forbidden`)
+    scanJson(child, childPath, failures)
   }
 }
 
@@ -62,40 +66,50 @@ function validateAuthorization(authorization, failures) {
   for (const key of ['approval_id', 'approved_by']) add(failures, nullableString(authorization[key]), `authorization.${key}: must be null or string`)
   add(failures, authorization.nonce_digest === null || digest(authorization.nonce_digest), 'authorization.nonce_digest: must be null or a SHA-256 digest')
   add(failures, authorization.expires_at === null || timestamp(authorization.expires_at), 'authorization.expires_at: must be null or ISO UTC')
-  const carriesApproval = authorization.approval_id !== null || authorization.approved_by !== null || authorization.nonce_digest !== null || authorization.expires_at !== null
-  if (authorization.verdict !== 'approval_required' && carriesApproval) failures.push('authorization: allow/deny must not carry approval material')
-  if (authorization.verdict === 'approval_required') {
-    if (authorization.approval_id === null && (authorization.approved_by !== null || authorization.nonce_digest !== null || authorization.expires_at !== null))
-      failures.push('authorization: approval material requires approval_id')
-    if (authorization.expires_at !== null && authorization.nonce_digest === null) failures.push('authorization: expiry requires nonce digest')
-  }
+  const noApproval = authorization.approval_id === null && authorization.approved_by === null && authorization.nonce_digest === null && authorization.expires_at === null
+  const approvedTuple = nonEmptyString(authorization.approval_id) && nonEmptyString(authorization.approved_by) && digest(authorization.nonce_digest) && timestamp(authorization.expires_at)
+  const pendingTuple = nonEmptyString(authorization.approval_id) && authorization.approved_by === null && digest(authorization.nonce_digest) && timestamp(authorization.expires_at)
+  if (authorization.verdict === 'allow' && !noApproval && !approvedTuple) failures.push('authorization: allow requires no approval or a complete approved tuple')
+  if (authorization.verdict === 'deny' && !noApproval) failures.push('authorization: deny must not carry approval material')
+  if (authorization.verdict === 'approval_required' && authorization.approved_by !== null) failures.push('authorization: approval_required must not name an approver')
+  if (authorization.verdict === 'approval_required' && !noApproval && !pendingTuple) failures.push('authorization: approval_required requires no approval or a coherent pending tuple')
 }
 
 function emptyProvider(provider) {
   return provider.provider === null && provider.receipt_digest === null && provider.readback_digest === null && provider.readback_at === null
 }
 
-function validateOutcomeAndProvider(evidence, failures) {
-  const outcome = evidence.outcome_attestation
-  const provider = evidence.provider_evidence
-  exactKeys(outcome, 'outcome_attestation', ['status', 'attester', 'attested_at', 'statement_digest'], failures)
+function validateProviderEvidence(provider, failures) {
   exactKeys(provider, 'provider_evidence', ['provider', 'receipt_digest', 'readback_digest', 'readback_at'], failures)
-  add(failures, OUTCOME_STATUSES.includes(outcome.status), 'outcome_attestation.status: unsupported status')
-  add(failures, ATTESTERS.has(outcome.attester), 'outcome_attestation.attester: unsupported attester')
-  add(failures, outcome.attested_at === null || timestamp(outcome.attested_at), 'outcome_attestation.attested_at: invalid timestamp')
-  add(failures, outcome.statement_digest === null || digest(outcome.statement_digest), 'outcome_attestation.statement_digest: must be null or a digest')
   add(failures, nullableString(provider.provider), 'provider_evidence.provider: must be null or string')
   add(failures, provider.receipt_digest === null || digest(provider.receipt_digest), 'provider_evidence.receipt_digest: must be null or a digest')
   add(failures, provider.readback_digest === null || digest(provider.readback_digest), 'provider_evidence.readback_digest: must be null or a digest')
   add(failures, provider.readback_at === null || timestamp(provider.readback_at), 'provider_evidence.readback_at: invalid timestamp')
+  if (provider.readback_digest === null && provider.readback_at !== null) failures.push('provider_evidence: readback time requires readback digest')
+  if (provider.readback_digest !== null && provider.readback_at === null) failures.push('provider_evidence: readback digest requires readback time')
+  if (provider.provider === null && (provider.receipt_digest !== null || provider.readback_digest !== null || provider.readback_at !== null))
+    failures.push('provider_evidence: provider name is required when provider evidence is present')
+  if (provider.provider !== null && provider.receipt_digest === null && provider.readback_digest === null && provider.readback_at === null)
+    failures.push('provider_evidence: provider name requires receipt or readback evidence')
+}
 
-  if (evidence.execution_mode === 'simulated') {
-    if (!['simulated', 'not_attempted'].includes(outcome.status)) failures.push('simulated execution only permits simulated or not_attempted outcomes')
+function validateOutcome(evidence, failures) {
+  const outcome = evidence.outcome_attestation
+  const provider = evidence.provider_evidence
+  exactKeys(outcome, 'outcome_attestation', ['status', 'attester', 'attested_at', 'statement_digest'], failures)
+  add(failures, OUTCOME_STATUSES.includes(outcome.status), 'outcome_attestation.status: unsupported status')
+  add(failures, ATTESTERS.has(outcome.attester), 'outcome_attestation.attester: unsupported attester')
+  add(failures, outcome.attested_at === null || timestamp(outcome.attested_at), 'outcome_attestation.attested_at: invalid timestamp')
+  add(failures, outcome.statement_digest === null || digest(outcome.statement_digest), 'outcome_attestation.statement_digest: must be null or a digest')
+
+  if (outcome.status === 'not_attempted') {
+    if (!emptyProvider(provider)) failures.push('not_attempted requires empty provider evidence')
+    if (outcome.attester !== 'none' || outcome.attested_at !== null || outcome.statement_digest !== null) failures.push('not_attempted requires none attester and null attestation fields')
+  }
+  if (outcome.status === 'simulated') {
+    if (evidence.execution_mode !== 'simulated') failures.push('simulated outcome requires simulated execution mode')
     if (!emptyProvider(provider)) failures.push('simulated execution requires empty provider evidence')
-    if (outcome.status === 'simulated' && outcome.attester !== 'origin') failures.push('simulated outcome requires origin attester')
-    if (outcome.status === 'not_attempted' && outcome.attester !== 'none') failures.push('not_attempted outcome requires none attester')
-  } else if (['simulated', 'not_attempted'].includes(outcome.status)) {
-    failures.push('simulated/not_attempted outcomes require simulated execution mode')
+    if (outcome.attester !== 'origin') failures.push('simulated outcome requires origin attester')
   }
   if (outcome.status === 'provider_confirmed') {
     if (outcome.attester !== 'provider' || !nonEmptyString(provider.provider) || !digest(provider.receipt_digest))
@@ -105,8 +119,7 @@ function validateOutcomeAndProvider(evidence, failures) {
     if (outcome.attester !== 'independent_verifier' || !digest(provider.readback_digest) || !timestamp(provider.readback_at))
       failures.push('independently_verified requires independent verifier attester and readback digest/time')
   }
-  if (outcome.status === 'claimed' && (outcome.attester !== 'provider' || !nonEmptyString(provider.provider) || !digest(provider.receipt_digest)))
-    failures.push('claimed outcome requires provider attester, name, and receipt digest')
+  if (outcome.status === 'claimed' && !['origin', 'provider'].includes(outcome.attester)) failures.push('claimed outcome requires origin or provider attester')
 }
 
 function validateCompleteness(completeness, now, failures) {
@@ -116,8 +129,14 @@ function validateCompleteness(completeness, now, failures) {
   add(failures, count(completeness.observed_count), 'completeness.observed_count: must be a non-negative integer')
   add(failures, completeness.covered_ids_digest === null || digest(completeness.covered_ids_digest), 'completeness.covered_ids_digest: must be null or a digest')
   add(failures, Array.isArray(completeness.omissions) && Array.isArray(completeness.duplicates), 'completeness.omissions/duplicates: must be arrays')
-  for (const omission of completeness.omissions || []) add(failures, isPlainRecord(omission) && digest(omission.id_digest) && nonEmptyString(omission.reason), 'completeness.omissions: invalid entry')
-  for (const duplicate of completeness.duplicates || []) add(failures, isPlainRecord(duplicate) && digest(duplicate.id_digest) && Number.isSafeInteger(duplicate.count) && duplicate.count >= 2, 'completeness.duplicates: invalid entry')
+  for (const omission of completeness.omissions || []) {
+    if (isPlainRecord(omission)) exactKeys(omission, 'completeness.omissions[]', ['id_digest', 'reason'], failures)
+    add(failures, isPlainRecord(omission) && digest(omission.id_digest) && nonEmptyString(omission.reason), 'completeness.omissions: invalid entry')
+  }
+  for (const duplicate of completeness.duplicates || []) {
+    if (isPlainRecord(duplicate)) exactKeys(duplicate, 'completeness.duplicates[]', ['id_digest', 'count'], failures)
+    add(failures, isPlainRecord(duplicate) && digest(duplicate.id_digest) && Number.isSafeInteger(duplicate.count) && duplicate.count >= 2, 'completeness.duplicates: invalid entry')
+  }
   if (completeness.coverage === 'complete' && (completeness.expected_count === null || completeness.expected_count !== completeness.observed_count || completeness.omissions.length || completeness.duplicates.length))
     failures.push('completeness: complete coverage requires exact counts without omissions or duplicates')
   if (completeness.coverage === 'unknown' && completeness.expected_count !== null) failures.push('completeness: unknown coverage must not claim expected count')
@@ -188,9 +207,13 @@ export function validateActionRunEvidence(value, options = {}) {
     const authorizationStart = failures.length
     if (authorization) validateAuthorization(authorization, failures)
     dimensions.authorization_valid = authorizationStart === failures.length
-    const providerStart = failures.length
-    if (outcome && provider) validateOutcomeAndProvider(value, failures)
-    dimensions.provider_bound = providerStart === failures.length
+    const providerFailures = []
+    if (provider) validateProviderEvidence(provider, providerFailures)
+    dimensions.provider_bound = providerFailures.length === 0
+    failures.push(...providerFailures)
+    if (outcome && provider) validateOutcome(value, failures)
+    if (authorization && outcome && ['deny', 'approval_required'].includes(authorization.verdict) && outcome.status !== 'not_attempted')
+      failures.push('authorization: deny/approval_required requires not_attempted outcome')
     if (source) {
       exactKeys(source, 'source', ['trace_id', 'audit_row_digest', 'oracle_verdict_digest'], failures)
       add(failures, nullableString(source.trace_id) && (source.audit_row_digest === null || digest(source.audit_row_digest)) && (source.oracle_verdict_digest === null || digest(source.oracle_verdict_digest)), 'source: invalid trace/oracle binding')

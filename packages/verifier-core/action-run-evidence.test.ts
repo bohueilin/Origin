@@ -76,12 +76,13 @@ describe('signed Action/Run Evidence', () => {
 
     const claimed = structuredClone(unsigned)
     claimed.execution_mode = 'live'
-    claimed.outcome_attestation = { status: 'claimed', attester: 'provider', attested_at: '2026-09-12T00:00:00.000Z', statement_digest: 'f'.repeat(64) }
-    claimed.provider_evidence = { provider: 'fixture-provider', receipt_digest: '1'.repeat(64), readback_digest: null, readback_at: null }
+    claimed.outcome_attestation = { status: 'claimed', attester: 'origin', attested_at: '2026-09-12T00:00:00.000Z', statement_digest: 'f'.repeat(64) }
+    claimed.provider_evidence = { provider: null, receipt_digest: null, readback_digest: null, readback_at: null }
     const signedClaimed = await signActionRunEvidence(buildActionRunEvidence(claimed), pair, { keyId: 'origin-prod-1', keyEpoch: 1, issuer: 'origin', signedAt: '2026-09-12T00:00:00.000Z' })
     const claimedVerdict = await verifyActionRunEvidence(signedClaimed, pins('origin-prod-1', 1, signedClaimed.signature!.sigil.thumbprint))
     expect(claimedVerdict.ok).toBe(false)
     expect(claimedVerdict.dimensions.execution_verified).toBe(false)
+    expect(claimedVerdict.dimensions.provider_bound).toBe(true)
   })
 
   it('reports stale evidence as non-green', async () => {

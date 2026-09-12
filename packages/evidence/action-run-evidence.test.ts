@@ -114,4 +114,27 @@ describe('Action/Run Evidence', () => {
     expect(() => buildActionRunEvidence({ ...input, authorization: { ...input.authorization, approval_id: 'approval-1' } })).toThrow(TypeError)
     expect(() => buildActionRunEvidence({ ...input, execution_mode: 'live', authorization: { ...input.authorization, verdict: 'deny' } })).toThrow(TypeError)
   })
+
+  it('rejects fully populated provider confirmation in the simulated lane', () => {
+    const candidate = {
+      ...input,
+      outcome_attestation: { status: 'provider_confirmed', attester: 'provider', attested_at: '2026-09-12T00:00:00.000Z', statement_digest: 'f'.repeat(64) },
+      provider_evidence: { provider: 'fixture-provider', receipt_digest: '1'.repeat(64), readback_digest: '2'.repeat(64), readback_at: '2026-09-12T00:00:00.000Z' },
+    }
+    const sealed = { ...candidate, evidence_digest: '', signature: null }
+    sealed.evidence_digest = actionRunEvidenceDigest(sealed)
+    expect(validateActionRunEvidence(sealed).ok).toBe(false)
+    expect(() => buildActionRunEvidence(candidate)).toThrow(TypeError)
+  })
+
+  it.each(['api_key', 'apiKey', 'signing_key', 'signingKey', 'session_key', 'sessionKey'])(
+    'rejects nested raw provider-key alias %s in builder and validator',
+    (key) => {
+      const candidate = { ...input, proposal: { ...input.proposal, proposed_effect: { [key]: 'raw-provider-key' } } }
+      const sealed = { ...candidate, evidence_digest: '', signature: null }
+      sealed.evidence_digest = actionRunEvidenceDigest(sealed)
+      expect(validateActionRunEvidence(sealed).ok).toBe(false)
+      expect(() => buildActionRunEvidence(candidate)).toThrow(TypeError)
+    },
+  )
 })

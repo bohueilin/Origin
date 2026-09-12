@@ -19,7 +19,7 @@ const nullableString = (value) => value === null || typeof value === 'string'
 const digest = (value) => typeof value === 'string' && HEX_64.test(value)
 const count = (value) => Number.isSafeInteger(value) && value >= 0
 const timestamp = (value) => typeof value === 'string' && ISO_UTC.test(value) && !Number.isNaN(Date.parse(value))
-const isSecretLikeKey = (key) => /(?:nonce|token|credential|secret|password|private[_-]?key|bearer)/i.test(key)
+const isSecretLikeKey = (key) => /(?:nonce|token|credential|secret|password|private[_-]?key|bearer|api[_-]?key|signing[_-]?key|session[_-]?key)/i.test(key)
 
 function add(failures, condition, message) {
   if (!condition) failures.push(message)
@@ -102,6 +102,10 @@ function validateOutcome(evidence, failures) {
   add(failures, outcome.attested_at === null || timestamp(outcome.attested_at), 'outcome_attestation.attested_at: invalid timestamp')
   add(failures, outcome.statement_digest === null || digest(outcome.statement_digest), 'outcome_attestation.statement_digest: must be null or a digest')
 
+  if (evidence.execution_mode === 'simulated') {
+    if (!['simulated', 'not_attempted'].includes(outcome.status)) failures.push('simulated execution only permits simulated or not_attempted outcomes')
+    if (!emptyProvider(provider)) failures.push('simulated execution requires empty provider evidence')
+  }
   if (outcome.status === 'not_attempted') {
     if (!emptyProvider(provider)) failures.push('not_attempted requires empty provider evidence')
     if (outcome.attester !== 'none' || outcome.attested_at !== null || outcome.statement_digest !== null) failures.push('not_attempted requires none attester and null attestation fields')

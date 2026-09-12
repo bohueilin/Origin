@@ -363,7 +363,7 @@ const reservationPrepare: ToolAdapter = {
 // --- commit connectors (simulated; approval-gated) --------------------------
 
 function simulated(action: string, detail: Record<string, unknown>): ToolResult {
-  return { summary: `Simulated ${action} — no real-world action was taken.`, data: { ...detail, simulated: true }, simulated: true }
+  return { summary: `Simulated ${action} — no real-world action was taken.`, data: { ...detail, simulated: true }, simulated: true, execution_mode: 'simulated', outcome_attestation: 'simulated' }
 }
 
 const registrationSubmit: ToolAdapter = {

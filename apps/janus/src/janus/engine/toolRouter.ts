@@ -25,6 +25,9 @@ import type { AuditLogger } from './auditLogger'
 import type { IdFactory } from './ids'
 import { tellGate, type DeclaredPlan, type ProbeSignal } from './tell'
 import type { Cordon } from './cordon'
+import { canonical, sha256 } from '@origin/evidence/env-evidence'
+import type { ApprovalManager } from './approvalManager'
+import type { KillSwitchContext, KillSwitchRegistry } from './killSwitch'
 
 export interface RouteResult {
   call: ToolCall
@@ -43,6 +46,7 @@ export interface RouterGuard {
   plan?: DeclaredPlan
   probes?: ProbeSignal[]
 }
+export interface RouterStops { approvals?: ApprovalManager; killSwitch?: KillSwitchRegistry; killContext?: () => KillSwitchContext }
 
 export class ToolRouter {
   private grant: CapabilityGrant
@@ -50,14 +54,16 @@ export class ToolRouter {
   private idf: IdFactory
   private now: () => number
   private guard?: RouterGuard
+  private stops?: RouterStops
   private stepIndex = 0
 
-  constructor(grant: CapabilityGrant, audit: AuditLogger, idf: IdFactory, now: () => number, guard?: RouterGuard) {
+  constructor(grant: CapabilityGrant, audit: AuditLogger, idf: IdFactory, now: () => number, guard?: RouterGuard, stops?: RouterStops) {
     this.grant = grant
     this.audit = audit
     this.idf = idf
     this.now = now
     this.guard = guard
+    this.stops = stops
   }
 
   async route(
@@ -112,17 +118,39 @@ export class ToolRouter {
     // 2) Authorization path.
     if (adapter.sideEffecting) {
       // Commit: requires an approved packet for THIS tool + capability.
-      if (!approval) return deny('side-effecting action requires an approval packet', 'tool.denied')
-      if (approval.status !== 'approved') return deny(`approval is ${approval.status}`, 'tool.denied')
+      if (!approval || !this.stops?.approvals || !this.stops.killSwitch || !this.stops.killContext) return deny('side-effecting action requires managed approval and stop controls', 'tool.denied')
+      let routeInputDigest: string
+      try {
+        routeInputDigest = sha256(canonical(input))
+      } catch {
+        return deny('side-effecting input is not canonical JSON', 'tool.denied')
+      }
+      const stored = this.stops.approvals.get(approval.approval_id)
+      if (!stored) return deny('approval is unknown', 'tool.denied')
+      approval = stored
+      if (approval.intent_id !== this.grant.intent_id || approval.intent_id !== ctx.intent.intent_id) return deny('approval intent does not match this grant and request', 'tool.denied')
       if (approval.capability !== cap || approval.tool_name !== adapter.name) {
         return deny('approval does not authorize this action', 'tool.denied')
       }
-      if (this.now() >= approval.expires_at) return deny('approval expired', 'tool.denied')
+      if (routeInputDigest !== approval.input_digest) return deny('approval input does not match the approved input', 'tool.denied')
+      if (approval.status !== 'approved') return deny(`approval is ${approval.status}`, 'tool.denied')
+      if (this.now() >= approval.expires_at) { this.stops.approvals.expireApproved(approval.approval_id); return deny('approval expired', 'tool.denied') }
+      if (approval.execution_mode !== 'simulated' || approval.nonce_digest !== sha256(canonical({ domain: 'origin.approval-nonce.v1', approval_id: approval.approval_id, intent_id: approval.intent_id }))) return deny('approval binding is invalid', 'tool.denied')
       // Defense in depth: the grant's own policy must have scoped this capability as
       // approval-gated. A packet alone cannot unlock a capability the grant never contemplated.
       if (!this.grant.requires_approval_for.includes(cap) && !this.grant.denied_capabilities.includes(cap)) {
         return deny('capability is outside the grant policy', 'tool.denied')
       }
+      let blocked
+      try {
+        blocked = this.stops.killSwitch.blocked(this.stops.killContext())
+      } catch {
+        return deny('kill-switch context is unavailable', 'tool.denied')
+      }
+      if (blocked) return deny(`kill switch active (${blocked.scope}): ${blocked.reason}`, 'tool.killed')
+      const consumed = this.stops.approvals.consumeApproved(approval.approval_id)
+      if (!consumed) return deny('approval is no longer consumable', 'tool.denied')
+      approval = consumed
     } else {
       // Read/prepare: must be explicitly allowed and not denied.
       if (this.grant.denied_capabilities.includes(cap)) return deny('capability is on the deny list', 'tool.denied')
@@ -136,7 +164,8 @@ export class ToolRouter {
       const raw = await adapter.execute(input, { ...ctx, approval })
       const result = redact(raw)
       assertNoSecret(result, `tool:${adapter.name}`)
-      const call = this.mkCall(adapter, input, 'ok', result.summary)
+      const status = adapter.sideEffecting ? (result.execution_mode === 'simulated' || result.simulated ? 'simulated' : 'claimed') : 'ok'
+      const call = this.mkCall(adapter, input, status, result.summary)
       this.audit.append({
         actor: 'tool',
         kind: adapter.sideEffecting ? 'tool.commit' : 'tool.run',
@@ -184,8 +213,12 @@ export class ToolRouter {
 function summarizeInput(input: Record<string, unknown>): string {
   // Redact both by key-name and by value-pattern before rendering, so neither a
   // secret-ish field name nor a secret-shaped value can reach the trace.
-  const safe = redact(input)
-  const parts = Object.entries(safe).map(([k, v]) => `${k}=${typeof v === 'string' ? v : JSON.stringify(v)}`)
-  const s = parts.join(', ')
-  return s.length > 120 ? s.slice(0, 117) + '…' : s || '(none)'
+  try {
+    const safe = redact(input)
+    const parts = Object.entries(safe).map(([k, v]) => `${k}=${typeof v === 'string' ? v : JSON.stringify(v)}`)
+    const s = parts.join(', ')
+    return s.length > 120 ? s.slice(0, 117) + '…' : s || '(none)'
+  } catch {
+    return '[unrenderable input]'
+  }
 }

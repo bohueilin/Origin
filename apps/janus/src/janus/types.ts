@@ -99,7 +99,7 @@ export interface AgentPlan {
   fallback_plan: string
 }
 
-export type ToolCallStatus = 'ok' | 'denied' | 'awaiting_approval' | 'error'
+export type ToolCallStatus = 'ok' | 'denied' | 'awaiting_approval' | 'error' | 'simulated' | 'claimed'
 
 export interface ToolCall {
   tool_call_id: string
@@ -132,6 +132,9 @@ export interface ApprovalPacket {
   capability: Capability
   tool_name: string
   tool_input: Record<string, unknown>
+  input_digest: string
+  nonce_digest: string
+  execution_mode: 'simulated'
 }
 
 export type AuditActor = 'user' | 'agent' | 'janus' | 'tool'
@@ -176,6 +179,8 @@ export interface ToolResult {
   data?: Record<string, unknown>
   /** True when this is a simulated side effect that performed NO real action. */
   simulated?: boolean
+  execution_mode?: 'simulated' | 'authorized_fixture' | 'sandbox' | 'customer_replay' | 'shadow' | 'live'
+  outcome_attestation?: 'not_attempted' | 'simulated' | 'claimed' | 'provider_confirmed' | 'independently_verified' | 'failed' | 'unknown'
 }
 
 export interface ToolAdapter<Input = Record<string, unknown>, Output extends ToolResult = ToolResult> {

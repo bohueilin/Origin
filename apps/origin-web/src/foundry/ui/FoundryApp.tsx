@@ -587,10 +587,10 @@ export default function FoundryApp() {
             accept="image/png,image/jpeg"
             hidden
             disabled={!uploadAvailable}
-            onChange={(e) => {
+            onChange={uploadAvailable ? (e) => {
               const f = e.target.files?.[0]
               if (f) void onUpload(f)
-            }}
+            } : undefined}
           />
           <button className="fdy-btn fdy-btn--primary" onClick={uploadAvailable ? openUploadChooser : undefined} disabled={parsing || !uploadAvailable} aria-label="Upload a floor image (PNG or JPEG, under 7MB)">
             {parsing ? 'Reading…' : 'Upload a floor image'}

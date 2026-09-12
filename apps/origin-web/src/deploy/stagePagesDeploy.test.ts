@@ -118,11 +118,17 @@ describe('stage-pages-deploy', () => {
     expect(fs.readFileSync(path.join(populated, 'keep.txt'), 'utf8')).toBe('must not be deleted')
   })
 
-  it('reuses only a complete, exact managed staging directory', () => {
+  it('never reuses or deletes a nonempty staging directory, even when its marker and shape look managed', () => {
     const root = tempDir()
     const valid = path.join(root, 'valid')
     runStage(valid)
-    expect(() => runStage(valid)).not.toThrow()
+    const stagedRoute = path.join(valid, 'functions', 'api', 'lead.ts')
+    const stagedSupport = path.join(valid, 'server', 'requestAuth.ts')
+    fs.writeFileSync(stagedRoute, 'valuable route bytes')
+    fs.writeFileSync(stagedSupport, 'valuable support bytes')
+    expect(() => runStage(valid)).toThrow(/nonempty/i)
+    expect(fs.readFileSync(stagedRoute, 'utf8')).toBe('valuable route bytes')
+    expect(fs.readFileSync(stagedSupport, 'utf8')).toBe('valuable support bytes')
 
     const markerOnly = path.join(root, 'marker-only')
     fs.mkdirSync(markerOnly)
@@ -150,6 +156,19 @@ describe('stage-pages-deploy', () => {
     expect(fs.readFileSync(path.join(wrongMarker, '.origin-pages-stage'), 'utf8')).toBe('wrong manifest\n')
     expect(fs.readFileSync(path.join(markerWithForeignContents, 'foreign.txt'), 'utf8')).toBe('must not be deleted')
     expect(fs.lstatSync(path.join(markerSymlink, '.origin-pages-stage')).isSymbolicLink()).toBe(true)
+  })
+
+  it('rejects direct and symlink-resolved outputs inside the application source before writing', () => {
+    const fixture = fixtureApp()
+    const direct = path.join(fixture.appRoot, 'server', '.stage-output')
+    const alias = path.join(path.dirname(fixture.appRoot), 'app-alias')
+    fs.symlinkSync(fixture.appRoot, alias, 'dir')
+    const throughAlias = path.join(alias, 'src', '.stage-output')
+
+    expect(() => runFixtureStage(fixture, direct)).toThrow(/unsafe staging output/i)
+    expect(() => runFixtureStage(fixture, throughAlias)).toThrow(/unsafe staging output/i)
+    expect(fs.existsSync(direct)).toBe(false)
+    expect(fs.existsSync(path.join(fixture.appRoot, 'src', '.stage-output'))).toBe(false)
   })
 
   it('rejects a symlinked allowlisted route before it stages external bytes', () => {

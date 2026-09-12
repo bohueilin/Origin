@@ -131,6 +131,20 @@ test('public Foundry is local-sample-only and emits no Foundry/provider request'
   await expect(upload).toBeDisabled()
   await expect(page.getByText('local/backend demo only', { exact: false }).first()).toBeVisible()
 
+  // A disabled public control has no React change handler. Programmatically
+  // dispatching a file event must therefore do nothing, rather than merely
+  // relying on the browser's disabled-input behavior or an in-handler guard.
+  await page.locator('input[type="file"]').evaluate((element) => {
+    const input = element as HTMLInputElement
+    Object.defineProperty(input, 'files', {
+      configurable: true,
+      value: [new File(['not-an-image'], 'floor.png', { type: 'image/png' })],
+    })
+    input.dispatchEvent(new Event('change', { bubbles: true }))
+  })
+  await expect(page.getByRole('alert')).toHaveCount(0)
+  await expect(page.getByText(/No image left this browser/i)).toHaveCount(0)
+
   const speed = page.getByRole('button', { name: /Run the speed race/i }).first()
   await expect(speed).toBeDisabled()
 

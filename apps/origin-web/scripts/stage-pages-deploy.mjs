@@ -56,10 +56,16 @@ async function canonicalOutput(raw) {
 
 function isForbiddenOutput(output) {
   const root = path.parse(output).root
-  return output === root || output === repositoryRoot || output === os.homedir()
+  const relativeToApp = path.relative(appRoot, output)
+  const isInsideApp = relativeToApp === '' || (
+    relativeToApp !== '..' &&
+    !relativeToApp.startsWith(`..${path.sep}`) &&
+    !path.isAbsolute(relativeToApp)
+  )
+  return output === root || output === repositoryRoot || output === os.homedir() || isInsideApp
 }
 
-async function emptyManagedDirectory(output, supportFiles) {
+async function prepareEmptyDirectory(output) {
   const existing = await exists(output)
   if (!existing) {
     await fs.mkdir(output, { recursive: true })
@@ -70,8 +76,7 @@ async function emptyManagedDirectory(output, supportFiles) {
   if (!stat.isDirectory()) throw new Error(`Output must be a directory: ${output}`)
   const entries = await fs.readdir(output, { withFileTypes: true })
   if (entries.length === 0) return
-  await assertManagedStage(output, entries, supportFiles)
-  await Promise.all(entries.map((entry) => fs.rm(path.join(output, entry.name), { recursive: true, force: true })))
+  throw new Error(`Refusing nonempty staging output directory: ${output}`)
 }
 
 async function collectRegularFiles(directory, label) {
@@ -119,32 +124,6 @@ async function preflightSource() {
   return { sources, supportFiles }
 }
 
-async function assertManagedStage(output, entries, supportFiles) {
-  const expectedEntries = [markerName, 'functions', ...supports].sort()
-  const actualEntries = entries.map((entry) => entry.name).sort()
-  if (JSON.stringify(actualEntries) !== JSON.stringify(expectedEntries)) {
-    throw new Error(`Refusing output with unmanaged entries: ${output}`)
-  }
-  const marker = path.join(output, markerName)
-  const markerStat = await fs.lstat(marker)
-  if (markerStat.isSymbolicLink() || !markerStat.isFile()) {
-    throw new Error(`Refusing unmanaged staging marker: ${marker}`)
-  }
-  if ((await fs.readFile(marker, 'utf8')) !== stageManifest) {
-    throw new Error(`Refusing staging marker with unexpected manifest: ${marker}`)
-  }
-  const actualRoutes = await stagedFunctionFiles(path.join(output, 'functions'))
-  if (JSON.stringify(actualRoutes) !== JSON.stringify(routes)) {
-    throw new Error(`Refusing staging route set with unexpected manifest: ${output}`)
-  }
-  for (const support of supports) {
-    const actualFiles = await collectRegularFiles(path.join(output, support), 'staged support')
-    if (JSON.stringify(actualFiles) !== JSON.stringify(supportFiles.get(support))) {
-      throw new Error(`Refusing staging support tree with unexpected manifest: ${output}`)
-    }
-  }
-}
-
 async function copyFile(relative, source, output) {
   const destination = path.join(output, 'functions', relative)
   await fs.mkdir(path.dirname(destination), { recursive: true })
@@ -171,7 +150,7 @@ async function main() {
   if (isForbiddenOutput(output)) throw new Error(`Unsafe staging output directory: ${output}`)
   const { sources, supportFiles } = await preflightSource()
 
-  await emptyManagedDirectory(output, supportFiles)
+  await prepareEmptyDirectory(output)
   await fs.mkdir(path.join(output, 'functions'), { recursive: true })
   for (const route of routes) await copyFile(route, sources.get(route), output)
 

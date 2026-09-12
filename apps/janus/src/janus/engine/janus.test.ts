@@ -13,7 +13,8 @@ import { MockSecretBroker } from '../secrets/mockSecretBroker'
 import { pickBroker } from '../secrets/pickBroker'
 import { MOCK_SECRET_SENTINEL } from '../secrets/redact'
 import { SCENARIOS, getScenario } from '../scenarios'
-import type { CapabilityGrant, ToolExecutionContext, UserIntent } from '../types'
+import type { ApprovalPacketSpec } from '../scenarios/types'
+import type { CapabilityGrant, ToolAdapter, ToolExecutionContext, ToolResult, UserIntent } from '../types'
 
 // ---- a controllable clock ----
 function clock(start = 1_000_000) {
@@ -60,10 +61,10 @@ describe('ToolRouter fail-closed authorization', () => {
     const approvals = new ApprovalManager(idf, c.now); const stops = new KillSwitchRegistry()
     const context = { environment_id: 'env', tenant_id: 'tenant', agent_id: grant.agent_id, session_id: 'session' }
     const router = new ToolRouter(grant, new AuditLogger(idf, c.now), idf, c.now, undefined, { approvals, killSwitch: stops, killContext: () => context })
-    const packetSpec: any = { action_type: 'send', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'yes', deny_button_label: 'no', capability: 'messages.send' }
+    const packetSpec: ApprovalPacketSpec = { action_type: 'send', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'yes', deny_button_label: 'no', capability: 'messages.send' }
     const make = () => { const p = approvals.create(packetSpec, fakeIntent(), 'send', { to: 'a' }); approvals.approve(p.approval_id); return p }
     let calls = 0
-    const adapter: any = { name: 'send', requiredCapability: 'messages.send', riskLevel: 'high', sideEffecting: true, async execute(_input: any, ctx: any) { calls++; expect(ctx.approval.status).toBe('consumed'); return { summary: 'sent', simulated: true, execution_mode: 'simulated', outcome_attestation: 'simulated' } } }
+    const adapter: ToolAdapter = { name: 'send', requiredCapability: 'messages.send', riskLevel: 'high', sideEffecting: true, async execute(_input, executionContext) { calls++; expect(executionContext.approval?.status).toBe('consumed'); return { summary: 'sent', simulated: true, execution_mode: 'simulated', outcome_attestation: 'simulated' } } }
     const mismatch = make(); expect((await router.route(adapter, { to: 'changed' }, ctx(grant, c.now), mismatch)).call.status).toBe('denied'); expect(calls).toBe(0)
     const good = make(); expect((await router.route(adapter, { to: 'a' }, ctx(grant, c.now), good)).call.status).toBe('simulated'); expect(calls).toBe(1); expect(approvals.get(good.approval_id)?.status).toBe('consumed')
     expect((await router.route(adapter, { to: 'a' }, ctx(grant, c.now), good)).call.status).toBe('denied'); expect(calls).toBe(1)
@@ -75,10 +76,10 @@ describe('ToolRouter fail-closed authorization', () => {
     const c = clock(); const grant = buildGrant(c.now(), [], ['messages.send']); const idf = new IdFactory()
     const approvals = new ApprovalManager(idf, c.now); const stops = new KillSwitchRegistry()
     const router = new ToolRouter(grant, new AuditLogger(idf, c.now), idf, c.now, undefined, { approvals, killSwitch: stops, killContext: () => ({ environment_id: 'env', tenant_id: 'tenant', agent_id: grant.agent_id, session_id: 'session' }) })
-    const packetSpec: any = { action_type: 'send', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'yes', deny_button_label: 'no', capability: 'messages.send' }
+    const packetSpec: ApprovalPacketSpec = { action_type: 'send', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'yes', deny_button_label: 'no', capability: 'messages.send' }
     const make = () => { const p = approvals.create(packetSpec, fakeIntent(), 'send', { to: 'a' }); approvals.approve(p.approval_id); return p }
     let calls = 0
-    const simulated: any = { name: 'send', requiredCapability: 'messages.send', riskLevel: 'high', sideEffecting: true, async execute() { calls++; await Promise.resolve(); return { summary: 'simulated', execution_mode: 'simulated', outcome_attestation: 'simulated' } } }
+    const simulated: ToolAdapter = { name: 'send', requiredCapability: 'messages.send', riskLevel: 'high', sideEffecting: true, async execute() { calls++; await Promise.resolve(); return { summary: 'simulated', execution_mode: 'simulated', outcome_attestation: 'simulated' } } }
 
     const forged = make()
     const callerForgery = { ...forged, intent_id: 'forged', tool_name: 'other', capability: 'calendar.read', input_digest: '0'.repeat(64), nonce_digest: '1'.repeat(64) }
@@ -107,11 +108,11 @@ describe('ToolRouter fail-closed authorization', () => {
     expect(approvals.get(throwing.approval_id)?.status).toBe('consumed')
 
     const claimed = make()
-    const live = { ...simulated, async execute() { calls++; return { summary: 'provider not yet verified', execution_mode: 'live', outcome_attestation: 'claimed' } } }
+    const live: ToolAdapter = { ...simulated, async execute(): Promise<ToolResult> { calls++; return { summary: 'provider not yet verified', execution_mode: 'live', outcome_attestation: 'claimed' } } }
     expect((await router.route(live, { to: 'a' }, ctx(grant, c.now), claimed)).call.status).toBe('claimed')
 
     const malformed = make()
-    const cyclic: any = { to: 'a' }; cyclic.self = cyclic
+    const cyclic: Record<string, unknown> = { to: 'a' }; cyclic.self = cyclic
     expect((await router.route(simulated, cyclic, ctx(grant, c.now), malformed)).call.status).toBe('denied')
     expect(calls).toBe(4)
 
@@ -255,7 +256,7 @@ describe('high-risk approval gating (airport pickup)', () => {
   })
 
   it('audits and blocks a malformed approval input instead of throwing from the session boundary', async () => {
-    const c = clock(); const cyclic: any = {}; cyclic.self = cyclic
+    const c = clock(); const cyclic: Record<string, unknown> = {}; cyclic.self = cyclic
     const base = getScenario('airport-pickup')!
     const scenario = { ...base, steps: base.steps.map((step) => step.kind === 'approval' ? { ...step, commitInput: cyclic } : step) }
     const session = new JanusSession(scenario, { now: c.now })

@@ -12,6 +12,7 @@ const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.
 const repoRoot = path.resolve(appRoot, '../..')
 const script = path.join(appRoot, 'scripts/stage-pages-deploy.mjs')
 const temps: string[] = []
+const managedManifest = '{"schema":"origin-pages-stage/v1","routes":["api/evidence/status.ts","api/foundry/parse-floor.ts","api/lead.ts"],"supports":["server","src"]}\n'
 
 const tempDir = (): string => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'origin-pages-stage-test-'))
@@ -21,6 +22,32 @@ const tempDir = (): string => {
 
 const runStage = (out: string): void => {
   execFileSync(process.execPath, [script, '--out', out], {
+    cwd: repoRoot,
+    stdio: 'pipe',
+  })
+}
+
+const fixtureApp = (): { appRoot: string; script: string } => {
+  const root = tempDir()
+  const app = path.join(root, 'app')
+  const fixtureScript = path.join(app, 'scripts', 'stage-pages-deploy.mjs')
+  fs.mkdirSync(path.dirname(fixtureScript), { recursive: true })
+  fs.copyFileSync(script, fixtureScript)
+
+  for (const route of ['api/evidence/status.ts', 'api/foundry/parse-floor.ts', 'api/lead.ts']) {
+    const file = path.join(app, 'functions', route)
+    fs.mkdirSync(path.dirname(file), { recursive: true })
+    fs.writeFileSync(file, `export const route = ${JSON.stringify(route)}\n`)
+  }
+  fs.mkdirSync(path.join(app, 'server'), { recursive: true })
+  fs.writeFileSync(path.join(app, 'server', 'requestAuth.ts'), 'export {}\n')
+  fs.mkdirSync(path.join(app, 'src', 'foundry'), { recursive: true })
+  fs.writeFileSync(path.join(app, 'src', 'foundry', 'types.ts'), 'export {}\n')
+  return { appRoot: app, script: fixtureScript }
+}
+
+const runFixtureStage = (fixture: { script: string }, out: string): void => {
+  execFileSync(process.execPath, [fixture.script, '--out', out], {
     cwd: repoRoot,
     stdio: 'pipe',
   })
@@ -89,6 +116,78 @@ describe('stage-pages-deploy', () => {
       expect(() => runStage(unsafe)).toThrow()
     }
     expect(fs.readFileSync(path.join(populated, 'keep.txt'), 'utf8')).toBe('must not be deleted')
+  })
+
+  it('reuses only a complete, exact managed staging directory', () => {
+    const root = tempDir()
+    const valid = path.join(root, 'valid')
+    runStage(valid)
+    expect(() => runStage(valid)).not.toThrow()
+
+    const markerOnly = path.join(root, 'marker-only')
+    fs.mkdirSync(markerOnly)
+    fs.writeFileSync(path.join(markerOnly, '.origin-pages-stage'), managedManifest)
+
+    const wrongMarker = path.join(root, 'wrong-marker')
+    fs.mkdirSync(wrongMarker)
+    fs.writeFileSync(path.join(wrongMarker, '.origin-pages-stage'), 'wrong manifest\n')
+
+    const markerWithForeignContents = path.join(root, 'foreign')
+    fs.mkdirSync(markerWithForeignContents)
+    fs.writeFileSync(path.join(markerWithForeignContents, '.origin-pages-stage'), managedManifest)
+    fs.writeFileSync(path.join(markerWithForeignContents, 'foreign.txt'), 'must not be deleted')
+
+    const markerSymlink = path.join(root, 'marker-symlink')
+    fs.mkdirSync(markerSymlink)
+    const markerTarget = path.join(root, 'marker-target')
+    fs.writeFileSync(markerTarget, managedManifest)
+    fs.symlinkSync(markerTarget, path.join(markerSymlink, '.origin-pages-stage'))
+
+    for (const output of [markerOnly, wrongMarker, markerWithForeignContents, markerSymlink]) {
+      expect(() => runStage(output)).toThrow()
+    }
+    expect(fs.existsSync(path.join(markerOnly, '.origin-pages-stage'))).toBe(true)
+    expect(fs.readFileSync(path.join(wrongMarker, '.origin-pages-stage'), 'utf8')).toBe('wrong manifest\n')
+    expect(fs.readFileSync(path.join(markerWithForeignContents, 'foreign.txt'), 'utf8')).toBe('must not be deleted')
+    expect(fs.lstatSync(path.join(markerSymlink, '.origin-pages-stage')).isSymbolicLink()).toBe(true)
+  })
+
+  it('rejects a symlinked allowlisted route before it stages external bytes', () => {
+    const fixture = fixtureApp()
+    const external = path.join(path.dirname(fixture.appRoot), 'external-route.ts')
+    fs.writeFileSync(external, 'external route bytes')
+    const route = path.join(fixture.appRoot, 'functions', 'api', 'lead.ts')
+    fs.unlinkSync(route)
+    fs.symlinkSync(external, route)
+    const output = path.join(path.dirname(fixture.appRoot), 'stage')
+
+    expect(() => runFixtureStage(fixture, output)).toThrow(/symlink/i)
+    expect(fs.existsSync(output)).toBe(false)
+  })
+
+  it('rejects a symlinked support file before it stages external bytes', () => {
+    const fixture = fixtureApp()
+    const external = path.join(path.dirname(fixture.appRoot), 'external-support.ts')
+    fs.writeFileSync(external, 'external support bytes')
+    const support = path.join(fixture.appRoot, 'server', 'requestAuth.ts')
+    fs.unlinkSync(support)
+    fs.symlinkSync(external, support)
+    const output = path.join(path.dirname(fixture.appRoot), 'stage')
+
+    expect(() => runFixtureStage(fixture, output)).toThrow(/symlink/i)
+    expect(fs.existsSync(output)).toBe(false)
+  })
+
+  it('rejects a symlinked parent within a support tree before staging', () => {
+    const fixture = fixtureApp()
+    const external = path.join(path.dirname(fixture.appRoot), 'external-support-dir')
+    fs.mkdirSync(external)
+    fs.writeFileSync(path.join(external, 'payload.ts'), 'external support bytes')
+    fs.symlinkSync(external, path.join(fixture.appRoot, 'src', 'linked'), 'dir')
+    const output = path.join(path.dirname(fixture.appRoot), 'stage')
+
+    expect(() => runFixtureStage(fixture, output)).toThrow(/symlink/i)
+    expect(fs.existsSync(output)).toBe(false)
   })
 
   it('keeps the release workflow manual, main-bound, pinned, and stage-scoped', () => {

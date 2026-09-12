@@ -12,6 +12,12 @@ const routes = [
   'api/foundry/parse-floor.ts',
   'api/lead.ts',
 ]
+const supports = ['server', 'src']
+const stageManifest = `${JSON.stringify({
+  schema: 'origin-pages-stage/v1',
+  routes,
+  supports,
+})}\n`
 
 function usage() {
   throw new Error('Usage: node apps/origin-web/scripts/stage-pages-deploy.mjs --out <directory>')
@@ -53,29 +59,96 @@ function isForbiddenOutput(output) {
   return output === root || output === repositoryRoot || output === os.homedir()
 }
 
-async function emptyManagedDirectory(output) {
+async function emptyManagedDirectory(output, supportFiles) {
   const existing = await exists(output)
   if (!existing) {
     await fs.mkdir(output, { recursive: true })
     return
   }
 
-  const stat = await fs.stat(output)
+  const stat = await fs.lstat(output)
   if (!stat.isDirectory()) throw new Error(`Output must be a directory: ${output}`)
-  const entries = await fs.readdir(output)
-  if (entries.length > 0 && !entries.includes(markerName)) {
-    throw new Error(`Refusing nonempty unmarked output directory: ${output}`)
-  }
-  await Promise.all(entries.map((entry) => fs.rm(path.join(output, entry), { recursive: true, force: true })))
+  const entries = await fs.readdir(output, { withFileTypes: true })
+  if (entries.length === 0) return
+  await assertManagedStage(output, entries, supportFiles)
+  await Promise.all(entries.map((entry) => fs.rm(path.join(output, entry.name), { recursive: true, force: true })))
 }
 
-async function copyFile(relative, output) {
-  const source = path.join(appRoot, 'functions', relative)
+async function collectRegularFiles(directory, label) {
+  const root = await fs.lstat(directory)
+  if (root.isSymbolicLink()) throw new Error(`Refusing symlink ${label} root: ${directory}`)
+  if (!root.isDirectory()) throw new Error(`Expected ${label} directory: ${directory}`)
+
+  const files = []
+  async function visit(current) {
+    for (const entry of await fs.readdir(current, { withFileTypes: true })) {
+      const absolute = path.join(current, entry.name)
+      const metadata = await fs.lstat(absolute)
+      if (metadata.isSymbolicLink()) throw new Error(`Refusing symlink in ${label}: ${absolute}`)
+      if (metadata.isDirectory()) await visit(absolute)
+      else if (metadata.isFile()) files.push(path.relative(directory, absolute).split(path.sep).join('/'))
+      else throw new Error(`Unexpected ${label} entry: ${absolute}`)
+    }
+  }
+  await visit(directory)
+  return files.sort()
+}
+
+async function assertSourceRoute(relative) {
+  const root = path.join(appRoot, 'functions')
+  let current = root
+  for (const component of relative.split('/')) {
+    const metadata = await fs.lstat(current)
+    if (metadata.isSymbolicLink()) throw new Error(`Refusing symlink in route source: ${current}`)
+    if (!metadata.isDirectory()) throw new Error(`Expected route source directory: ${current}`)
+    current = path.join(current, component)
+  }
+  const metadata = await fs.lstat(current)
+  if (metadata.isSymbolicLink()) throw new Error(`Refusing symlink route source: ${current}`)
+  if (!metadata.isFile()) throw new Error(`Expected route source file: ${current}`)
+  return current
+}
+
+async function preflightSource() {
+  const sources = new Map()
+  for (const route of routes) sources.set(route, await assertSourceRoute(route))
+  const supportFiles = new Map()
+  for (const support of supports) {
+    supportFiles.set(support, await collectRegularFiles(path.join(appRoot, support), 'support source'))
+  }
+  return { sources, supportFiles }
+}
+
+async function assertManagedStage(output, entries, supportFiles) {
+  const expectedEntries = [markerName, 'functions', ...supports].sort()
+  const actualEntries = entries.map((entry) => entry.name).sort()
+  if (JSON.stringify(actualEntries) !== JSON.stringify(expectedEntries)) {
+    throw new Error(`Refusing output with unmanaged entries: ${output}`)
+  }
+  const marker = path.join(output, markerName)
+  const markerStat = await fs.lstat(marker)
+  if (markerStat.isSymbolicLink() || !markerStat.isFile()) {
+    throw new Error(`Refusing unmanaged staging marker: ${marker}`)
+  }
+  if ((await fs.readFile(marker, 'utf8')) !== stageManifest) {
+    throw new Error(`Refusing staging marker with unexpected manifest: ${marker}`)
+  }
+  const actualRoutes = await stagedFunctionFiles(path.join(output, 'functions'))
+  if (JSON.stringify(actualRoutes) !== JSON.stringify(routes)) {
+    throw new Error(`Refusing staging route set with unexpected manifest: ${output}`)
+  }
+  for (const support of supports) {
+    const actualFiles = await collectRegularFiles(path.join(output, support), 'staged support')
+    if (JSON.stringify(actualFiles) !== JSON.stringify(supportFiles.get(support))) {
+      throw new Error(`Refusing staging support tree with unexpected manifest: ${output}`)
+    }
+  }
+}
+
+async function copyFile(relative, source, output) {
   const destination = path.join(output, 'functions', relative)
-  const stat = await fs.stat(source)
-  if (!stat.isFile()) throw new Error(`Expected route source file: ${source}`)
   await fs.mkdir(path.dirname(destination), { recursive: true })
-  await fs.copyFile(source, destination)
+  await fs.cp(source, destination, { dereference: false, force: false })
 }
 
 async function stagedFunctionFiles(directory) {
@@ -96,15 +169,16 @@ async function stagedFunctionFiles(directory) {
 async function main() {
   const output = await canonicalOutput(parseOutput(process.argv.slice(2)))
   if (isForbiddenOutput(output)) throw new Error(`Unsafe staging output directory: ${output}`)
+  const { sources, supportFiles } = await preflightSource()
 
-  await emptyManagedDirectory(output)
+  await emptyManagedDirectory(output, supportFiles)
   await fs.mkdir(path.join(output, 'functions'), { recursive: true })
-  for (const route of routes) await copyFile(route, output)
+  for (const route of routes) await copyFile(route, sources.get(route), output)
 
-  for (const support of ['server', 'src']) {
+  for (const support of supports) {
     await fs.cp(path.join(appRoot, support), path.join(output, support), {
       recursive: true,
-      dereference: true,
+      dereference: false,
       force: true,
     })
   }
@@ -113,7 +187,13 @@ async function main() {
   if (JSON.stringify(actualRoutes) !== JSON.stringify(routes)) {
     throw new Error(`Staged Pages routes diverged from the allowlist: ${actualRoutes.join(', ')}`)
   }
-  await fs.writeFile(path.join(output, markerName), 'Origin Pages staging manifest\n')
+  for (const support of supports) {
+    const actualFiles = await collectRegularFiles(path.join(output, support), 'staged support')
+    if (JSON.stringify(actualFiles) !== JSON.stringify(supportFiles.get(support))) {
+      throw new Error(`Staged Pages support tree diverged from source: ${support}`)
+    }
+  }
+  await fs.writeFile(path.join(output, markerName), stageManifest)
   process.stdout.write(`Staged Pages routes in ${output}: ${actualRoutes.join(', ')}\n`)
 }
 

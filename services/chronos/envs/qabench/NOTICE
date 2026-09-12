@@ -22,6 +22,9 @@ materializes each upstream task into a HUD environment layout and, in doing so:
     conftest discovery to a trusted tests root — not present upstream;
   * adds `provenance.json` per task (grader/dockerfile/build-context/base-image
     digests and a content digest) — not present upstream;
+  * accepts Docker build-context files only from the checked-in, revision-bound
+    `tasks.json` public-build-asset allowlist, snapshots their bytes before any
+    write, and atomically publishes only a complete staged batch;
   * relocates the intentional public v1 verification bundle into `task_assets/`;
     the HUD image exposes that public grader by design, while clean verification
     is a separate trusted read-only referee boundary.

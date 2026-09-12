@@ -28,9 +28,26 @@ def test_parse_grade_deps_extracts_uv_add_minus_pytest() -> None:
     assert parse_grade_deps(_TEST_SH) == ["numpy", "pandas", "scipy", "requests"]
 
 
-def test_parse_grade_deps_drops_version_pins_and_flags() -> None:
-    deps = parse_grade_deps("uv add 'numpy>=2.0' scipy==1.18.0 --frozen\n")
+def test_parse_grade_deps_drops_version_pins() -> None:
+    deps = parse_grade_deps("uv add numpy>=2.0 scipy==1.18.0\n")
     assert deps == ["numpy", "scipy"]
+
+
+@pytest.mark.parametrize(
+    "token",
+    [
+        "$(id)",
+        "`id`",
+        "'numpy'",
+        '"numpy"',
+        "numpy;id",
+        "numpy\\\nuv add id",
+        "--index-url",
+    ],
+)
+def test_parse_grade_deps_rejects_shell_and_option_injection(token: str) -> None:
+    with pytest.raises(ValueError, match="unsafe grade dependency"):
+        parse_grade_deps(f"uv add {token}\n")
 
 
 def _materialized_env(tmp_path: Path) -> Path:
@@ -68,7 +85,7 @@ def test_generate_hud_env_emits_serve_contract(tmp_path: Path) -> None:
     assert 'CMD ["/bin/bash"]' not in dockerfile
     assert 'hud", "serve", "env:env"' in dockerfile
     # Grade-time deps from test.sh are baked in for offline grading.
-    assert '"numpy" "pandas" "scipy" "requests"' in dockerfile
+    assert "numpy pandas scipy requests" in dockerfile
 
     assert "hud-python" in files["pyproject.toml"]
     assert "from env import build_task" in files["tasks.py"]

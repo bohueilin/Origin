@@ -13,11 +13,24 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from chronos.qabench.hud_env import write_hud_env
-from chronos.qabench.importer import discover_task, plan_env, task_slug, validate_task_id
+from chronos.qabench.importer import (
+    _STAGE_MARKER,
+    _assert_no_symlink,
+    _atomic_write,
+    _ensure_real_directory,
+    _remove_owned_stage,
+    ImportedEnvPlan,
+    discover_task,
+    plan_env,
+    task_slug,
+    validate_task_id,
+)
 
 _DEFAULT_TASKS_DIR = Path(".external/terminal-wrench/tasks")
 
@@ -40,6 +53,7 @@ def materialize(
     dest_root: Path | str,
     revision: str = "",
     with_hud: bool = True,
+    build_asset_policies: dict[tuple[str, str], tuple[str, ...]] | None = None,
 ) -> list[MaterializeResult]:
     """Discover + plan + write each task; skip (don't write) non-deployable ones.
 
@@ -55,26 +69,87 @@ def materialize(
             raise ValueError(f"multiple task ids normalize to slug {slug!r}")
         slugs.add(slug)
 
+    destination = Path(dest_root)
+    _assert_no_symlink(destination)
+    if destination.exists():
+        if not destination.is_dir():
+            raise ValueError(f"destination root is not a directory: {destination}")
+        if any(destination.iterdir()):
+            raise ValueError(
+                f"destination root is non-empty; explicit refresh is required: {destination}"
+            )
+        raise ValueError(f"destination root already exists: {destination}")
+
+    # Freeze every deployable source before creating the private batch stage.
+    planned: list[tuple[MaterializeResult, ImportedEnvPlan]] = []
     results: list[MaterializeResult] = []
     for task_id in task_ids:
         task = discover_task(tasks_dir, task_id, revision=revision)
-        env_dir = None
         if task.deployable:
-            env_dir = str(plan_env(task, dest_root).write())
-            if with_hud:
-                write_hud_env(env_dir)
-        results.append(
-            MaterializeResult(
+            policy = (
+                build_asset_policies.get((task_id, revision))
+                if build_asset_policies is not None
+                else None
+            )
+            plan = plan_env(
+                task,
+                destination / f".{destination.name}.stage-{uuid.uuid4().hex}",
+                public_build_assets=policy,
+            )
+            result = MaterializeResult(
                 task_id=task_id,
                 slug=task.slug(),
-                deployable=task.deployable,
+                deployable=True,
                 base_image=task.base_image,
                 base_rewritten=task.base_rewritten,
                 base_digest=task.base_digest,
-                env_dir=env_dir,
-                skip_reason=task.skip_reason,
+                env_dir=str(destination / task.slug()),
+                skip_reason=None,
             )
-        )
+            planned.append((result, plan))
+            results.append(result)
+        else:
+            results.append(
+                MaterializeResult(
+                    task_id=task_id,
+                    slug=task.slug(),
+                    deployable=False,
+                    base_image=task.base_image,
+                    base_rewritten=task.base_rewritten,
+                    base_digest=task.base_digest,
+                    env_dir=None,
+                    skip_reason=task.skip_reason,
+                )
+            )
+
+    _ensure_real_directory(destination.parent)
+    batch_stage = destination.parent / f".{destination.name}.stage-{uuid.uuid4().hex}"
+    try:
+        batch_stage.mkdir(mode=0o700)
+        _atomic_write(batch_stage / _STAGE_MARKER, b"origin-qabench-stage\n")
+        for result, plan in planned:
+            plan.dest = batch_stage / result.slug
+            env_dir = plan.write()
+            if with_hud:
+                write_hud_env(env_dir)
+            for name in ("Dockerfile", "provenance.json"):
+                candidate = env_dir / name
+                if candidate.is_symlink() or not candidate.is_file():
+                    raise ValueError(f"staged environment verification failed: {candidate}")
+            if with_hud:
+                for name in ("env.py", "pyproject.toml", "tasks.py", "Dockerfile.hud"):
+                    candidate = env_dir / name
+                    if candidate.is_symlink() or not candidate.is_file():
+                        raise ValueError(f"staged HUD verification failed: {candidate}")
+        (batch_stage / _STAGE_MARKER).unlink()
+        _assert_no_symlink(destination.parent)
+        if destination.exists() or destination.is_symlink():
+            raise ValueError(f"destination appeared while publishing batch: {destination}")
+        os.replace(batch_stage, destination)
+    except Exception:
+        if (batch_stage / _STAGE_MARKER).exists():
+            _remove_owned_stage(batch_stage)
+        raise
     return results
 
 
@@ -97,6 +172,22 @@ def load_manifest(path: Path | str) -> tuple[list[str], str]:
     return list(data["tasks"]), str(data.get("terminal_wrench_revision", ""))
 
 
+def load_build_asset_policies(path: Path | str) -> dict[tuple[str, str], tuple[str, ...]]:
+    """Load exact reviewed public build inputs, keyed by task and source revision."""
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    revision = str(data.get("terminal_wrench_revision", ""))
+    raw = data.get("public_build_assets", {})
+    if not isinstance(raw, dict):
+        raise ValueError("public_build_assets must be an object keyed by task id")
+    policies: dict[tuple[str, str], tuple[str, ...]] = {}
+    for task_id, assets in raw.items():
+        validate_task_id(task_id)
+        if not isinstance(assets, list) or not all(isinstance(item, str) for item in assets):
+            raise ValueError(f"public build assets for {task_id!r} must be a string list")
+        policies[(task_id, revision)] = tuple(assets)
+    return policies
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Materialize qabench envs from TW tasks."
@@ -110,7 +201,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     task_ids, revision = load_manifest(args.manifest)
-    results = materialize(args.tasks_dir, task_ids, args.dest_root, revision=revision)
+    results = materialize(
+        args.tasks_dir,
+        task_ids,
+        args.dest_root,
+        revision=revision,
+        build_asset_policies=load_build_asset_policies(args.manifest),
+    )
     report = import_report(results, args.tasks_dir, revision)
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(

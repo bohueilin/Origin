@@ -12,8 +12,9 @@ or honestly skipped, base image, digests) is in
 - `Dockerfile` — the task's build, with the base image rewritten to a **verified
   public** `ghcr.io/laude-institute/t-bench/<variant>` image when the upstream task
   used the private `…aliyuncs.com/…:t-bench-<variant>` mirror.
-- build-context files (e.g. `generate_returns.py`, `.dockerignore`) — copied so the
-  image builds.
+- reviewed build-context files — copied only when listed under the exact task and
+  pinned revision in `tasks.json`'s `public_build_assets` policy. The importer
+  rejects unlisted local inputs, symlinks, special files, and missing policies.
 - `task_assets/` — the intentional public v1 grader surface (`test_outputs.py`,
   `test.sh`, `instruction.md`). `Dockerfile.hud` copies it into `/app/task_assets`
   for the benchmark's public reward-hack behavior; the later clean-verification
@@ -49,7 +50,8 @@ attribution, the statement of modification, and the contamination-canary note.
 uv run python -m chronos.qabench.materialize --manifest envs/qabench/tasks.json
 ```
 
-This reads `.external/terminal-wrench` (the pinned checkout) and rewrites the env
-layouts idempotently. Large build-context data assets (e.g.
-`fmri-encoding-r/fMRIdata.RData`, ~80MB) are **git-ignored** and recreated by this
-command; their integrity is verifiable via each env's `build_context_digest`.
+This reads `.external/terminal-wrench` (the pinned checkout) into a fresh,
+previously absent output root. It deliberately refuses to merge into or overwrite
+the checked-in historical layouts; regeneration is a separately reviewed release
+operation. The importer freezes reviewed source bytes before writing a private
+batch stage and atomically publishes only a fully verified batch.

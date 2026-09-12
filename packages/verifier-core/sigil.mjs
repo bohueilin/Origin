@@ -50,7 +50,11 @@ function requireSubtle() {
 
 /** Generate a fresh ECDSA P-256 signing keypair. In the browser, keep the key non-extractable. */
 export async function generateSigningKey() {
-  return requireSubtle().generateKey(KEY_ALG, true, ['sign', 'verify'])
+  const subtle = requireSubtle()
+  const generated = await subtle.generateKey(KEY_ALG, true, ['sign', 'verify'])
+  const privatePkcs8 = await subtle.exportKey('pkcs8', generated.privateKey)
+  const privateKey = await subtle.importKey('pkcs8', privatePkcs8, KEY_ALG, false, ['sign'])
+  return { publicKey: generated.publicKey, privateKey }
 }
 
 /**

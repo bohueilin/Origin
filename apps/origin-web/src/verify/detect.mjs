@@ -26,6 +26,7 @@ import { canonical, sha256, verifyChain } from '@origin/evidence/env-evidence'
 import { verifySigil } from '@origin/verifier-core/sigil'
 import { verifyCredential } from '@origin/verifier-core/crucible'
 import { verifyReceiptInBatch } from '@origin/verifier-core/merkleBatch'
+import { verifyActionRunEvidence } from '@origin/verifier-core/action-run-evidence'
 
 const isObj = (v) => Boolean(v) && typeof v === 'object' && !Array.isArray(v)
 const short = (d) => String(d).slice(0, 12) + '…'
@@ -37,6 +38,7 @@ const info = (label, text) => ({ tone: 'info', label, text })
 
 /** Human names for the detected kinds (shared by the UI + selftest output). */
 export const KIND_LABELS = {
+  action_run_evidence: 'Action/Run Evidence — signed policy-evaluation envelope',
   sigil: 'Sigil — portable signed receipt',
   credential: 'Crucible credential — config-bound reference check',
   receipt: 'ScoreReceipt — sealed score record',
@@ -52,6 +54,10 @@ export const KIND_LABELS = {
  */
 export function detectArtifact(value) {
   if (!isObj(value)) return 'unknown'
+  if (value.schema_version === '1.0.0' && typeof value.evidence_id === 'string' && typeof value.evidence_digest === 'string'
+    && isObj(value.identity) && isObj(value.subject) && isObj(value.proposal) && isObj(value.authorization)
+    && isObj(value.outcome_attestation) && isObj(value.provider_evidence) && isObj(value.completeness) && isObj(value.source))
+    return 'action_run_evidence'
   if (isObj(value.pubkey_jwk) && typeof value.signature === 'string' && typeof value.payload_digest === 'string')
     return 'sigil'
   if (typeof value.credential_digest === 'string' && typeof value.config_digest === 'string')
@@ -63,6 +69,46 @@ export function detectArtifact(value) {
   if (typeof value.receipt_digest === 'string') return 'receipt'
   if (Array.isArray(value.events) && typeof value.final_digest === 'string') return 'trace'
   return 'unknown'
+}
+
+async function verifyActionRunEvidenceArtifact(evidence, opts) {
+  const lines = [info('detected', 'Action/Run Evidence (schema_version + execution_mode + signed envelope) → verifyActionRunEvidence, offline')]
+  const v = await verifyActionRunEvidence(evidence, { expectedThumbprints: opts?.expectedThumbprints, now: opts?.now })
+  const notAttempted = evidence?.outcome_attestation?.status === 'not_attempted'
+  const browserPolicyEvaluation = evidence?.proposal?.action_type === 'synthetic_reference_check_policy_evaluation'
+  const noProviderEvidence = evidence?.provider_evidence?.provider === null && evidence?.provider_evidence?.receipt_digest === null
+    && evidence?.provider_evidence?.readback_digest === null && evidence?.provider_evidence?.readback_at === null
+  if (v.dimensions.integrity) lines.push(ok('digest', 'the unsigned envelope content-address recomputes'))
+  else lines.push(bad('digest', 'the unsigned envelope content-address does not recompute'))
+  if (v.dimensions.signature_valid) lines.push(ok('signature', 'the signed Action/Run statement matches this envelope'))
+  else lines.push(bad('signature', 'the signed Action/Run statement could not be verified'))
+  lines.push(v.dimensions.issuer_trusted
+    ? ok('issuer pin', 'the signer matches a configured key_id/key_epoch thumbprint')
+    : info('issuer pin', 'no trusted thumbprint was supplied for this key_id/key_epoch; signature integrity is not issuer trust'))
+  lines.push(info('outcome status', String(evidence?.outcome_attestation?.status ?? 'missing')))
+  lines.push(v.dimensions.provider_bound
+    ? info('provider evidence', noProviderEvidence ? 'no provider receipt or readback is represented' : 'provider-evidence fields are internally consistent')
+    : bad('provider evidence', 'provider-evidence fields are malformed or inconsistent'))
+  lines.push(notAttempted
+    ? info('execution', 'not attempted — no named agent execution, provider confirmation, or provider readback is represented')
+    : v.dimensions.execution_verified
+      ? ok('execution', 'provider-confirmed or independently verified execution is represented')
+      : info('execution', 'this envelope does not represent execution-verified evidence'))
+  lines.push(v.dimensions.complete ? ok('coverage', 'selected-battery decision coverage is complete') : bad('coverage', 'selected-battery decision coverage is partial or invalid'))
+  lines.push(v.dimensions.fresh ? ok('freshness', 'the stated freshness window is currently valid') : bad('freshness', 'the stated freshness window is stale or invalid'))
+  for (const failure of v.failures) lines.push(info('verifier note', failure))
+  const intactEnvelope = v.dimensions.integrity && v.dimensions.signature_valid && v.dimensions.complete && v.dimensions.fresh
+  const verdict = v.ok && v.dimensions.execution_verified ? 'VALID' : intactEnvelope && (!v.dimensions.issuer_trusted || (browserPolicyEvaluation && notAttempted)) ? 'UNTRUSTED' : 'VOID'
+  return {
+    kind: 'action_run_evidence', ok: verdict === 'VALID', verdict, code: null,
+    headline: verdict === 'VALID'
+      ? 'Action/Run Evidence verifies under a trusted issuer pin with execution evidence.'
+      : verdict === 'UNTRUSTED'
+        ? 'Envelope integrity is checkable, but this browser policy evaluation is unpinned and does not represent a named-agent execution.'
+        : 'Action/Run Evidence is void — the envelope, signature, coverage, or freshness checks failed.',
+    lines,
+    scope: 'Offline verification checks the deterministic envelope, coverage, freshness, and signature statement. A browser Reference Check is a local synthetic policy evaluation: it does not contact or execute the named agent, confirm a provider effect, or grant deployment authority.',
+  }
 }
 
 /** Strict-ish JSON intake: one artifact object per paste. */
@@ -222,6 +268,7 @@ function unknownReport() {
       info('…', 'a ScoreReceipt (receipt_digest)'),
       info('…', 'an EpisodeTrace (events[] + final_digest)'),
       info('…', 'a Merkle inclusion proof (beneficiary + receipt + proof + root)'),
+      info('…', 'an Action/Run Evidence envelope (schema_version + execution_mode + evidence_digest)'),
     ],
     scope: 'Nothing was verified — and nothing you pasted left this tab.',
   }
@@ -234,6 +281,8 @@ function unknownReport() {
  */
 export async function verifyArtifact(value, opts = {}) {
   switch (detectArtifact(value)) {
+    case 'action_run_evidence':
+      return verifyActionRunEvidenceArtifact(value, opts)
     case 'sigil':
       return verifySigilArtifact(value, opts)
     case 'credential':
@@ -302,6 +351,10 @@ export function tamperArtifact(kind, artifact) {
       }
       copy.root = flipHexChar(copy.root)
       return { value: copy, note: 'flipped one character of the batch root' }
+    }
+    case 'action_run_evidence': {
+      copy.evidence_id = `${copy.evidence_id}-tampered`
+      return { value: copy, note: 'altered evidence_id without recomputing the envelope digest or re-signing' }
     }
     default:
       return { value: copy, note: 'artifact kind not recognized — nothing tampered' }

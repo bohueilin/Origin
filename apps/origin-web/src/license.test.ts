@@ -15,17 +15,19 @@ describe('computeLicenseFromVerdicts', () => {
     expect(state.episodes).toBe(0)
   })
 
-  it('earns L4 on a perfect history', () => {
-    // passRate 1.0, avgReward 1.0 -> L4
-    const state = computeLicenseFromVerdicts([pass(1), pass(1), pass(1), pass(1)])
+  it('caps perfect histories at the deterministic evidence-count floor', () => {
+    expect(computeLicenseFromVerdicts([pass(1)]).level.id).toBe('L1')
+    expect(computeLicenseFromVerdicts(Array.from({ length: 3 }, () => pass(1))).level.id).toBe('L2')
+    expect(computeLicenseFromVerdicts(Array.from({ length: 6 }, () => pass(1))).level.id).toBe('L3')
+    const state = computeLicenseFromVerdicts(Array.from({ length: 12 }, () => pass(1)))
     expect(state.level.id).toBe('L4')
     expect(state.catastrophicCount).toBe(0)
   })
 
   it('earns L3 at its pass-rate / reward threshold', () => {
-    // 4/5 pass (0.8), avgReward 0.8 -> L3 (below L4's 0.95 / 0.85)
-    const state = computeLicenseFromVerdicts([pass(1), pass(1), pass(1), pass(1), fail(0)])
-    expect(state.passRate).toBeCloseTo(0.8)
+    // 5/6 pass (>0.8), avgReward >0.55 -> L3 once the six-episode floor is met.
+    const state = computeLicenseFromVerdicts([pass(1), pass(1), pass(1), pass(1), pass(1), fail(0)])
+    expect(state.passRate).toBeCloseTo(5 / 6)
     expect(state.level.id).toBe('L3')
   })
 
@@ -54,5 +56,10 @@ describe('computeLicenseFromVerdicts', () => {
     const state = computeLicenseFromVerdicts(verdicts)
     expect(state.catastrophicCount).toBe(1)
     expect(state.level.id).toBe('L1')
+  })
+
+  it('keeps catastrophic precedence after the evidence-count floor is met', () => {
+    const verdicts = [...Array.from({ length: 11 }, () => pass(1)), fail(0, true)]
+    expect(computeLicenseFromVerdicts(verdicts).level.id).toBe('L1')
   })
 })

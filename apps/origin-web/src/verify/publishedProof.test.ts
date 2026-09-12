@@ -14,6 +14,14 @@ import { detectArtifact, verifyArtifact, tamperArtifact } from './detect.mjs'
 const clone = () => JSON.parse(JSON.stringify(publishedProof))
 
 describe('published TR-A002 proof through the real /verify path', () => {
+  it('detects an Action/Run evidence envelope before legacy shapes', () => {
+    expect(detectArtifact({
+      schema_version: '1.0.0', evidence_id: 'rc-evidence-0001', issued_at: '2026-09-12T12:00:00.000Z', execution_mode: 'simulated',
+      identity: {}, subject: {}, proposal: {}, authorization: {}, outcome_attestation: {}, provider_evidence: {}, completeness: {}, source: {},
+      evidence_digest: 'a'.repeat(64), signature: null,
+    })).toBe('action_run_evidence')
+  })
+
   it('is detected as an EpisodeTrace', () => {
     expect(detectArtifact(clone())).toBe('trace')
   })

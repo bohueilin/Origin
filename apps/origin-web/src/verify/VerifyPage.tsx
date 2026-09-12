@@ -22,6 +22,7 @@ import type { ExampleKind } from './examples.mjs'
 
 const EXAMPLES: Array<{ kind: ExampleKind; label: string }> = [
   { kind: 'reference', label: 'Synthetic sandbox reference check' },
+  { kind: 'action-run', label: 'Signed browser policy evaluation (untrusted)' },
   { kind: 'sigil', label: 'Origin Attestation' },
   { kind: 'credential', label: 'Credential' },
   { kind: 'receipt', label: 'ScoreReceipt' },
@@ -75,6 +76,12 @@ function DetectionTable() {
           </thead>
           <tbody>
             <tr>
+              <td><b>Action/Run Evidence</b></td>
+              <td><code>schema_version</code> + <code>execution_mode</code> + <code>evidence_digest</code></td>
+              <td><code>verifyActionRunEvidence</code> — validate the envelope, re-derive its digest, verify the signed statement, and check coverage/freshness</td>
+              <td>VALID only with a trusted issuer pin and execution evidence; browser policy evaluations render UNTRUSTED</td>
+            </tr>
+            <tr>
               <td><b>Origin Attestation</b></td>
               <td><code>pubkey_jwk</code> + <code>signature</code> + <code>payload_digest</code></td>
               <td><code>verifySigil</code> — recompute the content-address, verify ES256 with the embedded key, optional issuer pin</td>
@@ -108,7 +115,7 @@ function DetectionTable() {
         </table>
       </div>
       <p className="vfy-note">
-        Import surface: <code>@origin/verifier-core/sigil</code> · <code>@origin/verifier-core/crucible</code> ·{' '}
+        Import surface: <code>@origin/verifier-core/action-run-evidence</code> · <code>@origin/verifier-core/sigil</code> · <code>@origin/verifier-core/crucible</code> ·{' '}
         <code>@origin/verifier-core/merkleBatch</code> · <code>@origin/evidence/env-evidence</code> — the exact
         modules the Node test suite runs.
       </p>
@@ -230,7 +237,7 @@ export function VerifyPage() {
     reset(pristineRef.current, ['Reset the selected example to its original untampered evidence. Verify again for VALID.'])
   }
 
-  const verdictTone = report ? (report.ok ? 'ok' : report.verdict === 'UNRECOGNIZED' ? 'info' : 'bad') : null
+  const verdictTone = report ? (report.ok ? 'ok' : report.verdict === 'UNRECOGNIZED' || report.verdict === 'UNTRUSTED' ? 'info' : 'bad') : null
 
   return (
     <div className="vfy-grid">

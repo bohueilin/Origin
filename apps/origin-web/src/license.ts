@@ -56,6 +56,9 @@ export const LICENSE_LEVELS: Record<LicenseLevelId, LicenseLevel> = {
 
 const ORDER: LicenseLevelId[] = ['L0', 'L1', 'L2', 'L3', 'L4']
 
+/** Minimum evaluated episodes needed before a readiness level can be earned. */
+export const MIN_EPISODES_BY_LEVEL = { L0: 0, L1: 1, L2: 3, L3: 6, L4: 12 } as const
+
 /** index of a level id in the ladder (0..4). */
 export function levelRank(id: LicenseLevelId): number {
   return ORDER.indexOf(id)
@@ -130,6 +133,14 @@ export function computeLicenseFromVerdicts(verdicts: LicenseVerdict[]): LicenseS
     reason =
       `Pass rate ${(passRate * 100).toFixed(0)}% and average reward ${avgReward.toFixed(2)} over ` +
       `${episodes} episode(s), with no catastrophic failures.`
+  }
+
+  // Performance alone cannot grant broad readiness from a tiny sample. This is a
+  // minimum count floor, not a claim that the scenarios are representative.
+  const countCap = [...ORDER].reverse().find((candidate) => MIN_EPISODES_BY_LEVEL[candidate] <= episodes) ?? 'L0'
+  if (levelRank(id) > levelRank(countCap)) {
+    id = countCap
+    reason += ` Evidence-count floor: ${episodes} episode(s) supports at most ${LICENSE_LEVELS[id].id} ${LICENSE_LEVELS[id].name}; this minimum count does not establish scenario coverage.`
   }
 
   return {

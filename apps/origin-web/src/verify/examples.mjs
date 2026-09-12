@@ -11,12 +11,14 @@
 // customer data and not real customer proof.
 // =============================================================================
 
-import { chainEpisode, buildScoreReceipt, sha256 } from '@origin/evidence/env-evidence'
+import { canonical, chainEpisode, buildScoreReceipt, sha256 } from '@origin/evidence/env-evidence'
 import { generateSigningKey, signSigil } from '@origin/verifier-core/sigil'
+import { buildActionRunEvidence } from '@origin/evidence/action-run-evidence'
+import { signActionRunEvidence } from '@origin/verifier-core/action-run-evidence'
 import { mintCredential } from '@origin/verifier-core/crucible'
 import { batchReceipts } from '@origin/verifier-core/merkleBatch'
 
-export const exampleKinds = ['reference', 'sigil', 'credential', 'receipt', 'trace', 'inclusion', 'factory']
+export const exampleKinds = ['reference', 'action-run', 'sigil', 'credential', 'receipt', 'trace', 'inclusion', 'factory']
 
 const DEMO_ENV_DIGEST = sha256('synthetic-demo-env-bundle')
 const DEMO_VERSIONS = { verifier_version: 'demo-verifier-1.0.0', reward_model_version: 'demo-reward-1.0.0' }
@@ -44,6 +46,36 @@ function demoTrace() {
 /** Mint one synthetic example of the given kind. Async because the Sigil is signed live. */
 export async function makeExample(kind) {
   switch (kind) {
+    case 'action-run': {
+      const issuedAt = '2026-09-12T00:00:00.000Z'
+      const input = { scenario: 'support', selected_policy: 'least-privilege', ordered_battery_ids: ['demo-support-1'] }
+      const evidence = buildActionRunEvidence({
+        evidence_id: 'synthetic-browser-policy-evaluation', issued_at: issuedAt, execution_mode: 'simulated',
+        identity: { principal_id: 'user-declared-agent-configuration', tenant_id: null, workload_id: 'origin-reference-check', on_behalf_of: null },
+        subject: {
+          run_id: 'synthetic-browser-policy-evaluation:policy-evaluation', action_id: 'synthetic-browser-policy-evaluation:selected-policy',
+          model_digest: sha256(canonical({ model: 'declared-demo-agent' })), tools_digest: sha256(canonical(['demo.tool'])),
+          policy_digest: sha256(canonical({ mode: 'least-privilege' })), environment_digest: DEMO_ENV_DIGEST,
+          evaluator_version: 'synthetic-demo-oracle@1', verifier_version: 'synthetic-demo-verifier@1', adapter_version: null,
+        },
+        proposal: {
+          action_type: 'synthetic_reference_check_policy_evaluation',
+          proposed_effect: { kind: 'synthetic_reference_check_policy_evaluation', named_agent_contacted: false, policy_evaluated_locally: true },
+          input_digest: sha256(canonical(input)),
+        },
+        authorization: { verdict: 'deny', reason_codes: ['synthetic_policy_only_no_execution_authority'], approval_id: null, approved_by: null, nonce_digest: null, expires_at: null },
+        outcome_attestation: { status: 'not_attempted', attester: 'none', attested_at: null, statement_digest: null },
+        provider_evidence: { provider: null, receipt_digest: null, readback_digest: null, readback_at: null },
+        completeness: {
+          coverage: 'complete', expected_count: 1, observed_count: 1, covered_ids_digest: sha256(canonical(['demo-support-1'])), omissions: [], duplicates: [],
+          freshness: { status: 'fresh', observed_at: issuedAt, max_age_ms: 24 * 60 * 60 * 1000 },
+        },
+        source: { trace_id: null, audit_row_digest: null, oracle_verdict_digest: sha256(canonical([{ id: 'demo-support-1', selected_policy_decision: 'allow', oracle_decision: 'allow' }])) },
+      })
+      return signActionRunEvidence(evidence, await generateSigningKey(), {
+        keyId: 'origin-browser-session', keyEpoch: 1, issuer: 'origin-reference-check-session', signedAt: issuedAt,
+      })
+    }
     case 'reference': {
       const liveConfig = {
         model: 'support-agent-v1 (SYNTHETIC sandbox)',

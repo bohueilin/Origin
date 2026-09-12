@@ -3,6 +3,14 @@ import { defineConfig, devices } from '@playwright/test'
 // Browser-level page validation: smoke + accessibility (axe) gates against the real app.
 // Runs its own vite dev server on a dedicated port so it never clashes with a preview.
 const PORT = 5290
+const LOCAL_DEMO_PORT = 5291
+
+const authTestEnv = {
+  VITE_DISABLE_OPTIONAL_BACKEND_FETCHES: '1',
+  // PUBLIC test values. Every browser test stubs the related network surface.
+  VITE_INSFORGE_URL: 'https://82fs5fqk.us-west.insforge.app',
+  VITE_INSFORGE_ANON_KEY: 'anon_d727beb831e1f5c4ee7c36f0484a51375574f443d4f3421add387932f9c0b44d',
+}
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -27,34 +35,49 @@ export default defineConfig({
     // 'reduce' would delete those branches from ALL coverage. Desktop keeps the
     // default (no-preference) so they stay exercised; mobile uses 'reduce' because
     // scroll-behavior:smooth fights Playwright's auto-scroll at 390px.
-    { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'], reducedMotion: 'no-preference' } },
+    { name: 'desktop-chromium', grepInvert: /@foundry-local/, use: { ...devices['Desktop Chrome'], reducedMotion: 'no-preference' } },
     {
       name: 'mobile-chromium',
+      grepInvert: /@foundry-local/,
       use: {
         ...devices['Pixel 7'],
         viewport: { width: 390, height: 844 },
         reducedMotion: 'reduce',
       },
     },
-  ],
-  webServer: {
-    command: 'npm run dev',
-    url: `http://localhost:${PORT}`,
-    env: {
-      PORT: String(PORT),
-      VITE_DISABLE_OPTIONAL_BACKEND_FETCHES: '1',
-      // Auth must be ENABLED for the session-restore contract to be testable at all.
-      // Without these, `insforge` is null, AuthProvider short-circuits, and every
-      // assertion about auth behaviour passes vacuously — which is exactly how the
-      // /admin sign-in loop shipped: the one existing "makes no auth-refresh calls"
-      // test was green because the page under test could not make an auth call in the
-      // first place. Both values are PUBLIC (the anon key is RLS-guarded and already
-      // ships in the client bundle); tests stub the network with page.route, so no
-      // request actually leaves the machine.
-      VITE_INSFORGE_URL: 'https://82fs5fqk.us-west.insforge.app',
-      VITE_INSFORGE_ANON_KEY: 'anon_d727beb831e1f5c4ee7c36f0484a51375574f443d4f3421add387932f9c0b44d',
+    {
+      // One narrow build proves that the development-only loopback capability
+      // still requires informed consent before the chooser can open. No file is
+      // submitted and every Foundry/provider request is failed by the test.
+      name: 'foundry-local-demo-chromium',
+      grep: /@foundry-local/,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: `http://localhost:${LOCAL_DEMO_PORT}`,
+        reducedMotion: 'reduce',
+      },
     },
-    reuseExistingServer: !process.env.CI,
-    timeout: 60_000,
-  },
+  ],
+  webServer: [
+    {
+      command: 'npm run dev',
+      url: `http://localhost:${PORT}`,
+      env: { PORT: String(PORT), ...authTestEnv },
+      reuseExistingServer: !process.env.CI,
+      timeout: 60_000,
+    },
+    {
+      command: 'npm run dev',
+      url: `http://localhost:${LOCAL_DEMO_PORT}`,
+      env: {
+        PORT: String(LOCAL_DEMO_PORT),
+        ...authTestEnv,
+        VITE_FOUNDRY_API_BASE: 'http://127.0.0.1:8787',
+        VITE_FOUNDRY_LOCAL_BACKEND_DEMO: 'true',
+        VITE_FOUNDRY_UPLOADS_ENABLED: 'true',
+      },
+      reuseExistingServer: !process.env.CI,
+      timeout: 60_000,
+    },
+  ],
 })

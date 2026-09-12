@@ -1,102 +1,92 @@
-# Origin Web — the evidence-layer site + console
+# Origin Web — public trust layer, evidence formats, and demos
 
-> **Canonical story:** the repo-root [`README.md`](../../README.md) and the live site.
-> Origin is **the evidence layer for AI agents** — *Model proposes. Environment verifies.
-> Gate decides. Trace proves. Capability is not permission.* Physical AI (robot readiness)
-> is the **longer-term arc** that runs on the same evidence spine, not the current product.
+> **Canonical product boundary:** see the repository-root [`README.md`](../../README.md).
+> Proprietary algorithm work stays in its private repository. This public app contains
+> the trust layer, deterministic verifiers, evidence formats, and explicitly labeled demos.
 
-**A deterministic safety gym that produces evidence, not a certification.** For the physical
-arc, Origin turns a description of a site into a deterministic gym and produces **gym
-evidence** — a reproducible, tamper-evident record of what a policy did, scored by a
-deterministic oracle (never an LLM). It is **not** a certification and does not "sign off"
-a robot; a safety team reads the evidence and decides.
+Origin's core control model is:
 
-🔗 **Live demo:** https://origin-physical-ai.pages.dev
+> Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.
+> Capability is not permission.
 
----
+## What is implemented publicly
 
-## The physical arc (gym evidence, longer-term)
+- A browser-only synthetic policy reference check over declared configuration and a
+  deterministic checked-in battery. It does not contact or execute the named agent.
+- A browser-session-signed Action/Run evidence envelope. The session key is unpinned,
+  so intact demo evidence correctly verifies as untrusted by default and does not prove
+  a provider or real-world effect.
+- Offline verification and tamper/config-drift demonstrations.
+- Deterministic simulation and route/map evaluators using route-summary and map-derived
+  features—not raw end-to-end perception and not production-autonomy validation.
+- A Foundry public mode with a deterministic browser-local sample. The sample makes no
+  backend or provider request.
 
-The hard question for a robot policy isn't "can it move," it's **"what should it do on
-*this* floor, doing *this* job?"** The gym scores each scenario with a deterministic label:
+The proposed runtime gate/proxy and proposed hosted verification API are design artifacts,
+not generally deployed public capabilities. Origin issues evidence; a customer's gate and
+risk owner retain release authority.
 
-> **finish** — the policy completed the job under the verifier
-> **escalate** — the policy paused and deferred to a human
-> **refuse** — the policy correctly declined
+## Foundry authority and data flow
 
-This finish / escalate / refuse triad is paired with a **Readiness/Safety Level (RSL)** tier
-and false-accept / false-reject rates (FAR/FRR) so you can see how conservative the call is —
-all as **reproducible gym evidence under this verifier**, never a safety guarantee.
+Public production exposes only the labeled browser-local sample. External parse, quorum,
+and provider-speed operations are disabled and marked `local/backend demo only`.
 
-## How it works
+A developer can deliberately enable a loopback-only backend demo. Image processing then
+requires all of the following: development mode, an explicit local-backend selector, an
+explicit upload-UX flag, server-side external-processing enablement, service authority,
+a configured provider key, and affirmative user consent. A selected image leaves the
+browser for Cerebras. Origin handler code does not intentionally persist it; provider
+terms and retention apply. Never submit personal, confidential, regulated, or customer
+data. This is deterministic simulated evaluation, not robot training, deployment, or
+execution.
 
-Origin is a four-step funnel — the same spine from the marketing site through the console:
+## Evidence lanes
 
-| Step | What you do | What Origin does |
-| --- | --- | --- |
-| **1 · Submit your site** | Pick a template, or describe your floor (text, voice, a video/link — metadata only). | Reads it into a structured workflow + floor map. |
-| **2 · Build the robot brain** | Review and edit the plan and the safety calls. | Proposes the plan → verifies it → repairs violations. |
-| **3 · Run the proving ground** | Lay out robots, items, and drop-off points; watch them run. | Animates a deterministic, collision-free multi-robot deployment. |
-| **4 · Get the readiness license** | Read the report. | Scores every scenario and issues the RSL license. |
+Keep these claims separate:
 
-### The one rule that makes it trustworthy
+- **Synthetic demo evidence:** checked-in/browser-generated examples; not customer proof.
+- **Counterfactual robustness:** generated tests; not customer-owned proof.
+- **Authorized fixture:** permitted test input; not real customer data.
+- **External/customer evidence:** not earned until an authorized design partner actually
+  runs the scoped workflow and its provenance is captured.
 
-**A deterministic oracle is the only judge.** Every readiness verdict comes from a
-deterministic verifier with a known ground truth — never from a model grading itself. The
-multi-robot animation is an honest illustration of deployment intent; it never feeds the
-score. "Measured" numbers come from real evaluation runs scored by that verifier;
-anything not yet run is labeled **projected**, never presented as a result.
+A valid artifact can record `not_attempted`; artifact validity is not execution success.
+Only deterministic verifiers provide labels. An LLM never grades another LLM.
 
-## The proving ground
+## Run locally
 
-Step 3 plans a real **Multi-Agent Pickup & Delivery (MAPD)** deployment:
-
-- Each robot joins the **fleet** of its nearest drop-off and delivers only there.
-- Work is balanced across robots (completion-time-greedy allocation) — no robot hauls
-  everything while others idle.
-- One item per trip: drive to the item, carry it home to the drop, return, repeat.
-- Motion is **collision-free in time and space** (space-time search with a reservation
-  table) and fully deterministic — same floor in, same motion out.
-
-You build the floor with a tap-to-place editor: a palette doubles as the legend, steppers
-set how many robots / items / drops to deploy, and one click clears it back to the
-template default.
-
-## Tech
-
-- **React 19 + TypeScript + Vite**, two entry points: a marketing home (`index.html`) and
-  the console (`app.html`).
-- Client-side deterministic oracle — the public demo needs **no backend and no model
-  spend** to produce a readiness call.
-- Frontier models are scored offline through the verifier and surfaced as scorecards, a
-  readiness curve, and a cost-vs-readiness view.
-
-## Run it locally
-
-Requires Node 20+ and npm.
+Requires Node 20+ and the root npm workspace install.
 
 ```bash
-npm install
-npm run dev        # console + marketing home on the Vite dev server
-npm run build      # type-check + production build to dist/
-npm run lint       # ESLint
-npm test           # Vitest
-npm run gates      # build + lint + evidence check + tests (full gate)
+npm ci
+npm --prefix apps/origin-web run dev
+npm run test -w @origin/origin-web
+npm run build -w @origin/origin-web
+node scripts/honesty-lint.mjs
 ```
 
-## Privacy & safety
+The hermetic browser gate is:
 
-- The public Foundry path uses a deterministic browser-local sample and does not upload an image. A separately authorized local/backend demo may transmit a selected image to Cerebras only after affirmative consent; Origin handler code does not intentionally persist it. Never submit personal, confidential, regulated, or customer data; provider terms and retention apply. Foundry is deterministic simulated evaluation, not robot training, deployment, or execution.
-- No secrets ship to the browser. Only `VITE_*` public configuration is bundled; any
-  API keys stay server-side and are never committed (`.env*` is git-ignored).
-- The readiness license is a decision-support artifact, not a regulatory certification.
+```bash
+npm --prefix apps/origin-web run test:e2e -- tests/e2e/smoke.spec.ts tests/e2e/investor-ready.spec.ts
+```
 
-## License
+It runs public mode plus one isolated loopback-demo consent test. Foundry/provider requests
+are intercepted and must remain at zero in the covered flows.
 
-See the repository for license details. Datasets and model outputs referenced in the demo
-remain under their respective upstream licenses.
+## Deployment
 
----
+Production release is human-dispatched, main-ref-bound, protected-Environment-gated, and
+uploads the exact tested artifact with an exact three-route Pages Function allowlist. No
+push or pull request deploys. See [`docs/DEPLOY.md`](../../docs/DEPLOY.md) and
+[`docs/CUTOVER.md`](../../docs/CUTOVER.md).
 
-*Origin is an independent research demo and is not affiliated with or endorsed by any
-model provider whose outputs it evaluates.*
+No secrets ship to the browser. Only public `VITE_*` configuration is bundled, and no
+`VITE_*` value grants service authority. Never commit `.env*` other than `.env.example`.
+
+## Claim boundary
+
+Results mean reproducible under the named verifier, inputs, and environment. They are not
+a safety guarantee, regulatory certification, robot sign-off, provider-effect proof, or
+deployment authorization. Simulation evidence must be followed by the fidelity-appropriate
+real-world validation and a named residual-risk owner.

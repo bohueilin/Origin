@@ -184,6 +184,7 @@ describe('POST /api/lead — validation still holds', () => {
 
     const res = await post({ ...VALID, company_website: 'http://spam.example' }, DB_ENV)
     expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ ok: true, stored: false, delivered: false, suppressed: true })
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 

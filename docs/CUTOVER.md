@@ -1,80 +1,109 @@
-# Cloudflare Pages cutover — make `Origin` the deploy source
+# Cloudflare Pages cutover — operator runbook
 
-> **Goal:** point the live site `origin-physical-ai.pages.dev` at **`bohueilin/Origin`** so everything
-> lives in one repo, instead of the legacy `bohueilin/physical-ai-demo-test`. This is the one action
-> that makes all the honesty fixes + the new pages (`/security`, `/verify`, `/reference-check`,
-> `/simulation`, `/operations`) actually reach visitors.
->
-> **Who does what:** the repo is already deploy-ready and verified (below). The **repoint + env-var**
-> steps are a **human dashboard action** (an agent has no Cloudflare credentials). It is **reversible** —
-> the old repo stays as instant rollback until you delete it.
+> **Status:** source and release-gate implementation only. This document does not
+> assert that a Cloudflare cutover, production deployment, environment change, or
+> domain change has happened.
 
-## Why this is safe
-- `physical-ai-demo-test` is the **same app, older** (`autonomy-trace-console`, identical `tsc -b &&
-  vite build`). Origin's `apps/origin-web` is a **superset** — every live page plus the 5 new ones, the
-  `functions/`, and the honesty fixes. Nothing is lost; only added.
-- Repointing a Pages project's **Git source keeps the project's environment variables** (they are
-  project-level, not per-repo). So auth, InsForge, and the VITE_* build vars carry over untouched.
-- The build was **verified from a clean clone** of Origin (see "Verified build" below): it produces the
-  full site with all pages and resolves the `@origin/*` workspace packages.
+Origin is the canonical source for the public trust layer, evidence formats, and
+demos in `apps/origin-web`. Production release authority remains human-owned. No
+source change deploys automatically.
 
-## The Pages build settings (verified — use exactly these)
-Cloudflare dashboard → the `origin-physical-ai` Pages project → **Settings → Builds & deployments**:
+## Supported release path
 
-| Setting | Value |
-|---|---|
-| Production branch | `main` |
-| Git repository | `bohueilin/Origin` |
-| **Root directory** | `apps/origin-web` |
-| **Build command** | `npm install && npm run build` |
-| **Build output directory** | `dist` *(i.e. `apps/origin-web/dist`)* |
-| Node version | `20` *(set env `NODE_VERSION=20` if needed)* |
+The only supported production path is the pinned GitHub Actions workflow
+`.github/workflows/deploy-origin-web.yml`:
 
-- Clean URLs work automatically (Pages serves `/verify` → `/verify.html`, same as today's `/proof`).
-- **Functions:** with root `apps/origin-web`, Pages auto-detects `apps/origin-web/functions/` (11
-  Pages Functions). They are **fail-closed by default** — a function with an unset key refuses rather
-  than misbehaving — so an incomplete env is safe, just degraded.
+1. A human selects `main` and starts `workflow_dispatch`.
+2. The human types the exact confirmation `DEPLOY`.
+3. The build job tests that exact commit and uploads `origin-web-dist`.
+4. The deploy job is admitted only when `github.ref == 'refs/heads/main'`, the
+   build succeeded, and the protected `production` Environment approves it.
+5. The job downloads that exact artifact, creates a marked Pages source stage,
+   compiles the staged Functions without uploading, and invokes the SHA-pinned
+   Wrangler action from `.origin-pages-stage`.
+6. Wrangler uploads `../origin-web-dist`; the staged source contributes only the
+   explicitly allowed Pages Functions.
 
-## Environment variables to confirm on the Pages project
-Most already exist (they build the live site today). **Confirm** these are present after repointing;
-set any that are missing. Public `VITE_*` are build-time and baked into the bundle:
+Push and pull-request runs are checks only. A Cloudflare Git integration is not
+part of this release contract and must remain disabled for this project.
 
-- **Build (public, VITE_):** `VITE_INSFORGE_URL`, `VITE_INSFORGE_ANON_KEY`, `VITE_BRAIN_URL`,
-  `VITE_API_BASE_URL`, `VITE_FOUNDRY_API_BASE`, `VITE_PASSPORT_ORDER_CONTEXT`,
-  `VITE_DISABLE_OPTIONAL_BACKEND_FETCHES` (as configured today).
-- **Functions (runtime, server-side, secret):** for demand capture to actually deliver instead of
-  falling back to a mailto — set **`LEAD_WEBHOOK_URL`** (Slack/Discord webhook) *or*
-  **`RESEND_API_KEY` + `LEAD_TO_EMAIL` + `LEAD_FROM_EMAIL`**. Money-path brokers (Snaplii / 1Password /
-  InsForge) stay **fail-closed** (`SNAPLII_LIVE=0`) unless deliberately configured; `EPISODE_SIGNING_SECRET`
-  only matters for the hosted Hono backend, not the Pages Functions.
-- Never paste real keys into the repo — set them only in the Pages dashboard. `.env.example` lists the
-  full set.
+## Exact Pages Function allowlist
 
-## Do it (≈5 minutes)
-1. **Preview first (optional, zero-risk):** create a *new* Pages project bound to `bohueilin/Origin`
-   with the settings above → get a `*.pages.dev` preview → click through `/`, `/verify`, `/simulation`,
-   `/operations`, `/reference-check`, `/security`, and one Sign-in. Confirm it looks right.
-2. **Repoint production:** on the existing `origin-physical-ai` project, change the Git repository to
-   `bohueilin/Origin` and apply the build settings above. Trigger a deploy from `main`.
-3. **Verify live:** the 5 new routes return 200 and render; the landing + `/trust` + `/brief` are intact;
-   `/verify` re-checks a pasted credential; no console errors.
-4. **Keep rollback:** leave `physical-ai-demo-test` connected-but-unused (or note its last good commit).
-   Only after a few good days: archive it, and (optional) run the git-history purge of the leaked
-   `factoryceo_trm` before archiving if you want it gone from history too.
+`apps/origin-web/scripts/stage-pages-deploy.mjs` is the executable manifest. It
+admits exactly these routable files:
 
-## After cutover (repo already reflects this)
-- `docs/DEPLOY.md` and `CLAUDE.md` now name **Origin** as the canonical deploy source.
-- The push-inert, human-gated `deploy-origin-web.yml` remains the belt-and-suspenders path: to enable
-  the "Actions → Run workflow → type DEPLOY" flow, add the repo secret `CLOUDFLARE_API_TOKEN`
-  (scope: *Account › Cloudflare Pages › Edit*). Until then, deploys happen via the Git integration above.
-- Optional polish before/after: register the real domain + MX (fixes the `originphysical.ai` NXDOMAIN
-  lead/contact path), enable branch protection on `main`, add a LICENSE. See `~/hackathons/REMAINING_BUILD.md`.
+- `functions/api/evidence/status.ts`
+- `functions/api/foundry/parse-floor.ts`
+- `functions/api/lead.ts`
 
-## Verified build (reproduce)
+The stage also carries `server/` and `src/` as non-routable sibling dependency
+trees so the allowed Functions retain their relative imports. Root Deno/InsForge
+functions, tests, credential brokers, payment handlers, token routes, and sweepers
+are not Pages routes. CI tests the exact tree and performs a non-deploying bundle
+with pinned Wrangler `4.92.0`.
+
+## Preconditions owned by the operator
+
+Before authorizing the protected Environment:
+
+- Confirm branch protection requires the aggregate `CI green` status.
+- Confirm required reviewers are configured for the GitHub `production`
+  Environment.
+- Confirm `CLOUDFLARE_API_TOKEN` is a least-privilege Pages-edit token stored only
+  as a repository/environment secret.
+- Confirm the target project/account in the workflow is still the intended
+  production target.
+- Confirm runtime secrets are present for every capability being enabled. Paid or
+  owner routes fail closed when required service/signing/provider secrets are
+  absent. Never place secrets in `VITE_*` values or the repository.
+- Keep `PARSE_DISABLED=1` until external parsing has been deliberately approved.
+  Enabling it additionally requires `PARSE_EXTERNAL_ENABLED=1`, provider
+  configuration, service authentication, and affirmative upload consent.
+- Install and verify a Cloudflare WAF or equivalent distributed abuse/rate rule
+  for public `/api/lead`. The in-code 16 KiB body limit and validation are
+  admission controls, not distributed abuse protection.
+- Record the current production deployment identifier and rollback owner.
+
+## Pre-deploy evidence
+
+Reproduce the source gates without deploying:
+
 ```bash
-git clone https://github.com/bohueilin/Origin && cd Origin/apps/origin-web
-npm install && npm run build     # exit 0; dist/ contains index, verify, security, reference-check,
-                                 # simulation, operations, trust, brief, proof, app, … (17 pages)
+npm ci
+npm run test -w @origin/origin-web
+npm run build -w @origin/origin-web
+node scripts/honesty-lint.mjs
+npx vitest run apps/origin-web/src/deploy/stagePagesDeploy.test.ts
+npm --prefix apps/origin-web run test:e2e -- tests/e2e/smoke.spec.ts tests/e2e/investor-ready.spec.ts
+npm audit --omit=dev --audit-level=moderate
 ```
-Confirmed 2026-07-14 from a clean clone: `@origin/evidence` + `@origin/verifier-core` resolve via the
-workspace, all pages build, `functions/` (11) are present for Pages to pick up.
+
+The npm audit covers all resolved production npm dependencies; it is not, by
+itself, proof that every dependency is runtime-reachable. Any time-bounded
+exception must name the advisory, entrypoint/import path, runtime exposure,
+compensating control, owner, and expiry.
+
+## Human cutover and smoke check
+
+1. Open the production workflow on `main`; verify the displayed commit SHA.
+2. Run it with `confirm=DEPLOY` and complete the protected-Environment approval.
+3. Confirm the workflow reports the expected Cloudflare deployment URL and record
+   the run URL, commit SHA, artifact digest, approver, and time.
+4. From an unauthenticated browser, verify `/`, `/reference-check`, `/verify`,
+   `/foundry`, `/security`, `/trust`, and the legal pages render. Confirm Foundry's
+   sample is local and labeled; external parse/quorum/speed remain disabled.
+5. Verify protected owner/provider routes reject missing and invalid service
+   credentials, and verify `/api/lead` rejects oversized/malformed bodies. Do not
+   send real customer or sensitive data as a smoke-test fixture.
+6. Review Cloudflare and application logs for unexpected errors or outbound calls.
+
+## Rollback
+
+Rollback is a separate human decision. Re-deploy the recorded last-known-good
+artifact/commit through the same protected workflow, then repeat the smoke checks.
+Do not reconnect an automatic Git deployment path as a rollback shortcut. Preserve
+the failed run, logs, evidence, and incident owner so the decision remains auditable.
+
+Source readiness is not production validation. DNS, WAF, secrets, Environment
+reviewers, provider configuration, live smoke results, observability, and rollback
+rehearsal remain operator-owned launch gates.

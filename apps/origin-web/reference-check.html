@@ -146,7 +146,8 @@
             Pick a scenario, declare an agent configuration, and select a policy. This browser evaluates the
             <b>selected policy</b> against a deterministic synthetic battery and shows where it over-grants.
             It does <b>not</b> contact or execute the named agent. Downloaded browser-generated synthetic demo
-            evidence is signed for tamper detection but is <b>UNTRUSTED</b> by default, not a production permission
+            evidence is <b>session-signed</b> for tamper detection but <b>unpinned</b> and therefore <b>UNTRUSTED</b>
+            by default, not a production permission
             or provider-confirmed run. The <b>deterministic oracle is the only judge</b> — never an LLM grading an LLM.
           </p>
           <p class="mono-note" style="margin-top: 14px;">

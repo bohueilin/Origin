@@ -44,35 +44,43 @@ beforeEach(() => {
 
 describe('handleParseFloor — demo mode (no image)', () => {
   it('returns a labeled sample floor without calling the model', async () => {
-    const res = await handleParseFloor({}, cfg)
+    const beforeProvider = vi.fn(() => true)
+    const res = await handleParseFloor({}, cfg, { beforeProvider })
     expect(res.ok).toBe(true)
     expect(res.source).toBe('mock')
     expect(res.fallback).toBe('no_image')
     expect(res.siteMap).not.toBeNull()
     expect(['finish', 'refuse', 'escalate']).toContain(res.oracle?.verdict)
     expect(chat).not.toHaveBeenCalled()
+    expect(beforeProvider).not.toHaveBeenCalled()
   })
 })
 
 describe('handleParseFloor — an uploaded image is never answered with a fake parse', () => {
   it('rejects an image while external parsing is disabled before provider work', async () => {
-    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, { ...cfg, externalEnabled: false })
+    const beforeProvider = vi.fn(() => true)
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, { ...cfg, externalEnabled: false }, { beforeProvider })
     expect(res.fallback).toBe('external_parse_disabled')
     expect(chat).not.toHaveBeenCalled()
+    expect(beforeProvider).not.toHaveBeenCalled()
   })
 
   it('requires affirmative consent before image validation or provider work', async () => {
-    const res = await handleParseFloor({ imageDataUri: IMG }, cfg)
+    const beforeProvider = vi.fn(() => true)
+    const res = await handleParseFloor({ imageDataUri: IMG }, cfg, { beforeProvider })
     expect(res.fallback).toBe('consent_required')
     expect(chat).not.toHaveBeenCalled()
+    expect(beforeProvider).not.toHaveBeenCalled()
   })
   it('refuses when the key is missing: no siteMap, explicit reason', async () => {
-    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfgNoKey)
+    const beforeProvider = vi.fn(() => true)
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfgNoKey, { beforeProvider })
     expect(res.ok).toBe(false)
     expect(res.siteMap).toBeNull()
     expect(res.fallback).toBe('no_key')
     expect(res.error).toMatch(/CEREBRAS_API_KEY/)
     expect(chat).not.toHaveBeenCalled()
+    expect(beforeProvider).not.toHaveBeenCalled()
   })
 
   it('refuses a non-image "imageDataUri" — the endpoint must not relay arbitrary URLs to the model provider', async () => {
@@ -86,11 +94,32 @@ describe('handleParseFloor — an uploaded image is never answered with a fake p
   })
 
   it('refuses an oversize upload before spending a request', async () => {
-    const res = await handleParseFloor({ imageDataUri: `data:image/png;base64,${'A'.repeat(10_000_001)}`, uploadConsent: true }, cfg)
+    const beforeProvider = vi.fn(() => true)
+    const res = await handleParseFloor({ imageDataUri: `data:image/png;base64,${'A'.repeat(10_000_001)}`, uploadConsent: true }, cfg, { beforeProvider })
     expect(res.ok).toBe(false)
     expect(res.siteMap).toBeNull()
     expect(res.fallback).toBe('oversize')
     expect(chat).not.toHaveBeenCalled()
+    expect(beforeProvider).not.toHaveBeenCalled()
+  })
+
+  it('accounts for rate only at the final provider boundary and fails closed when denied', async () => {
+    const order: string[] = []
+    const beforeProvider = vi.fn(() => {
+      order.push('rate')
+      return false
+    })
+    chat.mockImplementation(async () => {
+      order.push('provider')
+      return reply(JSON.stringify(cleanGrid))
+    })
+
+    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg, { beforeProvider })
+
+    expect(res.fallback).toBe('rate_limited')
+    expect(beforeProvider).toHaveBeenCalledTimes(1)
+    expect(chat).not.toHaveBeenCalled()
+    expect(order).toEqual(['rate'])
   })
 
   it('refuses on an API error instead of substituting the sample', async () => {
@@ -124,13 +153,22 @@ describe('handleParseFloor — the gate judges real model output', () => {
   })
 
   it('VALID: a clean grid comes back with the map, the gate receipt, and an oracle verdict', async () => {
-    chat.mockResolvedValue(reply(JSON.stringify(cleanGrid)))
-    const res = await handleParseFloor({ imageDataUri: IMG, uploadConsent: true }, cfg)
+    const order: string[] = []
+    chat.mockImplementation(async () => {
+      order.push('provider')
+      return reply(JSON.stringify(cleanGrid))
+    })
+    const res = await handleParseFloor(
+      { imageDataUri: IMG, uploadConsent: true },
+      cfg,
+      { beforeProvider: () => { order.push('rate'); return true } },
+    )
     expect(res.ok).toBe(true)
     expect(res.siteMap).not.toBeNull()
     expect(res.gate?.verdict).toBe('VALID')
     expect(res.gate?.receipt.receipt_digest).toMatch(/^[0-9a-f]{64}$/)
     expect(['finish', 'refuse', 'escalate']).toContain(res.oracle?.verdict)
+    expect(order).toEqual(['rate', 'provider'])
   })
 
   it('the parse call keeps reasoning OFF with budget for a full grid (live outage regression)', async () => {

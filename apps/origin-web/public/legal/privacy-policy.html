@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
-    <meta name="description" content="Origin Privacy Policy — how the evidence layer for AI agents collects and uses account, agent-workflow, tool-call, policy-decision, and audit-log data to enforce runtime policy and produce a tamper-evident evidence package." />
+    <meta name="description" content="Origin Privacy Policy — browser-local synthetic evaluation, optional consented Foundry image processing, account and lead data, and separately authorized pilot data." />
     <link rel="canonical" href="https://origin-physical-ai.pages.dev/legal/privacy-policy.html" />
     <meta name="theme-color" content="#faf9f5" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,27 +44,26 @@
     </nav>
     <main>
       <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: July 2026</p>
-      <p class="intro">This Privacy Policy explains what information Origin (“we”) collects, how we use it, and the choices you have. Origin is the evidence layer for high-consequence AI agents. It enforces runtime policy before an AI agent takes a side effect, routes every tool call through a controlled proxy, and produces a tamper-evident, hash-chained evidence package showing what an agent did, why it was allowed, and who owned the risk — so teams can get high-consequence agents through security review. Origin is currently available through a founder-led pilot program. The prototype runs; it is not production SaaS. By using Origin, you agree to this Policy.</p>
+      <p class="updated">Last updated: September 2026</p>
+      <p class="intro">This Privacy Policy explains what information Origin (“we”) collects, how we use it, and the choices you have. Origin is a prototype evidence layer for high-consequence AI agents. The public reference check runs a deterministic synthetic policy evaluation in your browser; it does not contact or execute the named agent, and the declared configuration is not uploaded. Runtime policy enforcement and a controlled tool-call proxy are proposed pilot architecture, not deployed general production enforcement. Origin is currently available through a founder-led pilot program; it is not production SaaS. By using Origin, you agree to this Policy.</p>
 
       <h2>Information we collect</h2>
       <ul>
         <li><strong>Account information</strong> — your name and email when you create an account, and authentication data handled by our identity provider.</li>
-        <li><strong>Agent workflow metadata</strong> — the agent workflows, policies, scopes, budgets, and approval rules you configure so the Service can enforce what an agent is allowed to do.</li>
-        <li><strong>Tool-call requests and responses</strong> — in a pilot deployment, the proposed and executed tool calls that pass through a controlled proxy, including their parameters and results, so the Service can evaluate and record each side effect.</li>
-        <li><strong>Policy decisions</strong> — the verdict returned for each proposed action (allow, cap, require-approval, deny, or pause) and the inputs that produced it.</li>
-        <li><strong>Approval metadata</strong> — the named risk owner, the approval or denial, and the time it was recorded when a risky action is escalated to a human.</li>
-        <li><strong>Audit logs</strong> — the append-only, hash-chained record of every proposal, verdict, approval, action, block, and exception that forms the evidence package.</li>
-        <li><strong>Customer-system identifiers</strong> — references to the tools, systems, and resources your agents connect to (for example resource names or account identifiers) needed to enforce scope and produce the record.</li>
+        <li><strong>Browser reference-check inputs</strong> — declared model, tools, context, harness, scenario, and selected policy remain in your browser in the public demo. The browser can generate a downloadable synthetic evidence artifact, but Origin does not intentionally receive or store those fields through this flow.</li>
+        <li><strong>Authorized pilot data</strong> — only when separately scoped with a pilot participant, we may process agreed workflow metadata, policies, tool-call requests or responses, approval metadata, system identifiers, and evidence logs needed for that authorized evaluation. The applicable agreement defines purpose, access, and retention; the public demo does not establish that pilot authority.</li>
         <li><strong>Usage and security logs</strong> — basic logs, IP address, and diagnostics needed to operate and secure the Service, plus aggregated usage analytics.</li>
         <li><strong>Contact and lead information</strong> — details you submit through a form or an evidence-review request, such as your name, work email, company, role, and the workflow you describe.</li>
       </ul>
+
+      <h2>Foundry image processing</h2>
+      <p>The public Foundry sample is local to your browser and sends no image. Only a separately authorized local/backend demo can transmit a selected image to Cerebras after affirmative consent. Origin handler code does not intentionally persist that image; provider terms and retention apply. Do not submit personal, confidential, regulated, or customer data. Foundry produces deterministic simulated evaluation, not robot training, deployment, or execution.</p>
 
       <h2>How we use information</h2>
       <ul>
         <li>To run the deterministic reference check — binding an agent configuration and returning deterministic verdicts over a scenario battery. (A runtime policy gate evaluating live proposed actions is proposed pilot architecture, not a deployed capability.)</li>
         <li>Where a controlled tool-call proxy is used in a pilot, to record what passed through it. The proxy is proposed pilot architecture and is not deployed as general production enforcement.</li>
-        <li>To produce the tamper-evident, hash-chained evidence package showing what an agent did, why it was allowed, and who owned the risk.</li>
+        <li>When separately authorized for a pilot, to produce a tamper-evident evidence record of the scoped evaluation. A public browser artifact does not prove that a named agent or provider effect occurred.</li>
         <li>To operate, maintain, and secure the Service and your account.</li>
         <li>To surface human-in-the-loop controls — human approval for risky actions, scope and budget limits, and kill switches to pause a workflow or revoke a scope.</li>
         <li>To communicate with you about your account, security, and changes to the Service.</li>
@@ -72,19 +71,19 @@
       </ul>
 
       <h2>Human-in-the-loop controls</h2>
-      <p>Risky actions do not execute silently. When a policy decision returns require-approval, the action is held at the proxy and routed to a named risk owner, whose approval or denial is recorded in the audit log alongside the action. Scope and budget limits bound blast radius before an action runs, and a kill switch can pause a workflow or revoke a scope without redeploying the agent. These controls are part of the record: the evidence package reflects who owned the risk and what they decided.</p>
+      <p>The public repository contains deterministic approval-binding, scope, budget, and kill-switch demonstrations. Where those controls are separately integrated into an authorized pilot, the pilot design can hold a proposed risky action for a named risk owner and record that decision. This source capability is not proof that a customer workflow is integrated, that an action was executed, or that distributed replay protection and production operations are in place.</p>
 
-      <h2>Append-only, hash-chained audit logs</h2>
-      <p>The audit log is append-only and hash-chained, so the record of what the Service evaluated, allowed, and recorded is tamper-evident and replayable. Its purpose is to provide evidence and accountability for each agent action. Audit access is scoped to the workflow it belongs to and subject to the applicable controls.</p>
+      <h2>Tamper-evident evidence</h2>
+      <p>Public demo artifacts can use canonical JSON, signatures, digests, and hash chains so later alteration is detectable under the named verifier. The public reference-check artifact is browser-session-signed and unpinned, and it records that execution was not attempted. Separately authorized pilot evidence may have different storage and issuer-trust controls documented in the pilot agreement.</p>
 
       <h2>How we share information</h2>
-      <p>We do not sell your personal information. We share it only with: (a) sub-processors that help us run the Service (for example, hosting, identity, and infrastructure providers) under appropriate confidentiality and security obligations; (b) authorities when required by law; and (c) a successor in the event of a merger or acquisition, subject to this Policy. A current list of sub-processors is available on request and is referenced in the Data Processing Agreement (DPA).</p>
+      <p>We do not sell your personal information. We share it only with: (a) sub-processors that help us run the Service, such as hosting, identity, analytics, email, and—only for an affirmatively consented Foundry local/backend demo—Cerebras; (b) authorities when required by law; and (c) a successor in the event of a merger or acquisition, subject to this Policy. Provider terms and retention may apply to data sent to a provider. A current sub-processor list is available on request and can be incorporated into a Data Processing Agreement (DPA).</p>
 
       <h2>Security</h2>
       <p>We use technical and organizational measures designed to protect your information, including least-privilege (need-to-know) access, encryption in transit, and append-only, hash-chained audit logs of policy and tool-call activity. Access to workflow data and audit logs is scoped to the workflow it belongs to and subject to the applicable controls. Origin is responsible for the software controls it provides; you remain responsible for the agents and tools you connect. No method of transmission or storage is perfectly secure. A DPA and a security review are available on request.</p>
 
       <h2>Data retention and deletion</h2>
-      <p>We retain information for the life of the engagement and as required by law. Audit logs are append-only and may be retained as the evidentiary record of policy and tool-call activity. Retention windows applied during the pilot are defaults; the finalized retention terms are set in the DPA. To request removal of your account or associated data, contact us using the details below.</p>
+      <p>We retain account, lead, operational, and authorized pilot information for the engagement, the period agreed with the participant, and as required by law. Browser-only reference-check inputs are not intentionally received by Origin. Origin handler code does not intentionally persist a Foundry image, but Cerebras terms and retention apply to an image deliberately transmitted in the local/backend demo. To request removal of your account or associated data held by Origin, contact us below.</p>
 
       <h2>Your rights</h2>
       <p>Depending on your location, you may have rights to access, correct, export, or delete your personal information, and to object to or restrict certain processing. To exercise these rights, contact us using the details below. You may also have the right to lodge a complaint with your local data-protection authority.</p>
@@ -112,6 +111,5 @@
       <a href="/">Home</a>
       <span>© 2026 Origin</span>
     </footer>
-    <section><h2>Foundry image processing</h2><p>The public Foundry sample is local to your browser. Only a separately authorized local/backend demo can transmit a selected image to Cerebras after affirmative consent. Origin handler code does not intentionally persist that image; provider terms and retention apply. Do not submit personal, confidential, regulated, or customer data.</p></section>
   </body>
 </html>

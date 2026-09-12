@@ -157,10 +157,19 @@ interface ParseFloorBody {
   uploadConsent?: boolean
 }
 
+export interface ParseFloorOptions {
+  /**
+   * Last-moment admission hook for a provider-spending call. It is deliberately
+   * invoked only after enablement, consent, key, media type, and size checks.
+   * Returning false refuses the call before provider I/O.
+   */
+  beforeProvider?: () => boolean
+}
+
 /** Hard bound on the user-supplied hint (see the comment at the use site). */
 const HINT_MAX = 800
 
-export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig): Promise<ParseFloorResponse> {
+export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig, options: ParseFloorOptions = {}): Promise<ParseFloorResponse> {
   const tryOracle = (map: DescriptiveSiteMap): ParseFloorResponse['oracle'] => {
     try {
       return oracleSummary(map, chooseEmbodiment(undefined))
@@ -224,6 +233,9 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
       ],
     },
   ]
+  if (options.beforeProvider && !options.beforeProvider()) {
+    return refuse('rate_limited', 'Rate limit exceeded — try again in a minute.')
+  }
   // reasoningEffort MUST stay 'none': 'low' turns Gemma reasoning ON, and on the
   // first live run it consumed the entire token budget before one content byte
   // (finish_reason 'length', empty content → every parse died bad_json). The

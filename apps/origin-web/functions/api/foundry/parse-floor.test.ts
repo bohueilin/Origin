@@ -8,8 +8,8 @@
 // runs locally). Same root cause as the /api/lead outage — a route with no
 // Pages Function behind it.
 
-import { describe, expect, it } from 'vitest'
-import { onRequestPost } from './parse-floor.ts'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { MAX_PARSE_BODY_BYTES, onRequestPost, resetParseRateLimitForTest } from './parse-floor.ts'
 import type { ParseFloorResponse } from '../../../src/foundry/types.ts'
 
 const call = async (
@@ -27,11 +27,33 @@ const call = async (
   } as Parameters<typeof onRequestPost>[0])
 
 describe('POST /api/foundry/parse-floor (Cloudflare Pages Function)', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+    resetParseRateLimitForTest()
+  })
+
   it('fails closed before parsing the body when service authority is absent or invalid', async () => {
     expect((await call('{not-json', { SERVICE_AUTH_TOKEN: undefined })).status).toBe(503)
     const unauthorized = await call('{not-json', { SERVICE_AUTH_TOKEN: 'pages-test-token' }, 'Bearer wrong')
     expect(unauthorized.status).toBe(401)
     expect(unauthorized.headers.get('www-authenticate')).toBe('Bearer')
+  })
+
+  it('does not pull a streaming body before service authentication succeeds', async () => {
+    let bodyReads = 0
+    const request = {
+      headers: new Headers({ authorization: 'Bearer wrong' }),
+      get body() {
+        bodyReads += 1
+        throw new Error('body must not be read')
+      },
+    } as unknown as Request
+
+    const res = await onRequestPost({ request, env: { SERVICE_AUTH_TOKEN: 'pages-test-token' } })
+
+    expect(res.status).toBe(401)
+    expect(bodyReads).toBe(0)
   })
 
   it('authorized demo mode with no provider env: 200, labeled sample floor, no-store', async () => {
@@ -53,6 +75,19 @@ describe('POST /api/foundry/parse-floor (Cloudflare Pages Function)', () => {
     expect(data.fallback).toBe('no_key')
   })
 
+  it('maps disabled external parsing and missing consent to typed HTTP failures', async () => {
+    const disabled = await call(JSON.stringify({ imageDataUri: 'data:image/png;base64,AAAA', uploadConsent: true }))
+    expect(disabled.status).toBe(503)
+    expect(await disabled.json()).toMatchObject({ ok: false, fallback: 'external_parse_disabled' })
+
+    const missingConsent = await call(
+      JSON.stringify({ imageDataUri: 'data:image/png;base64,AAAA' }),
+      { PARSE_EXTERNAL_ENABLED: '1', CEREBRAS_API_KEY: 'test-key' },
+    )
+    expect(missingConsent.status).toBe(400)
+    expect(await missingConsent.json()).toMatchObject({ ok: false, fallback: 'consent_required' })
+  })
+
   it('rejects a non-JSON body with 400', async () => {
     const res = await call('not json at all')
     expect(res.status).toBe(400)
@@ -72,21 +107,53 @@ describe('POST /api/foundry/parse-floor (Cloudflare Pages Function)', () => {
     expect(res.status).toBe(413)
   })
 
+  it('bounds a chunked stream by bytes before JSON parsing', async () => {
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array(MAX_PARSE_BODY_BYTES))
+        controller.enqueue(new Uint8Array([1]))
+        controller.close()
+      },
+    })
+    const request = new Request('https://origin.test/api/foundry/parse-floor', {
+      method: 'POST',
+      headers: { authorization: 'Bearer pages-test-token' },
+      body,
+      duplex: 'half',
+    } as RequestInit)
+
+    const res = await onRequestPost({ request, env: { SERVICE_AUTH_TOKEN: 'pages-test-token' } })
+
+    expect(res.status).toBe(413)
+  })
+
   it('is disable-able via env kill switch (PARSE_DISABLED)', async () => {
     const res = await call(JSON.stringify({}), { PARSE_DISABLED: '1' })
     expect(res.status).toBe(503)
   })
 
-  it('rate-limits repeated calls per isolate (paid-key endpoint, not a free relay)', async () => {
-    // The limiter is per-isolate and in-memory — real edge enforcement should
-    // ALSO come from a Cloudflare WAF rate rule (dashboard). This is friction,
-    // honestly scoped, not a guarantee.
-    const statuses: number[] = []
-    for (let i = 0; i < 40; i += 1) statuses.push((await call(JSON.stringify({}), { PARSE_RATE_PER_MIN: '10' })).status)
-    // Window state is module-level (earlier tests in this file legitimately
-    // consumed some of it), so assert the shape, not exact positions: requests
-    // beyond the limit 429, and every response is one of the two.
-    expect(statuses.filter((s) => s === 429).length).toBeGreaterThanOrEqual(30)
-    expect(statuses.every((s) => s === 200 || s === 429)).toBe(true)
+  it('charges only provider-eligible image requests immediately before dispatch', async () => {
+    const fetchSpy = vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({
+        width: 4, height: 4, start: { x: 0, y: 0 }, item: { x: 1, y: 0 }, drop: { x: 2, y: 0 },
+        obstacles: [], hazards: [], humanOnly: [],
+      }) } }],
+    }), { status: 200, headers: { 'content-type': 'application/json' } }))
+    vi.stubGlobal('fetch', fetchSpy)
+    const env = {
+      PARSE_RATE_PER_MIN: '1', PARSE_EXTERNAL_ENABLED: '1', CEREBRAS_API_KEY: 'test-key',
+    }
+
+    expect((await call('{}', env)).status).toBe(200)
+    expect((await call('not json', env)).status).toBe(400)
+    expect((await call(JSON.stringify({ imageDataUri: 'data:text/plain;base64,AAAA', uploadConsent: true }), env)).status).toBe(200)
+    expect((await call(JSON.stringify({ imageDataUri: 'data:image/png;base64,AAAA' }), env)).status).toBe(400)
+    expect(fetchSpy).not.toHaveBeenCalled()
+
+    const eligible = JSON.stringify({ imageDataUri: 'data:image/png;base64,AAAA', uploadConsent: true })
+    expect((await call(eligible, env)).status).toBe(200)
+    expect(fetchSpy).toHaveBeenCalledTimes(1)
+    expect((await call(eligible, env)).status).toBe(429)
+    expect(fetchSpy).toHaveBeenCalledTimes(1)
   })
 })

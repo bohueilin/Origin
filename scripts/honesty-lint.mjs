@@ -274,6 +274,133 @@ for (const [file, re, why] of REQUIRED) {
   }
 }
 
+// Launch-boundary contracts. These are deliberately file-specific instead of
+// another bag of global banned words: phrases such as "Git integration" and
+// "Origin-issued" are honest inside a negated explanation, but become release
+// blockers when they advertise authority the public build does not have.
+//
+// Keep this population explicit. Unlike served entrypoints, these files have
+// different roles (operator runbook, proposed API design, product disclosure),
+// so adding a file is a conscious claim-boundary decision rather than a glob.
+const launchSourceText = (rel) => {
+  const raw = readFileSync(join(ROOT, rel), 'utf8')
+  if (rel.endsWith('.html')) return `${visibleText(raw)}\n${metaAndTitleText(raw)}`
+  if (/\.[jt]sx?$/.test(rel)) return codeCopy(raw)
+  return raw
+}
+
+const LAUNCH_CONTRACTS = [
+  {
+    file: 'docs/CUTOVER.md',
+    forbid: [
+      [/\b11\s+Pages Functions\b/i, 'the retired eleven-function discovery claim'],
+      [/\bPages\s+auto-detects?\b[\s\S]{0,100}\bFunctions?\b/i, 'automatic Pages Function discovery'],
+      [/\bdeploys?\s+happen\s+via\s+the\s+Git integration\b/i, 'Git-triggered deployment'],
+      [/\btrigger\s+a\s+deploy\s+from\s+main\b/i, 'automatic/Git cutover instructions'],
+    ],
+    require: [
+      [/workflow_dispatch/i, 'the manual workflow entrypoint'],
+      [/allowlist/i, 'the exact Pages Function allowlist boundary'],
+      [/No\s+source change deploys automatically/i, 'the no-auto-deploy authority statement'],
+    ],
+  },
+  {
+    file: 'docs/DEPLOY.md',
+    forbid: [
+      [/\bPages\s+auto-detects?\b[\s\S]{0,100}\bFunctions?\b/i, 'automatic Pages Function discovery'],
+      [/\bdeploys?\s+happen\s+via\s+the\s+Git integration\b/i, 'Git-triggered deployment'],
+      [/\bConnected repo:\s*`?bohueilin\/Origin/i, 'a dashboard Git-source deployment path'],
+    ],
+    require: [
+      [/workflow_dispatch/i, 'the manual workflow entrypoint'],
+      [/allowlist/i, 'the Pages Function allowlist boundary'],
+      [/refs\/heads\/main/i, 'the production-ref gate'],
+    ],
+  },
+  {
+    file: 'docs/api/origin-certify.openapi.yaml',
+    forbid: [
+      [/^servers:/m, 'a live server for the proposed API'],
+      [/^\s{2}\/v1\/(?:certify|verify):/m, 'an advertised hosted operation'],
+      [/certifyApi\.ts/i, 'the nonexistent implementation reference'],
+    ],
+    require: [
+      [/^x-origin-status:\s*proposed-not-deployed\s*$/m, 'the proposed-not-deployed status'],
+      [/^paths:\s*\{\}\s*$/m, 'an empty hosted path surface'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/foundry/ui/FoundryApp.tsx',
+    forbid: [
+      [/VITE_FOUNDRY_UPLOADS_ENABLED\s*(?:\?\?|\|\|)\s*['"]true['"]/i, 'upload enabled by fallback default'],
+      [/VITE_FOUNDRY_UPLOADS_ENABLED[\s\S]{0,40}!==\s*['"]false['"]/i, 'upload enabled unless explicitly disabled'],
+    ],
+    require: [
+      [/VITE_FOUNDRY_UPLOADS_ENABLED\s*===\s*['"]true['"]/i, 'an explicit default-false upload UX opt-in'],
+      [/leave (?:this|your) browser[\s\S]{0,100}Cerebras/i, 'the external-processing disclosure'],
+      [/does not intentionally persist/i, 'the Origin handler non-persistence boundary'],
+      [/personal[\s\S]{0,80}confidential[\s\S]{0,80}regulated[\s\S]{0,80}customer data/i, 'the sensitive-data prohibition'],
+      [/local\/backend demo only/i, 'the disabled public-operation label'],
+      [/legal\/privacy-policy\.html/i, 'the privacy-policy link'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/foundry.html',
+    require: [
+      [/deterministic simulated evaluation/i, 'the simulated-evaluation boundary'],
+      [/not robot training, deployment, or execution/i, 'the no-physical-execution boundary'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/README.md',
+    require: [
+      [/browser-local sample/i, 'the public local-sample boundary'],
+      [/(?:Cerebras[\s\S]{0,200}affirmative\s+(?:user\s+)?consent|affirmative\s+(?:user\s+)?consent[\s\S]{0,200}Cerebras)/i, 'the provider-and-consent disclosure'],
+      [/does not intentionally persist/i, 'the Origin handler non-persistence boundary'],
+      [/provider\s+terms and retention apply/i, 'the provider-retention boundary'],
+      [/personal[\s\S]{0,80}confidential[\s\S]{0,80}regulated[\s\S]{0,80}customer\s+data/i, 'the sensitive-data prohibition'],
+      [/not robot\s+training, deployment, or\s+execution/i, 'the simulated-evaluation boundary'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/public/legal/privacy-policy.html',
+    require: [
+      [/Foundry image processing/i, 'the Foundry processing section'],
+      [/Cerebras[\s\S]{0,160}affirmative consent/i, 'the provider-and-consent disclosure'],
+      [/does not intentionally persist/i, 'the Origin handler non-persistence boundary'],
+      [/provider terms and retention apply/i, 'the provider-retention boundary'],
+      [/personal[\s\S]{0,80}confidential[\s\S]{0,80}regulated[\s\S]{0,80}customer data/i, 'the sensitive-data prohibition'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/reference-check.html',
+    forbid: [
+      [/browser(?:-generated)?[^.]{0,100}\bis\s+(?:an?\s+)?Origin-issued/i, 'trusted Origin issuance for a browser-session signature'],
+    ],
+    require: [
+      [/session-signed/i, 'session-signature provenance before the run'],
+      [/synthetic/i, 'the synthetic evidence lane'],
+      [/unpinned/i, 'the unpinned signer boundary'],
+    ],
+  },
+]
+
+for (const contract of LAUNCH_CONTRACTS) {
+  const path = join(ROOT, contract.file)
+  if (!existsSync(path)) {
+    note(`${contract.file}: MISSING launch claim surface`)
+    continue
+  }
+  const text = launchSourceText(contract.file)
+  for (const [re, why] of contract.forbid ?? []) {
+    const match = text.match(re)
+    if (match) note(`${contract.file}: PROHIBITED launch claim — ${why} (matched "${match[0].trim()}")`)
+  }
+  for (const [re, why] of contract.require ?? []) {
+    if (!re.test(text)) note(`${contract.file}: REQUIRED launch disclosure removed — ${why}`)
+  }
+}
+
 // Privacy invariant: any served page that loads Google Analytics MUST also set
 // Consent Mode with analytics_storage denied by default — otherwise it sets
 // cookies with no consent, contradicting the published privacy policy.
@@ -287,7 +414,7 @@ for (const file of SERVED) {
 }
 
 if (violations === 0) {
-  console.log(`honesty-lint: clean — ${SERVED.length} served pages (prose + meta/title) + ${REACT_COPY_GLOBS.length} React copy files, ${BANNED.length} banned patterns, ${REQUIRED.length} required disclaimers.`)
+  console.log(`honesty-lint: clean — ${SERVED.length} served pages (prose + meta/title) + ${REACT_COPY_GLOBS.length} React copy files, ${BANNED.length} banned patterns, ${REQUIRED.length} required disclaimers, ${LAUNCH_CONTRACTS.length} launch contracts.`)
   process.exit(0)
 }
 console.log(`\nhonesty-lint: ${violations} violation(s). Keep claims scoped ("reproducible under this verifier," never "safe"/"correct").`)

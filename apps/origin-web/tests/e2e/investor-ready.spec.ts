@@ -13,7 +13,7 @@
 import { test, expect } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 
-const HERO = 'Get your agent through security review, and prove what it did.'
+const HERO = 'Evaluate a policy before security review, and show the evidence limits.'
 
 // The approved design keeps the existing mobile burger, so on the mobile project
 // the primary nav is collapsed until it is opened. Open it before asserting on
@@ -75,7 +75,7 @@ test('home demo reflects the implemented reference-check lifecycle', async ({ pa
   await demo.getByRole('tab', { name: /Reverify/i }).click()
   await expect(demo).toContainText('VOID')
   await expect(demo.getByRole('link', { name: /Run the reference check/i })).toHaveAttribute('href', '/reference-check')
-  await expect(demo.getByRole('link', { name: /Verify an attestation/i })).toHaveAttribute('href', '/verify')
+  await expect(demo.getByRole('link', { name: /Verify evidence/i })).toHaveAttribute('href', '/verify')
 })
 
 test('lead form is a low-friction four-field request', async ({ page }) => {
@@ -130,7 +130,7 @@ test('demo tabs support keyboard navigation', async ({ page }) => {
 test('social card presents the current product at 1200 by 630', async ({ page }) => {
   await page.goto('/')
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /Agent Reference Check|evidence layer/i)
-  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /configuration-bound|reference check/i)
+  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /deterministic synthetic policy evaluation/i)
 
   await page.goto('/og-cover.jpg')
   const dimensions = await page.locator('img').evaluate((image: HTMLImageElement) => ({

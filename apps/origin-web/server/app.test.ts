@@ -12,7 +12,7 @@ const config: AppConfig = {
   nebius: {},
   insforge: {},
   minimax: {},
-  cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1' },
+  cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1', externalEnabled: false },
   gemini: { model: 'gemini-2.0-flash', baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai' },
   episodeSecret: 'app-test-secret',
   serviceAuthToken: undefined,

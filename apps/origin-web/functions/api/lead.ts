@@ -115,7 +115,9 @@ export const onRequestPost = async (ctx: { request: Request; env: LeadEnv }): Pr
   const field = (key: string): string => typeof data[key] === 'string' ? data[key] as string : ''
 
   // Honeypot: a filled hidden field means a bot — accept silently, deliver nothing.
-  if (field('company_website').trim() !== '') return json({ ok: true, delivered: true })
+  if (field('company_website').trim() !== '') {
+    return json({ ok: true, stored: false, delivered: false, suppressed: true })
+  }
 
   const name = field('name').trim()
   const email = field('email').trim()

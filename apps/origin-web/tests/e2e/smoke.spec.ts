@@ -10,6 +10,15 @@ function collectErrors(page: Page): string[] {
 }
 const benign = (e: string) => /devtools|react-refresh|\[vite\]|favicon/i.test(e)
 
+async function blockFoundryNetwork(page: Page): Promise<string[]> {
+  const attempted: string[] = []
+  await page.route(/(?:\/api\/foundry\/|api\.cerebras\.ai|generativelanguage\.googleapis\.com)/i, async (route) => {
+    attempted.push(route.request().url())
+    await route.abort('blockedbyclient')
+  })
+  return attempted
+}
+
 // canonical JSON used by the TR-A002 emitter: keys sorted at every level, no whitespace.
 function canonical(value: unknown): string {
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']'
@@ -26,7 +35,7 @@ test('home carries the agent-evidence thesis, one h1, clean console', async ({ p
   await page.goto('/')
   await expect(page).toHaveTitle(/Origin/)
   await expect(page.locator('h1')).toHaveCount(1)
-  await expect(page.locator('h1')).toHaveText('Get your agent through security review, and prove what it did.')
+  await expect(page.locator('h1')).toHaveText('Evaluate a policy before security review, and show the evidence limits.')
   await page.waitForTimeout(800)
   expect(errors.filter((e) => !benign(e)), errors.join('\n')).toHaveLength(0)
 })
@@ -42,7 +51,7 @@ test('home content is in the server HTML (crawler-readable, not client-rendered)
   // change reading order still fails.
   const text = (await res.text()).replace(/<[^>]+>/g, '')
   expect(html).toContain('The evidence layer for high-consequence AI agents')
-  expect(text).toContain('Get your agent through security review, and prove what it did.')
+  expect(text).toContain('Evaluate a policy before security review, and show the evidence limits.')
   expect(html).toContain('For the owner of a high-consequence agent that a reviewer can’t yet approve: agents touching production, internal tools, code, PII, or money. Prototype in private pilot: synthetic sandbox evidence, not production SaaS, and not compliance certification.')
   expect(html).toContain('Book an Agent Evidence Review')
   expect(html).toContain('tamper-evident')
@@ -81,7 +90,7 @@ test('interactive reference-check demo steps and reaches the attested + VOID sta
   // progressive enhancement kicked in
   await expect(demo).toHaveClass(/is-enhanced/)
   await page.locator('[data-demo-step="4"]').click()
-  await expect(page.locator('[data-demo-panel="4"]')).toContainText('ISSUED')
+  await expect(page.locator('[data-demo-panel="4"]')).toContainText('SIGNED')
   await page.locator('[data-demo-step="5"]').click()
   await expect(page.locator('[data-demo-panel="5"]')).toContainText('VOID')
 })
@@ -99,11 +108,58 @@ test('reference check communicates selection, verdict, and drift invalidation ac
 
   await page.getByRole('button', { name: 'Run the reference check' }).click()
   const result = page.getByRole('status')
-  await expect(result).toContainText('Verified Readiness Level')
+  await expect(result).toContainText('Synthetic battery readiness sample')
   await expect(page.locator('body')).toContainText('Synthetic pilot battery')
 
   await page.getByRole('button', { name: /Change a tool/ }).click()
   await expect(page.getByRole('alert')).toContainText('VOID (code 4) — config drift')
+})
+
+test('reference-check discloses synthetic session-signed unpinned provenance before a run', async ({ page }) => {
+  await page.goto('/reference-check')
+  const beforeRun = page.locator('main').first()
+  await expect(beforeRun).toContainText(/synthetic/i)
+  await expect(beforeRun).toContainText(/session-signed/i)
+  await expect(beforeRun).toContainText(/unpinned/i)
+})
+
+test('public Foundry is local-sample-only and emits no Foundry/provider request', async ({ page }) => {
+  const attempted = await blockFoundryNetwork(page)
+  await page.goto('/foundry')
+
+  const upload = page.getByRole('button', { name: /Upload a floor image/i })
+  await expect(upload).toBeDisabled()
+  await expect(page.getByText('local/backend demo only', { exact: false }).first()).toBeVisible()
+
+  const speed = page.getByRole('button', { name: /Run the speed race/i }).first()
+  await expect(speed).toBeDisabled()
+
+  await page.getByRole('button', { name: 'Use the sample floor' }).click()
+  await expect(page.getByText(/sample floor — not parsed from an upload/i)).toBeVisible()
+  await expect(page.getByText(/No image left this browser/i)).toBeVisible()
+
+  const quorum = page.getByRole('button', { name: /Run the Quorum loop/i })
+  await expect(quorum).toBeDisabled()
+  await expect(page.getByText('local/backend demo only', { exact: false }).last()).toBeVisible()
+  expect(attempted).toEqual([])
+})
+
+test('@foundry-local consent gates the local-demo chooser without submitting', async ({ page }) => {
+  const attempted = await blockFoundryNetwork(page)
+  await page.goto('/foundry')
+
+  const consent = page.getByRole('checkbox', { name: /selected image.*Cerebras/i })
+  const upload = page.getByRole('button', { name: /Upload a floor image/i })
+  await expect(consent).not.toBeChecked()
+  await expect(upload).toBeDisabled()
+
+  await consent.check()
+  await expect(upload).toBeEnabled()
+  const chooser = page.waitForEvent('filechooser')
+  await upload.click()
+  await chooser
+
+  expect(attempted).toEqual([])
 })
 
 test('/verify bundled reference check completes VALID → tampered → VOID → reset', async ({ page }) => {

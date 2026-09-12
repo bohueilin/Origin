@@ -29,7 +29,9 @@ const call = async (
 describe('POST /api/foundry/parse-floor (Cloudflare Pages Function)', () => {
   it('fails closed before parsing the body when service authority is absent or invalid', async () => {
     expect((await call('{not-json', { SERVICE_AUTH_TOKEN: undefined })).status).toBe(503)
-    expect((await call('{not-json', { SERVICE_AUTH_TOKEN: 'pages-test-token' }, 'Bearer wrong')).status).toBe(401)
+    const unauthorized = await call('{not-json', { SERVICE_AUTH_TOKEN: 'pages-test-token' }, 'Bearer wrong')
+    expect(unauthorized.status).toBe(401)
+    expect(unauthorized.headers.get('www-authenticate')).toBe('Bearer')
   })
 
   it('authorized demo mode with no provider env: 200, labeled sample floor, no-store', async () => {

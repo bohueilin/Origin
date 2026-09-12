@@ -17,10 +17,16 @@ const json = (body: unknown, status = 200): Response =>
     headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
   })
 
+const unauthorized = (): Response => {
+  const response = json({ ok: false, error: 'unauthorized' }, 401)
+  response.headers.set('WWW-Authenticate', 'Bearer')
+  return response
+}
+
 const respond = (ctx: { request: Request; env: EvidenceStatusEnv }): Response => {
   const decision = authorizeService(ctx.request.headers, ctx.env.SERVICE_AUTH_TOKEN)
   if (decision === 'not_configured') return json({ ok: false, error: 'auth_not_configured' }, 503)
-  if (decision === 'unauthorized') return json({ ok: false, error: 'unauthorized' }, 401)
+  if (decision === 'unauthorized') return unauthorized()
   return json({ ok: false, status: 'unavailable' })
 }
 

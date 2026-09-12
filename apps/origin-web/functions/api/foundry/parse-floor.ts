@@ -51,13 +51,19 @@ const json = (body: unknown, status = 200): Response =>
     headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
   })
 
+const unauthorized = (): Response => {
+  const response = json({ ok: false, error: 'unauthorized' }, 401)
+  response.headers.set('WWW-Authenticate', 'Bearer')
+  return response
+}
+
 export const onRequestPost = async (ctx: { request: Request; env: ParseFloorEnv }): Promise<Response> => {
   // Pages Functions are the public deployment authority. Authenticate before every
   // kill-switch, rate-limit, declared-length, or body operation so unauthenticated
   // callers cannot consume provider/rate-limit resources or learn parse behavior.
   const decision = authorizeService(ctx.request.headers, ctx.env.SERVICE_AUTH_TOKEN)
   if (decision === 'not_configured') return json({ ok: false, error: 'auth_not_configured' }, 503)
-  if (decision === 'unauthorized') return json({ ok: false, error: 'unauthorized' }, 401)
+  if (decision === 'unauthorized') return unauthorized()
   if (ctx.env.PARSE_DISABLED === '1') {
     return json({ ok: false, error: 'Parse endpoint is temporarily disabled.' }, 503)
   }

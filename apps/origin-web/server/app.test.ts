@@ -454,4 +454,22 @@ describe('createApp production request authority', () => {
       expect(((await response.json()) as { results: { toolCallId: string }[] }).results[0]?.toolCallId).toBe(field)
     }
   })
+
+  it('enforces every Origin route authority class without a broad API bypass', async () => {
+    const app = productionApp()
+    const publicRoutes: Array<[string, string]> = [
+      ['GET', '/health'], ['POST', '/v1/episodes'], ['POST', '/v1/episodes/x/step'], ['POST', '/v1/step'],
+      ['POST', '/v1/warehouse/episodes'], ['POST', '/v1/warehouse/episodes/x/step'],
+    ]
+    for (const [method, path] of publicRoutes) {
+      expect((await app.request(path, { method, headers: { 'content-type': 'application/json' }, body: method === 'POST' ? '{}' : undefined })).status, `${method} ${path}`).not.toBe(401)
+    }
+    const protectedRoutes: Array<[string, string]> = [
+      ['POST', '/v1/reference-episodes'], ['POST', '/v1/warehouse/reference-episodes'], ['POST', '/api/run-episode'], ['GET', '/api/runs/recent'], ['GET', '/api/evidence/status'], ['POST', '/api/nebius-action'], ['POST', '/api/voice/structure'],
+      ['POST', '/api/foundry/parse-floor'], ['POST', '/api/foundry/quorum-run'], ['POST', '/api/foundry/gym-rollout'], ['POST', '/api/foundry/speed-race'], ['POST', '/api/foundry/soc-run'], ['POST', '/api/foundry/soc-race'], ['POST', '/api/foundry/leaderboard'], ['POST', '/api/foundry/soc-shootout'], ['POST', '/api/foundry/economics'], ['POST', '/api/foundry/ensemble'], ['POST', '/api/foundry/latency'], ['POST', '/api/foundry/accuracy'], ['POST', '/api/foundry/passport-run'], ['POST', '/api/foundry/supervision-run'],
+    ]
+    for (const [method, path] of protectedRoutes) {
+      expect((await app.request(path, { method, headers: { 'content-type': 'application/json' }, body: method === 'POST' ? '{}' : undefined })).status, `${method} ${path}`).toBe(401)
+    }
+  })
 })

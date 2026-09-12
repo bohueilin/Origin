@@ -9,7 +9,9 @@ const request = (method: 'GET' | 'HEAD', authorization?: string) => new Request(
 describe('Pages evidence status authority', () => {
   it('requires configured service authority for GET before returning the unavailable stub', async () => {
     expect(onRequestGet({ request: request('GET'), env: {} }).status).toBe(503)
-    expect(onRequestGet({ request: request('GET', 'Bearer wrong'), env: { SERVICE_AUTH_TOKEN: 'pages-token' } }).status).toBe(401)
+    const unauthorized = onRequestGet({ request: request('GET', 'Bearer wrong'), env: { SERVICE_AUTH_TOKEN: 'pages-token' } })
+    expect(unauthorized.status).toBe(401)
+    expect(unauthorized.headers.get('www-authenticate')).toBe('Bearer')
     const accepted = onRequestGet({ request: request('GET', 'Bearer pages-token'), env: { SERVICE_AUTH_TOKEN: 'pages-token' } })
     expect(accepted.status).toBe(200)
     expect(await accepted.json()).toEqual({ ok: false, status: 'unavailable' })

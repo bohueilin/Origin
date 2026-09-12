@@ -9,6 +9,7 @@ import { PassportSession } from './session'
 import { MockSecretBroker } from '../secrets/mockSecretBroker'
 import { getScenario } from '../scenarios'
 import type { ToolAdapter, ToolExecutionContext, UserIntent } from '../types'
+import type { ApprovalPacketSpec } from '../scenarios/types'
 
 function clock(start = 1_000_000) {
   let value = start
@@ -19,7 +20,7 @@ const intent: UserIntent = {
   intent_id: 'intent_test', raw_user_request: 'x', normalized_intent: 'x', user_goal: 'x',
   success_criteria: [], constraints: [], time_window: null, risk_level: 'low', created_at: 0,
 }
-const spec: any = { action_type: 'send', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'approve', deny_button_label: 'deny', capability: 'messages.send' }
+const spec: ApprovalPacketSpec = { action_type: 'send', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'approve', deny_button_label: 'deny', capability: 'messages.send' }
 
 describe('Passport ToolRouter Task 3 parity', () => {
   it('atomically binds, stops, consumes, and classifies commit outcomes', async () => {
@@ -64,7 +65,7 @@ describe('Passport ToolRouter Task 3 parity', () => {
   })
 
   it('audits and blocks a malformed approval input instead of throwing from the session boundary', async () => {
-    const c = clock(); const cyclic: any = {}; cyclic.self = cyclic
+    const c = clock(); const cyclic: Record<string, unknown> = {}; cyclic.self = cyclic
     const base = getScenario('airport-pickup')!
     const scenario = { ...base, steps: base.steps.map((step) => step.kind === 'approval' ? { ...step, commitInput: cyclic } : step) }
     const session = new PassportSession(scenario, { now: c.now })

@@ -26,7 +26,7 @@ describe('published TR-A002 proof through the real /verify path', () => {
   })
 
   it('calls a correctly pinned not_attempted envelope VALID while exposing no execution effect', async () => {
-    const evidence: any = await makeExample('action-run')
+    const evidence = await makeExample('action-run')
     const thumbprint = await keyThumbprint(evidence.signature.sigil.pubkey_jwk)
     const report = await verifyArtifact(evidence, {
       expectedThumbprints: { 'origin-browser-session': { 1: thumbprint } }, now: '2026-09-12T00:01:00.000Z',
@@ -37,7 +37,7 @@ describe('published TR-A002 proof through the real /verify path', () => {
   })
 
   it('voids a signer-authentic envelope when its authorization semantics are invalid', async () => {
-    const evidence: any = await makeExample('action-run')
+    const evidence = await makeExample('action-run')
     evidence.authorization.approved_by = 'reviewer-1'
     evidence.evidence_digest = actionRunEvidenceDigest(evidence)
     const pair = await generateSigningKey()

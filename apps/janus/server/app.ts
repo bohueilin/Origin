@@ -36,6 +36,27 @@ import { isAvailable as opAvailable, leaseScopedSecret, listLeases, revokeLease 
 import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
+import { authorizeService, authorizeVapi } from './requestAuth.ts'
+
+function normalizePolicyPath(path: string): string {
+  return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
+}
+
+function isPublicRoute(method: string, path: string): boolean {
+  if (method === 'GET' && path === '/health') return true
+  if (method === 'GET' && path === '/api/janus/notify/phone-approve') return true
+  if (method !== 'POST') return false
+  return path === '/v1/episodes'
+    || path === '/v1/step'
+    || /^\/v1\/episodes\/[^/]+\/step$/.test(path)
+    || path === '/api/janus/notify/phone-approve'
+}
+
+function authFailure(c: Context, decision: 'unauthorized' | 'not_configured', service: boolean): Response {
+  if (decision === 'not_configured') return c.json({ ok: false, error: 'auth_not_configured' }, 503)
+  if (service) c.header('WWW-Authenticate', 'Bearer')
+  return c.json({ ok: false, error: 'unauthorized' }, 401)
+}
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
   switch (code) {
@@ -117,6 +138,21 @@ export function createApp(config: AppConfig): Hono {
 
   const app = new Hono()
   app.use('*', cors())
+
+  // CORS must answer preflight before credentials are evaluated. Every other production
+  // route is deny-by-default, with only the small external-gym and one-shot phone set public.
+  app.use('*', async (c, next) => {
+    if (!config.isProd || c.req.method === 'OPTIONS') return next()
+    const path = normalizePolicyPath(c.req.path)
+    if (c.req.method === 'HEAD' && path === '/api/janus/notify/phone-approve') return c.body(null, 405)
+    const policyMethod = c.req.method === 'HEAD' ? 'GET' : c.req.method
+    if (isPublicRoute(policyMethod, path)) return next()
+    const vapi = policyMethod === 'POST' && path === '/api/vapi/tools'
+    const decision = vapi
+      ? authorizeVapi(c.req.raw.headers, config.vapiWebhookSecret)
+      : authorizeService(c.req.raw.headers, config.serviceAuthToken)
+    return decision === 'authorized' ? next() : authFailure(c, decision, !vapi)
+  })
 
   // CSRF / abuse defense for the guarded /api/janus/* routes (money, notify, discord, email,
   // credential, intent). A browser caller is allowed only from localhost or an explicitly-configured

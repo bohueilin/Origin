@@ -16,6 +16,8 @@ const config: AppConfig = {
   cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1' }, // no apiKey → mock path
   gemini: { model: 'gemini-2.0-flash', baseUrl: 'https://example.test/v1' },
   episodeSecret: 'foundry-test-secret',
+  serviceAuthToken: undefined,
+  vapiWebhookSecret: undefined,
   warnings: [],
 }
 

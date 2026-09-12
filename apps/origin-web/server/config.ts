@@ -64,6 +64,8 @@ export interface AppConfig {
   gemini: GeminiConfig
   /** HMAC secret for signing stateless episode tokens. */
   episodeSecret: string
+  serviceAuthToken: string | undefined
+  vapiWebhookSecret: string | undefined
   /** Non-fatal configuration warnings to log at startup. */
   warnings: string[]
 }
@@ -88,7 +90,10 @@ function readDotEnvLocal(cwd: string): Record<string, string> {
 export function loadConfig(cwd: string = process.cwd()): AppConfig {
   const file = readDotEnvLocal(cwd)
   // process.env always wins over .env.local (prod injects real env).
-  const get = (k: string): string | undefined => process.env[k] ?? file[k] ?? undefined
+  const get = (k: string): string | undefined => {
+    const value = process.env[k] ?? file[k]
+    return value && value.trim() ? value : undefined
+  }
 
   const isProd = (get('NODE_ENV') ?? 'development') === 'production'
   const warnings: string[] = []
@@ -151,5 +156,5 @@ export function loadConfig(cwd: string = process.cwd()): AppConfig {
     throw new Error(`Invalid PORT: ${get('PORT')}`)
   }
 
-  return { port, isProd, nebius, insforge, minimax, cerebras, gemini, episodeSecret, warnings }
+  return { port, isProd, nebius, insforge, minimax, cerebras, gemini, episodeSecret, serviceAuthToken: get('SERVICE_AUTH_TOKEN'), vapiWebhookSecret: get('VAPI_WEBHOOK_SECRET'), warnings }
 }

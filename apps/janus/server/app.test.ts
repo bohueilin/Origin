@@ -27,11 +27,21 @@ const config: AppConfig = {
   },
   episodeSecret: 'app-test-secret',
   episodeSecretIsDev: false,
+  serviceAuthToken: undefined,
+  vapiWebhookSecret: undefined,
   webOrigins: [],
   warnings: [],
 }
 
 const app = createApp(config)
+
+const productionApp = (overrides: Partial<AppConfig> = {}) => createApp({
+  ...config,
+  isProd: true,
+  serviceAuthToken: 'service-test-token',
+  vapiWebhookSecret: 'vapi-test-secret',
+  ...overrides,
+})
 
 async function post(path: string, body: unknown): Promise<Response> {
   // A real same-origin browser sends Origin on POST; the metered routes are
@@ -284,5 +294,46 @@ describe('createApp /v1/reference-episodes (server-owned reference agents)', () 
     const resp = await postRaw('/v1/reference-episodes', '{ scenarioId: com-1 ')
     expect(resp.status).toBe(400)
     expect(((await resp.json()) as { code: string }).code).toBe('bad_request')
+  })
+})
+
+describe('createApp production request authority', () => {
+  it('fails closed for missing or invalid service credentials, while health and gym remain public', async () => {
+    const missing = createApp({ ...config, isProd: true })
+    expect((await missing.request('/api/nebius-action', { method: 'POST' })).status).toBe(503)
+    const app = productionApp()
+    const denied = await app.request('/api/nebius-action/', { method: 'POST' })
+    expect(denied.status).toBe(401)
+    expect(denied.headers.get('www-authenticate')).toBe('Bearer')
+    expect((await app.request('/health')).status).toBe(200)
+    expect((await app.request('/v1/episodes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })).status).toBe(200)
+    expect((await app.request('/api/janus/notify/phone-approve')).status).not.toBe(401)
+  })
+
+  it('allows CORS preflight before authority and makes protected HEAD inherit GET policy', async () => {
+    const app = productionApp()
+    expect((await app.request('/api/nebius-action', { method: 'OPTIONS', headers: { origin: 'https://example.test', 'access-control-request-method': 'POST' } })).status).toBe(204)
+    expect((await app.request('/api/runs/recent', { method: 'HEAD' })).status).toBe(401)
+    expect((await app.request('/api/runs/recent', { method: 'HEAD', headers: { authorization: 'Bearer service-test-token' } })).status).toBe(200)
+  })
+
+  it('authenticates Vapi before parsing its body and rejects the phone approval HEAD alias', async () => {
+    const app = productionApp()
+    expect((await app.request('/api/vapi/tools', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{not-json' })).status).toBe(401)
+    expect((await app.request('/api/vapi/tools', { method: 'POST', headers: { 'content-type': 'application/json', 'x-vapi-secret': 'vapi-test-secret' }, body: '{not-json' })).status).not.toBe(401)
+    expect((await app.request('/api/janus/notify/phone-approve', { method: 'HEAD' })).status).toBe(405)
+  })
+
+  it('preserves every Vapi tool-call envelope after a valid distinct secret', async () => {
+    const app = productionApp()
+    for (const field of ['toolCallList', 'toolCalls', 'tool_calls']) {
+      const response = await app.request('/api/vapi/tools', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', authorization: 'Bearer vapi-test-secret' },
+        body: JSON.stringify({ message: { [field]: [{ id: field, name: 'unknown_tool' }] } }),
+      })
+      expect(response.status).toBe(200)
+      expect(((await response.json()) as { results: { toolCallId: string }[] }).results[0]?.toolCallId).toBe(field)
+    }
   })
 })

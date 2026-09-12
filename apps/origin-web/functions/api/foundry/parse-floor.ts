@@ -19,8 +19,11 @@
 
 import { handleParseFloor } from '../../../server/foundryHandler.ts'
 import type { CerebrasConfig } from '../../../server/config.ts'
+import { authorizeService } from '../../../server/requestAuth.ts'
 
 interface ParseFloorEnv {
+  /** Required on every Pages request; browser bundles must never receive this value. */
+  SERVICE_AUTH_TOKEN?: string
   CEREBRAS_API_KEY?: string
   CEREBRAS_MODEL?: string
   CEREBRAS_BASE_URL?: string
@@ -49,6 +52,12 @@ const json = (body: unknown, status = 200): Response =>
   })
 
 export const onRequestPost = async (ctx: { request: Request; env: ParseFloorEnv }): Promise<Response> => {
+  // Pages Functions are the public deployment authority. Authenticate before every
+  // kill-switch, rate-limit, declared-length, or body operation so unauthenticated
+  // callers cannot consume provider/rate-limit resources or learn parse behavior.
+  const decision = authorizeService(ctx.request.headers, ctx.env.SERVICE_AUTH_TOKEN)
+  if (decision === 'not_configured') return json({ ok: false, error: 'auth_not_configured' }, 503)
+  if (decision === 'unauthorized') return json({ ok: false, error: 'unauthorized' }, 401)
   if (ctx.env.PARSE_DISABLED === '1') {
     return json({ ok: false, error: 'Parse endpoint is temporarily disabled.' }, 503)
   }

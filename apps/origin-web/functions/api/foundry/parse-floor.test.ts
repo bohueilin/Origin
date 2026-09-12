@@ -12,18 +12,27 @@ import { describe, expect, it } from 'vitest'
 import { onRequestPost } from './parse-floor.ts'
 import type { ParseFloorResponse } from '../../../src/foundry/types.ts'
 
-const call = async (body: string, env: Record<string, string | undefined> = {}): Promise<Response> =>
+const call = async (
+  body: string,
+  env: Record<string, string | undefined> = {},
+  authorization = 'Bearer pages-test-token',
+): Promise<Response> =>
   onRequestPost({
     request: new Request('https://origin.test/api/foundry/parse-floor', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', authorization },
       body,
     }),
-    env,
+    env: { SERVICE_AUTH_TOKEN: 'pages-test-token', ...env },
   } as Parameters<typeof onRequestPost>[0])
 
 describe('POST /api/foundry/parse-floor (Cloudflare Pages Function)', () => {
-  it('demo mode with no env: 200, labeled sample floor, no-store', async () => {
+  it('fails closed before parsing the body when service authority is absent or invalid', async () => {
+    expect((await call('{not-json', { SERVICE_AUTH_TOKEN: undefined })).status).toBe(503)
+    expect((await call('{not-json', { SERVICE_AUTH_TOKEN: 'pages-test-token' }, 'Bearer wrong')).status).toBe(401)
+  })
+
+  it('authorized demo mode with no provider env: 200, labeled sample floor, no-store', async () => {
     const res = await call(JSON.stringify({}))
     expect(res.status).toBe(200)
     expect(res.headers.get('cache-control')).toBe('no-store')
@@ -56,8 +65,8 @@ describe('POST /api/foundry/parse-floor (Cloudflare Pages Function)', () => {
 
   it('rejects an oversize declared Content-Length without reading the body', async () => {
     const req = new Request('https://origin.test/api/foundry/parse-floor', { method: 'POST', body: '{}' })
-    Object.defineProperty(req, 'headers', { value: new Headers({ 'content-length': '99999999' }) })
-    const res = await onRequestPost({ request: req, env: {} } as Parameters<typeof onRequestPost>[0])
+    Object.defineProperty(req, 'headers', { value: new Headers({ 'content-length': '99999999', authorization: 'Bearer pages-test-token' }) })
+    const res = await onRequestPost({ request: req, env: { SERVICE_AUTH_TOKEN: 'pages-test-token' } } as Parameters<typeof onRequestPost>[0])
     expect(res.status).toBe(413)
   })
 

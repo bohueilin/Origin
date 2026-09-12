@@ -41,6 +41,27 @@ import { handleVapiTools } from './vapiHandler.ts'
 import { handleGymRollout, handleParseFloor, handleQuorumRun, handleSpeedRace } from './foundryHandler.ts'
 import { handleSocRun, handleSocRace, handleSocShootout, handleEconomics, handleEnsemble, handleLatency, handleAccuracy, handlePassportRun, handleSupervisionRun } from './socHandler.ts'
 import { handleLeaderboard } from './leaderboardHandler.ts'
+import { authorizeService, authorizeVapi } from './requestAuth.ts'
+
+function normalizePolicyPath(path: string): string {
+  return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
+}
+
+function isPublicRoute(method: string, path: string): boolean {
+  if (method === 'GET' && path === '/health') return true
+  if (method !== 'POST') return false
+  return path === '/v1/episodes'
+    || path === '/v1/step'
+    || /^\/v1\/episodes\/[^/]+\/step$/.test(path)
+    || path === '/v1/warehouse/episodes'
+    || /^\/v1\/warehouse\/episodes\/[^/]+\/step$/.test(path)
+}
+
+function authFailure(c: import('hono').Context, decision: 'unauthorized' | 'not_configured', service: boolean): Response {
+  if (decision === 'not_configured') return c.json({ ok: false, error: 'auth_not_configured' }, 503)
+  if (service) c.header('WWW-Authenticate', 'Bearer')
+  return c.json({ ok: false, error: 'unauthorized' }, 401)
+}
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
   switch (code) {
@@ -141,6 +162,20 @@ export function createApp(config: AppConfig): Hono {
 
   const app = new Hono()
   app.use('*', cors())
+
+  // Production is deny-by-default. OPTIONS remains a CORS concern; HEAD follows
+  // its GET policy so a protected read cannot become a status-discovery side door.
+  app.use('*', async (c, next) => {
+    if (!config.isProd || c.req.method === 'OPTIONS') return next()
+    const path = normalizePolicyPath(c.req.path)
+    const policyMethod = c.req.method === 'HEAD' ? 'GET' : c.req.method
+    if (isPublicRoute(policyMethod, path)) return next()
+    const vapi = policyMethod === 'POST' && path === '/api/vapi/tools'
+    const decision = vapi
+      ? authorizeVapi(c.req.raw.headers, config.vapiWebhookSecret)
+      : authorizeService(c.req.raw.headers, config.serviceAuthToken)
+    return decision === 'authorized' ? next() : authFailure(c, decision, !vapi)
+  })
 
   app.get('/health', (c) =>
     c.json({ ok: true, environment: ENVIRONMENT_NAME, time: new Date().toISOString() }),

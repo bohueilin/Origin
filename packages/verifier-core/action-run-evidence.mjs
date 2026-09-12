@@ -1,8 +1,4 @@
-import {
-  actionRunEvidenceDigest,
-  buildActionRunEvidence,
-  validateActionRunEvidence,
-} from '@origin/evidence/action-run-evidence'
+import { actionRunEvidenceDigest, validateActionRunEvidence } from '@origin/evidence/action-run-evidence'
 import { canonical } from '@origin/evidence/env-evidence'
 import { signSigil, verifySigil } from './sigil.mjs'
 
@@ -22,22 +18,24 @@ function validKeyMetadata(keyId, keyEpoch) {
   return typeof keyId === 'string' && keyId.trim().length > 0 && Number.isSafeInteger(keyEpoch) && keyEpoch > 0
 }
 
+function expectedThumbprint(registry, keyId, keyEpoch) {
+  const candidate = registry?.[keyId]?.[keyEpoch]
+  return typeof candidate === 'string' && candidate.length > 0 ? candidate : null
+}
+
 export async function signActionRunEvidence(evidence, keyPair, options = {}) {
   if (!validKeyMetadata(options.keyId, options.keyEpoch)) throw new TypeError('keyId and positive integer keyEpoch are required')
-  const unsigned = buildActionRunEvidence(evidence)
-  const statement = signingStatement(unsigned, options.keyId, options.keyEpoch)
+  if (!evidence || typeof evidence !== 'object' || evidence.signature !== null) throw new TypeError('only unsigned evidence with signature: null may be signed')
+  const verdict = validateActionRunEvidence(evidence)
+  if (!verdict.ok) throw new TypeError(`invalid Action/Run Evidence: ${verdict.failures.join('; ')}`)
+  if (actionRunEvidenceDigest(evidence) !== evidence.evidence_digest) throw new TypeError('evidence_digest: supplied unsigned evidence does not match its digest')
+  const statement = signingStatement(evidence, options.keyId, options.keyEpoch)
   const sigil = await signSigil(statement, keyPair, {
-    issuer: options.issuer ?? 'origin',
-    kind: ARTIFACT_TYPE,
-    signed_at: options.signedAt ?? null,
+    issuer: options.issuer ?? 'origin', kind: ARTIFACT_TYPE, signed_at: options.signedAt ?? null,
   })
   return {
-    ...unsigned,
-    signature: {
-      key_id: options.keyId,
-      key_epoch: options.keyEpoch,
-      sigil,
-    },
+    ...evidence,
+    signature: { key_id: options.keyId, key_epoch: options.keyEpoch, sigil },
   }
 }
 
@@ -49,19 +47,25 @@ function typedVerdict() {
       structure: false,
       semantics: false,
       integrity: false,
+      authorization_valid: false,
       statement_bound: false,
       signature_valid: false,
       issuer_trusted: false,
-      outcome_verified: false,
+      outcome_consistent: false,
+      execution_verified: false,
+      provider_bound: false,
       complete: false,
       fresh: false,
     },
   }
 }
 
-function outcomeIsVerified(evidence) {
-  const status = evidence.outcome_attestation?.status
-  return status === 'simulated' || status === 'not_attempted' || status === 'provider_confirmed' || status === 'independently_verified'
+function outcomeConsistent(evidence) {
+  return ['simulated', 'not_attempted', 'provider_confirmed', 'independently_verified', 'failed', 'unknown'].includes(evidence.outcome_attestation?.status)
+}
+
+function executionVerified(evidence) {
+  return ['provider_confirmed', 'independently_verified'].includes(evidence.outcome_attestation?.status)
 }
 
 export async function verifyActionRunEvidence(evidence, options = {}) {
@@ -72,8 +76,10 @@ export async function verifyActionRunEvidence(evidence, options = {}) {
     verdict.dimensions.structure = pure.dimensions.structure
     verdict.dimensions.semantics = pure.dimensions.semantics
     verdict.dimensions.integrity = pure.dimensions.integrity
-    verdict.dimensions.complete = evidence?.completeness?.coverage === 'complete' && pure.dimensions.completeness
-    verdict.dimensions.fresh = evidence?.completeness?.freshness?.status === 'fresh' && pure.dimensions.freshness
+    verdict.dimensions.authorization_valid = pure.dimensions.authorization_valid
+    verdict.dimensions.provider_bound = pure.dimensions.provider_bound
+    verdict.dimensions.complete = pure.dimensions.completeness
+    verdict.dimensions.fresh = pure.dimensions.freshness
     if (!pure.ok) return verdict
 
     const signature = evidence.signature
@@ -88,9 +94,10 @@ export async function verifyActionRunEvidence(evidence, options = {}) {
     }
     verdict.dimensions.statement_bound = true
 
+    const pin = expectedThumbprint(options.expectedThumbprints, signature.key_id, signature.key_epoch)
     let sigilVerdict
     try {
-      sigilVerdict = await verifySigil(signature.sigil, options.expectedThumbprint ? { expectedThumbprint: options.expectedThumbprint } : {})
+      sigilVerdict = await verifySigil(signature.sigil, pin ? { expectedThumbprint: pin } : {})
     } catch {
       verdict.failures.push('signature: malformed Sigil')
       return verdict
@@ -100,11 +107,12 @@ export async function verifyActionRunEvidence(evidence, options = {}) {
       return verdict
     }
     verdict.dimensions.signature_valid = true
-    verdict.dimensions.issuer_trusted = typeof options.expectedThumbprint === 'string' && options.expectedThumbprint.length > 0
-    if (!verdict.dimensions.issuer_trusted) verdict.failures.push('issuer: embedded key is untrusted without an expected pinned thumbprint')
+    verdict.dimensions.issuer_trusted = pin !== null
+    if (!verdict.dimensions.issuer_trusted) verdict.failures.push('issuer: no trusted thumbprint is registered for declared key_id/key_epoch')
 
-    verdict.dimensions.outcome_verified = outcomeIsVerified(evidence)
-    if (!verdict.dimensions.outcome_verified) verdict.failures.push('outcome: claimed evidence is not verified execution evidence')
+    verdict.dimensions.outcome_consistent = outcomeConsistent(evidence)
+    verdict.dimensions.execution_verified = executionVerified(evidence)
+    if (!verdict.dimensions.outcome_consistent) verdict.failures.push('outcome: claimed evidence is not verified outcome evidence')
     verdict.ok = verdict.failures.length === 0 && verdict.dimensions.complete && verdict.dimensions.fresh
     if (!verdict.dimensions.complete) verdict.failures.push('completeness: evidence is not complete')
     if (!verdict.dimensions.fresh) verdict.failures.push('freshness: evidence is not fresh')

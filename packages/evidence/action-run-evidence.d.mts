@@ -9,6 +9,8 @@ export interface ActionRunValidationVerdict {
     structure: boolean
     semantics: boolean
     integrity: boolean
+    authorization_valid: boolean
+    provider_bound: boolean
     completeness: boolean
     freshness: boolean
   }
@@ -19,15 +21,29 @@ export interface ActionRunEvidence {
   evidence_id: string
   issued_at: string
   execution_mode: (typeof EXECUTION_MODES)[number]
-  identity: { principal_id: string; tenant_id: string | null; on_behalf_of: string | null }
-  proposal: { proposed_effect: Record<string, unknown>; input_digest: string; policy_only?: boolean }
-  approval: { authorization: 'allow' | 'deny'; required: boolean; status: string; nonce_digest: string | null; expires_at: string | null }
-  outcome_attestation: { status: (typeof OUTCOME_STATUSES)[number]; attester: string; attested_at: string | null; statement_digest: string | null }
+  identity: { principal_id: string; tenant_id: string | null; workload_id: string; on_behalf_of: string | null }
+  subject: {
+    run_id: string; action_id: string; model_digest: string; tools_digest: string; policy_digest: string
+    environment_digest: string; evaluator_version: string; verifier_version: string; adapter_version: string | null
+  }
+  proposal: { action_type: string; proposed_effect: Record<string, unknown>; input_digest: string }
+  authorization: {
+    verdict: 'allow' | 'deny' | 'approval_required'; reason_codes: string[]; approval_id: string | null
+    approved_by: string | null; nonce_digest: string | null; expires_at: string | null
+  }
+  outcome_attestation: {
+    status: (typeof OUTCOME_STATUSES)[number]; attester: 'none' | 'origin' | 'provider' | 'independent_verifier'
+    attested_at: string | null; statement_digest: string | null
+  }
   provider_evidence: { provider: string | null; receipt_digest: string | null; readback_digest: string | null; readback_at: string | null }
-  completeness: { coverage: 'complete' | 'partial' | 'unknown'; expected_count: number | null; observed_count: number; covered_ids_digest: string | null; omissions: { id_digest: string; reason: string }[]; duplicates: { id_digest: string; count: number }[]; freshness: { status: 'fresh' | 'stale' | 'unknown'; observed_at: string | null; max_age_ms: number | null } }
-  source: { trace_id: string | null; audit_row_digest: string | null; verifier_version: string; oracle_verdict_digest: string | null }
+  completeness: {
+    coverage: 'complete' | 'partial' | 'unknown'; expected_count: number | null; observed_count: number; covered_ids_digest: string | null
+    omissions: Array<{ id_digest: string; reason: string }>; duplicates: Array<{ id_digest: string; count: number }>
+    freshness: { status: 'fresh' | 'stale' | 'unknown'; observed_at: string | null; max_age_ms: number | null }
+  }
+  source: { trace_id: string | null; audit_row_digest: string | null; oracle_verdict_digest: string | null }
   evidence_digest: string
-  signature: unknown | null
+  signature: { key_id: string; key_epoch: number; sigil: unknown } | null
 }
 
 export function actionRunEvidenceDigest(value: Record<string, unknown>): string

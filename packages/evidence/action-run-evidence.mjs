@@ -6,25 +6,37 @@ export const OUTCOME_STATUSES = Object.freeze(['not_attempted', 'simulated', 'cl
 
 const HEX_64 = /^[0-9a-f]{64}$/
 const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/
-const SECRET_LIKE_KEY = /(?:secret|password|private[_-]?key|raw[_-]?nonce|authorization[_-]?token|approval[_-]?token|bearer|access[_-]?token|refresh[_-]?token)/i
-const APPROVAL_STATUSES = new Set(['not_required', 'approved', 'denied', 'expired', 'missing'])
-const AUTHORIZATIONS = new Set(['allow', 'deny'])
+const AUTHORIZATION_VERDICTS = new Set(['allow', 'deny', 'approval_required'])
+const ATTESTERS = new Set(['none', 'origin', 'provider', 'independent_verifier'])
 const COVERAGE = new Set(['complete', 'partial', 'unknown'])
 const FRESHNESS = new Set(['fresh', 'stale', 'unknown'])
 
 const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
-const isPlainRecord = (value) => {
-  if (!isRecord(value)) return false
-  const proto = Object.getPrototypeOf(value)
-  return proto === Object.prototype || proto === null
-}
-const isNullableString = (value) => value === null || typeof value === 'string'
+const isPlainRecord = (value) => isRecord(value) && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null)
 const nonEmptyString = (value) => typeof value === 'string' && value.trim().length > 0
-const isDigest = (value) => typeof value === 'string' && HEX_64.test(value)
-const isCount = (value) => Number.isSafeInteger(value) && value >= 0
+const nullableString = (value) => value === null || typeof value === 'string'
+const digest = (value) => typeof value === 'string' && HEX_64.test(value)
+const count = (value) => Number.isSafeInteger(value) && value >= 0
+const timestamp = (value) => typeof value === 'string' && ISO_UTC.test(value) && !Number.isNaN(Date.parse(value))
+const isForbiddenKey = (key) => !key.endsWith('_digest') && /(?:nonce|token|credential|secret|password|private[_-]?key|bearer)/i.test(key)
 
-function isIsoTimestamp(value) {
-  return typeof value === 'string' && ISO_UTC.test(value) && !Number.isNaN(Date.parse(value))
+function add(failures, condition, message) {
+  if (!condition) failures.push(message)
+}
+
+function requireRecord(value, name, failures) {
+  if (!isPlainRecord(value)) {
+    failures.push(`${name}: required plain object missing or malformed`)
+    return null
+  }
+  return value
+}
+
+function exactKeys(value, name, keys, failures) {
+  if (!value) return
+  const allowed = new Set(keys)
+  for (const key of Object.keys(value)) if (!allowed.has(key)) failures.push(`${name}.${key}: unsupported field`)
+  for (const key of keys) if (!(key in value)) failures.push(`${name}.${key}: required field missing`)
 }
 
 function scanJson(value, path, failures) {
@@ -32,114 +44,98 @@ function scanJson(value, path, failures) {
     if (typeof value === 'number' && !Number.isFinite(value)) failures.push(`${path}: non-finite number`)
     return
   }
-  if (Array.isArray(value)) {
-    value.forEach((item, index) => scanJson(item, `${path}[${index}]`, failures))
-    return
-  }
+  if (Array.isArray(value)) return value.forEach((item, index) => scanJson(item, `${path}[${index}]`, failures))
   if (!isPlainRecord(value)) {
     failures.push(`${path}: evidence must contain plain JSON only`)
     return
   }
   for (const [key, child] of Object.entries(value)) {
-    if (SECRET_LIKE_KEY.test(key)) failures.push(`${path}.${key}: secret-like fields are forbidden`)
+    if (isForbiddenKey(key)) failures.push(`${path}.${key}: raw secret-like fields are forbidden`)
     scanJson(child, `${path}.${key}`, failures)
   }
 }
 
-function requireRecord(value, name, failures) {
-  if (!isPlainRecord(value)) {
-    failures.push(`${name}: required object missing or malformed`)
-    return null
+function validateAuthorization(authorization, failures) {
+  exactKeys(authorization, 'authorization', ['verdict', 'reason_codes', 'approval_id', 'approved_by', 'nonce_digest', 'expires_at'], failures)
+  add(failures, AUTHORIZATION_VERDICTS.has(authorization.verdict), 'authorization.verdict: unsupported verdict')
+  add(failures, Array.isArray(authorization.reason_codes) && authorization.reason_codes.every(nonEmptyString), 'authorization.reason_codes: must be an array of non-empty strings')
+  for (const key of ['approval_id', 'approved_by']) add(failures, nullableString(authorization[key]), `authorization.${key}: must be null or string`)
+  add(failures, authorization.nonce_digest === null || digest(authorization.nonce_digest), 'authorization.nonce_digest: must be null or a SHA-256 digest')
+  add(failures, authorization.expires_at === null || timestamp(authorization.expires_at), 'authorization.expires_at: must be null or ISO UTC')
+  const carriesApproval = authorization.approval_id !== null || authorization.approved_by !== null || authorization.nonce_digest !== null || authorization.expires_at !== null
+  if (authorization.verdict !== 'approval_required' && carriesApproval) failures.push('authorization: allow/deny must not carry approval material')
+  if (authorization.verdict === 'approval_required') {
+    if (authorization.approval_id === null && (authorization.approved_by !== null || authorization.nonce_digest !== null || authorization.expires_at !== null))
+      failures.push('authorization: approval material requires approval_id')
+    if (authorization.expires_at !== null && authorization.nonce_digest === null) failures.push('authorization: expiry requires nonce digest')
   }
-  return value
 }
 
-function validateApproval(approval, failures) {
-  if (!AUTHORIZATIONS.has(approval.authorization)) failures.push('approval.authorization: must be allow or deny')
-  if (typeof approval.required !== 'boolean') failures.push('approval.required: must be boolean')
-  if (!APPROVAL_STATUSES.has(approval.status)) failures.push('approval.status: unsupported status')
-  if (!isNullableString(approval.nonce_digest) || (approval.nonce_digest !== null && !isDigest(approval.nonce_digest)))
-    failures.push('approval.nonce_digest: must be null or a SHA-256 digest')
-  if (approval.expires_at !== null && !isIsoTimestamp(approval.expires_at)) failures.push('approval.expires_at: must be null or an ISO UTC timestamp')
-
-  if (approval.status === 'not_required') {
-    if (approval.required || approval.nonce_digest !== null || approval.expires_at !== null)
-      failures.push('approval: not_required must not carry approval authority')
-  }
-  if (approval.status === 'approved') {
-    if (!approval.required || !isDigest(approval.nonce_digest) || !isIsoTimestamp(approval.expires_at))
-      failures.push('approval: approved requires a nonce digest and expiry')
-  }
-  if (approval.authorization === 'allow' && approval.status === 'denied') failures.push('approval: allow cannot have denied status')
-  if (approval.authorization === 'deny' && approval.status === 'approved') failures.push('approval: deny cannot have approved status')
+function emptyProvider(provider) {
+  return provider.provider === null && provider.receipt_digest === null && provider.readback_digest === null && provider.readback_at === null
 }
 
-function validateOutcome(evidence, failures) {
+function validateOutcomeAndProvider(evidence, failures) {
   const outcome = evidence.outcome_attestation
   const provider = evidence.provider_evidence
-  if (!OUTCOME_STATUSES.includes(outcome.status)) failures.push('outcome_attestation.status: unsupported status')
-  if (!['none', 'origin', 'provider', 'independent_verifier'].includes(outcome.attester))
-    failures.push('outcome_attestation.attester: unsupported attester')
-  if (outcome.attested_at !== null && !isIsoTimestamp(outcome.attested_at)) failures.push('outcome_attestation.attested_at: invalid timestamp')
-  if (outcome.statement_digest !== null && !isDigest(outcome.statement_digest)) failures.push('outcome_attestation.statement_digest: must be null or a digest')
+  exactKeys(outcome, 'outcome_attestation', ['status', 'attester', 'attested_at', 'statement_digest'], failures)
+  exactKeys(provider, 'provider_evidence', ['provider', 'receipt_digest', 'readback_digest', 'readback_at'], failures)
+  add(failures, OUTCOME_STATUSES.includes(outcome.status), 'outcome_attestation.status: unsupported status')
+  add(failures, ATTESTERS.has(outcome.attester), 'outcome_attestation.attester: unsupported attester')
+  add(failures, outcome.attested_at === null || timestamp(outcome.attested_at), 'outcome_attestation.attested_at: invalid timestamp')
+  add(failures, outcome.statement_digest === null || digest(outcome.statement_digest), 'outcome_attestation.statement_digest: must be null or a digest')
+  add(failures, nullableString(provider.provider), 'provider_evidence.provider: must be null or string')
+  add(failures, provider.receipt_digest === null || digest(provider.receipt_digest), 'provider_evidence.receipt_digest: must be null or a digest')
+  add(failures, provider.readback_digest === null || digest(provider.readback_digest), 'provider_evidence.readback_digest: must be null or a digest')
+  add(failures, provider.readback_at === null || timestamp(provider.readback_at), 'provider_evidence.readback_at: invalid timestamp')
 
-  if (!isNullableString(provider.provider)) failures.push('provider_evidence.provider: must be null or string')
-  for (const key of ['receipt_digest', 'readback_digest']) {
-    if (provider[key] !== null && !isDigest(provider[key])) failures.push(`provider_evidence.${key}: must be null or a digest`)
-  }
-  if (provider.readback_at !== null && !isIsoTimestamp(provider.readback_at)) failures.push('provider_evidence.readback_at: invalid timestamp')
-
-  const hasProviderEvidence = provider.provider !== null || provider.receipt_digest !== null || provider.readback_digest !== null || provider.readback_at !== null
   if (evidence.execution_mode === 'simulated') {
-    if (!['simulated', 'not_attempted'].includes(outcome.status)) failures.push('simulated evidence cannot claim a provider outcome')
-    if (outcome.status === 'not_attempted' && evidence.proposal.policy_only !== true)
-      failures.push('simulated not_attempted outcome is reserved for policy-only evaluation')
-    if (hasProviderEvidence) failures.push('simulated evidence cannot carry provider evidence')
+    if (!['simulated', 'not_attempted'].includes(outcome.status)) failures.push('simulated execution only permits simulated or not_attempted outcomes')
+    if (!emptyProvider(provider)) failures.push('simulated execution requires empty provider evidence')
+    if (outcome.status === 'simulated' && outcome.attester !== 'origin') failures.push('simulated outcome requires origin attester')
+    if (outcome.status === 'not_attempted' && outcome.attester !== 'none') failures.push('not_attempted outcome requires none attester')
+  } else if (['simulated', 'not_attempted'].includes(outcome.status)) {
+    failures.push('simulated/not_attempted outcomes require simulated execution mode')
   }
-  if (outcome.status === 'simulated' && evidence.execution_mode !== 'simulated') failures.push('simulated outcome requires simulated execution mode')
-  if (['provider_confirmed', 'independently_verified'].includes(outcome.status)) {
-    if (!['customer_replay', 'live'].includes(evidence.execution_mode)) failures.push('confirmed provider outcome requires customer_replay or live execution mode')
-    if (!nonEmptyString(provider.provider) || !isDigest(provider.receipt_digest) || !isDigest(provider.readback_digest) || !isIsoTimestamp(provider.readback_at))
-      failures.push('confirmed provider outcome requires provider receipt and readback evidence')
+  if (outcome.status === 'provider_confirmed') {
+    if (outcome.attester !== 'provider' || !nonEmptyString(provider.provider) || !digest(provider.receipt_digest))
+      failures.push('provider_confirmed requires provider attester, name, and receipt digest')
   }
-  if (outcome.status === 'claimed' && (!nonEmptyString(provider.provider) || !isDigest(provider.receipt_digest)))
-    failures.push('claimed provider outcome requires a provider receipt digest')
+  if (outcome.status === 'independently_verified') {
+    if (outcome.attester !== 'independent_verifier' || !digest(provider.readback_digest) || !timestamp(provider.readback_at))
+      failures.push('independently_verified requires independent verifier attester and readback digest/time')
+  }
+  if (outcome.status === 'claimed' && (outcome.attester !== 'provider' || !nonEmptyString(provider.provider) || !digest(provider.receipt_digest)))
+    failures.push('claimed outcome requires provider attester, name, and receipt digest')
 }
 
 function validateCompleteness(completeness, now, failures) {
-  if (!COVERAGE.has(completeness.coverage)) failures.push('completeness.coverage: unsupported status')
-  if (completeness.expected_count !== null && !isCount(completeness.expected_count)) failures.push('completeness.expected_count: must be null or a non-negative integer')
-  if (!isCount(completeness.observed_count)) failures.push('completeness.observed_count: must be a non-negative integer')
-  if (completeness.covered_ids_digest !== null && !isDigest(completeness.covered_ids_digest)) failures.push('completeness.covered_ids_digest: must be null or a digest')
-  if (!Array.isArray(completeness.omissions) || !Array.isArray(completeness.duplicates)) failures.push('completeness omissions and duplicates must be arrays')
-  for (const omission of completeness.omissions || []) {
-    if (!isPlainRecord(omission) || !isDigest(omission.id_digest) || !nonEmptyString(omission.reason)) failures.push('completeness.omissions: invalid omission entry')
-  }
-  for (const duplicate of completeness.duplicates || []) {
-    if (!isPlainRecord(duplicate) || !isDigest(duplicate.id_digest) || !Number.isSafeInteger(duplicate.count) || duplicate.count < 2)
-      failures.push('completeness.duplicates: invalid duplicate entry')
-  }
-  if (completeness.coverage === 'complete' && (
-    completeness.expected_count === null ||
-    completeness.expected_count !== completeness.observed_count ||
-    completeness.omissions.length !== 0 ||
-    completeness.duplicates.length !== 0
-  )) failures.push('completeness: complete coverage requires exact counts with no omissions or duplicates')
-  if (completeness.coverage === 'unknown' && completeness.expected_count !== null) failures.push('completeness: unknown coverage must not claim an expected count')
+  exactKeys(completeness, 'completeness', ['coverage', 'expected_count', 'observed_count', 'covered_ids_digest', 'omissions', 'duplicates', 'freshness'], failures)
+  add(failures, COVERAGE.has(completeness.coverage), 'completeness.coverage: unsupported status')
+  add(failures, completeness.expected_count === null || count(completeness.expected_count), 'completeness.expected_count: must be null or non-negative integer')
+  add(failures, count(completeness.observed_count), 'completeness.observed_count: must be a non-negative integer')
+  add(failures, completeness.covered_ids_digest === null || digest(completeness.covered_ids_digest), 'completeness.covered_ids_digest: must be null or a digest')
+  add(failures, Array.isArray(completeness.omissions) && Array.isArray(completeness.duplicates), 'completeness.omissions/duplicates: must be arrays')
+  for (const omission of completeness.omissions || []) add(failures, isPlainRecord(omission) && digest(omission.id_digest) && nonEmptyString(omission.reason), 'completeness.omissions: invalid entry')
+  for (const duplicate of completeness.duplicates || []) add(failures, isPlainRecord(duplicate) && digest(duplicate.id_digest) && Number.isSafeInteger(duplicate.count) && duplicate.count >= 2, 'completeness.duplicates: invalid entry')
+  if (completeness.coverage === 'complete' && (completeness.expected_count === null || completeness.expected_count !== completeness.observed_count || completeness.omissions.length || completeness.duplicates.length))
+    failures.push('completeness: complete coverage requires exact counts without omissions or duplicates')
+  if (completeness.coverage === 'unknown' && completeness.expected_count !== null) failures.push('completeness: unknown coverage must not claim expected count')
 
-  const freshness = requireRecord(completeness.freshness, 'completeness.freshness', failures)
-  if (!freshness) return
-  if (!FRESHNESS.has(freshness.status)) failures.push('freshness.status: unsupported status')
-  if (freshness.observed_at !== null && !isIsoTimestamp(freshness.observed_at)) failures.push('freshness.observed_at: invalid timestamp')
-  if (freshness.max_age_ms !== null && (!Number.isSafeInteger(freshness.max_age_ms) || freshness.max_age_ms < 0)) failures.push('freshness.max_age_ms: must be null or a non-negative integer')
-  if (freshness.status === 'unknown' && (freshness.observed_at !== null || freshness.max_age_ms !== null)) failures.push('freshness: unknown must not carry timing claims')
-  if (freshness.status !== 'unknown' && (!isIsoTimestamp(freshness.observed_at) || freshness.max_age_ms === null)) failures.push('freshness: fresh/stale requires observed_at and max_age_ms')
-  if (now !== undefined && freshness.status !== 'unknown' && isIsoTimestamp(freshness.observed_at) && Number.isSafeInteger(freshness.max_age_ms)) {
+  const fresh = requireRecord(completeness.freshness, 'completeness.freshness', failures)
+  if (!fresh) return
+  exactKeys(fresh, 'completeness.freshness', ['status', 'observed_at', 'max_age_ms'], failures)
+  add(failures, FRESHNESS.has(fresh.status), 'freshness.status: unsupported status')
+  add(failures, fresh.observed_at === null || timestamp(fresh.observed_at), 'freshness.observed_at: invalid timestamp')
+  add(failures, fresh.max_age_ms === null || (Number.isSafeInteger(fresh.max_age_ms) && fresh.max_age_ms > 0), 'freshness.max_age_ms: must be a strictly positive integer or null')
+  if (fresh.status === 'unknown' && (fresh.observed_at !== null || fresh.max_age_ms !== null)) failures.push('freshness: unknown must not carry timing claims')
+  if (fresh.status !== 'unknown' && (!timestamp(fresh.observed_at) || !Number.isSafeInteger(fresh.max_age_ms) || fresh.max_age_ms <= 0)) failures.push('freshness: fresh/stale requires observed_at and positive max_age_ms')
+  if (now !== undefined && fresh.status !== 'unknown' && timestamp(fresh.observed_at) && Number.isSafeInteger(fresh.max_age_ms) && fresh.max_age_ms > 0) {
     const nowMs = typeof now === 'string' ? Date.parse(now) : now instanceof Date ? now.getTime() : Number(now)
     if (!Number.isFinite(nowMs)) failures.push('options.now: must be a valid timestamp')
     else {
-      const actual = nowMs <= Date.parse(freshness.observed_at) + freshness.max_age_ms ? 'fresh' : 'stale'
-      if (actual !== freshness.status) failures.push(`freshness: declared ${freshness.status} but evaluates ${actual}`)
+      const actual = nowMs <= Date.parse(fresh.observed_at) + fresh.max_age_ms ? 'fresh' : 'stale'
+      if (actual !== fresh.status) failures.push(`freshness: declared ${fresh.status} but evaluates ${actual}`)
     }
   }
 }
@@ -153,46 +149,61 @@ export function actionRunEvidenceDigest(value) {
 
 export function validateActionRunEvidence(value, options = {}) {
   const failures = []
-  const dimensions = {
-    structure: false,
-    semantics: false,
-    integrity: false,
-    completeness: false,
-    freshness: false,
-  }
+  const dimensions = { structure: false, semantics: false, integrity: false, authorization_valid: false, provider_bound: false, completeness: false, freshness: false }
   try {
-    if (!isPlainRecord(value)) {
-      failures.push('evidence: must be a plain object')
-      return { ok: false, failures, dimensions }
-    }
+    if (!isPlainRecord(value)) return { ok: false, failures: ['evidence: must be a plain object'], dimensions }
     scanJson(value, 'evidence', failures)
+    exactKeys(value, 'evidence', ['schema_version', 'evidence_id', 'issued_at', 'execution_mode', 'identity', 'subject', 'proposal', 'authorization', 'outcome_attestation', 'provider_evidence', 'completeness', 'source', 'evidence_digest', 'signature'], failures)
     const identity = requireRecord(value.identity, 'identity', failures)
+    const subject = requireRecord(value.subject, 'subject', failures)
     const proposal = requireRecord(value.proposal, 'proposal', failures)
-    const approval = requireRecord(value.approval, 'approval', failures)
+    const authorization = requireRecord(value.authorization, 'authorization', failures)
     const outcome = requireRecord(value.outcome_attestation, 'outcome_attestation', failures)
     const provider = requireRecord(value.provider_evidence, 'provider_evidence', failures)
     const completeness = requireRecord(value.completeness, 'completeness', failures)
     const source = requireRecord(value.source, 'source', failures)
-    if (value.schema_version !== ACTION_RUN_SCHEMA_VERSION) failures.push(`schema_version: expected ${ACTION_RUN_SCHEMA_VERSION}`)
-    if (!nonEmptyString(value.evidence_id)) failures.push('evidence_id: required non-empty string')
-    if (!isIsoTimestamp(value.issued_at)) failures.push('issued_at: invalid ISO UTC timestamp')
-    if (!EXECUTION_MODES.includes(value.execution_mode)) failures.push('execution_mode: unsupported mode')
-    if (identity && (!nonEmptyString(identity.principal_id) || !isNullableString(identity.tenant_id) || !isNullableString(identity.on_behalf_of)))
-      failures.push('identity: invalid principal, tenant, or on_behalf_of')
-    if (proposal && (!isPlainRecord(proposal.proposed_effect) || !isDigest(proposal.input_digest))) failures.push('proposal: requires proposed_effect and input_digest')
-    if (approval) validateApproval(approval, failures)
-    if (outcome && provider && proposal) validateOutcome(value, failures)
-    if (source && (!isNullableString(source.trace_id) || (source.audit_row_digest !== null && !isDigest(source.audit_row_digest)) || !nonEmptyString(source.verifier_version) || (source.oracle_verdict_digest !== null && !isDigest(source.oracle_verdict_digest))))
-      failures.push('source: invalid trace/digest/version binding')
+    add(failures, value.schema_version === ACTION_RUN_SCHEMA_VERSION, `schema_version: expected ${ACTION_RUN_SCHEMA_VERSION}`)
+    add(failures, nonEmptyString(value.evidence_id), 'evidence_id: required non-empty string')
+    add(failures, timestamp(value.issued_at), 'issued_at: invalid ISO UTC timestamp')
+    add(failures, EXECUTION_MODES.includes(value.execution_mode), 'execution_mode: unsupported mode')
+    if (value.signature !== null) {
+      const signature = requireRecord(value.signature, 'signature', failures)
+      if (signature) {
+        exactKeys(signature, 'signature', ['key_id', 'key_epoch', 'sigil'], failures)
+        add(failures, nonEmptyString(signature.key_id) && Number.isSafeInteger(signature.key_epoch) && signature.key_epoch > 0 && isPlainRecord(signature.sigil), 'signature: invalid key metadata or Sigil')
+      }
+    }
+    if (identity) {
+      exactKeys(identity, 'identity', ['principal_id', 'tenant_id', 'workload_id', 'on_behalf_of'], failures)
+      add(failures, nonEmptyString(identity.principal_id) && nullableString(identity.tenant_id) && nonEmptyString(identity.workload_id) && nullableString(identity.on_behalf_of), 'identity: invalid principal, tenant, workload, or on_behalf_of')
+    }
+    if (subject) {
+      exactKeys(subject, 'subject', ['run_id', 'action_id', 'model_digest', 'tools_digest', 'policy_digest', 'environment_digest', 'evaluator_version', 'verifier_version', 'adapter_version'], failures)
+      add(failures, nonEmptyString(subject.run_id) && nonEmptyString(subject.action_id) && digest(subject.model_digest) && digest(subject.tools_digest) && digest(subject.policy_digest) && digest(subject.environment_digest) && nonEmptyString(subject.evaluator_version) && nonEmptyString(subject.verifier_version) && nullableString(subject.adapter_version), 'subject: invalid run/action binding')
+    }
+    if (proposal) {
+      exactKeys(proposal, 'proposal', ['action_type', 'proposed_effect', 'input_digest'], failures)
+      add(failures, nonEmptyString(proposal.action_type) && isPlainRecord(proposal.proposed_effect) && digest(proposal.input_digest), 'proposal: requires action_type, proposed_effect, and input_digest')
+    }
+    const authorizationStart = failures.length
+    if (authorization) validateAuthorization(authorization, failures)
+    dimensions.authorization_valid = authorizationStart === failures.length
+    const providerStart = failures.length
+    if (outcome && provider) validateOutcomeAndProvider(value, failures)
+    dimensions.provider_bound = providerStart === failures.length
+    if (source) {
+      exactKeys(source, 'source', ['trace_id', 'audit_row_digest', 'oracle_verdict_digest'], failures)
+      add(failures, nullableString(source.trace_id) && (source.audit_row_digest === null || digest(source.audit_row_digest)) && (source.oracle_verdict_digest === null || digest(source.oracle_verdict_digest)), 'source: invalid trace/oracle binding')
+    }
     if (completeness) validateCompleteness(completeness, options.now, failures)
     dimensions.structure = failures.length === 0
     dimensions.semantics = failures.length === 0
-    if (isDigest(value.evidence_digest)) {
+    if (digest(value.evidence_digest)) {
       dimensions.integrity = actionRunEvidenceDigest(value) === value.evidence_digest
       if (!dimensions.integrity) failures.push('evidence_digest: does not match the unsigned envelope')
     } else failures.push('evidence_digest: must be a SHA-256 digest')
-    dimensions.completeness = !!completeness && COVERAGE.has(completeness.coverage) && failures.every((f) => !f.startsWith('completeness'))
-    dimensions.freshness = !!completeness?.freshness && FRESHNESS.has(completeness.freshness.status) && failures.every((f) => !f.startsWith('freshness'))
+    dimensions.completeness = !!completeness && completeness.coverage === 'complete' && failures.every((failure) => !failure.startsWith('completeness'))
+    dimensions.freshness = !!completeness?.freshness && completeness.freshness.status === 'fresh' && failures.every((failure) => !failure.startsWith('freshness'))
   } catch {
     failures.push('evidence: malformed attacker-controlled input')
   }

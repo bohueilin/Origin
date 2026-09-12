@@ -18,10 +18,13 @@ export interface ActionRunEvidenceVerification {
     structure: boolean
     semantics: boolean
     integrity: boolean
+    authorization_valid: boolean
     statement_bound: boolean
     signature_valid: boolean
     issuer_trusted: boolean
-    outcome_verified: boolean
+    outcome_consistent: boolean
+    execution_verified: boolean
+    provider_bound: boolean
     complete: boolean
     fresh: boolean
   }
@@ -34,6 +37,6 @@ export function signActionRunEvidence(
 ): Promise<SignedActionRunEvidence>
 export function verifyActionRunEvidence(
   evidence: unknown,
-  options?: { expectedThumbprint?: string; now?: string | number | Date },
+  options?: { expectedThumbprints?: Record<string, Record<number, string>>; now?: string | number | Date },
 ): Promise<ActionRunEvidenceVerification>
 export { actionRunEvidenceDigest } from '@origin/evidence/action-run-evidence'

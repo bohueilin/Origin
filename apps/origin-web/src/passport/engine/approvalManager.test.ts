@@ -5,6 +5,14 @@ import type { ApprovalPacket, UserIntent } from '../types'
 import type { ApprovalPacketSpec } from '../scenarios/types'
 const intent: UserIntent = { intent_id: 'intent-a', raw_user_request: 'x', normalized_intent: 'x', user_goal: 'x', success_criteria: [], constraints: [], time_window: null, risk_level: 'low', created_at: 0 }
 const spec: ApprovalPacketSpec = { action_type: 'commit', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'approve', deny_button_label: 'deny', capability: 'messages.send' }
+
+const record = (value: unknown): Record<string, unknown> => {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    throw new TypeError('expected a mutable record')
+  }
+  return value as Record<string, unknown>
+}
+
 describe('ApprovalManager Task 3 bindings', () => {
   it('clones input and binds canonical input plus domain-separated nonce digests', () => {
     const manager = new ApprovalManager(new IdFactory(), () => 100)
@@ -22,7 +30,7 @@ describe('ApprovalManager Task 3 bindings', () => {
     const manager = new ApprovalManager(new IdFactory(), () => 100)
     const created = manager.create(spec, intent, 'messages.send', { nested: { recipient: 'a' } })
     const mutate = (packet: ApprovalPacket) => {
-      packet.tool_input.nested.recipient = 'attacker'
+      record(packet.tool_input.nested).recipient = 'attacker'
       packet.input_digest = '0'.repeat(64)
       packet.nonce_digest = '1'.repeat(64)
       packet.status = 'consumed'

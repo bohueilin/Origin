@@ -4,6 +4,7 @@ import publishedProof from '../../public/proof/tr-a002.json'
 import { detectArtifact, verifyArtifact, tamperArtifact } from './detect.mjs'
 import { makeExample } from './examples.mjs'
 import { generateSigningKey, keyThumbprint, signSigil } from '@origin/verifier-core/sigil'
+import type { SignedActionRunEvidence } from '@origin/verifier-core/action-run-evidence'
 import { actionRunEvidenceDigest } from '@origin/evidence/action-run-evidence'
 
 // Regression guard for the flagship published proof. The /proof page invites
@@ -26,7 +27,7 @@ describe('published TR-A002 proof through the real /verify path', () => {
   })
 
   it('calls a correctly pinned not_attempted envelope VALID while exposing no execution effect', async () => {
-    const evidence = await makeExample('action-run')
+    const evidence = await makeExample('action-run') as SignedActionRunEvidence
     const thumbprint = await keyThumbprint(evidence.signature.sigil.pubkey_jwk)
     const report = await verifyArtifact(evidence, {
       expectedThumbprints: { 'origin-browser-session': { 1: thumbprint } }, now: '2026-09-12T00:01:00.000Z',
@@ -37,9 +38,9 @@ describe('published TR-A002 proof through the real /verify path', () => {
   })
 
   it('voids a signer-authentic envelope when its authorization semantics are invalid', async () => {
-    const evidence = await makeExample('action-run')
+    const evidence = await makeExample('action-run') as SignedActionRunEvidence
     evidence.authorization.approved_by = 'reviewer-1'
-    evidence.evidence_digest = actionRunEvidenceDigest(evidence)
+    evidence.evidence_digest = actionRunEvidenceDigest({ ...evidence })
     const pair = await generateSigningKey()
     const keyId = 'semantic-test-key'
     evidence.signature = {

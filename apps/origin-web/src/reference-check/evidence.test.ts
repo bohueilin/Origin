@@ -29,7 +29,10 @@ describe('buildSyntheticReferenceCheckEvidence', () => {
     expect(evidence.authorization).toMatchObject({ verdict: 'deny', reason_codes: ['synthetic_policy_only_no_execution_authority'] })
     expect(evidence.completeness).toMatchObject({ coverage: 'complete', expected_count: 12, observed_count: 12, omissions: [], duplicates: [] })
     expect(evidence.source.oracle_verdict_digest).toMatch(/^[a-f0-9]{64}$/)
-    expect(evidence.proposal.proposed_effect).toMatchObject({ kind: 'synthetic_reference_check_policy_evaluation', named_agent_contacted: false })
+    expect(evidence.proposal.proposed_effect).toMatchObject({
+      kind: 'synthetic_reference_check_policy_evaluation', policy_only: true,
+      named_agent_contacted: false, named_agent_executed: false,
+    })
   })
 
   it('makes incomplete or duplicated decision records explicit rather than calling coverage complete', () => {
@@ -42,5 +45,23 @@ describe('buildSyntheticReferenceCheckEvidence', () => {
     expect(evidence.completeness.observed_count).toBe(2)
     expect(evidence.completeness.omissions).toHaveLength(11)
     expect(evidence.completeness.duplicates).toHaveLength(1)
+  })
+
+  it('canonicalizes covered selected IDs and records unexpected observed IDs separately', () => {
+    const reordered = buildSyntheticReferenceCheckEvidence({ ...base, rows: [...base.rows].reverse() })
+    const expected = buildSyntheticReferenceCheckEvidence(base)
+    const withUnexpected = buildSyntheticReferenceCheckEvidence({
+      ...base,
+      rows: [...base.rows, { id: 'unexpected-task', yours: 'allow', oracle: 'deny', passed: false, catastrophic: false }],
+    })
+
+    expect(reordered.completeness.covered_ids_digest).toBe(expected.completeness.covered_ids_digest)
+    expect(reordered.proposal.input_digest).toBe(expected.proposal.input_digest)
+    expect(reordered.source.oracle_verdict_digest).toBe(expected.source.oracle_verdict_digest)
+    expect(buildSyntheticReferenceCheckEvidence({ ...base, verifierVersion: 'support-verifier@2' }).proposal.input_digest)
+      .not.toBe(expected.proposal.input_digest)
+    expect(withUnexpected.completeness.coverage).toBe('partial')
+    expect(withUnexpected.completeness.omissions).toEqual([])
+    expect(withUnexpected.proposal.proposed_effect).toMatchObject({ unexpected_observed_ids: ['unexpected-task'] })
   })
 })

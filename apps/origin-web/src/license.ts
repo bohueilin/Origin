@@ -58,6 +58,10 @@ const ORDER: LicenseLevelId[] = ['L0', 'L1', 'L2', 'L3', 'L4']
 
 /** Minimum evaluated episodes needed before a readiness level can be earned. */
 export const MIN_EPISODES_BY_LEVEL = { L0: 0, L1: 1, L2: 3, L3: 6, L4: 12 } as const
+/** Historical policy pinned by immutable v1 evidence artifacts. */
+export const LEGACY_LICENSE_POLICY_VERSION = '1.0.0'
+/** Current policy adds the deterministic evidence-count floor. */
+export const LICENSE_POLICY_VERSION = '2.0.0'
 
 /** index of a level id in the ladder (0..4). */
 export function levelRank(id: LicenseLevelId): number {
@@ -82,7 +86,7 @@ export function computeLicense(traces: Trace[]): LicenseState {
  * Core license math over bare verdicts — identical semantics to computeLicense,
  * but consumable from rehydrated InsForge rows (which aren't full traces).
  */
-export function computeLicenseFromVerdicts(verdicts: LicenseVerdict[]): LicenseState {
+function computeLicenseForPolicy(verdicts: LicenseVerdict[], policyVersion: string): LicenseState {
   if (verdicts.length === 0) {
     return {
       level: EMPTY_LEVEL,
@@ -135,12 +139,14 @@ export function computeLicenseFromVerdicts(verdicts: LicenseVerdict[]): LicenseS
       `${episodes} episode(s), with no catastrophic failures.`
   }
 
-  // Performance alone cannot grant broad readiness from a tiny sample. This is a
-  // minimum count floor, not a claim that the scenarios are representative.
-  const countCap = [...ORDER].reverse().find((candidate) => MIN_EPISODES_BY_LEVEL[candidate] <= episodes) ?? 'L0'
-  if (levelRank(id) > levelRank(countCap)) {
-    id = countCap
-    reason += ` Evidence-count floor: ${episodes} episode(s) supports at most ${LICENSE_LEVELS[id].id} ${LICENSE_LEVELS[id].name}; this minimum count does not establish scenario coverage.`
+  if (policyVersion === LICENSE_POLICY_VERSION) {
+    // Performance alone cannot grant broad readiness from a tiny sample. This is a
+    // minimum count floor, not a claim that the scenarios are representative.
+    const countCap = [...ORDER].reverse().find((candidate) => MIN_EPISODES_BY_LEVEL[candidate] <= episodes) ?? 'L0'
+    if (levelRank(id) > levelRank(countCap)) {
+      id = countCap
+      reason += ` Evidence-count floor: ${episodes} episode(s) supports at most ${LICENSE_LEVELS[id].id} ${LICENSE_LEVELS[id].name}; this minimum count does not establish scenario coverage.`
+    }
   }
 
   return {
@@ -153,4 +159,16 @@ export function computeLicenseFromVerdicts(verdicts: LicenseVerdict[]): LicenseS
     catastrophicCount,
     reason,
   }
+}
+
+/** Compute new runs under the current, explicitly versioned readiness policy. */
+export function computeLicenseFromVerdicts(verdicts: LicenseVerdict[]): LicenseState {
+  return computeLicenseForPolicy(verdicts, LICENSE_POLICY_VERSION)
+}
+
+/** Replay a verdict history under the policy version sealed into its evidence. */
+export function computeLicenseFromVerdictsForPolicyVersion(verdicts: LicenseVerdict[], policyVersion: string): LicenseState {
+  if (policyVersion !== LEGACY_LICENSE_POLICY_VERSION && policyVersion !== LICENSE_POLICY_VERSION)
+    throw new RangeError(`unsupported license policy version: ${policyVersion}`)
+  return computeLicenseForPolicy(verdicts, policyVersion)
 }

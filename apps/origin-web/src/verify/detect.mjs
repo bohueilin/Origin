@@ -54,9 +54,10 @@ export const KIND_LABELS = {
  */
 export function detectArtifact(value) {
   if (!isObj(value)) return 'unknown'
-  if (value.schema_version === '1.0.0' && typeof value.evidence_id === 'string' && typeof value.evidence_digest === 'string'
+  if (value.schema_version === '1.0.0' && typeof value.execution_mode === 'string' && typeof value.evidence_id === 'string' && typeof value.evidence_digest === 'string'
     && isObj(value.identity) && isObj(value.subject) && isObj(value.proposal) && isObj(value.authorization)
-    && isObj(value.outcome_attestation) && isObj(value.provider_evidence) && isObj(value.completeness) && isObj(value.source))
+    && isObj(value.outcome_attestation) && isObj(value.provider_evidence) && isObj(value.completeness) && isObj(value.source)
+    && isObj(value.signature) && isObj(value.signature.sigil))
     return 'action_run_evidence'
   if (isObj(value.pubkey_jwk) && typeof value.signature === 'string' && typeof value.payload_digest === 'string')
     return 'sigil'
@@ -75,7 +76,6 @@ async function verifyActionRunEvidenceArtifact(evidence, opts) {
   const lines = [info('detected', 'Action/Run Evidence (schema_version + execution_mode + signed envelope) → verifyActionRunEvidence, offline')]
   const v = await verifyActionRunEvidence(evidence, { expectedThumbprints: opts?.expectedThumbprints, now: opts?.now })
   const notAttempted = evidence?.outcome_attestation?.status === 'not_attempted'
-  const browserPolicyEvaluation = evidence?.proposal?.action_type === 'synthetic_reference_check_policy_evaluation'
   const noProviderEvidence = evidence?.provider_evidence?.provider === null && evidence?.provider_evidence?.receipt_digest === null
     && evidence?.provider_evidence?.readback_digest === null && evidence?.provider_evidence?.readback_at === null
   if (v.dimensions.integrity) lines.push(ok('digest', 'the unsigned envelope content-address recomputes'))
@@ -90,21 +90,27 @@ async function verifyActionRunEvidenceArtifact(evidence, opts) {
     ? info('provider evidence', noProviderEvidence ? 'no provider receipt or readback is represented' : 'provider-evidence fields are internally consistent')
     : bad('provider evidence', 'provider-evidence fields are malformed or inconsistent'))
   lines.push(notAttempted
-    ? info('execution', 'not attempted — no named agent execution, provider confirmation, or provider readback is represented')
+    ? info('execution_verified', 'false — not_attempted: no named agent execution, provider confirmation, or provider readback is represented')
     : v.dimensions.execution_verified
-      ? ok('execution', 'provider-confirmed or independently verified execution is represented')
-      : info('execution', 'this envelope does not represent execution-verified evidence'))
+      ? ok('execution_verified', 'true — provider-confirmed or independently verified execution is represented')
+      : info('execution_verified', 'false — this envelope does not represent execution-verified evidence'))
   lines.push(v.dimensions.complete ? ok('coverage', 'selected-battery decision coverage is complete') : bad('coverage', 'selected-battery decision coverage is partial or invalid'))
   lines.push(v.dimensions.fresh ? ok('freshness', 'the stated freshness window is currently valid') : bad('freshness', 'the stated freshness window is stale or invalid'))
   for (const failure of v.failures) lines.push(info('verifier note', failure))
-  const intactEnvelope = v.dimensions.integrity && v.dimensions.signature_valid && v.dimensions.complete && v.dimensions.fresh
-  const verdict = v.ok && v.dimensions.execution_verified ? 'VALID' : intactEnvelope && (!v.dimensions.issuer_trusted || (browserPolicyEvaluation && notAttempted)) ? 'UNTRUSTED' : 'VOID'
+  const requiredDimensions = [
+    'structure', 'semantics', 'integrity', 'authorization_valid', 'statement_bound', 'signature_valid',
+    'outcome_consistent', 'provider_bound', 'complete', 'fresh',
+  ]
+  const intactEnvelope = requiredDimensions.every((dimension) => v.dimensions[dimension])
+  const verdict = !intactEnvelope ? 'VOID' : !v.dimensions.issuer_trusted ? 'UNTRUSTED' : 'VALID'
   return {
     kind: 'action_run_evidence', ok: verdict === 'VALID', verdict, code: null,
     headline: verdict === 'VALID'
-      ? 'Action/Run Evidence verifies under a trusted issuer pin with execution evidence.'
+      ? notAttempted
+        ? 'Action/Run Evidence is authentic under the trusted issuer pin; its raw outcome is not_attempted, so no execution effect is verified.'
+        : 'Action/Run Evidence verifies under a trusted issuer pin.'
       : verdict === 'UNTRUSTED'
-        ? 'Envelope integrity is checkable, but this browser policy evaluation is unpinned and does not represent a named-agent execution.'
+        ? 'Envelope integrity is checkable, but no trusted issuer thumbprint is registered; this does not represent a named-agent execution.'
         : 'Action/Run Evidence is void — the envelope, signature, coverage, or freshness checks failed.',
     lines,
     scope: 'Offline verification checks the deterministic envelope, coverage, freshness, and signature statement. A browser Reference Check is a local synthetic policy evaluation: it does not contact or execute the named agent, confirm a provider effect, or grant deployment authority.',

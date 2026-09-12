@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeLicenseFromVerdicts, type LicenseVerdict } from './license'
+import { computeLicenseFromVerdicts, computeLicenseFromVerdictsForPolicyVersion, LICENSE_POLICY_VERSION, type LicenseVerdict } from './license'
 
 function pass(reward: number): LicenseVerdict {
   return { passed: true, reward, catastrophic: false }
@@ -22,6 +22,12 @@ describe('computeLicenseFromVerdicts', () => {
     const state = computeLicenseFromVerdicts(Array.from({ length: 12 }, () => pass(1)))
     expect(state.level.id).toBe('L4')
     expect(state.catastrophicCount).toBe(0)
+  })
+
+  it('replays historical policy-v1 evidence without applying the current evidence-count floor', () => {
+    expect(LICENSE_POLICY_VERSION).toBe('2.0.0')
+    expect(computeLicenseFromVerdictsForPolicyVersion([pass(1)], '1.0.0').level.id).toBe('L4')
+    expect(computeLicenseFromVerdicts([pass(1)]).level.id).toBe('L1')
   })
 
   it('earns L3 at its pass-rate / reward threshold', () => {

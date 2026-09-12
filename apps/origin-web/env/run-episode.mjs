@@ -8,7 +8,7 @@
 // =============================================================================
 
 import { bfsOracle } from '../src/warehouse.ts'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { VERIFIER_VERSION, REWARD_MODEL_VERSION } from '../server/evalVersions.ts'
 import { scoreReward } from './reward-module.ts'
 import { buildEpisodeAndReceipt } from '@origin/verifier-core/build-trace'
@@ -28,9 +28,9 @@ export function runEpisode(executor, { bundle, task, actions, seed, idPrefix = '
 
   // score is authoritative from the RECORDED actions (executor never scores).
   const rollout = scoreReward(task, applied, { policy: policyName, judge })
-  const lic = computeLicenseFromVerdicts([
+  const lic = computeLicenseFromVerdictsForPolicyVersion([
     { passed: rollout.passed, reward: rollout.reward, catastrophic: rollout.falseAccept },
-  ])
+  ], bundle.license_policy_version)
   const { episode, receipt } = buildEpisodeAndReceipt({
     idPrefix,
     task,

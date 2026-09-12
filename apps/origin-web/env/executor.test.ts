@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { warehouseTasks, bfsOracle, oraclePolicy } from '../src/warehouse.ts'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { verifyEpisode } from '@origin/evidence/env-evidence'
 import { InProcessExecutor, FakeDaytona, makeExecutor } from './executor.mjs'
 import { runEpisode } from './run-episode.mjs'
@@ -15,7 +15,7 @@ const bundle = load('warehouse.env-bundle.lock.json')
 const task = warehouseTasks.find((t) => bfsOracle(t).label === 'finish') ?? warehouseTasks[0]
 const actions = oraclePolicy(task)
 const scoreFn = (t, a) => scoreReward(t, a, { policy: 'test' })
-const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
+const licenseFn = (v) => computeLicenseFromVerdictsForPolicyVersion(v, bundle.license_policy_version).level.id
 
 describe('Executor (P4) — provider-agnostic execution seam', () => {
   it('prepare() refuses a bundle whose env_bundle_digest does not recompute', () => {

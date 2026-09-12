@@ -79,7 +79,7 @@ function DetectionTable() {
               <td><b>Action/Run Evidence</b></td>
               <td><code>schema_version</code> + <code>execution_mode</code> + <code>evidence_digest</code></td>
               <td><code>verifyActionRunEvidence</code> — validate the envelope, re-derive its digest, verify the signed statement, and check coverage/freshness</td>
-              <td>VALID only with a trusted issuer pin and execution evidence; browser policy evaluations render UNTRUSTED</td>
+              <td>VALID with a trusted issuer pin and intact complete/fresh semantics; execution_verified remains a separate field. Unpinned browser policy evidence renders UNTRUSTED.</td>
             </tr>
             <tr>
               <td><b>Origin Attestation</b></td>

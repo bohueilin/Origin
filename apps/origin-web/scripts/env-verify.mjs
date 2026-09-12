@@ -12,7 +12,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { verifyEpisode, adjudicate } from '@origin/evidence/env-evidence'
 import { warehouseToolsDigest, warehousePoliciesDigest } from '../env/warehouse-manifest.mjs'
 import { scoreReward } from '../env/reward-module.ts'
@@ -45,7 +45,7 @@ if (mode === 'full') {
 // verifier-agnostic. scoreReward (no judge) = the deterministic core + reward-hack
 // classification, so the recomputed receipt carries is_hack/raw/patched and reproduces.
 const scoreFn = (task, actions) => scoreReward(task, actions, { policy: 'env-verify' })
-const licenseFn = (verdicts) => computeLicenseFromVerdicts(verdicts).level.id
+const licenseFn = (verdicts) => computeLicenseFromVerdictsForPolicyVersion(verdicts, bundle.license_policy_version).level.id
 
 const { code, checks } = verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn })
 for (const [status, msg] of checks) console.log(`${status}  ${msg}`)
@@ -57,7 +57,7 @@ for (const [status, msg] of checks) console.log(`${status}  ${msg}`)
 let driftCode = code
 if (code === 0 && bundle.tools_digest != null) {
   const liveTools = warehouseToolsDigest()
-  const livePolicies = warehousePoliciesDigest()
+  const livePolicies = warehousePoliciesDigest(bundle.license_policy_version)
   if (liveTools !== bundle.tools_digest) {
     console.log('FAIL  tool surface drifted — the live warehouse tools do not match the pinned tools_digest')
     driftCode = 4

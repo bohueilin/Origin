@@ -32,21 +32,35 @@ const digest = (value: unknown) => sha256(canonical(value))
  */
 export function buildSyntheticReferenceCheckEvidence(input: BuildSyntheticReferenceCheckEvidenceInput): ActionRunEvidence {
   const expectedIds = input.battery.map((task) => task.id)
+  const expectedUniqueIds = [...new Set(expectedIds)].sort()
   const observedIds = input.rows.map((row) => row.id)
   const observedCounts = new Map<string, number>()
   for (const id of observedIds) observedCounts.set(id, (observedCounts.get(id) ?? 0) + 1)
 
-  const omissions = expectedIds
+  const omissions = expectedUniqueIds
     .filter((id) => (observedCounts.get(id) ?? 0) === 0)
     .map((id) => ({ id_digest: digest(id), reason: 'no deterministic policy decision was recorded for this selected-battery task' }))
   const duplicates = [...observedCounts.entries()]
     .filter(([, count]) => count > 1)
     .map(([id, count]) => ({ id_digest: digest(id), count }))
-  const unexpected = observedIds
-    .filter((id) => !expectedIds.includes(id))
-    .map((id) => ({ id_digest: digest(id), reason: 'recorded decision is not in the selected battery' }))
-  const complete = observedIds.length === expectedIds.length && omissions.length === 0 && duplicates.length === 0 && unexpected.length === 0
-  const decisionRows = input.rows.map(({ id, yours, oracle, passed, catastrophic }) => ({ id, selected_policy_decision: yours, oracle_decision: oracle, passed, catastrophic }))
+  const unexpectedObservedIds = [...new Set(observedIds.filter((id) => !expectedUniqueIds.includes(id)))].sort()
+  const coveredExpectedIds = expectedUniqueIds.filter((id) => (observedCounts.get(id) ?? 0) > 0)
+  const complete = observedIds.length === expectedUniqueIds.length && omissions.length === 0 && duplicates.length === 0 && unexpectedObservedIds.length === 0
+  const recordsById = new Map<string, Array<Record<string, unknown>>>()
+  for (const { id, yours, oracle, passed, catastrophic } of input.rows) {
+    const records = recordsById.get(id) ?? []
+    records.push({ id, selected_policy_decision: yours, oracle_decision: oracle, passed, catastrophic })
+    recordsById.set(id, records)
+  }
+  const fixedBatteryOrder = [...new Set(expectedIds)]
+  const decisionRows = [...fixedBatteryOrder, ...unexpectedObservedIds]
+    .flatMap((id) => recordsById.get(id) ?? [])
+    .sort((a, b) => {
+      const aIndex = fixedBatteryOrder.indexOf(String(a.id))
+      const bIndex = fixedBatteryOrder.indexOf(String(b.id))
+      if (aIndex !== bIndex) return (aIndex < 0 ? Number.MAX_SAFE_INTEGER : aIndex) - (bIndex < 0 ? Number.MAX_SAFE_INTEGER : bIndex)
+      return canonical(a).localeCompare(canonical(b))
+    })
 
   return buildActionRunEvidence({
     evidence_id: input.evidenceId,
@@ -68,14 +82,20 @@ export function buildSyntheticReferenceCheckEvidence(input: BuildSyntheticRefere
       action_type: 'synthetic_reference_check_policy_evaluation',
       proposed_effect: {
         kind: 'synthetic_reference_check_policy_evaluation',
+        policy_only: true,
         scenario: input.scenario,
         synthetic_battery: input.scenario === 'support' ? 'Origin synthetic support policy battery' : 'Origin synthetic IAM policy battery',
         named_agent_contacted: false,
         named_agent_executed: false,
         policy_evaluated_locally: true,
         selected_battery_task_ids: expectedIds,
+        unexpected_observed_ids: unexpectedObservedIds,
       },
-      input_digest: digest({ scenario: input.scenario, declared_config: input.declaredConfig, selected_policy: input.selectedPolicy, ordered_battery_ids: expectedIds }),
+      input_digest: digest({
+        scenario: input.scenario, declared_config: input.declaredConfig, selected_policy: input.selectedPolicy,
+        ordered_battery_ids: expectedIds, environment_digest: input.environmentDigest,
+        evaluator_version: input.evaluatorVersion, verifier_version: input.verifierVersion,
+      }),
     },
     authorization: {
       verdict: 'deny',
@@ -89,10 +109,10 @@ export function buildSyntheticReferenceCheckEvidence(input: BuildSyntheticRefere
     provider_evidence: { provider: null, receipt_digest: null, readback_digest: null, readback_at: null },
     completeness: {
       coverage: complete ? 'complete' : 'partial',
-      expected_count: expectedIds.length,
+      expected_count: expectedUniqueIds.length,
       observed_count: observedIds.length,
-      covered_ids_digest: digest(observedIds),
-      omissions: [...omissions, ...unexpected],
+      covered_ids_digest: digest(coveredExpectedIds),
+      omissions,
       duplicates,
       freshness: { status: 'fresh', observed_at: input.issuedAt, max_age_ms: input.maxAgeMs },
     },

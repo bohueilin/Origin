@@ -28,7 +28,7 @@ check('browser policy-evaluation is UNTRUSTED, never execution-verified VALID', 
 check('browser policy-evaluation says no provider readback occurred', actionRunUntrusted.lines.some((line) => line.text.includes('no named agent execution, provider confirmation, or provider readback')))
 const actionThumbprint = await keyThumbprint(actionRun.signature.sigil.pubkey_jwk)
 const actionPinned = await verifyArtifact(actionRun, { expectedThumbprints: { 'origin-browser-session': { 1: actionThumbprint } }, now: actionNow })
-check('correct Action/Run key_id + epoch pin verifies the signer but not execution', !actionPinned.ok && actionPinned.verdict === 'UNTRUSTED' && actionPinned.lines.some((line) => line.label === 'issuer pin' && line.text.includes('matches')))
+check('correct Action/Run key_id + epoch pin makes authentic not_attempted evidence VALID', actionPinned.ok && actionPinned.verdict === 'VALID' && actionPinned.lines.some((line) => line.label === 'issuer pin' && line.text.includes('matches')) && actionPinned.lines.some((line) => line.label === 'execution_verified' && line.text.startsWith('false')))
 const actionWrongSigner = await verifyArtifact(actionRun, { expectedThumbprints: { 'origin-browser-session': { 1: '0'.repeat(64) } }, now: actionNow })
 check('wrong Action/Run signer pin → VOID', !actionWrongSigner.ok && actionWrongSigner.verdict === 'VOID')
 const actionWrongEpochArtifact = structuredClone(actionRun)

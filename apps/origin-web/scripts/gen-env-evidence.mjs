@@ -51,7 +51,7 @@ const verifierSrc = readFileSync(resolve(HERE, '../src/warehouse.ts'), 'utf8')
 // P1 — content-address the env surface: tool schemas + safety/license policies.
 const toolSchemas = warehouseToolSchemas() // full schemas → written to the sidecar
 const tools = warehouseBundleTools() // {name, schema_digest, version} → into the bundle
-const policies = warehousePolicies() // {id, kind, statement, source_ref, source_digest, digest}
+const policies = warehousePolicies(LICENSE_POLICY_VERSION) // {id, kind, statement, source_ref, source_digest, digest}
 // P6 — the pinned cost rate model (rates live here, not in code). rate_digest folds in.
 const cost_model = {
   rate_version: DAYTONA_RATE_VERSION,

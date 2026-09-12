@@ -3,23 +3,23 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bfsOracle, warehouseTasks, WAREHOUSE_VERSION } from '../src/warehouse.ts'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { VERIFIER_VERSION, REWARD_MODEL_VERSION } from '../server/evalVersions.ts'
 import { bundleDigest, chainEpisode, openEpisode, buildScoreReceipt, verifyEpisode, canonical, sha256 } from '@origin/evidence/env-evidence'
 import { scoreReward } from './reward-module.ts'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const scoreFn = (task, actions) => scoreReward(task, actions, { policy: 'test' })
-const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
+const licenseFn = (v) => computeLicenseFromVerdictsForPolicyVersion(v, '1.0.0').level.id
 
 // Build a bundle + episode + receipt in memory from the REAL pinned verifier.
 function buildTrio() {
   const task = warehouseTasks.find((t) => bfsOracle(t).label === 'finish') ?? warehouseTasks[0]
   const actions = [...bfsOracle(task).optimalPath]
   const rollout = scoreReward(task, actions, { policy: 'ref' })
-  const level = computeLicenseFromVerdicts([
+  const level = computeLicenseFromVerdictsForPolicyVersion([
     { passed: rollout.passed, reward: rollout.reward, catastrophic: rollout.falseAccept },
-  ]).level.id
+  ], '1.0.0').level.id
 
   const bundle = {
     schema_version: '1.0.0',

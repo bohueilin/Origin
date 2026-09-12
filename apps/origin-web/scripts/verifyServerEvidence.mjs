@@ -104,8 +104,8 @@ const validRow = {
   expected_action: 'act',
   actual_action: 'act',
   verifier_reason: null,
-  license_level: 'L4',
-  license_summary: { level: 'L4', name: 'Limited Autonomy', passRate: 1, avgReward: 1, catastrophicCount: 0, episodes: 1 },
+  license_level: 'L1',
+  license_summary: { level: 'L1', name: 'Ask', passRate: 1, avgReward: 1, catastrophicCount: 0, episodes: 1 },
   environment_name: 'autonomy_trace_console',
   app_commit: null,
   created_at: '2026-06-19T00:00:00.000Z',
@@ -159,7 +159,7 @@ check(
   mismatch.versionMismatch === true &&
     compatible.length === 1 &&
     lic.catastrophicCount === 0 &&
-    lic.level.id === 'L4',
+    lic.level.id === 'L1',
 )
 
 // 9. Compact status row exposes no snapshots / model inputs / hidden risk, and
@@ -295,7 +295,7 @@ const lic2 = computeLicenseFromVerdicts(
 )
 check(
   '26. version+digest mismatch excluded from license',
-  ls2.length === 1 && lic2.catastrophicCount === 0 && lic2.level.id === 'L4',
+  ls2.length === 1 && lic2.catastrophicCount === 0 && lic2.level.id === 'L1',
 )
 
 // 27. Status exposes digest counts.

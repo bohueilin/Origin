@@ -18,7 +18,7 @@ export const VERIFIER_VERSION = '1.0.0'
 /** Behavior version of the reward model (the verifier's reward calibration). */
 export const REWARD_MODEL_VERSION = '1.0.0'
 /** Behavior version of the license ladder + gate (src/license.ts). */
-export const LICENSE_POLICY_VERSION = '1.0.0'
+export const LICENSE_POLICY_VERSION = '2.0.0'
 
 /** Schema version of the persisted audit row (bump when columns change). */
 export const ROW_SCHEMA_VERSION = '1.0.0'

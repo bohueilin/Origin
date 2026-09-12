@@ -67,7 +67,7 @@ describe('resetEpisode', () => {
 })
 
 describe('stepEpisode', () => {
-  it('scores the correct action: reward 1, done, L4 in dev fallback', async () => {
+  it('scores the correct action: reward 1, done, L1 under the current evidence-count floor in dev fallback', async () => {
     // Fresh runId -> the dev fallback license reflects exactly this one episode.
     const reset = resetEpisode({ scenarioId: 'com-1', runId: 'run_correct_act' }, cfg)
     expect(reset.ok).toBe(true)
@@ -80,7 +80,7 @@ describe('stepEpisode', () => {
     expect(step.reward).toBe(1)
     expect(step.persisted).toBe(false)
     expect(step.info.passed).toBe(true)
-    expect(step.license.level).toBe('L4')
+    expect(step.license.level).toBe('L1')
     expect(step.license.episodes).toBe(1)
   })
 

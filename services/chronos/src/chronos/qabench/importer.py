@@ -95,6 +95,8 @@ def _content_digest(provenance: dict[str, str]) -> str:
 
 def _snapshot_regular_file(path: Path, allowed_root: Path | None = None) -> bytes:
     """Read one regular, non-symlinked file into an immutable planning snapshot."""
+    if allowed_root is not None:
+        _assert_source_path_no_symlinks(allowed_root, path)
     try:
         metadata = path.lstat()
     except OSError as exc:
@@ -123,6 +125,26 @@ def _snapshot_regular_file(path: Path, allowed_root: Path | None = None) -> byte
         return b"".join(chunks)
     finally:
         os.close(descriptor)
+
+
+def _assert_source_path_no_symlinks(root: Path, path: Path) -> None:
+    """Reject every lexical symlink from a reviewed context root to its asset."""
+    root_absolute = root.absolute()
+    path_absolute = path.absolute()
+    try:
+        relative = path_absolute.relative_to(root_absolute)
+    except ValueError as exc:
+        raise ValueError(f"source is outside approved build root: {path}") from exc
+    current = root_absolute
+    for component in (".", *relative.parts):
+        if component != ".":
+            current /= component
+        try:
+            metadata = current.lstat()
+        except OSError as exc:
+            raise ValueError(f"unable to inspect source path: {current}") from exc
+        if stat.S_ISLNK(metadata.st_mode):
+            raise ValueError(f"source path contains a symlink: {current}")
 
 
 def _snapshot_dir_digest(files: dict[str, bytes]) -> str:
@@ -201,7 +223,7 @@ def _atomic_write(target: Path, data: bytes, mode: int | None = None) -> None:
 
 def _remove_owned_stage(stage: Path) -> None:
     """Clean only the private staging directory we created and can authenticate."""
-    marker = stage / _STAGE_MARKER
+    marker = stage.parent / f"{stage.name}.{_STAGE_MARKER}"
     if not stage.exists():
         return
     _assert_no_symlink(stage)
@@ -213,6 +235,7 @@ def _remove_owned_stage(stage: Path) -> None:
     ):
         raise ValueError(f"refusing to remove unowned staging directory: {stage}")
     shutil.rmtree(stage)
+    marker.unlink()
 
 
 def _tbench_variant_of(base_image: str) -> str:
@@ -361,25 +384,24 @@ class ImportedEnvPlan:
                 return self.dest
         _ensure_real_directory(self.dest.parent)
         stage = self.dest.parent / f".{self.dest.name}.stage-{uuid.uuid4().hex}"
+        marker = stage.parent / f"{stage.name}.{_STAGE_MARKER}"
         try:
             stage.mkdir(mode=0o700)
-            _atomic_write(stage / _STAGE_MARKER, b"origin-qabench-stage\n")
+            _atomic_write(marker, b"origin-qabench-stage\n")
             for relative, data in expected.items():
                 _atomic_write(
                     stage / relative,
                     data,
                     0o755 if relative == self.clean_verify_entrypoint else None,
                 )
-            self._verify_existing_at(
-                stage, {**expected, _STAGE_MARKER: b"origin-qabench-stage\n"}
-            )
-            (stage / _STAGE_MARKER).unlink()
+            self._verify_existing_at(stage, expected)
             _assert_no_symlink(self.dest.parent)
             if self.dest.exists() or self.dest.is_symlink():
                 raise ValueError(f"destination appeared while publishing: {self.dest}")
             os.replace(stage, self.dest)
+            marker.unlink()
         except Exception:
-            if (stage / _STAGE_MARKER).exists():
+            if marker.exists():
                 _remove_owned_stage(stage)
             raise
         return self.dest
@@ -502,6 +524,7 @@ def plan_env(
     # inherit every source sibling: semantic solution/reference classification is
     # an owner review decision, not a filename heuristic.
     if task.env_context_dir is not None and task.env_context_dir.is_dir():
+        _assert_source_path_no_symlinks(task.env_context_dir, task.env_context_dir)
         has_local_inputs = any(
             child.name != "Dockerfile" for child in task.env_context_dir.iterdir()
         )
@@ -519,13 +542,15 @@ def plan_env(
             )
         files.update(build_context)
     if task.base_rewritten and task.dockerfile_path.exists():
-        original_bytes = _snapshot_regular_file(task.dockerfile_path)
+        original_bytes = _snapshot_regular_file(task.dockerfile_path, task.env_context_dir)
         original = original_bytes.decode("utf-8", errors="replace")
         file_contents["Dockerfile"] = _rewrite_dockerfile_from(
             original, task.base_image
         )
     else:
-        files["Dockerfile"] = _snapshot_regular_file(task.dockerfile_path)
+        files["Dockerfile"] = _snapshot_regular_file(
+            task.dockerfile_path, task.env_context_dir
+        )
     if task.test_harness_path is not None:
         files["task_assets/test.sh"] = _snapshot_regular_file(task.test_harness_path)
     if task.instruction_path is not None:

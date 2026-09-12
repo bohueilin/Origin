@@ -124,9 +124,10 @@ def materialize(
 
     _ensure_real_directory(destination.parent)
     batch_stage = destination.parent / f".{destination.name}.stage-{uuid.uuid4().hex}"
+    marker = batch_stage.parent / f"{batch_stage.name}.{_STAGE_MARKER}"
     try:
         batch_stage.mkdir(mode=0o700)
-        _atomic_write(batch_stage / _STAGE_MARKER, b"origin-qabench-stage\n")
+        _atomic_write(marker, b"origin-qabench-stage\n")
         for result, plan in planned:
             plan.dest = batch_stage / result.slug
             env_dir = plan.write()
@@ -141,13 +142,13 @@ def materialize(
                     candidate = env_dir / name
                     if candidate.is_symlink() or not candidate.is_file():
                         raise ValueError(f"staged HUD verification failed: {candidate}")
-        (batch_stage / _STAGE_MARKER).unlink()
         _assert_no_symlink(destination.parent)
         if destination.exists() or destination.is_symlink():
             raise ValueError(f"destination appeared while publishing batch: {destination}")
         os.replace(batch_stage, destination)
+        marker.unlink()
     except Exception:
-        if (batch_stage / _STAGE_MARKER).exists():
+        if marker.exists():
             _remove_owned_stage(batch_stage)
         raise
     return results

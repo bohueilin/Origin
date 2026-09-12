@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+import chronos.qabench.importer as importer
+import chronos.qabench.materialize as materializer
 from chronos.qabench.materialize import materialize
 from chronos.qabench.importer import (
     deployability,
@@ -266,6 +268,33 @@ def test_plan_snapshots_allowed_inputs_and_rejects_unreviewed_or_symlinked_conte
     with pytest.raises(ValueError, match="symlink"):
         plan_env(task, tmp_path / "out", public_build_assets=("solution-link.sh",))
 
+    real_assets = context / "real-assets"
+    real_assets.mkdir()
+    (real_assets / "nested.txt").write_text("public", encoding="utf-8")
+    (context / "alias").symlink_to(real_assets, target_is_directory=True)
+    with pytest.raises(ValueError, match="symlink"):
+        plan_env(task, tmp_path / "out", public_build_assets=("alias/nested.txt",))
+
+
+def test_plan_rejects_a_symlinked_environment_root(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    original = source / "public-sample" / "claude-opus-4.6" / "original_task"
+    real_context = original / "real-environment"
+    tests = original / "tests"
+    real_context.mkdir(parents=True)
+    tests.mkdir()
+    (real_context / "Dockerfile").write_text("FROM ubuntu:24.04\n", encoding="utf-8")
+    (real_context / "public.txt").write_text("public", encoding="utf-8")
+    (original / "environment").symlink_to(real_context, target_is_directory=True)
+    (tests / "test_outputs.py").write_text("def test_x(): pass\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="symlink"):
+        plan_env(
+            discover_task(source, "public-sample", revision="r1"),
+            tmp_path / "out",
+            public_build_assets=("public.txt",),
+        )
+
 
 def test_plan_freezes_source_bytes_and_rejects_destination_symlinks(tmp_path: Path) -> None:
     task = discover_task(TW_TASKS, "public-sample")
@@ -351,3 +380,49 @@ def test_materialize_rejects_nonempty_or_symlinked_destination_root(tmp_path: Pa
     link.symlink_to(redirected, target_is_directory=True)
     with pytest.raises(ValueError, match="symlink"):
         materialize(TW_TASKS, ["public-sample"], link)
+
+
+def test_plan_publish_failure_cleans_its_owned_stage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    plan = plan_env(
+        discover_task(TW_TASKS, "public-sample"),
+        tmp_path / "out",
+        public_build_assets=("seed.txt",),
+    )
+    real_replace = importer.os.replace
+
+    def fail_directory_publish(source: str | Path, destination: str | Path) -> None:
+        if Path(source).is_dir():
+            raise OSError("publish failed")
+        real_replace(source, destination)
+
+    monkeypatch.setattr(importer.os, "replace", fail_directory_publish)
+    with pytest.raises(OSError, match="publish failed"):
+        plan.write()
+    assert not plan.dest.exists()
+    assert not list(plan.dest.parent.glob(f".{plan.dest.name}.stage-*"))
+
+
+def test_batch_publish_failure_cleans_its_owned_stage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    destination = tmp_path / "out"
+    real_replace = materializer.os.replace
+
+    def fail_batch_publish(source: str | Path, target: str | Path) -> None:
+        if Path(source).name.startswith(".out.stage-"):
+            raise OSError("batch publish failed")
+        real_replace(source, target)
+
+    monkeypatch.setattr(materializer.os, "replace", fail_batch_publish)
+    with pytest.raises(OSError, match="batch publish failed"):
+        materialize(
+            TW_TASKS,
+            ["public-sample"],
+            destination,
+            build_asset_policies={("public-sample", "r1"): ("seed.txt",)},
+            revision="r1",
+        )
+    assert not destination.exists()
+    assert not list(tmp_path.glob(".out.stage-*"))

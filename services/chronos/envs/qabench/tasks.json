@@ -23,7 +23,8 @@
       "data/database.db-shm",
       "data/database.db-wal"
     ],
-    "solve-ode-with-sympy": []
+    "solve-ode-with-sympy": [],
+    "synthesize-harmonic-wav-in-c": ["files/generate_audio.py"]
   },
   "tasks": [
     "adaptive-rejection-sampler",

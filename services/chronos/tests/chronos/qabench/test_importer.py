@@ -17,6 +17,7 @@ from chronos.qabench.importer import (
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 TW_TASKS = _REPO_ROOT / "fixtures" / "chronos" / "qabench" / "tw-tasks"
+QABENCH_MANIFEST = _REPO_ROOT / "envs" / "qabench" / "tasks.json"
 
 # Pinned public ghcr.io refs verified against the registry on 2026-06-21.
 _PY_REF = "ghcr.io/laude-institute/t-bench/python-3-13:20250620"
@@ -127,6 +128,13 @@ def test_materialize_rejects_normalized_slug_collisions_before_writes(
         with pytest.raises(ValueError):
             materialize(TW_TASKS, task_ids, dest_root)
         assert not dest_root.exists()
+
+
+def test_checked_in_manifest_binds_synth_builder_input_to_pinned_revision() -> None:
+    manifest = json.loads(QABENCH_MANIFEST.read_text(encoding="utf-8"))
+    assert manifest["public_build_assets"]["synthesize-harmonic-wav-in-c"] == [
+        "files/generate_audio.py"
+    ]
 
 
 # --- env planning / materialization --------------------------------------------

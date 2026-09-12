@@ -17,7 +17,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from chronos.qabench.hud_env import write_hud_env
-from chronos.qabench.importer import discover_task, plan_env
+from chronos.qabench.importer import discover_task, plan_env, task_slug, validate_task_id
 
 _DEFAULT_TASKS_DIR = Path(".external/terminal-wrench/tasks")
 
@@ -46,6 +46,15 @@ def materialize(
     When ``with_hud`` (default), also emit the per-task HUD serve artifacts
     (``env.py``/``Dockerfile.hud``/``pyproject.toml``/``tasks.py``) for live deploy.
     """
+    # Preflight all ids before source lookup or destination creation. A normalized
+    # collision is ambiguous authority, not a name we may silently overwrite.
+    slugs: set[str] = set()
+    for task_id in task_ids:
+        slug = task_slug(validate_task_id(task_id))
+        if slug in slugs:
+            raise ValueError(f"multiple task ids normalize to slug {slug!r}")
+        slugs.add(slug)
+
     results: list[MaterializeResult] = []
     for task_id in task_ids:
         task = discover_task(tasks_dir, task_id, revision=revision)

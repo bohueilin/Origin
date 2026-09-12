@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -24,6 +25,7 @@ _PUBLIC_REGISTRIES = frozenset(
     {"docker.io", "registry.hub.docker.com", "ghcr.io", "quay.io", "public.ecr.aws"}
 )
 _PREFERRED_MODELS = ("claude-opus-4.6", "gemini-3.1-pro")
+_TASK_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$")
 # Verified public ghcr.io Terminal-Bench base images, keyed by mirror variant.
 # Each value is a (tag, manifest_digest) pinned and checked against the ghcr.io
 # registry on 2026-06-21 (see evidence/008). The public tag is NOT uniform across
@@ -51,6 +53,26 @@ set -euo pipefail
 TRUSTED_TESTS="${CLEAN_VERIFY_TESTS:-task_assets}"
 exec python -m pytest -p no:cacheprovider --confcutdir "$TRUSTED_TESTS" -q "$TRUSTED_TESTS" "$@"
 """
+
+
+def validate_task_id(task_id: str) -> str:
+    """Return a safe Terminal-Wrench task id or reject it before path use."""
+    if not isinstance(task_id, str) or _TASK_ID_RE.fullmatch(task_id) is None:
+        raise ValueError("task id must match ^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$")
+    return task_id
+
+
+def task_slug(task_id: str) -> str:
+    """Return the canonical, directory-safe slug for a validated source id."""
+    return validate_task_id(task_id).lower().replace("_", "-")
+
+
+def validate_task_slug(slug: str) -> str:
+    """Accept only the canonical slug emitted by :func:`task_slug`."""
+    validate_task_id(slug)
+    if slug != slug.lower() or "_" in slug:
+        raise ValueError("task slug must be lowercase and use hyphens, not underscores")
+    return slug
 
 
 def _sha256(path: Path) -> str:
@@ -145,7 +167,7 @@ class TerminalWrenchTask:
     skip_reason: str | None = None
 
     def slug(self) -> str:
-        return self.task_id.strip().lower().replace(" ", "-").replace("_", "-")
+        return task_slug(self.task_id)
 
 
 @dataclass
@@ -161,6 +183,29 @@ class ImportedEnvPlan:
 
     def write(self) -> Path:
         """Materialize the env layout idempotently and return the env directory."""
+        if self.dest.exists():
+            if not self.dest.is_dir():
+                raise ValueError(f"destination is not a directory: {self.dest}")
+            existing = list(self.dest.iterdir())
+            if existing:
+                provenance_path = self.dest / "provenance.json"
+                try:
+                    existing_provenance = json.loads(
+                        provenance_path.read_text(encoding="utf-8")
+                    )
+                except (OSError, json.JSONDecodeError) as exc:
+                    raise ValueError(
+                        f"non-empty destination lacks readable provenance: {self.dest}"
+                    ) from exc
+                if (
+                    existing_provenance.get("task_id") != self.task_id
+                    or existing_provenance.get("content_digest")
+                    != self.provenance.get("content_digest")
+                ):
+                    raise ValueError(
+                        "destination belongs to a different task or content digest: "
+                        f"{self.dest}"
+                    )
         self.dest.mkdir(parents=True, exist_ok=True)
         for rel, src in self.files.items():
             target = self.dest / rel
@@ -216,6 +261,7 @@ def discover_task(
     models: tuple[str, ...] = _PREFERRED_MODELS,
 ) -> TerminalWrenchTask:
     """Locate + parse one TW task under ``tasks_dir/<task_id>/<model>/original_task``."""
+    task_id = validate_task_id(task_id)
     tasks_dir = Path(tasks_dir)
     chosen_model = ""
     original = None
@@ -274,6 +320,8 @@ def plan_env(task: TerminalWrenchTask, dest_root: Path | str) -> ImportedEnvPlan
     Idempotent: re-planning a pinned source yields the same ``content_digest``. If
     the base image was rewritten, the materialized Dockerfile gets the public FROM.
     """
+    task_id = validate_task_id(task.task_id)
+    slug = validate_task_slug(task.slug())
     dest_root = Path(dest_root)
     files: dict[str, Path] = {"task_assets/test_outputs.py": task.grader_path}
     file_contents: dict[str, str] = {}
@@ -281,6 +329,13 @@ def plan_env(task: TerminalWrenchTask, dest_root: Path | str) -> ImportedEnvPlan
     # must travel with it or the image build fails. The Dockerfile itself is
     # handled separately below (copied, or rewritten when the base was swapped).
     if task.env_context_dir is not None and task.env_context_dir.is_dir():
+        if task.solution_path is not None and task.solution_path.is_relative_to(
+            task.env_context_dir
+        ):
+            raise ValueError(
+                "source solution is inside the build context; an explicit reviewed "
+                "public build-asset list is required"
+            )
         for path in sorted(task.env_context_dir.rglob("*")):
             if path.is_file() and path.name != "Dockerfile":
                 files[path.relative_to(task.env_context_dir).as_posix()] = path
@@ -295,12 +350,10 @@ def plan_env(task: TerminalWrenchTask, dest_root: Path | str) -> ImportedEnvPlan
         files["task_assets/test.sh"] = task.test_harness_path
     if task.instruction_path is not None:
         files["task_assets/instruction.md"] = task.instruction_path
-    if task.solution_path is not None:
-        files["task_assets/solution.sh"] = task.solution_path
 
     provenance: dict[str, str] = {
-        "task_id": task.task_id,
-        "task_slug": task.slug(),
+        "task_id": task_id,
+        "task_slug": slug,
         "model": task.model,
         "terminal_wrench_revision": task.revision,
         "base_image": task.base_image,
@@ -324,8 +377,8 @@ def plan_env(task: TerminalWrenchTask, dest_root: Path | str) -> ImportedEnvPlan
     provenance["content_digest"] = _content_digest(provenance)
 
     return ImportedEnvPlan(
-        task_id=task.task_id,
-        dest=dest_root / task.slug(),
+        task_id=task_id,
+        dest=dest_root / slug,
         files=files,
         clean_verify_entrypoint="clean_verify.sh",
         provenance=provenance,

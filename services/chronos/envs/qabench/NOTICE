@@ -22,8 +22,9 @@ materializes each upstream task into a HUD environment layout and, in doing so:
     conftest discovery to a trusted tests root — not present upstream;
   * adds `provenance.json` per task (grader/dockerfile/build-context/base-image
     digests and a content digest) — not present upstream;
-  * relocates the task's verification bundle into `task_assets/`, outside the
-    agent-writable image.
+  * relocates the intentional public v1 verification bundle into `task_assets/`;
+    the HUD image exposes that public grader by design, while clean verification
+    is a separate trusted read-only referee boundary.
 
 Per-task import results, including tasks honestly skipped as non-deployable, are
 recorded in IMPORT_REPORT.json.
@@ -39,6 +40,10 @@ recorded run transcripts that quote it.
 If you are assembling a training corpus: exclude this directory, and exclude any
 file in this repository containing that GUID.
 
-Reference solutions (`task_assets/solution.sh`) are deliberately NOT tracked in
-git — see README.md, "Reference solutions". They are regenerated locally by the
-importer from the pinned upstream checkout.
+The importer retains upstream solution paths only as host/researcher metadata and
+does not materialize them into the environment, provenance, generated HUD files,
+or image build context. `port-fortran-rk4-lorenz-to-python/rk4_solver.f` is an
+instruction-declared **public reference input**, not protected verification.
+`synthesize-harmonic-wav-in-c` generates its public waveform in a builder stage
+and copies only that waveform into the final image. Real-image inspection of that
+boundary and of opaque encrypted assets remains an operator gate before release.

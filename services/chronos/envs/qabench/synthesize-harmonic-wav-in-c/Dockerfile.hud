@@ -1,3 +1,13 @@
+FROM ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624 AS builder
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY files/generate_audio.py /tmp/generate_audio.py
+RUN python3 /tmp/generate_audio.py
+
 FROM ghcr.io/laude-institute/t-bench/ubuntu-24-04:20250624
 
 RUN apt-get update && \
@@ -9,10 +19,7 @@ RUN apt-get update && \
         && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
-# Copy and run audio generation script
-COPY files/generate_audio.py /protected/
-RUN python3 /protected/generate_audio.py
+COPY --from=builder /app/audio.wav /app/audio.wav
 
 # Create protected directory for test data
 RUN mkdir -p /protected

@@ -3,6 +3,9 @@
 import json
 from pathlib import Path
 
+import pytest
+
+from chronos.qabench.materialize import materialize
 from chronos.qabench.importer import (
     deployability,
     discover_task,
@@ -99,18 +102,47 @@ def test_discover_missing_task_is_skipped_not_raised() -> None:
     assert "no original_task" in (task.skip_reason or "")
 
 
+def test_discover_rejects_invalid_ids_before_source_lookup() -> None:
+    for task_id in (
+        "../escape",
+        "a/b",
+        "a\\b",
+        "a\nb",
+        "x'; import os; #",
+        "☃",
+        "",
+        "a" * 129,
+    ):
+        with pytest.raises(ValueError):
+            discover_task(TW_TASKS, task_id)
+
+
+def test_materialize_rejects_normalized_slug_collisions_before_writes(
+    tmp_path: Path,
+) -> None:
+    dest_root = tmp_path / "envs"
+    for task_ids in (["a_b", "a-b"], ["A", "a"], ["same", "same"]):
+        with pytest.raises(ValueError):
+            materialize(TW_TASKS, task_ids, dest_root)
+        assert not dest_root.exists()
+
+
 # --- env planning / materialization --------------------------------------------
 
 
 def test_plan_env_materializes_layout_and_sterile_clean_verify(tmp_path: Path) -> None:
-    plan = plan_env(discover_task(TW_TASKS, "public-sample"), tmp_path)
+    task = discover_task(TW_TASKS, "public-sample")
+    plan = plan_env(task, tmp_path)
     env_dir = plan.write()
 
     assert env_dir == tmp_path / "public-sample"
     assert (env_dir / "task_assets" / "test_outputs.py").exists()
     assert (env_dir / "task_assets" / "test.sh").exists()
     assert (env_dir / "task_assets" / "instruction.md").exists()
-    assert (env_dir / "task_assets" / "solution.sh").exists()
+    assert not (env_dir / "task_assets" / "solution.sh").exists()
+    assert task_solution_not_in_plan(plan)
+    assert task.solution_path not in plan.files.values()
+    assert str(task.solution_path) not in json.dumps(plan.provenance)
     assert (env_dir / "Dockerfile").exists()
     # Build context (Dockerfile siblings, e.g. COPY-ed seed files) must travel
     # to the env root or the image build would fail on the missing COPY source.
@@ -122,6 +154,11 @@ def test_plan_env_materializes_layout_and_sterile_clean_verify(tmp_path: Path) -
     # plugin autoload (that would break tasks whose verification needs plugins).
     assert "--confcutdir" in text
     assert "PYTEST_DISABLE_PLUGIN_AUTOLOAD" not in text
+    assert plan.write() == env_dir
+
+
+def task_solution_not_in_plan(plan: object) -> bool:
+    return all("solution" not in rel for rel in plan.files)  # type: ignore[attr-defined]
 
 
 def test_plan_env_rewrites_dockerfile_from_for_private_base(tmp_path: Path) -> None:
@@ -160,6 +197,23 @@ def test_planning_is_idempotent_per_pinned_source(tmp_path: Path) -> None:
         "content_digest"
     ]
     assert first == second
+
+
+def test_write_rejects_mismatched_existing_provenance_without_overwrite(
+    tmp_path: Path,
+) -> None:
+    plan = plan_env(discover_task(TW_TASKS, "public-sample"), tmp_path)
+    plan.write()
+    marker = plan.dest / "keep.txt"
+    marker.write_text("unchanged", encoding="utf-8")
+    (plan.dest / "provenance.json").write_text(
+        json.dumps({"task_id": "other", "content_digest": "not-this-plan"}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError):
+        plan.write()
+    assert marker.read_text(encoding="utf-8") == "unchanged"
 
 
 def test_slug_normalizes_task_id() -> None:

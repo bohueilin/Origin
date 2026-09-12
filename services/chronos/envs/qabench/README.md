@@ -14,23 +14,31 @@ or honestly skipped, base image, digests) is in
   used the private `…aliyuncs.com/…:t-bench-<variant>` mirror.
 - build-context files (e.g. `generate_returns.py`, `.dockerignore`) — copied so the
   image builds.
-- `task_assets/` — the trusted post-hoc verification bundle (v1 grader
-  `test_outputs.py`, `test.sh`, `instruction.md`) the sterile referee runs; kept out
-  of the agent-writable image. `solution.sh` also materializes here but is
-  **untracked** — see "Reference solutions" below.
+- `task_assets/` — the intentional public v1 grader surface (`test_outputs.py`,
+  `test.sh`, `instruction.md`). `Dockerfile.hud` copies it into `/app/task_assets`
+  for the benchmark's public reward-hack behavior; the later clean-verification
+  mount is a separate trusted, read-only referee boundary.
 - `clean_verify.sh` — the sterile referee entrypoint (confined conftest discovery).
 - `provenance.json` — pinned source digests: `grader_digest`, `dockerfile_digest`,
   `build_context_digest`, `base_image_digest`, and a `content_digest`.
 
-## Reference solutions
+## Source solutions and historical classifications
 
-`task_assets/solution.sh` is the upstream task's reference answer. It is materialized
-locally but **deliberately kept out of git** (`.gitignore`), for one reason: this
-repository publishes qabench-derived scores, and offering the benchmark's answers
-next to those scores invites the obvious contamination question. It is not needed to
-run or verify anything here — the sterile referee (`clean_verify.sh`) collects only
-the pytest assets, and no provenance digest covers it (`grader_digest` hashes the
-grader). Re-materialize to get it back.
+The importer retains an upstream source solution path only as host/researcher
+metadata. It does not materialize, serialize, or copy a solution into the Docker
+build context, `task_assets/`, generated HUD source, provenance, or the referee
+bundle.
+
+The checked-in `port-fortran-rk4-lorenz-to-python/rk4_solver.f` is an instruction-
+declared **public reference input** for a porting task. It remains intentionally
+available and excludes that task from any hidden-reference-free claim.
+
+`synthesize-harmonic-wav-in-c` keeps the public `audio.wav` reference baseline,
+but its generator now runs only in a Docker builder stage; the final runtime image
+copies the waveform, not `generate_audio.py`. This is a static source boundary, not
+final-image proof. Real-image inspection as the HUD agent identity remains an
+operator gate. The encrypted `protected.tar.gz.enc` assets are opaque ciphertext;
+they likewise require a real-image key/plaintext inspection before a release claim.
 
 Upstream is Apache-2.0; see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE) for
 attribution, the statement of modification, and the contamination-canary note.

@@ -19,8 +19,8 @@
 #
 # One-time setup: add a Cloudflare API token (scope: Account › Cloudflare Pages › Edit)
 # as the repo secret CLOUDFLARE_API_TOKEN.
-# Rollback stays the old binding (bohueilin/physical-ai-demo-test @ hud-factorydad-1);
-# see docs/DEPLOY.md before any cutover.
+# Rollback remains a human-owned, documented operation; see docs/DEPLOY.md
+# before any cutover.
 
 name: Deploy origin-web → Cloudflare Pages
 
@@ -62,6 +62,20 @@ jobs:
 
       - name: Install workspace deps
         run: npm ci
+
+      - name: Stage and compile the exact Pages Functions manifest
+        run: |
+          node apps/origin-web/scripts/stage-pages-deploy.mjs --out .origin-pages-stage
+          cd .origin-pages-stage
+          npm exec --yes --package=wrangler@4.92.0 -- wrangler pages functions build functions --outdir .wrangler-pages-build
+
+      - name: Browser E2E (Chromium, hermetic)
+        run: |
+          npx playwright install --with-deps chromium
+          npm --prefix apps/origin-web run test:e2e -- tests/e2e/smoke.spec.ts tests/e2e/investor-ready.spec.ts
+
+      - name: Production dependency audit (all resolved production npm dependencies)
+        run: npm audit --omit=dev --audit-level=moderate
 
       # Same gate as ci.yml, re-run at the exact SHA under consideration:
       # a deploy can never ship code that hasn't passed typecheck + lint + tests.
@@ -130,7 +144,7 @@ jobs:
     name: Deploy to LIVE (manual dispatch + typed confirmation only)
     # Human gate: only an explicit "Run workflow" with confirm=DEPLOY reaches this job.
     # Push events never satisfy this condition, so main can never auto-deploy.
-    if: github.event_name == 'workflow_dispatch' && inputs.confirm == 'DEPLOY'
+    if: github.event_name == 'workflow_dispatch' && inputs.confirm == 'DEPLOY' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -139,39 +153,25 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+
       - name: Download the gated build (deploy exactly what was tested)
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: origin-web-dist
           path: origin-web-dist
 
-      # wrangler `pages deploy <dir>` reads Functions from ./functions in the WORKING
-      # DIRECTORY — not from inside <dir>. functions/ lives at apps/origin-web/functions,
-      # so nothing was ever uploaded and /api/* has always been served by the static
-      # 404/405 handler: every "Book an evidence review" submission was dropped.
-      #
-      # Copy ONLY functions/api. Pages compiles every file under functions/ into one
-      # worker, and the root-level modules (snaplii-broker, credential-broker,
-      # _onePasswordBroker, expiry-sweeper, …) are InsForge DENO functions using
-      # Deno.env and npm: specifiers — they would fail the Workers build, and
-      # expiry-sweeper is an unauthenticated admin-key endpoint that must never
-      # become routable.
-      - name: Stage Cloudflare Pages Functions where wrangler looks for them
+      - name: Install workspace deps for staged Functions validation
+        run: npm ci
+
+      - name: Stage and compile the exact Pages Functions manifest
         run: |
-          rm -rf functions server src
-          mkdir -p functions/api
-          cp -R apps/origin-web/functions/api/. functions/api/
-          # Tests never ship as routes.
-          find functions -name '*.test.ts' -delete
-          # functions/api/foundry/parse-floor.ts imports ../../../server and
-          # ../../../src (it reuses the SAME handleParseFloor + parseGate the
-          # local Hono server runs). wrangler's bundler follows relative imports
-          # anywhere on disk, but only files UNDER functions/ become routes — so
-          # staging these trees beside functions/ adds zero routes and keeps the
-          # deployed parse path byte-identical to the tested one.
-          cp -R apps/origin-web/server ./server
-          cp -R apps/origin-web/src ./src
-          echo "staged routes:"; find functions -type f
+          node apps/origin-web/scripts/stage-pages-deploy.mjs --out .origin-pages-stage
+          cd .origin-pages-stage
+          npm exec --yes --package=wrangler@4.92.0 -- wrangler pages functions build functions --outdir .wrangler-pages-build
 
       - name: Check for Cloudflare token
         id: gate
@@ -191,4 +191,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ecf2451e81261e8de3295b4a3b4e439c
-          command: pages deploy origin-web-dist --project-name=origin-physical-ai --branch=hud-factorydad-1
+          workingDirectory: .origin-pages-stage
+          packageManager: npm
+          command: pages deploy ../origin-web-dist --project-name=origin-physical-ai

@@ -67,6 +67,57 @@ jobs:
         working-directory: apps/${{ matrix.app }}
         run: npx vitest run
 
+  browser-e2e:
+    name: origin-web — Chromium E2E (hermetic)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install (root lockfile — npm workspaces)
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run the hermetic public browser flows
+        run: npm --prefix apps/origin-web run test:e2e -- tests/e2e/smoke.spec.ts tests/e2e/investor-ready.spec.ts
+
+  pages-stage:
+    name: origin-web — Pages allowlist and non-deploying bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install (root lockfile — npm workspaces)
+        run: npm ci
+      - name: Test the deterministic Pages staging manifest
+        run: npx vitest run apps/origin-web/src/deploy/stagePagesDeploy.test.ts
+      - name: Stage and compile Functions without upload
+        run: |
+          node apps/origin-web/scripts/stage-pages-deploy.mjs --out .origin-pages-stage
+          cd .origin-pages-stage
+          npm exec --yes --package=wrangler@4.92.0 -- wrangler pages functions build functions --outdir .wrangler-pages-build
+
+  production-audit:
+    name: npm production dependency audit (resolved graph)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install (root lockfile — npm workspaces)
+        run: npm ci
+      # This audits all resolved production npm dependencies. It is not a runtime
+      # reachability proof and intentionally runs outside hermetic browser tests.
+      - name: Audit all resolved production npm dependencies
+        run: npm audit --omit=dev --audit-level=moderate
+
   chronos-ui:
     name: chronos-ui — standalone build (React 18)
     runs-on: ubuntu-latest
@@ -209,7 +260,7 @@ jobs:
   ci-ok:
     name: CI green
     if: always()
-    needs: [workspace-apps, chronos-ui, python-services, functions-typecheck, evidence-verify, secret-scan, honesty-lint]
+    needs: [workspace-apps, chronos-ui, python-services, functions-typecheck, evidence-verify, secret-scan, honesty-lint, browser-e2e, pages-stage, production-audit]
     runs-on: ubuntu-latest
     steps:
       - name: Fail if any gate job failed

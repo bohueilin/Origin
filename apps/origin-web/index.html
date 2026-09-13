@@ -25,7 +25,7 @@
     <title>Origin, the Agent Reference Check for high-consequence AI agents</title>
     <meta
       name="description"
-      content="Origin runs a deterministic, configuration-bound reference check on your AI agent and issues a tamper-evident attestation a reviewer re-verifies offline."
+      content="Origin’s browser demo evaluates a selected policy against a deterministic synthetic battery and emits tamper-evident, untrusted-by-default evidence; it does not execute your named agent."
     />
     <link rel="canonical" href="https://origin-physical-ai.pages.dev/" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
@@ -40,13 +40,13 @@
     <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://origin-physical-ai.pages.dev/" />
     <meta property="og:title" content="Origin — the evidence layer for high-consequence AI agents" />
-    <meta property="og:description" content="A deterministic, configuration-bound Agent Reference Check that issues a tamper-evident attestation your reviewer re-verifies offline." />
+    <meta property="og:description" content="A deterministic synthetic policy evaluation with tamper-evident browser evidence; it does not contact or execute the named agent." />
     <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Origin — the evidence layer for high-consequence AI agents" />
-    <meta name="twitter:description" content="Configuration-bound reference check, then an attestation your reviewer verifies offline. Change a bound field and it returns VOID." />
+    <meta name="twitter:description" content="Deterministic synthetic policy evaluation with browser evidence that is untrusted by default; it does not contact or execute the named agent." />
     <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
 
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
@@ -74,7 +74,7 @@
           "logo": "https://origin-physical-ai.pages.dev/origin-logo.png",
           "email": "bohueilin@gmail.com",
           "founder": { "@type": "Person", "name": "Bo-Huei Lin" },
-          "description": "The evidence layer for high-consequence AI agents. Origin runs a deterministic, configuration-bound Agent Reference Check and issues a tamper-evident attestation a security reviewer can re-verify offline."
+          "description": "The evidence layer for high-consequence AI agents. The public browser demo evaluates a selected policy against a deterministic synthetic battery and emits tamper-evident evidence; it does not execute the named agent."
         },
         {
           "@type": "WebSite",
@@ -89,7 +89,7 @@
           "name": "Origin",
           "applicationCategory": "SecurityApplication",
           "operatingSystem": "Vendor-neutral — any cloud or model provider",
-          "description": "Origin runs a deterministic, configuration-bound Agent Reference Check against an exact agent configuration, grades it with a deterministic oracle, and issues a tamper-evident, offline-verifiable Origin Attestation that is invalidated by configuration drift.",
+          "description": "Origin’s public browser demo evaluates a selected policy against a deterministic synthetic battery and emits tamper-evident browser evidence. It does not contact or execute the named agent, confirm a provider effect, or grant deployment authority.",
           "publisher": { "@id": "https://origin-physical-ai.pages.dev/#org" }
         }
       ]
@@ -132,8 +132,8 @@
         <div class="shell hero__grid">
           <div class="hero__copy">
             <p class="eyebrow">The evidence layer for high-consequence AI agents</p>
-            <h1 id="hero-title">Get your agent through security review, and <em>prove</em> what it did.</h1>
-            <p class="hero__lede">Origin runs a deterministic, configuration-bound reference check and issues a tamper-evident attestation a reviewer can re-verify offline.</p>
+            <h1 id="hero-title">Evaluate a policy before security review, and <em>show</em> the evidence limits.</h1>
+            <p class="hero__lede">The public browser demo evaluates a selected policy against a deterministic synthetic battery and emits tamper-evident, untrusted-by-default evidence. It does not execute the named agent.</p>
             <div class="hero__actions cta-row">
               <a class="btn btn--primary" href="/reference-check" data-analytics="hero_reference_check_click">Run the synthetic reference check</a>
               <a class="btn btn--ghost" href="#demo" data-analytics="hero_demo_click">Step through the 5-stage demo</a>
@@ -265,8 +265,8 @@
       <section class="section section--tint" id="demo" data-investor-section aria-labelledby="demo-title">
         <div class="shell">
           <p class="kicker">The demo</p>
-          <h2 id="demo-title">One agent configuration, checked and attested.</h2>
-          <p class="section__lede">The reference check binds an exact agent configuration, runs a deterministic battery against it, grades it with the oracle, never an LLM judging an LLM, and issues an attestation that stops verifying the moment a bound field changes.</p>
+          <h2 id="demo-title">One declared configuration, one selected policy evaluation.</h2>
+          <p class="section__lede">The browser reference check binds declared configuration metadata, evaluates the selected policy against a deterministic synthetic battery, and grades those policy decisions with the oracle, never an LLM judging an LLM. It does not run the named agent.</p>
           <div class="demo" data-demo aria-label="Walkthrough: bind, challenge, grade, attest, reverify">
             <div class="demo__rail" role="tablist" aria-label="Reference check stages">
               <button type="button" class="demo__dot" data-demo-step="1" role="tab" id="demo-tab-1" aria-controls="demo-panel-1" aria-selected="true" tabindex="0"><span>1</span>Bind</button>
@@ -276,11 +276,11 @@
               <button type="button" class="demo__dot" data-demo-step="5" role="tab" id="demo-tab-5" aria-controls="demo-panel-5" aria-selected="false" tabindex="-1"><span>5</span>Reverify</button>
             </div>
             <div class="demo__screen">
-              <div class="demo__panel is-on" data-demo-panel="1" role="tabpanel" tabindex="0" id="demo-panel-1" aria-labelledby="demo-tab-1"><h3><span class="demo__tag demo__tag--n">Bind</span> The exact configuration is bound</h3><p>Model, tool set, policy, budget, and scenario battery are pinned into a single <b>configuration digest</b>. The attestation that follows is bound to this digest and nothing else.</p><p class="demo__readout demo__readout--plan"><b>config</b> · model + tools + policy + budget + battery <span class="rd-state">DIGEST BOUND</span></p></div>
+              <div class="demo__panel is-on" data-demo-panel="1" role="tabpanel" tabindex="0" id="demo-panel-1" aria-labelledby="demo-tab-1"><h3><span class="demo__tag demo__tag--n">Bind</span> Declared inputs are bound</h3><p>Declared model, tool set, selected policy, and scenario battery are pinned into a single <b>input digest</b>. This binds the local policy evaluation; it does not prove that the named agent was inspected or run.</p><p class="demo__readout demo__readout--plan"><b>input</b> · declared model + tools + policy + battery <span class="rd-state">DIGEST BOUND</span></p></div>
               <div class="demo__panel" data-demo-panel="2" role="tabpanel" tabindex="0" id="demo-panel-2" aria-labelledby="demo-tab-2" hidden><h3><span class="demo__tag demo__tag--plan">Challenge</span> A deterministic battery runs</h3><p>The same scenarios every time: actions that must be <b>allowed</b>, actions that must be <b>denied</b>, and actions that must <b>escalate</b> to a named human.</p><p class="demo__readout demo__readout--plan"><b>battery</b> · allow · deny · escalate <span class="rd-state">DETERMINISTIC</span></p></div>
               <div class="demo__panel" data-demo-panel="3" role="tabpanel" tabindex="0" id="demo-panel-3" aria-labelledby="demo-tab-3" hidden><h3><span class="demo__tag demo__tag--held">Grade</span> The oracle grades it</h3><p>False accepts, false rejects, and catastrophic failures produce a readiness level. A catastrophic over-grant caps the result at <b>L0</b> no matter how well everything else scored.</p><p class="demo__readout demo__readout--held"><b>oracle</b> · FAR · FRR · catastrophic cap <span class="rd-state">READINESS LEVEL</span></p></div>
-              <div class="demo__panel" data-demo-panel="4" role="tabpanel" tabindex="0" id="demo-panel-4" aria-labelledby="demo-tab-4" hidden><h3><span class="demo__tag demo__tag--ok">Attest</span> An attestation is issued</h3><p>Origin issues a configuration-bound, tamper-evident <b>Origin Attestation</b> over the synthetic sandbox run, the artifact a reviewer receives.</p><p class="demo__readout demo__readout--ok"><b>attestation</b> · bound to config digest · synthetic sandbox <span class="rd-state">ISSUED</span></p></div>
-              <div class="demo__panel" data-demo-panel="5" role="tabpanel" tabindex="0" id="demo-panel-5" aria-labelledby="demo-tab-5" hidden><h3><span class="demo__tag demo__tag--ok">Reverify</span> Offline VALID, until the config drifts</h3><p>A reviewer re-verifies the artifact offline and gets <b>VALID</b>. Change one bound field, swap the model, widen a scope, and the same verifier returns <b>VOID</b>. That is the property being sold.</p><p class="demo__readout demo__readout--ok"><b>verify</b> · unchanged artifact <span class="rd-state">VALID</span></p><p class="demo__readout demo__readout--block"><b>verify</b> · one bound field changed <span class="rd-state">VOID</span></p><div class="cta-row" style="margin-top:16px"><a class="btn btn--ghost btn--sm" href="/reference-check" data-analytics="demo_reference_check_link">Run the reference check</a><a class="btn btn--ghost btn--sm" href="/verify" data-analytics="demo_verify_link">Verify an attestation</a></div></div>
+              <div class="demo__panel" data-demo-panel="4" role="tabpanel" tabindex="0" id="demo-panel-4" aria-labelledby="demo-tab-4" hidden><h3><span class="demo__tag demo__tag--ok">Attest</span> Browser demo evidence is issued</h3><p>The browser signs a synthetic Action/Run envelope over the local policy evaluation. It records <b>not attempted</b>: no named agent was contacted or executed, and no provider effect was confirmed.</p><p class="demo__readout demo__readout--ok"><b>envelope</b> · bound to declared input · synthetic <span class="rd-state">SIGNED</span></p></div>
+              <div class="demo__panel" data-demo-panel="5" role="tabpanel" tabindex="0" id="demo-panel-5" aria-labelledby="demo-tab-5" hidden><h3><span class="demo__tag demo__tag--ok">Reverify</span> Offline UNTRUSTED, until tampered</h3><p>A reviewer re-verifies browser evidence offline and gets <b>UNTRUSTED</b>: its session signer is unpinned and it does not represent execution. Change one bound field and the verifier returns <b>VOID</b>.</p><p class="demo__readout demo__readout--held"><b>verify</b> · intact browser evidence <span class="rd-state">UNTRUSTED</span></p><p class="demo__readout demo__readout--block"><b>verify</b> · one bound field changed <span class="rd-state">VOID</span></p><div class="cta-row" style="margin-top:16px"><a class="btn btn--ghost btn--sm" href="/reference-check" data-analytics="demo_reference_check_link">Run the reference check</a><a class="btn btn--ghost btn--sm" href="/verify" data-analytics="demo_verify_link">Verify evidence</a></div></div>
             </div>
             <div class="demo__bar">
               <button type="button" class="btn btn--ghost btn--sm" data-demo-play aria-pressed="false">&#9654; Play</button>

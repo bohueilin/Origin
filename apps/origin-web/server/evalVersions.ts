@@ -18,7 +18,7 @@ export const VERIFIER_VERSION = '1.0.0'
 /** Behavior version of the reward model (the verifier's reward calibration). */
 export const REWARD_MODEL_VERSION = '1.0.0'
 /** Behavior version of the license ladder + gate (src/license.ts). */
-export const LICENSE_POLICY_VERSION = '1.0.0'
+export const LICENSE_POLICY_VERSION = '2.0.0'
 
 /** Behavior version of the MCP tool registry authorization (scope map + token bucket) — @origin/verifier-core/tool-registry (P3). */
 export const TOOL_REGISTRY_VERSION = '1.0.0'

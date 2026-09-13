@@ -24,7 +24,7 @@ describe('proving-ground fleet readiness', () => {
       .toBe(canonical(fleetReadiness(map, 'amr').digestInput))
   })
 
-  it('an open floor EARNS L4: every embodiment finishes, zero catastrophic, zero counterfactual false-accepts', () => {
+  it('an open floor earns L2 under the three-embodiment evidence-count floor, with zero catastrophic or counterfactual false-accepts', () => {
     const { episodes, readiness, unverifiedFalseAccepts } = fleetReadiness(starterUnderstanding().siteMap, 'amr')
     for (const e of episodes) {
       expect(e.evaluation.verdict).toBe('finish')
@@ -33,7 +33,7 @@ describe('proving-ground fleet readiness', () => {
     }
     expect(readiness.passRate).toBe(1)
     expect(readiness.catastrophicCount).toBe(0)
-    expect(readiness.level.id).toBe('L4')
+    expect(readiness.level.id).toBe('L2')
     expect(unverifiedFalseAccepts).toBe(0)
   })
 

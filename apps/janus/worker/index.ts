@@ -15,8 +15,11 @@ import type { AppConfig } from '../server/config.ts'
 
 type Env = Record<string, string | undefined> & { APP_DO: DurableObjectNamespace }
 
-function configFromEnv(env: Env): AppConfig {
-  const get = (k: string): string | undefined => (env[k] ? String(env[k]) : undefined)
+export function configFromEnv(env: Env): AppConfig {
+  const get = (k: string): string | undefined => {
+    const value = env[k]
+    return value && value.trim() ? String(value) : undefined
+  }
   const num = (v: string | undefined, d: number): number => {
     const n = Number(v)
     return Number.isFinite(n) && n > 0 ? n : d
@@ -24,6 +27,7 @@ function configFromEnv(env: Env): AppConfig {
   const insforgeBaseUrl = get('INSFORGE_BASE_URL')
   const insforgeApiKey = get('INSFORGE_API_KEY')
   const episodeSecret = get('EPISODE_SIGNING_SECRET')
+  if (!episodeSecret) throw new Error('EPISODE_SIGNING_SECRET is required in Worker production')
   return {
     port: 0,
     isProd: true,
@@ -65,8 +69,10 @@ function configFromEnv(env: Env): AppConfig {
       orderEta: get('DEMO_ORDER_ETA') ?? '7:00 PM',
       gamePlan: get('DEMO_GAME_PLAN') ?? 'Thursday 6:30 PM',
     },
-    episodeSecret: episodeSecret ?? 'dev-insecure-episode-secret-change-me',
-    episodeSecretIsDev: !episodeSecret,
+    episodeSecret,
+    episodeSecretIsDev: false,
+    serviceAuthToken: get('SERVICE_AUTH_TOKEN'),
+    vapiWebhookSecret: get('VAPI_WEBHOOK_SECRET'),
     webOrigins: (get('EXTRA_WEB_ORIGINS') ?? '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
     warnings: [],
   }

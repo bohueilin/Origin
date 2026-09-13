@@ -1,45 +1,63 @@
 # Deploy — Origin Physical AI
 
-## Canonical deploy source = THIS repo (`bohueilin/Origin`, `apps/origin-web`)
-We are consolidating: **Origin is the single source of truth for the live site**, replacing the legacy
-`bohueilin/physical-ai-demo-test`. Origin's `apps/origin-web` is a **superset** of the old repo (same
-app lineage, every live page **plus** `/security` `/verify` `/reference-check` `/simulation`
-`/operations`, the `functions/`, and the honesty fixes) and its Pages build is **verified from a clean
-clone**. The one remaining step — repointing the Cloudflare Pages Git source at Origin — is a
-**human-owned dashboard action**; the full checklist is **[`docs/CUTOVER.md`](CUTOVER.md)**.
+## Release contract
 
-Until you run the cutover, the live site still deploys from `physical-ai-demo-test @ hud-factorydad-1`
-(so **pushing Origin does not yet deploy**), and that old repo remains the instant rollback. After the
-cutover, `physical-ai-demo-test` is legacy rollback only — archive it once Origin has deployed cleanly.
+`apps/origin-web` is the canonical source for the public Origin site. Pushing or
+merging code does not release it. Production deployment is permitted only through
+`.github/workflows/deploy-origin-web.yml` after all of these gates hold:
 
-The deploy-critical, hardcoded-URL files live in `apps/origin-web` and must stay correct:
-`index.html` / `app.html` / `passport.html` (og:/canonical), `public/_headers`, `public/robots.txt`,
-`public/sitemap.xml`, `public/llms.txt`, `insforge.toml` (OAuth allowlist), `src/auth/AuthProvider.tsx`
-(redirect fallback). Keep the canonical origin (`origin-physical-ai.pages.dev`) consistent across them.
+- the event is `workflow_dispatch`;
+- the confirmation input is exactly `DEPLOY`;
+- the selected ref is exactly `refs/heads/main`;
+- the build/test job for that commit succeeds;
+- the protected `production` Environment authorizes the deploy; and
+- a least-privilege Cloudflare token is available to the SHA-pinned action.
 
-## Cutover — HUMAN-OWNED, reversible, do LAST
-Only after the monorepo's `apps/origin-web` builds and you've confirmed parity. Two safe options:
+The workflow uploads the exact tested `origin-web-dist` artifact. Pages Function
+discovery is constrained by an executable allowlist, not by copying a repository
+function tree. No Cloudflare Git integration or source-change auto-deploy is part of
+the supported design.
 
-**A) Repoint Cloudflare Pages at the monorepo (cleaner long-term)**
-- Pages project → Settings → Build & deploy:
-  - Connected repo: `bohueilin/Origin`, Production branch: `main`
-  - Root directory: `apps/origin-web`
-  - Build command: `npm install && npm run build` (workspace-aware) or `npm --prefix ../.. install && npm run build`
-  - Output directory: `apps/origin-web/dist`
-- Keep `bohueilin/physical-ai-demo-test` for instant rollback.
+## Deployed source boundary
 
-**B) Push the built bundle (lowest-risk, keeps current binding)**
-- `cd apps/origin-web && npm run build && npx wrangler pages deploy dist --project-name origin-physical-ai`
+The staged Pages source contains exactly three routable handlers:
 
-## Parity check before cutover
-`make build` then diff `apps/origin-web/dist` against a fresh build of the untouched old repo (ignore
-content-hash filenames); run the dist secret-scan. Proceed only if functionally identical.
+| Route source | Public authority |
+| --- | --- |
+| `functions/api/lead.ts` | Public form ingress; bounded to 16 KiB and input-validated. Requires an operator WAF/distributed rate control before launch. |
+| `functions/api/foundry/parse-floor.ts` | Service-authenticated. External image processing is additionally kill-switch, enablement, consent, size, key, and rate gated. |
+| `functions/api/evidence/status.ts` | Service-authenticated owner/status read. |
 
-## Out-of-band (owner-only, not redeployed by this repo)
-InsForge edge functions + the OAuth redirect allowlist (`insforge.toml`) deploy to InsForge separately.
-If the canonical URL ever changes, the InsForge OAuth allowlist + OP/Snaplii broker config must be
-updated by the owner.
+`server/` and `src/` are staged only as sibling import support. They do not become
+Pages routes. Root InsForge/Deno functions, credentials, payments, agent tokens,
+and maintenance jobs are separate deployment authorities and are not deployed by
+this workflow.
 
-## Secrets
-Recreate each app's `.env.local` by hand (never copied). Keep `SNAPLII_LIVE=0` and the per-buy/daily
-caps; set `EPISODE_SIGNING_SECRET` on any hosted Hono backend (it refuses to start in production without it).
+## What the build proves—and does not prove
+
+The required CI/deploy gates cover TypeScript, lint, unit tests, browser acceptance,
+honesty claims, evidence re-derivation, the exact Pages source tree, a non-deploying
+Wrangler Functions bundle, secret scanning, and the resolved production npm graph.
+They do not prove that production configuration, DNS, WAF, provider accounts,
+notifications, database policies, monitoring, or rollback are correct.
+
+The public Foundry browser gets no service token. It can run only the deterministic,
+labeled local sample. External parse/quorum/speed are local/backend demo operations
+unless a future authenticated browser authority is designed and reviewed.
+
+## Operator procedure
+
+Use [CUTOVER.md](CUTOVER.md) for the full checklist. At minimum:
+
+1. Run and review all CI gates at the intended main-branch commit.
+2. Verify Environment reviewers, Cloudflare target/token, fail-closed runtime
+   secrets, public-lead WAF/rate control, logs, and rollback ownership.
+3. Manually dispatch the workflow from `main`, type `DEPLOY`, and approve the
+   protected production Environment.
+4. Record the workflow run, commit, artifact/deployment identifiers, approver,
+   runtime configuration version, and smoke-test evidence.
+5. Roll back through the same protected path if a launch threshold fails.
+
+Never paste secrets into source, artifacts, workflow inputs, or `VITE_*` variables.
+Source completion is not authority to deploy, and a successful upload is not proof
+of production correctness.

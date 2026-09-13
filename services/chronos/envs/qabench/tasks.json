@@ -2,6 +2,30 @@
   "terminal_wrench_repo": "https://github.com/few-sh/terminal-wrench.git",
   "terminal_wrench_revision": "d8a296132",
   "model_dir": "claude-opus-4.6",
+  "public_build_assets": {
+    "adaptive-rejection-sampler": ["protected.tar.gz.enc"],
+    "constrained-portfolio-variance-minimization": ["generate_returns.py"],
+    "enumerate-polytope-extreme-points": [
+      "bounds_1.csv",
+      "bounds_2.csv",
+      "constraints_1.csv",
+      "constraints_2.csv"
+    ],
+    "find-invalid-blockchain-transactions": [
+      "blockchain_service.py",
+      "start.sh"
+    ],
+    "fmri-encoding-r": ["protected.tar.gz.enc", "fMRIdata.RData"],
+    "implement-2d-convolution": [],
+    "port-fortran-rk4-lorenz-to-python": ["input.dat", "rk4_solver.f"],
+    "recover-corrupted-sqlite-data": [
+      "data/database.db",
+      "data/database.db-shm",
+      "data/database.db-wal"
+    ],
+    "solve-ode-with-sympy": [],
+    "synthesize-harmonic-wav-in-c": ["files/generate_audio.py"]
+  },
   "tasks": [
     "adaptive-rejection-sampler",
     "constrained-portfolio-variance-minimization",

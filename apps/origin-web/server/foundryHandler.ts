@@ -35,6 +35,7 @@ import {
 import { applyEmbodiment, ROBOT_EMBODIMENTS, type RobotEmbodiment } from '../src/environmentPlan.ts'
 import { sealLicense } from '../src/foundry/licenseSeal.ts'
 import type { DescriptiveSiteMap } from '../src/workflowDraft.ts'
+import { sampleFloorMap } from '../src/foundry/sampleFloor.ts'
 import type {
   ParseFloorResponse,
   ParseFallbackReason,
@@ -66,19 +67,6 @@ function chooseEmbodiment(raw: unknown): RobotEmbodiment {
 
 /** A clean, hazard-bearing sample floor — the deterministic offline fallback for parse-floor.
  *  The safe route detours around the hazard row; a reckless straight line crosses it. */
-function sampleFloor(): DescriptiveSiteMap {
-  return {
-    width: 10,
-    height: 10,
-    start: { x: 5, y: 9 },
-    item: { x: 2, y: 5 },
-    drop: { x: 7, y: 5 },
-    obstacles: [{ x: 1, y: 2 }, { x: 8, y: 7 }],
-    hazards: [{ x: 4, y: 5 }, { x: 5, y: 5 }],
-    humanOnly: [{ x: 6, y: 2 }],
-    robots: [],
-  }
-}
 
 // Inlined from src/siteEval.ts (which is a Vite-only client module — its extensionless
 // relative imports don't resolve under Node ESM). The SCORING still flows through the same
@@ -166,12 +154,22 @@ const PARSE_SYSTEM = [
 interface ParseFloorBody {
   imageDataUri?: string
   hint?: string
+  uploadConsent?: boolean
+}
+
+export interface ParseFloorOptions {
+  /**
+   * Last-moment admission hook for a provider-spending call. It is deliberately
+   * invoked only after enablement, consent, key, media type, and size checks.
+   * Returning false refuses the call before provider I/O.
+   */
+  beforeProvider?: () => boolean
 }
 
 /** Hard bound on the user-supplied hint (see the comment at the use site). */
 const HINT_MAX = 800
 
-export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig): Promise<ParseFloorResponse> {
+export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig, options: ParseFloorOptions = {}): Promise<ParseFloorResponse> {
   const tryOracle = (map: DescriptiveSiteMap): ParseFloorResponse['oracle'] => {
     try {
       return oracleSummary(map, chooseEmbodiment(undefined))
@@ -186,7 +184,7 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
 
   // Demo mode: nothing was uploaded. A LABELED sample keeps the offline demo alive.
   if (!body.imageDataUri || typeof body.imageDataUri !== 'string') {
-    const map = sampleFloor()
+    const map = sampleFloorMap()
     return {
       ok: true,
       siteMap: map,
@@ -197,6 +195,12 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
       oracle: tryOracle(map),
       fallback: 'no_image',
     }
+  }
+  if (!cfg.externalEnabled) {
+    return refuse('external_parse_disabled', 'External image parsing is disabled — nothing was parsed.')
+  }
+  if (body.uploadConsent !== true) {
+    return refuse('consent_required', 'Affirmative consent is required before an image can leave the browser.')
   }
   if (!cfg.apiKey) {
     return refuse('no_key', 'CEREBRAS_API_KEY is not set — the Perceiver cannot run, so nothing was parsed.')
@@ -229,6 +233,9 @@ export async function handleParseFloor(body: ParseFloorBody, cfg: CerebrasConfig
       ],
     },
   ]
+  if (options.beforeProvider && !options.beforeProvider()) {
+    return refuse('rate_limited', 'Rate limit exceeded — try again in a minute.')
+  }
   // reasoningEffort MUST stay 'none': 'low' turns Gemma reasoning ON, and on the
   // first live run it consumed the entire token budget before one content byte
   // (finish_reason 'length', empty content → every parse died bad_json). The
@@ -468,7 +475,7 @@ interface QuorumBody {
 export async function handleQuorumRun(body: QuorumBody, cfg: CerebrasConfig): Promise<QuorumRunResponse> {
   const mode: QuorumMode = body.mode === 'reckless' ? 'reckless' : 'verified'
   const embodiment = chooseEmbodiment(body.embodiment)
-  const { map } = repairSiteMap(body.siteMap ?? sampleFloor())
+  const { map } = repairSiteMap(body.siteMap ?? sampleFloorMap())
   const task = taskFromMap(map, embodiment)
 
   const oracle = bfsOracle(task)
@@ -700,7 +707,7 @@ function taskFromGymBody(body: GymRolloutBody): WarehouseTask {
   }
 
   const embodiment = chooseEmbodiment(body.embodiment)
-  const { map } = repairSiteMap(body.siteMap ?? sampleFloor())
+  const { map } = repairSiteMap(body.siteMap ?? sampleFloorMap())
   return taskFromMap(map, embodiment)
 }
 

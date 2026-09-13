@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { verifyEpisode, adjudicate } from '@origin/evidence/env-evidence'
 import { buildCostLedger, rateDigest } from '@origin/evidence/cost-ledger'
 import { scoreReward } from './reward-module.ts'
@@ -10,7 +10,7 @@ import { scoreReward } from './reward-module.ts'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const load = (p: string) => JSON.parse(readFileSync(resolve(HERE, '../docs/examples', p), 'utf8'))
 const scoreFn = (t, a) => scoreReward(t, a, { policy: 'test' })
-const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
+const licenseFn = (v) => computeLicenseFromVerdictsForPolicyVersion(v, '1.0.0').level.id
 const fresh = () => ({ bundle: load('warehouse.env-bundle.lock.json'), episode: load('warehouse-smoke.episode.json'), receipt: load('warehouse-smoke.score-receipt.json') })
 
 describe('CostLedger (P6) — deterministic cost-per-rollout attribution', () => {

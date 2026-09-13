@@ -51,13 +51,20 @@ export function warehouseRegistryDigest() {
   return registryDigest(warehouseBundleTools())
 }
 
-export function warehousePolicies() {
+const CURRENT_LICENSE_POLICY_VERSION = '2.0.0'
+
+export function warehousePolicies(licensePolicyVersion = CURRENT_LICENSE_POLICY_VERSION) {
+  const licenseSrc = licensePolicyVersion === '1.0.0'
+    ? readSrc('./license-policy-v1.ts')
+    : licensePolicyVersion === '2.0.0'
+      ? readSrc('../src/license.ts')
+      : (() => { throw new RangeError(`unsupported license policy version: ${licensePolicyVersion}`) })()
   return buildPolicies({
     safetyGateSrc: readSrc('../src/warehouse.ts'),
-    licenseSrc: readSrc('../src/license.ts'),
+    licenseSrc,
   })
 }
 
-export function warehousePoliciesDigest() {
-  return policiesDigest(warehousePolicies())
+export function warehousePoliciesDigest(licensePolicyVersion = CURRENT_LICENSE_POLICY_VERSION) {
+  return policiesDigest(warehousePolicies(licensePolicyVersion))
 }

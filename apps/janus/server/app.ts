@@ -36,6 +36,27 @@ import { isAvailable as opAvailable, leaseScopedSecret, listLeases, revokeLease 
 import { runReferenceEpisode } from './referenceAgent.ts'
 import { getEvidenceStatus, getRecentRuns, handleRunEpisode } from './runEpisodeHandler.ts'
 import { handleVapiTools } from './vapiHandler.ts'
+import { authorizeService, authorizeVapi } from './requestAuth.ts'
+
+function normalizePolicyPath(path: string): string {
+  return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
+}
+
+function isPublicRoute(method: string, path: string): boolean {
+  if (method === 'GET' && path === '/health') return true
+  if (method === 'GET' && path === '/api/janus/notify/phone-approve') return true
+  if (method !== 'POST') return false
+  return path === '/v1/episodes'
+    || path === '/v1/step'
+    || /^\/v1\/episodes\/[^/]+\/step$/.test(path)
+    || path === '/api/janus/notify/phone-approve'
+}
+
+function authFailure(c: Context, decision: 'unauthorized' | 'not_configured', service: boolean): Response {
+  if (decision === 'not_configured') return c.json({ ok: false, error: 'auth_not_configured' }, 503)
+  if (service) c.header('WWW-Authenticate', 'Bearer')
+  return c.json({ ok: false, error: 'unauthorized' }, 401)
+}
 
 function nebiusStatus(code: NebiusErrorCode): ContentfulStatusCode {
   switch (code) {
@@ -117,6 +138,21 @@ export function createApp(config: AppConfig): Hono {
 
   const app = new Hono()
   app.use('*', cors())
+
+  // CORS must answer preflight before credentials are evaluated. Every other production
+  // route is deny-by-default, with only the small external-gym and one-shot phone set public.
+  app.use('*', async (c, next) => {
+    if (!config.isProd || c.req.method === 'OPTIONS') return next()
+    const path = normalizePolicyPath(c.req.path)
+    if (c.req.method === 'HEAD' && path === '/api/janus/notify/phone-approve') return c.body(null, 405)
+    const policyMethod = c.req.method === 'HEAD' ? 'GET' : c.req.method
+    if (isPublicRoute(policyMethod, path)) return next()
+    const vapi = policyMethod === 'POST' && path === '/api/vapi/tools'
+    const decision = vapi
+      ? authorizeVapi(c.req.raw.headers, config.vapiWebhookSecret)
+      : authorizeService(c.req.raw.headers, config.serviceAuthToken)
+    return decision === 'authorized' ? next() : authFailure(c, decision, !vapi)
+  })
 
   // CSRF / abuse defense for the guarded /api/janus/* routes (money, notify, discord, email,
   // credential, intent). A browser caller is allowed only from localhost or an explicitly-configured
@@ -208,8 +244,8 @@ export function createApp(config: AppConfig): Hono {
   // The ONLY path that can mint trusted mock/nebius provenance — and only after
   // the server actually runs that reference agent against the gym env.
   app.post('/v1/reference-episodes', async (c) => {
-    // mode:'nebius' forwards to a paid model — origin-guard + throttle like /api/janus/intent.
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    // In development, mode:'nebius' keeps the browser-origin check; production uses service authority.
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     const parsed = await strictJsonObject(c)
     if (!parsed.ok) return badRequest(c, parsed.error)
     const body = parsed.body
@@ -233,8 +269,8 @@ export function createApp(config: AppConfig): Hono {
 
   // ---- Legacy /api (reuses existing server-owned handlers) ----------------
   app.post('/api/run-episode', async (c) => {
-    // policyMode:'nebius' forwards to a paid model — origin-guard + throttle.
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    // Development keeps the browser-origin check; production requires service authority upstream.
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     if (channelThrottled('nebius', 20)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await handleRunEpisode(await jsonBody(c), runCfg)
     if (!r.ok) return c.json(r, r.code === 'bad_request' ? 400 : 502)
@@ -252,8 +288,8 @@ export function createApp(config: AppConfig): Hono {
     return c.json({ ok: true, ...status })
   })
   app.post('/api/nebius-action', async (c) => {
-    // Forwards to the paid Nebius model — origin-guard + throttle like /api/janus/intent.
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    // Development browser-origin check plus throttle; production service authority is middleware-owned.
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     if (channelThrottled('nebius', 20)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await handleNebiusAction(await jsonBody(c), config.nebius)
     return c.json(r, r.ok ? 200 : nebiusStatus(r.code))
@@ -261,10 +297,10 @@ export function createApp(config: AppConfig): Hono {
   app.post('/api/vapi/tools', async (c) => c.json(await handleVapiTools(await jsonBody(c), runCfg)))
 
   // Janus brain — GMI Cloud intent understanding (voice/text → scenario).
-  // Origin-guarded + throttled like the other metered routes: classifyIntent forwards to a paid GMI
-  // model, so a cross-origin caller must not be able to burn quota or inject transcripts.
+  // Development browser-origin check plus throttling protects the paid GMI route; production
+  // request authority is the service bearer, never Origin.
   app.post('/api/janus/intent', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     if (channelThrottled('intent', 30)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await classifyIntent(await jsonBody(c), config.gmi)
     const status: ContentfulStatusCode = r.ok
@@ -273,26 +309,26 @@ export function createApp(config: AppConfig): Hono {
     return c.json(r, status)
   })
 
-  // Snaplii wallet — real, scoped payments (key server-side only). Every route below is origin-guarded
-  // by walletOriginOk (defined up top); a no-Origin POST is refused as a non-browser caller.
+  // Snaplii wallet — real, scoped payments (key server-side only). Development retains
+  // walletOriginOk; production service authority is enforced before these handlers.
   app.post('/api/janus/wallet/connect', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     const r = await connectWallet(config.snaplii, config.snaplii.live)
     return c.json(r, r.ok ? 200 : 503)
   })
   app.post('/api/janus/wallet/quote', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     const r = await quoteOrder(await jsonBody(c), config.snaplii, config.episodeSecret)
     return c.json(r, r.ok ? 200 : r.code === 'bad_request' || r.code === 'over_cap' ? 400 : 502)
   })
   // The human-approval step: exchanges a quote for a one-shot, reserved, mode-bound token.
   app.post('/api/janus/wallet/authorize', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     const r = authorizeOrder(await jsonBody(c), config.snaplii, config.episodeSecret, config.episodeSecretIsDev, config.snaplii.live)
     return c.json(r, r.ok ? 200 : r.code === 'insecure_secret' ? 503 : 400)
   })
   app.post('/api/janus/wallet/purchase', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     // Settles ONLY with a valid one-shot, amount/mode-bound approval token from /authorize.
     const r = await purchaseOrder(await jsonBody(c), config.snaplii, config.episodeSecret, config.snaplii.live, config.insforge)
     return c.json(r, r.ok ? 200 : r.code === 'upstream' || r.code === 'no_key' || r.code === 'uncertain' ? 502 : 400)
@@ -302,13 +338,13 @@ export function createApp(config: AppConfig): Hono {
   // phone-approve is the ONE intentionally-public route (the phone taps it) and is protected
   // by an unguessable, one-shot id — it carries no money authority of its own.
   app.post('/api/janus/notify/approval', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     if (channelThrottled('notify', 40)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await requestApproval(await jsonBody(c), config.notify)
     return c.json(r, 200)
   })
   app.get('/api/janus/notify/status', (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     return c.json(approvalStatus(c.req.query('id') ?? ''))
   })
   // Public (id-protected). A real browser tap approves on GET (single-action, smooth phone path);
@@ -325,7 +361,7 @@ export function createApp(config: AppConfig): Hono {
 
   // Discord group message — server composes the content; webhook (or simulated preview).
   app.post('/api/janus/discord/send', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     if (channelThrottled('discord', 20)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await sendDiscord(await jsonBody(c), config.discord, config.demo)
     return c.json(r, r.ok ? 200 : 502)
@@ -333,7 +369,7 @@ export function createApp(config: AppConfig): Hono {
 
   // Email the "Agentic Journey Summary" to the user's own (server-configured) address.
   app.post('/api/janus/email/summary', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     if (channelThrottled('email', 12)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = await sendJourneyEmail(await jsonBody(c), config.email)
     return c.json(r, r.ok ? 200 : 502)
@@ -343,21 +379,21 @@ export function createApp(config: AppConfig): Hono {
   // The agent NEVER holds a credential; it gets opaque, task-scoped lease handles. The service
   // account token + secret values stay server-side. All same-origin only.
   app.get('/api/janus/credential/status', (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     return c.json({ ok: true, available: opAvailable(config.onepassword), vault: config.onepassword.vault ?? null })
   })
   app.post('/api/janus/credential/lease', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     if (channelThrottled('credential', 60)) return c.json({ ok: false, error: 'rate_limited' }, 429)
     const r = leaseScopedSecret(await jsonBody(c), config.onepassword)
     return c.json(r, r.ok ? 200 : 400)
   })
   app.get('/api/janus/credential/leases', (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     return c.json({ ok: true, leases: listLeases(c.req.query('intent_id') || undefined) })
   })
   app.post('/api/janus/credential/revoke', async (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     const b = (await jsonBody(c)) as { handle?: unknown }
     const r = revokeLease(typeof b.handle === 'string' ? b.handle : '')
     return c.json(r, r.ok ? 200 : 404)
@@ -365,7 +401,7 @@ export function createApp(config: AppConfig): Hono {
 
   // Order / place context (delivery address, items, ETA) for the run view. Same-origin only.
   app.get('/api/janus/order-context', (c) => {
-    if (!walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
+    if (!config.isProd && !walletOriginOk(c)) return c.json({ ok: false, error: 'forbidden' }, 403)
     return c.json({ ok: true, context: config.demo })
   })
 

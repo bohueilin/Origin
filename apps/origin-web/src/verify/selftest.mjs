@@ -19,7 +19,27 @@ function check(name, cond, detail = '') {
   console.log(`${status}  ${name}${detail ? ` — ${detail}` : ''}`)
 }
 
-// ── 0 · Bundled reference check: deterministic config-bound credential bundle
+// ── 0 · Signed browser Action/Run envelope: unpinned and not execution verified
+const actionRun = await makeExample('action-run')
+check('browser policy-evaluation example detects as Action/Run Evidence', detectArtifact(actionRun) === 'action_run_evidence')
+const actionNow = '2026-09-12T00:01:00.000Z'
+const actionRunUntrusted = await verifyArtifact(actionRun, { now: actionNow })
+check('browser policy-evaluation is UNTRUSTED, never execution-verified VALID', !actionRunUntrusted.ok && actionRunUntrusted.verdict === 'UNTRUSTED')
+check('browser policy-evaluation says no provider readback occurred', actionRunUntrusted.lines.some((line) => line.text.includes('no named agent execution, provider confirmation, or provider readback')))
+const actionThumbprint = await keyThumbprint(actionRun.signature.sigil.pubkey_jwk)
+const actionPinned = await verifyArtifact(actionRun, { expectedThumbprints: { 'origin-browser-session': { 1: actionThumbprint } }, now: actionNow })
+check('correct Action/Run key_id + epoch pin makes authentic not_attempted evidence VALID', actionPinned.ok && actionPinned.verdict === 'VALID' && actionPinned.lines.some((line) => line.label === 'issuer pin' && line.text.includes('matches')) && actionPinned.lines.some((line) => line.label === 'execution_verified' && line.text.startsWith('false')))
+const actionWrongSigner = await verifyArtifact(actionRun, { expectedThumbprints: { 'origin-browser-session': { 1: '0'.repeat(64) } }, now: actionNow })
+check('wrong Action/Run signer pin → VOID', !actionWrongSigner.ok && actionWrongSigner.verdict === 'VOID')
+const actionWrongEpochArtifact = structuredClone(actionRun)
+actionWrongEpochArtifact.signature.key_epoch = 2
+const actionWrongEpoch = await verifyArtifact(actionWrongEpochArtifact, { expectedThumbprints: { 'origin-browser-session': { 2: actionThumbprint } }, now: actionNow })
+check('wrong Action/Run key epoch → VOID', !actionWrongEpoch.ok && actionWrongEpoch.verdict === 'VOID')
+const actionRunTampered = tamperArtifact('action_run_evidence', actionRun)
+const actionRunVoid = await verifyArtifact(actionRunTampered.value, { now: actionNow })
+check('Action/Run envelope tamper → VOID', !actionRunVoid.ok && actionRunVoid.verdict === 'VOID', actionRunTampered.note)
+
+// ── 1 · Bundled reference check: deterministic config-bound credential bundle
 const reference = await makeExample('reference')
 check('reference-check example detects as config-bound credential', detectArtifact(reference) === 'credential')
 check('reference-check example is explicitly synthetic sandbox evidence',
@@ -33,7 +53,7 @@ check('reference-check meaningful credential mutation → code 3 VOID', !referen
 const referenceReset = await verifyArtifact(reference)
 check('reference-check pristine value remains VALID after tampering copy', referenceReset.ok && referenceReset.code === 0)
 
-// ── 1 · Sigil: sign → detect → verify 0 → tamper 1 → corrupt 2 → wrong signer 3
+// ── 2 · Sigil: sign → detect → verify 0 → tamper 1 → corrupt 2 → wrong signer 3
 const sigil = await makeExample('sigil')
 check('sigil detect', detectArtifact(sigil) === 'sigil')
 const sv = await verifyArtifact(sigil)

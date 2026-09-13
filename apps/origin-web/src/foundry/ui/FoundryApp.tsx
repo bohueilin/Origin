@@ -1,14 +1,11 @@
-// Origin Foundry — the hero surface. Upload a floor → gemma-4-31b (vision) reads it into
-// a real RL environment → a Planner + Guardian loop on Cerebras proposes and RATIFIES every
-// step → the deterministic oracle scores it → you get a readiness level. The speed race
-// proves it only works at Cerebras tok/s. Every model call is gemma-4-31b on Cerebras; a
-// labeled mock keeps the demo alive offline.
+// Origin Foundry — a trust-layer demo. The public build offers a deterministic,
+// browser-local sample and simulated evaluation. Separately enabled local/backend
+// development can exercise provider-backed proposals after informed consent.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './foundry.css'
 import { FloorGrid } from './FloorGrid'
-import { parseFloor, quorumRun, speedRace, fileToDataUri } from '../foundryClient'
-import { SpeedProofs } from '../soc/SocConsole'
+import { parseFloor, quorumRun, speedRace, fileToDataUri, foundryCapabilities } from '../foundryClient'
 import type { ParseFloorResponse, QuorumRunResponse, SpeedRaceResponse, FoundrySource, QuorumMode } from '../types'
 import { gateParsedFloor, type ParseGateResult } from '../parseGate'
 import { analyzeFloorMargin } from '../../floorMargin'
@@ -239,7 +236,7 @@ function PassportGymCard() {
   )
   const rows: Array<{ label: string; eval: DrawnSiteEval; note: string }> = [
     { label: 'No Passport grant', eval: noGrant, note: 'restricted zone is an absolute policy wall' },
-    { label: `Live ${PASSPORT_ZONE_SCOPE.kind}:${PASSPORT_ZONE_SCOPE.zoneId}`, eval: matchingGrant, note: 'only this zone becomes passable for this agent' },
+    { label: `Simulated ${PASSPORT_ZONE_SCOPE.kind}:${PASSPORT_ZONE_SCOPE.zoneId}`, eval: matchingGrant, note: 'only this modeled zone becomes passable' },
     { label: 'Unrelated grant', eval: unrelatedGrant, note: 'wrong zoneId is not authority' },
     { label: 'Hazard with grant', eval: hazardWithGrant, note: 'authorization never overrides physics' },
   ]
@@ -247,10 +244,10 @@ function PassportGymCard() {
   return (
     <section className="fdy-card fdy-passport-gym">
       <div className="fdy-card__head">
-        <h2>Passport-gated robot task</h2>
+        <h2>Simulated scoped-authority task</h2>
         <p>
-          The robot&apos;s Passport: identity → authority → verified action. A restricted human-only zone refuses by policy until the
-          agent holds a live scoped <code>enter_zone</code> grant for that exact zoneId.
+          Identity → authority → evaluated action. A restricted human-only zone refuses in this deterministic model until the
+          simulated agent receives a scoped <code>enter_zone</code> grant for that exact zoneId.
         </p>
       </div>
       <div className="fdy-passport-gym__grid">
@@ -271,8 +268,8 @@ function PassportGymCard() {
         </div>
       </div>
       <p className="fdy-passport-gym__proof">
-        Capability is not permission: the grant is a deterministic key, not a physics override. Matching authority flips REFUSE → FINISH;
-        an unrelated grant still refuses, and a real hazard still refuses even with the grant.
+        Capability is not permission: the modeled grant is a deterministic input, not a physics override. Matching authority flips REFUSE → FINISH;
+        an unrelated grant still refuses, and a modeled hazard still refuses even with the grant. This is simulation evidence, not a production-autonomy result.
       </p>
     </section>
   )
@@ -288,14 +285,14 @@ function RsiVerifierCard() {
       <div className="fdy-card__head">
         <h2>Gemma proposes. Origin verifies.</h2>
         <p>
-          The RSI loop turns one building map into a battery of deterministic robot scenario tests: Gemma proposes
-          scenario variants, and the oracle — never an LLM judge — recomputes every verdict from geometry, overriding
-          the proposer whenever they disagree.
+          The checked-in demo turns a building map into deterministic simulated scenario tests. A model may propose
+          variants in a separately configured backend; the oracle — never an LLM judge — recomputes every verdict
+          from the declared geometry.
         </p>
       </div>
       <p className="fdy-rsi-card__note">
-        The dashboard labels its data source on every run — a real gemma-4-31b run when a key is present, and a
-        clearly-badged mock otherwise. Whatever the badge says is what the numbers are.
+        The dashboard labels each source. The public build does not trigger a provider run; checked-in or locally
+        produced results must retain their source and simulation labels.
       </p>
       <a className="fdy-btn fdy-btn--primary fdy-rsi-card__link" href="/rsi/rsi_dashboard.html">
         Open the RSI verifier dashboard
@@ -306,11 +303,12 @@ function RsiVerifierCard() {
 
 // ---- Speed race -------------------------------------------------------------
 
-function SpeedRacePanel() {
+function SpeedRacePanel({ enabled }: { enabled: boolean }) {
   const [data, setData] = useState<SpeedRaceResponse | null>(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const run = useCallback(async () => {
+    if (!enabled) return
     setBusy(true)
     setErr(null)
     try {
@@ -320,7 +318,7 @@ function SpeedRacePanel() {
     } finally {
       setBusy(false)
     }
-  }, [])
+  }, [enabled])
 
   const cTok = data?.cerebras.tokS ?? 0
   const bTok = data?.baseline.tokS ?? 0
@@ -329,12 +327,13 @@ function SpeedRacePanel() {
   return (
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
-        <h2>The speed race</h2>
-        <p>Same prompt. gemma-4-31b on Cerebras vs a GPU-class baseline. Per-step verification is only free at the top lane.</p>
+        <h2>Provider speed comparison</h2>
+        <p>A separately configured local backend can compare provider timing. The public Pages build has no browser authority for this operation.</p>
       </div>
-      <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
+      <button className="fdy-btn fdy-btn--primary" onClick={enabled ? run : undefined} disabled={busy || !enabled}>
         {busy ? 'Racing…' : data ? 'Race again' : 'Run the speed race'}
       </button>
+      {!enabled && <p className="fdy-lane__note">Speed comparison: local/backend demo only.</p>}
       {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
       {data && (
         <div className="fdy-race__lanes">
@@ -357,14 +356,14 @@ function SpeedRacePanel() {
               <p className="fdy-lane__preview">{lane.preview}</p>
             </div>
           ))}
-          {data.speedup && <div className="fdy-race__verdict">Cerebras is ~{data.speedup}× faster — fast enough to verify every step.</div>}
+          {data.speedup && <div className="fdy-race__verdict">Observed local-demo result: Cerebras reported ~{data.speedup}× the baseline throughput for this request.</div>}
         </div>
       )}
     </section>
   )
 }
 
-// ---- Training (armed; flagged as a small, honest trend) ---------------------
+// ---- Illustrative learning curve (pure local replay) -------------------------
 
 const MOCK_CURVE = [
   { step: 0, reward: 0.18, far: 0.42 },
@@ -402,16 +401,16 @@ function TrainingPanel() {
   return (
     <section className="fdy-card fdy-train">
       <div className="fdy-card__head">
-        <h2>Train in your floor</h2>
+        <h2>Inspect an illustrative learning curve</h2>
         <p>
-          The reward is the deterministic safety oracle, so cheating the metric earns the policy nothing: a verified-unsafe plan scores zero. This button replays a recorded illustrative trend
-          and starts no training run. The wiring it illustrates (Fireworks RFT, rollouts on Modal) lives in services/foundry-train.
+          This checked-in series illustrates how deterministic verifier scores could be tracked during experimentation.
+          The button replays fixed local points; it starts no training run and is not evidence of a trained or deployed robot policy.
         </p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={start}>
         {run ? 'Showing the trend…' : 'Show the training trend'}
       </button>
-      <span className="fdy-flag">armed · pipeline in services/foundry-train (Fireworks + Modal)</span>
+      <span className="fdy-flag">illustrative replay · no training job</span>
       <svg viewBox={`0 0 ${W} ${H}`} className="fdy-curve" role="img" aria-label="Reward and false-accept-rate over training steps">
         <line x1={0} y1={H} x2={W} y2={H} stroke="var(--fg-grid)" />
         <path d={line((p) => p.reward)} fill="none" stroke="var(--fg-pos)" strokeWidth={2.5} />
@@ -421,7 +420,7 @@ function TrainingPanel() {
         <span><i style={{ background: 'var(--fg-pos)' }} /> reward ↑</span>
         <span><i style={{ background: 'var(--fg-neg)' }} /> false-accept rate ↓</span>
       </div>
-      <p className="fdy-train__caption">Illustrative trend — not a live run. The wired RFT pipeline (reward = the deterministic oracle) lives in <code>services/foundry-train</code>.</p>
+      <p className="fdy-train__caption">Illustrative fixed data — not a live run, trained policy, or production validation.</p>
     </section>
   )
 }
@@ -461,7 +460,10 @@ export default function FoundryApp() {
   const [revealed, setRevealed] = useState(0)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [uploadConsent, setUploadConsent] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const uploadUxEnabled = import.meta.env.VITE_FOUNDRY_UPLOADS_ENABLED === 'true'
+  const uploadAvailable = uploadUxEnabled && foundryCapabilities.browserExternalParse && uploadConsent
 
   const doParse = useCallback(async (imageDataUri?: string, hint?: string) => {
     setParsing(true)
@@ -469,29 +471,35 @@ export default function FoundryApp() {
     setRevealed(0)
     setApiError(null)
     try {
-      setParse(await parseFloor({ imageDataUri, hint }))
+      setParse(await parseFloor({ imageDataUri, hint, uploadConsent }))
     } catch (e) {
       setApiError(e instanceof Error ? e.message : 'Parse failed.')
     } finally {
       setParsing(false)
     }
-  }, [])
+  }, [uploadConsent])
 
   const onUpload = useCallback(
     async (file: File) => {
       setUploadError(null)
       try {
+        if (!uploadUxEnabled || !foundryCapabilities.browserExternalParse || !uploadConsent) throw new Error('External parsing is local/backend demo only and requires consent.')
         const uri = await fileToDataUri(file)
         await doParse(uri, file.name)
       } catch (e) {
         setUploadError(e instanceof Error ? e.message : 'Could not read that image.')
       }
     },
-    [doParse],
+    [doParse, uploadConsent, uploadUxEnabled],
   )
 
+  const openUploadChooser = useCallback(() => {
+    if (!uploadAvailable) return
+    fileRef.current?.click()
+  }, [uploadAvailable])
+
   const runLoop = useCallback(async () => {
-    if (!parse?.siteMap) return
+    if (!parse?.siteMap || !foundryCapabilities.browserQuorum) return
     setRunning(true)
     setRevealed(0)
     setApiError(null)
@@ -535,15 +543,15 @@ export default function FoundryApp() {
   return (
     <div className="fdy">
       <header className="fdy-hero">
-        <div className="fdy-hero__eyebrow">Origin Foundry · powered by gemma-4-31b on Cerebras</div>
+        <div className="fdy-hero__eyebrow">Origin Foundry · deterministic simulated evaluation</div>
         <h1>
-          Upload a floor plan.<br />
-          Get a robot policy that <span className="fdy-hero__mark">earns nothing for cheating</span>.
+          Inspect a proposed floor map.<br />
+          Let a deterministic verifier <span className="fdy-hero__mark">decide what counts</span>.
         </h1>
         <p className="fdy-hero__sub">
-          gemma-4-31b reads your floor into a real simulation. A Planner proposes every move and a Guardian ratifies it — dozens of
-          perceive→plan→verify cycles per second, only possible at ~1,500 tok/s. The judge of "did it do the job within policy" is a deterministic
-          oracle, never an LLM.
+          The public page uses a labeled browser-local sample. In a separately enabled local/backend demo, Cerebras may propose a floor map
+          after affirmative consent. A deterministic oracle then evaluates simulated paths under the declared model—never an LLM grading an LLM.
+          This is not robot training, deployment, execution, certification, or real-world safety validation.
         </p>
       </header>
 
@@ -553,7 +561,7 @@ export default function FoundryApp() {
         </div>
       )}
 
-      <SpeedRacePanel />
+      <SpeedRacePanel enabled={foundryCapabilities.browserSpeed} />
       <PassportGymCard />
       <RsiVerifierCard />
 
@@ -562,30 +570,36 @@ export default function FoundryApp() {
         <div className="fdy-card__head">
           <h2>1 · Read the floor</h2>
           <p>
-            Snap a photo or use the sample. gemma-4-31b's vision proposes a grid; a deterministic gate judges it before
-            anything trusts it — an unsupported proposal is <em>voided</em>, never repaired into something plausible.
+            Use the local sample, or—only in a separately enabled local/backend demo—consent to external image processing.
+            A model-proposed grid is judged by a deterministic gate before the simulation uses it; unsupported proposals are <em>voided</em>.
           </p>
           <PerceiverResultStrip />
           <GateBenchStrip />
         </div>
+        <label className="fdy-consent">
+          <input type="checkbox" checked={uploadConsent} onChange={(e) => setUploadConsent(e.target.checked)} />
+          I understand a selected image would leave this browser for Cerebras. Origin handler code does not intentionally persist it; do not upload personal, confidential, regulated, or customer data. <a href="/legal/privacy-policy.html">Privacy</a>
+        </label>
         <div className="fdy-actions">
           <input
             ref={fileRef}
             type="file"
             accept="image/png,image/jpeg"
             hidden
-            onChange={(e) => {
+            disabled={!uploadAvailable}
+            onChange={uploadAvailable ? (e) => {
               const f = e.target.files?.[0]
               if (f) void onUpload(f)
-            }}
+            } : undefined}
           />
-          <button className="fdy-btn fdy-btn--primary" onClick={() => fileRef.current?.click()} disabled={parsing} aria-label="Upload a floor image (PNG or JPEG, under 7MB)">
+          <button className="fdy-btn fdy-btn--primary" onClick={uploadAvailable ? openUploadChooser : undefined} disabled={parsing || !uploadAvailable} aria-label="Upload a floor image (PNG or JPEG, under 7MB)">
             {parsing ? 'Reading…' : 'Upload a floor image'}
           </button>
           <button className="fdy-btn" onClick={() => void doParse(undefined, 'sample')} disabled={parsing}>
             Use the sample floor
           </button>
         </div>
+        {(!uploadUxEnabled || !foundryCapabilities.browserExternalParse) && <p className="fdy-upload-error">External parse, quorum, and speed are local/backend demo only.</p>}
         {uploadError && <p className="fdy-upload-error" role="alert">{uploadError}</p>}
 
         {/* An upload that could not be parsed is REFUSED with the reason — the
@@ -672,8 +686,8 @@ export default function FoundryApp() {
       {parse?.siteMap && (
         <section className="fdy-card">
           <div className="fdy-card__head">
-            <h2>2 · Watch it think — then prove it's safe</h2>
-            <p>The Planner and Guardian are both gemma-4-31b. Run the verified policy, or the reckless one to watch the Guardian veto an unsafe move.</p>
+            <h2>2 · Inspect a simulated proposal-and-check loop</h2>
+            <p>A local backend can ask a Planner and Guardian to propose simulated actions; the deterministic oracle remains the label authority. The public build does not run this provider loop.</p>
           </div>
           <div className="fdy-modes">
             <button className={`fdy-pill${mode === 'verified' ? ' is-on' : ''}`} aria-pressed={mode === 'verified'} onClick={() => setMode('verified')}>
@@ -682,9 +696,10 @@ export default function FoundryApp() {
             <button className={`fdy-pill${mode === 'reckless' ? ' is-on' : ''}`} aria-pressed={mode === 'reckless'} onClick={() => setMode('reckless')}>
               Reckless (reward-hacker)
             </button>
-            <button className="fdy-btn fdy-btn--primary" onClick={runLoop} disabled={running}>
+            <button className="fdy-btn fdy-btn--primary" onClick={foundryCapabilities.browserQuorum ? runLoop : undefined} disabled={running || !foundryCapabilities.browserQuorum}>
               {running ? 'Running the loop…' : 'Run the Quorum loop'}
             </button>
+            {!foundryCapabilities.browserQuorum && <span className="fdy-lane__note">Quorum: local/backend demo only.</span>}
           </div>
 
           {quorum && (
@@ -725,19 +740,16 @@ export default function FoundryApp() {
       <TrainingPanel />
 
       <header className="fdy-hero" style={{ paddingBottom: 0 }}>
-        <div className="fdy-hero__eyebrow">Why a robot brain only works at Cerebras speed</div>
+        <div className="fdy-hero__eyebrow">Evidence boundary</div>
         <p className="fdy-hero__sub">
-          A robot brain is a perceive → plan → <strong>verify</strong> loop too — and a Guardian on every motor command is only affordable
-          if inference is nearly free. These are Origin&rsquo;s live Cerebras-vs-GPU proofs, measured on the same autonomy engine that scores your floor.
+          Model capability can propose; it cannot authorize. The environment executes only within its lane, the deterministic verifier evaluates,
+          the gate decides, and the trace records the result. Simulation evidence does not establish physical-system safety or deployment readiness.
         </p>
       </header>
 
-      <SpeedProofs />
-
       <p className="fdy-brainline">
-        This is the robot's <strong>brain</strong>, not a maze toy: swap the floor photo for a camera feed and <code>move:east</code> for a motor
-        command — the gemma-4-31b perception, the Quorum gate, and the deterministic oracle don't change. We built the robot-ready brain; GPU latency
-        is what would break the verify-every-step loop.
+        The checked-in demo uses route-summary and map-derived features, not raw end-to-end perception. Its deterministic simulated evaluation is
+        not robot training, deployment, or execution, and must not be used as a production-autonomy or robot-certification claim.
       </p>
 
       <footer className="fdy-foot">

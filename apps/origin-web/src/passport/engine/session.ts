@@ -35,6 +35,7 @@ import { GrantManager } from './grantManager'
 import { Planner } from './planner'
 import { AuditLogger } from './auditLogger'
 import { ApprovalManager } from './approvalManager'
+import { KillSwitchRegistry, type KillSwitchContext, type KillSwitchRecord } from './killSwitch'
 import { ToolRouter } from './toolRouter'
 import { RevocationManager } from './revocationManager'
 import { IntentMonitor, type ConformanceCheck } from './intentMonitor'
@@ -104,6 +105,8 @@ export interface SessionOptions {
   /** Milliseconds to pause between collaboration beats so the demo plays out live.
    *  0 (the default) runs instantly — used by tests. */
   pace?: number
+  /** Optional deployment identities for scoped emergency stops. */
+  killContext?: KillSwitchContext
 }
 
 export class PassportSession {
@@ -119,6 +122,8 @@ export class PassportSession {
   private audit!: AuditLogger
   private approvals!: ApprovalManager
   private router!: ToolRouter
+  private readonly killSwitch = new KillSwitchRegistry()
+  private killContext: KillSwitchContext
   private monitor!: IntentMonitor
   private delegationTree!: DelegationTree
   private accessLedger!: AccessLedger
@@ -151,6 +156,15 @@ export class PassportSession {
     this.brokerExplicit = Boolean(opts.broker)
     this.agentId = opts.agentId ?? 'agent://personal-assistant'
     this.pace = Math.max(0, opts.pace ?? 0)
+    this.killContext = { ...opts.killContext }
+  }
+
+  activateKillSwitch(record: Omit<KillSwitchRecord, 'active'>): KillSwitchRecord {
+    return this.killSwitch.activate(record)
+  }
+
+  deactivateKillSwitch(record: Omit<KillSwitchRecord, 'active'>): KillSwitchRecord | undefined {
+    return this.killSwitch.deactivate(record)
   }
 
   // --- collaboration helpers ----------------------------------------------
@@ -222,7 +236,7 @@ export class PassportSession {
       this.idf,
       t,
     )
-    this.router = new ToolRouter(this.grant, this.audit, this.idf, this.now)
+    this.router = new ToolRouter(this.grant, this.audit, this.idf, this.now, { approvals: this.approvals, killSwitch: this.killSwitch, killContext: () => ({ ...this.killContext, agent_id: this.grant.agent_id, session_id: this.intent.intent_id }) })
     this.plan = Planner.build(this.scenario, this.intent, risk.notes, this.idf)
     this.prevented = [...this.scenario.prevented]
     this.initRoster()
@@ -375,7 +389,23 @@ export class PassportSession {
 
       // approval gate — the worker prepared a sensitive action; Passport escalates it to You.
       const gateWorker = workerForTool(spec.commitTool)
-      const packet = this.approvals.create(spec.packet, this.intent, spec.commitTool, spec.commitInput)
+      let packet: ApprovalPacket
+      try {
+        packet = this.approvals.create(spec.packet, this.intent, spec.commitTool, spec.commitInput)
+      } catch {
+        this.audit.append({ actor: 'passport', kind: 'approval.input_invalid', summary: `Blocked malformed input for ${spec.commitTool}.`, decision: 'deny', capability: spec.packet.capability })
+        step.status = 'blocked'
+        step.output_summary = 'blocked — malformed approval input'
+        this.prevented.push(`Blocked malformed input for "${spec.packet.action_type}".`)
+        this.setAgent(gateWorker.id, 'idle')
+        this.setAgent('passport', 'idle')
+        this.activeAgentId = null
+        this.activePhase = null
+        this.cursor++
+        this.emit()
+        await this.beat(0.6)
+        continue
+      }
       step.approval_ref = packet.approval_id
       step.status = 'awaiting_approval'
       this.setAgent(gateWorker.id, 'waiting')
@@ -597,17 +627,16 @@ export class PassportSession {
         this.emit()
         return
       }
-      if (call.status === 'ok') {
+      if (call.status === 'simulated' || call.status === 'claimed') {
         if (packet.estimated_cost) this.approvedSpend += packet.estimated_cost.amount
-        this.approvals.consume(packet.approval_id) // one-shot: the approval is now spent
-        this.say(worker.id, 'orchestrator', result?.summary ?? 'done (simulated)', 'result')
+        this.say(worker.id, 'orchestrator', result?.summary ?? `done (${call.status})`, 'result')
         this.setAgent(worker.id, 'done')
       }
       this.setAgent('passport', 'idle')
       this.activeAgentId = null
       this.activePhase = null
       if (step) {
-        step.status = call.status === 'ok' ? 'done' : 'blocked'
+        step.status = call.status === 'simulated' || call.status === 'claimed' ? 'done' : 'blocked'
         step.output_summary = result?.summary ?? call.output_summary
       }
       if (result) this.results[packet.tool_name] = result
@@ -691,38 +720,45 @@ export class PassportSession {
     for (const fn of this.listeners) fn()
   }
 
+  private snapshotView(): PassportSnapshot {
+    const view = structuredClone(this.snapshot!) as PassportSnapshot
+    // AuditLogger already returns a frozen, authority-free trace; preserve that API contract.
+    view.audit = this.snapshot!.audit
+    return view
+  }
+
   getState(): PassportSnapshot {
-    if (this.snapshot) return this.snapshot
+    if (this.snapshot) return this.snapshotView()
     RevocationManager.reconcileExpiry(this.grant, this.now())
     this.approvals.expireDue()
     const pending = this.approvals.packets.find((p) => p.status === 'pending')
     this.snapshot = {
       scenario: { id: this.scenario.id, title: this.scenario.title, tagline: this.scenario.tagline },
       status: this.status,
-      intent: this.intent,
-      grant: this.grant,
-      plan: this.plan,
-      toolCalls: this.toolCalls,
+      intent: structuredClone(this.intent),
+      grant: structuredClone(this.grant),
+      plan: structuredClone(this.plan),
+      toolCalls: structuredClone(this.toolCalls),
       approvals: this.approvals.packets,
       audit: this.audit.trace(this.intent.intent_id),
-      itinerary: this.itinerary,
-      prevented: this.prevented,
-      results: this.results,
+      itinerary: structuredClone(this.itinerary),
+      prevented: structuredClone(this.prevented),
+      results: structuredClone(this.results),
       brokerId: this.broker.id,
       pendingApprovalId: pending?.approval_id ?? null,
-      agents: [...this.agentState.values()],
-      collab: this.collab,
+      agents: structuredClone([...this.agentState.values()]),
+      collab: structuredClone(this.collab),
       activeAgentId: this.activeAgentId,
       activePhase: this.activePhase,
       conformance: {
         intent: this.intent.normalized_intent,
         envelope: this.monitor.envelope,
         state: this.conformanceState,
-        checks: this.conformanceChecks,
+        checks: structuredClone(this.conformanceChecks),
       },
-      delegation: this.delegationTree,
-      ledger: this.accessLedger.view(this.now(), this.grant.status),
+      delegation: structuredClone(this.delegationTree),
+      ledger: structuredClone(this.accessLedger.view(this.now(), this.grant.status)),
     }
-    return this.snapshot
+    return this.snapshotView()
   }
 }

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { verifyEpisode } from '@origin/evidence/env-evidence'
 import { scoreReward, scoreDeterministic, classifyHack, clampShaper } from './reward-module.ts'
 import { goldSuite, exploitSuite } from './exploit-suite.ts'
@@ -10,7 +10,7 @@ import { goldSuite, exploitSuite } from './exploit-suite.ts'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const load = (p: string) => JSON.parse(readFileSync(resolve(HERE, '../docs/examples', p), 'utf8'))
 const scoreFn = (task, actions) => scoreReward(task, actions, { policy: 'test' })
-const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
+const licenseFn = (v) => computeLicenseFromVerdictsForPolicyVersion(v, '1.0.0').level.id
 
 describe('reward module (P5) — deterministic core + reward-hack mitigations', () => {
   it('the clamp shaper maps NaN/Infinity → 0 and clamps to [0,1]', () => {

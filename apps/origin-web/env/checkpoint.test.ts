@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { initialWarehouseState, applyWarehouseAction } from '../src/warehouse.ts'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { chainEpisode, verifyEpisode } from '@origin/evidence/env-evidence'
 import { makeCheckpoint, resumeEpisode, ResumeError, verifyCheckpoint, checkpointBindsEpisode, actionsFromSteps } from '@origin/verifier-core/checkpoint'
 import { scoreReward } from './reward-module.ts'
@@ -11,7 +11,7 @@ import { scoreReward } from './reward-module.ts'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const load = (p: string) => JSON.parse(readFileSync(resolve(HERE, '../docs/examples', p), 'utf8'))
 const scoreFn = (t, a) => scoreReward(t, a, { policy: 'test' })
-const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
+const licenseFn = (v) => computeLicenseFromVerdictsForPolicyVersion(v, '1.0.0').level.id
 
 // reconstruct header + steps + the checkpoint fixtures from the committed gold episode.
 function fixtures() {

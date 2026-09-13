@@ -10,6 +10,10 @@
       "types": "./sigil.d.mts",
       "default": "./sigil.mjs"
     },
+    "./action-run-evidence": {
+      "types": "./action-run-evidence.d.mts",
+      "default": "./action-run-evidence.mjs"
+    },
     "./merkleBatch": {
       "types": "./merkleBatch.d.mts",
       "default": "./merkleBatch.mjs"

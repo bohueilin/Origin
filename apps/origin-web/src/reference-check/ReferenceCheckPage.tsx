@@ -1,21 +1,22 @@
-// The buyer reference-check flow — a real product surface, not a fixed demo.
-// A buyer picks a scenario (a customer-support agent by default, or the IAM least-privilege
-// gym), describes their agent (config, bound into the attestation), declares a policy, and
-// runs it through the deterministic oracle. They get: a Verified Readiness Level, the
-// before/after lift, a per-decision breakdown that shows exactly where the policy over-grants,
-// a signed Origin Attestation they download and re-verify offline on /verify — and a one-click
-// "drift" demonstration proving the attestation voids the moment a tool/permission changes.
+// The buyer reference-check flow is a browser-only synthetic policy evaluation.
+// A buyer picks a scenario (a customer-support or IAM least-privilege gym), declares an
+// agent configuration and policy, and evaluates that POLICY against the deterministic
+// battery. The named agent is not contacted or executed. The downloaded Action/Run envelope
+// is signed for tamper evidence, is deliberately unpinned, and carries not_attempted rather
+// than provider-confirmed execution.
 //
 // The deterministic oracle is the only label authority (never an LLM). A verdict means
 // reproducible least-privilege behavior under THIS verifier + THIS config — never "safe". The
-// signing key is generated in-session for offline integrity; production issues under Origin's
-// pinned issuer key.
+// browser-session signing key proves only that the downloaded envelope was not altered after it
+// was made; it is unpinned and cannot grant deployment authority.
 import { useMemo, useState } from 'react'
 import { issueIamReferenceCheck, iamTasks, iamOracle, verifyIamDecision, iamEnvDigest, IAM_VERSIONS } from '@origin/verifier-core/iamGym'
 import { issueSupportReferenceCheck, supportTasks, supportOracle, verifySupportDecision, supportEnvDigest, SUPPORT_VERSIONS } from '@origin/verifier-core/supportGym'
 import { verifyCredential, type CrucibleCredential } from '@origin/verifier-core/crucible'
-import { generateSigningKey, signSigil, keyThumbprint } from '@origin/verifier-core/sigil'
+import { generateSigningKey, keyThumbprint } from '@origin/verifier-core/sigil'
+import { signActionRunEvidence } from '@origin/verifier-core/action-run-evidence'
 import { computeLicenseFromVerdicts, type LicenseVerdict } from '../license'
+import { buildSyntheticReferenceCheckEvidence } from './evidence'
 import {
   PRESETS, policyForSpec, type PolicySpec, type Decision, type Classification,
   SUPPORT_PRESETS, supportPolicyForSpec, type SupportPolicySpec,
@@ -29,18 +30,18 @@ const short = (s: string) => (s ? `${s.slice(0, 10)}…` : '')
 
 // Each Verified Readiness Level maps to a concrete operational decision — not just a score.
 const VRL_DECISIONS: Record<string, { scope: string; approval: string; monitoring: string; voids: string }> = {
-  L0: { scope: 'Observe only — no side effects', approval: 'every action', monitoring: 'full', voids: 'any grant' },
-  L1: { scope: 'Read-only / low-sensitivity', approval: 'all side effects', monitoring: 'full', voids: 'any over-grant' },
-  L2: { scope: 'In-scope medium; commits approval-gated', approval: 'high-value + tainted', monitoring: 'on', voids: 'config or policy drift' },
-  L3: { scope: 'In-scope incl. high; no catastrophic', approval: 'catastrophic only', monitoring: 'sampled', voids: 'model / tools / env drift' },
-  L4: { scope: 'Full in-scope autonomy', approval: 'none within scope', monitoring: 'audit', voids: 'any drift' },
+  L0: { scope: 'Illustrative posture: observe-only', approval: 'illustrative: every proposed action', monitoring: 'illustrative: full', voids: 'declared config or selected policy changes' },
+  L1: { scope: 'Illustrative posture: read-only / low-sensitivity', approval: 'illustrative: all side effects', monitoring: 'illustrative: full', voids: 'declared config or selected policy changes' },
+  L2: { scope: 'Illustrative posture: medium-sensitivity with approval gates', approval: 'illustrative: high-value + tainted', monitoring: 'illustrative: on', voids: 'declared config or selected policy changes' },
+  L3: { scope: 'Illustrative posture: high-sensitivity with catastrophic checks', approval: 'illustrative: catastrophic cases', monitoring: 'illustrative: sampled', voids: 'declared config or selected policy changes' },
+  L4: { scope: 'Illustrative posture: broad in-scope policy coverage', approval: 'illustrative: none within a hypothetical scope', monitoring: 'illustrative: audit', voids: 'declared config or selected policy changes' },
 }
 
 interface RowResult { id: string; label: string; sub: string; yours: Decision; oracle: Decision; passed: boolean; catastrophic: boolean }
 interface RunResult {
   scenario: Scenario; level: string; passRate: number; coldPassRate: number; lift: number; catastrophic: number
   configDigest: string; rows: RowResult[]; credential: CrucibleCredential; reVerifyCode: number
-  sigil: unknown; sigilThumbprint: string; driftCode: number | null
+  evidence: unknown; sigilThumbprint: string; driftCode: number | null
 }
 
 export function ReferenceCheckPage() {
@@ -82,6 +83,8 @@ export function ReferenceCheckPage() {
       let r: { credential: CrucibleCredential; catastrophic: number }
       let envDigest: string
       let versions: { verifier_version: string; reward_model_version: string }
+      let battery: ReadonlyArray<{ id: string }>
+      let selectedPolicy: object
 
       if (scenario === 'support') {
         const policyFor = supportPolicyForSpec(supSpec)
@@ -93,6 +96,8 @@ export function ReferenceCheckPage() {
         })
         r = issueSupportReferenceCheck({ agentConfig, policyFor, computeLevel, issuedAt: null })
         envDigest = supportEnvDigest(); versions = SUPPORT_VERSIONS
+        battery = supportTasks
+        selectedPolicy = supSpec
       } else {
         const policyFor = policyForSpec(iamSpec)
         rows = iamTasks.map((task) => {
@@ -102,16 +107,26 @@ export function ReferenceCheckPage() {
         })
         r = issueIamReferenceCheck({ agentConfig, policyFor, computeLevel, issuedAt: null })
         envDigest = iamEnvDigest(); versions = IAM_VERSIONS
+        battery = iamTasks
+        selectedPolicy = iamSpec
       }
 
       const rv = verifyCredential({ credential: r.credential, liveConfig: agentConfig, envBundleDigest: envDigest, versions })
+      const issuedAt = new Date().toISOString()
       const keyPair = await generateSigningKey()
-      const sigil = await signSigil(r.credential, keyPair, { issuer: 'origin-reference-check', kind: 'credential' })
-      const thumb = await keyThumbprint(sigil.pubkey_jwk)
+      const unsignedEvidence = buildSyntheticReferenceCheckEvidence({
+        evidenceId: crypto.randomUUID(), issuedAt, maxAgeMs: 24 * 60 * 60 * 1000, scenario,
+        declaredConfig: agentConfig, selectedPolicy, battery, rows,
+        environmentDigest: envDigest, evaluatorVersion: versions.reward_model_version, verifierVersion: versions.verifier_version,
+      })
+      const evidence = await signActionRunEvidence(unsignedEvidence, keyPair, {
+        keyId: 'origin-browser-session', keyEpoch: 1, issuer: 'origin-reference-check-session', signedAt: issuedAt,
+      })
+      const thumb = await keyThumbprint(evidence.signature.sigil.pubkey_jwk)
       setResult({
         scenario, level: r.credential.rsl_level as string, passRate: r.credential.pass_rate as number, coldPassRate: r.credential.cold_pass_rate as number,
         lift: r.credential.lift as number, catastrophic: r.catastrophic, configDigest: r.credential.config_digest as string,
-        rows, credential: r.credential, reVerifyCode: rv.code, sigil, sigilThumbprint: thumb, driftCode: null,
+        rows, credential: r.credential, reVerifyCode: rv.code, evidence, sigilThumbprint: thumb, driftCode: null,
       })
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
@@ -120,7 +135,7 @@ export function ReferenceCheckPage() {
     }
   }
 
-  // The differentiated moment: change a tool and the attestation instantly voids.
+  // The legacy configuration-binding demonstration remains available alongside the new envelope.
   const simulateDrift = () => {
     if (!result) return
     const drifted = { ...agentConfig, tools: [...agentConfig.tools, 'payments.transfer'] }
@@ -143,7 +158,7 @@ export function ReferenceCheckPage() {
   return (
     <div className="rc-grid">
       <p className="rc-hint">
-        This is the implemented synthetic pre-access check. <a href="/reference-check-vs-runtime">See how it differs from proposed runtime enforcement →</a>
+        This is a browser-only synthetic policy evaluation. It evaluates the selected policy against a fixed deterministic battery; it does not contact or execute the named agent. <a href="/reference-check-vs-runtime">See how it differs from proposed runtime enforcement →</a>
       </p>
       {/* Scenario switch */}
       <div className="rc-scenarios">
@@ -158,7 +173,7 @@ export function ReferenceCheckPage() {
       {/* 1 · agent */}
       <div className="rc-card">
         <p className="rc-step">1 · Your agent</p>
-        <p className="rc-hint">These values are hashed into the attestation — change the model, tools, context, or harness later and it <b>voids</b> (an attestation can’t be carried onto a different agent).</p>
+        <p className="rc-hint">These declared configuration values are hashed into the synthetic evidence. Changing them changes the policy-evaluation input; this browser check does not contact, inspect, or execute the named agent.</p>
         <div className="rc-fields">
           <label className="rc-field"><span>Model</span><input value={agent.model} onChange={(e) => setAgent({ ...agent, model: e.target.value })} /></label>
           <label className="rc-field"><span>Tools (comma-separated)</span><input value={agent.tools} onChange={(e) => setAgent({ ...agent, tools: e.target.value })} /></label>
@@ -217,18 +232,18 @@ export function ReferenceCheckPage() {
           <p className="rc-step">3 · Your reference check</p>
           <div className={`rc-verdict ${verdictClass}`} role="status" aria-live="polite">
             <b>{result.level}</b>
-            <span>Verified Readiness Level</span>
+            <span>Synthetic battery readiness sample</span>
             <span className="rc-verdict__meta">passed {Math.round(result.passRate * 100)}% · unbounded baseline {Math.round(result.coldPassRate * 100)}% · lift +{Math.round(result.lift * 100)}% · config {short(result.configDigest)}</span>
           </div>
           {result.catastrophic > 0 ? (
             <p className="rc-hint rc-hint--warn"><b>{result.catastrophic} catastrophic over-grant{result.catastrophic > 1 ? 's' : ''}</b> — your policy allowed an action the oracle refuses (PII / destructive / fraud-flagged / approval-gated). A single catastrophic over-grant caps the level: the right to act can’t be averaged back.</p>
           ) : (
-            <p className="rc-hint">No catastrophic over-grants — the attestation re-verified independently{result.reVerifyCode === 0 ? ' (code 0)' : ` (code ${result.reVerifyCode})`}.</p>
+            <p className="rc-hint">No catastrophic over-grants in this fixed battery — the legacy configuration-bound credential re-verified locally{result.reVerifyCode === 0 ? ' (code 0)' : ` (code ${result.reVerifyCode})`}. This is not evidence that the named agent executed.</p>
           )}
 
           {/* what this level actually permits */}
           {VRL_DECISIONS[result.level] ? (
-            <p className="rc-hint"><b>What {result.level} permits:</b> {VRL_DECISIONS[result.level].scope}. Human approval on {VRL_DECISIONS[result.level].approval}; monitoring {VRL_DECISIONS[result.level].monitoring}; <b>voids on</b> {VRL_DECISIONS[result.level].voids}.</p>
+            <p className="rc-hint"><b>Illustrative posture associated with {result.level}:</b> {VRL_DECISIONS[result.level].scope}. Human approval on {VRL_DECISIONS[result.level].approval}; monitoring {VRL_DECISIONS[result.level].monitoring}; <b>input changes:</b> {VRL_DECISIONS[result.level].voids}. It is not a permission grant or deployment authorization.</p>
           ) : null}
 
           {/* tabindex/role: a horizontally scrollable region must be reachable by
@@ -250,7 +265,7 @@ export function ReferenceCheckPage() {
           {/* 4 · evidence + drift */}
           <p className="rc-step" style={{ marginTop: 26 }}>4 · Take the evidence — and watch it expire</p>
           <div className="rc-actions">
-            <button className="btn btn--primary btn--sm" onClick={() => download(result.sigil, 'reference-check.attestation.json')}>Download the Origin Attestation</button>
+            <button className="btn btn--primary btn--sm" onClick={() => download(result.evidence, 'reference-check.policy-evaluation.json')}>Download signed policy-evaluation evidence</button>
             <a className="btn btn--ghost btn--sm" href="/verify">Re-verify it on /verify →</a>
             <button className="btn btn--ghost btn--sm" onClick={simulateDrift}>Change a tool → watch it void</button>
           </div>
@@ -262,15 +277,15 @@ export function ReferenceCheckPage() {
             </p>
           ) : null}
           <p className="rc-hint">
-            The attestation is signed with an in-session key (thumbprint <code>{short(result.sigilThumbprint)}</code>) for offline integrity — paste the downloaded file into <a href="/verify">/verify</a> and it re-checks in your browser: green means reproducible under this verifier + config, tamper any field and it goes VOID. <b>Production issues under Origin’s pinned issuer key.</b> Synthetic pilot battery; real design-partner evidence stays blocked until authorized.
+            This browser-generated synthetic demo credential is an Action/Run envelope signed with a browser-session key (thumbprint <code>{short(result.sigilThumbprint)}</code>) for tamper evidence only. Paste it into <a href="/verify">/verify</a>: it correctly renders <b>UNTRUSTED</b> because this ephemeral key is not issuer-pinned, and <b>not attempted</b> because no named agent ran and no provider confirmed an effect. Tampering any field makes it VOID. Synthetic pilot battery; real design-partner evidence stays blocked until authorized.
           </p>
         </div>
       ) : null}
 
       {/* Book */}
       <div className="rc-card rc-card--cta">
-        <p className="rc-step">Want a reference check on your real agent?</p>
-        <p className="rc-hint">This runs Origin’s synthetic battery. To check your actual agent against your own policy and environment — as a design partner — book an evidence review.</p>
+        <p className="rc-step">Need an authorized evaluation beyond this browser demo?</p>
+        <p className="rc-hint">This page only evaluates a selected policy against Origin’s synthetic battery. A design-partner evidence review can scope whether any authorized evaluation of an actual agent is appropriate.</p>
         <div className="rc-actions"><a className="btn btn--ghost" href="/#contact" data-analytics="refcheck_book_click">Book an evidence review</a></div>
       </div>
     </div>

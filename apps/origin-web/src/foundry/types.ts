@@ -1,11 +1,9 @@
 // ----------------------------------------------------------------------------
 // Origin Foundry — shared request/response contracts (server ↔ client).
 //
-// Foundry turns a floor plan into a trained, reward-hardened robot policy:
-//   1. parse-floor : gemma-4-31b (vision) reads a floor image → DescriptiveSiteMap
-//   2. quorum-run  : a Planner + Guardian loop on gemma-4-31b proposes & RATIFIES
-//                    every step, scored by the deterministic oracle (never an LLM)
-//   3. speed-race  : gemma-4-31b on Cerebras vs a GPU baseline, real tok/s on screen
+// Foundry carries model-proposed maps and simulated action proposals through a
+// deterministic verifier. Provider-backed operations are local/backend demo
+// capabilities, not public browser authority or physical execution.
 // These types are the single source of truth for both the Hono routes and the React UI.
 // ----------------------------------------------------------------------------
 
@@ -30,7 +28,7 @@ export interface FoundryTiming {
  * sample is fine). Every other reason means an image WAS uploaded and the parse was
  * REFUSED (ok:false, siteMap:null): a sample floor never impersonates a parse.
  */
-export type ParseFallbackReason = 'no_image' | 'no_key' | 'bad_image' | 'oversize' | 'api_error' | 'bad_json'
+export type ParseFallbackReason = 'no_image' | 'external_parse_disabled' | 'consent_required' | 'rate_limited' | 'no_key' | 'bad_image' | 'oversize' | 'api_error' | 'bad_json'
 
 export interface ParseFloorResponse {
   ok: boolean

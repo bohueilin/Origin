@@ -13,9 +13,11 @@ const config: AppConfig = {
   nebius: {},
   insforge: {},
   minimax: {},
-  cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1' }, // no apiKey → mock path
+  cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1', externalEnabled: false }, // no apiKey → mock path
   gemini: { model: 'gemini-2.0-flash', baseUrl: 'https://example.test/v1' },
   episodeSecret: 'foundry-test-secret',
+  serviceAuthToken: undefined,
+  vapiWebhookSecret: undefined,
   warnings: [],
 }
 
@@ -46,7 +48,15 @@ describe('POST /api/foundry/parse-floor', () => {
   })
 
   it('an uploaded image with no key is REFUSED — no sample impersonates the parse', async () => {
-    const res = await post('/api/foundry/parse-floor', { imageDataUri: 'data:image/png;base64,AAAA' })
+    const parserEnabledApp = createApp({
+      ...config,
+      cerebras: { ...config.cerebras, externalEnabled: true },
+    })
+    const res = await parserEnabledApp.request('/api/foundry/parse-floor', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ imageDataUri: 'data:image/png;base64,AAAA', uploadConsent: true }),
+    })
     expect(res.status).toBe(200)
     const data = (await res.json()) as ParseFloorResponse
     expect(data.ok).toBe(false)

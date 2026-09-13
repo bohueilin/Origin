@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { canonical, sha256, verifyEpisode } from '@origin/evidence/env-evidence'
 import { buildToolSchemas, toolInputSchema, toBundleTools, toolsDigest, buildPolicies, policiesDigest } from '@origin/evidence/env-manifest'
 import { warehouseToolSchemas, warehouseBundleTools, warehouseToolsDigest, warehousePolicies, warehousePoliciesDigest } from './warehouse-manifest.mjs'
@@ -11,7 +11,7 @@ import { scoreReward } from './reward-module.ts'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const load = (p: string) => JSON.parse(readFileSync(resolve(HERE, '../docs/examples', p), 'utf8'))
 const scoreFn = (task, actions) => scoreReward(task, actions, { policy: 'test' })
-const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
+const licenseFn = (v) => computeLicenseFromVerdictsForPolicyVersion(v, '1.0.0').level.id
 
 describe('env-manifest — pure sub-artifact content-addressing (P1)', () => {
   it('a tool schema_digest is sha256(canonical(schema)) and is deterministic', () => {
@@ -53,11 +53,20 @@ describe('warehouse manifest ↔ committed lockfile (content-addressing holds)',
   it('the committed bundle pins tools + policies that re-derive from the live env code', () => {
     const bundle = load('warehouse.env-bundle.lock.json')
     expect(bundle.tools_digest).toBe(warehouseToolsDigest())
-    expect(bundle.policies_digest).toBe(warehousePoliciesDigest())
+    expect(bundle.policies_digest).toBe(warehousePoliciesDigest(bundle.license_policy_version))
     expect(bundle.tools).toEqual(warehouseBundleTools())
-    expect(bundle.policies).toEqual(warehousePolicies())
+    expect(bundle.policies).toEqual(warehousePolicies(bundle.license_policy_version))
     expect(bundle.tools.length).toBe(8) // one per WAREHOUSE_TOOL
     expect(bundle.policies.map((p) => p.id).sort()).toEqual(['license-ladder', 'safety-gate'])
+  })
+
+  it('preserves the exact v1 license source digest while the default selects current policy v2', () => {
+    const bundle = load('warehouse.env-bundle.lock.json')
+    const v1License = warehousePolicies('1.0.0').find((policy) => policy.id === 'license-ladder')
+    const v2License = warehousePolicies().find((policy) => policy.id === 'license-ladder')
+    const pinnedLicense = bundle.policies.find((policy) => policy.id === 'license-ladder')
+    expect(v1License?.source_digest).toBe(pinnedLicense?.source_digest)
+    expect(v2License?.source_digest).not.toBe(pinnedLicense?.source_digest)
   })
 
   it('every committed tools[].schema_digest content-addresses the sidecar schema', () => {

@@ -1,0 +1,4 @@
+# Public InsForge anonymous client credential copied into a hermetic Playwright
+# fixture in commit 5775e7c. It was never a server secret; current tests use an
+# inert low-entropy fixture instead. Keep this exception fingerprint-specific.
+5775e7caaf84fe78a191355f78a95503bae4987f:apps/origin-web/playwright.config.ts:generic-api-key:12

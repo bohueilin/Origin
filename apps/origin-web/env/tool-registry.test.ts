@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { warehouseTasks, bfsOracle, oraclePolicy } from '../src/warehouse.ts'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { verifyEpisode, recordedActions, recordedToolCalls } from '@origin/evidence/env-evidence'
 import { registryDigest } from '@origin/evidence/env-manifest'
 import { buildRegistry } from '@origin/verifier-core/tool-registry'
@@ -15,7 +15,7 @@ import { scoreReward } from './reward-module.ts'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const load = (p: string) => JSON.parse(readFileSync(resolve(HERE, '../docs/examples', p), 'utf8'))
 const scoreFn = (t, a) => scoreReward(t, a, { policy: 'test' })
-const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
+const licenseFn = (v) => computeLicenseFromVerdictsForPolicyVersion(v, '1.0.0').level.id
 const tools = warehouseBundleTools()
 
 describe('MCP tool registry (P3) — scoped + rate-limited authorization', () => {

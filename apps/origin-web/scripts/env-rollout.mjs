@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url'
 import {
   warehouseTasks, bfsOracle, oraclePolicy, alwaysFinishPolicy, alwaysRefusePolicy, recklessFinishPolicy,
 } from '../src/warehouse.ts'
-import { computeLicenseFromVerdicts } from '../src/license.ts'
+import { computeLicenseFromVerdictsForPolicyVersion } from '../src/license.ts'
 import { verifyEpisode } from '@origin/evidence/env-evidence'
 import { makeExecutor } from '../env/executor.mjs'
 import { runEpisode } from '../env/run-episode.mjs'
@@ -41,7 +41,7 @@ const executor = makeExecutor(tier)
 const { episode, receipt, meter } = runEpisode(executor, { bundle, task, actions, idPrefix: 'rollout', policyName })
 
 const scoreFn = (t, a) => scoreReward(t, a, { policy: 'env-rollout' })
-const licenseFn = (v) => computeLicenseFromVerdicts(v).level.id
+const licenseFn = (v) => computeLicenseFromVerdictsForPolicyVersion(v, bundle.license_policy_version).level.id
 const { code } = verifyEpisode({ episode, receipt, bundle, scoreFn, licenseFn })
 
 console.log(`policy=${policyName} tier=${tier} · steps=${meter.sandbox_seconds} · reward=${receipt.reward} · license=${receipt.license_level} · is_hack=${receipt.is_hack} (${receipt.exploit_cluster})`)

@@ -24,6 +24,12 @@ describe('Sigil — shareable, browser-signed receipt (ECDSA P-256 / ES256)', ()
     expect(v).toMatchObject({ ok: true, code: 0 })
   })
 
+  it('returns an exportable public key with a non-extractable private signing key', async () => {
+    const key = await generateSigningKey()
+    expect(await crypto.subtle.exportKey('jwk', key.publicKey)).toMatchObject({ kty: 'EC', crv: 'P-256' })
+    await expect(crypto.subtle.exportKey('pkcs8', key.privateKey)).rejects.toThrow()
+  })
+
   it('flipping one byte of the payload voids the Sigil (content-bound signature)', async () => {
     const key = await generateSigningKey()
     const sigil = await signSigil(RECEIPT, key)

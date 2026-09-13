@@ -12,13 +12,23 @@ const config: AppConfig = {
   nebius: {},
   insforge: {},
   minimax: {},
-  cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1' },
+  cerebras: { model: 'gemma-4-31b', baseUrl: 'https://api.cerebras.ai/v1', externalEnabled: false },
   gemini: { model: 'gemini-2.0-flash', baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai' },
   episodeSecret: 'app-test-secret',
+  serviceAuthToken: undefined,
+  vapiWebhookSecret: undefined,
   warnings: [],
 }
 
 const app = createApp(config)
+
+const productionApp = (overrides: Partial<AppConfig> = {}) => createApp({
+  ...config,
+  isProd: true,
+  serviceAuthToken: 'service-test-token',
+  vapiWebhookSecret: 'vapi-test-secret',
+  ...overrides,
+})
 
 async function post(path: string, body: unknown): Promise<Response> {
   return app.request(path, {
@@ -407,6 +417,59 @@ describe('createApp /api/voice/structure (voice intake trust boundary)', () => {
       expect(text).not.toMatch(/apiKey/i)
     } finally {
       vi.unstubAllGlobals()
+    }
+  })
+})
+
+describe('createApp production request authority', () => {
+  it('fails closed for service routes while health and external gym remain public', async () => {
+    const missing = createApp({ ...config, isProd: true })
+    expect((await missing.request('/api/foundry/parse-floor', { method: 'POST' })).status).toBe(503)
+    const app = productionApp()
+    const denied = await app.request('/api/foundry/parse-floor/', { method: 'POST' })
+    expect(denied.status).toBe(401)
+    expect(denied.headers.get('www-authenticate')).toBe('Bearer')
+    expect((await app.request('/health')).status).toBe(200)
+    expect((await app.request('/v1/warehouse/episodes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{"taskId":"wh-l1-01"}' })).status).toBe(200)
+  })
+
+  it('leaves CORS preflight public, applies service auth to HEAD, and authenticates Vapi before parsing', async () => {
+    const app = productionApp()
+    expect((await app.request('/api/foundry/parse-floor', { method: 'OPTIONS', headers: { origin: 'https://example.test', 'access-control-request-method': 'POST' } })).status).toBe(204)
+    expect((await app.request('/api/evidence/status', { method: 'HEAD' })).status).toBe(401)
+    expect((await app.request('/api/evidence/status', { method: 'HEAD', headers: { authorization: 'Bearer service-test-token' } })).status).toBe(200)
+    expect((await app.request('/api/vapi/tools', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{not-json' })).status).toBe(401)
+    expect((await app.request('/api/vapi/tools', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer vapi-test-secret' }, body: '{not-json' })).status).not.toBe(401)
+  })
+
+  it('preserves every Vapi tool-call envelope after a valid distinct secret', async () => {
+    const app = productionApp()
+    for (const field of ['toolCallList', 'toolCalls', 'tool_calls']) {
+      const response = await app.request('/api/vapi/tools', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-vapi-secret': 'vapi-test-secret' },
+        body: JSON.stringify({ message: { [field]: [{ id: field, name: 'unknown_tool' }] } }),
+      })
+      expect(response.status).toBe(200)
+      expect(((await response.json()) as { results: { toolCallId: string }[] }).results[0]?.toolCallId).toBe(field)
+    }
+  })
+
+  it('enforces every Origin route authority class without a broad API bypass', async () => {
+    const app = productionApp()
+    const publicRoutes: Array<[string, string]> = [
+      ['GET', '/health'], ['POST', '/v1/episodes'], ['POST', '/v1/episodes/x/step'], ['POST', '/v1/step'],
+      ['POST', '/v1/warehouse/episodes'], ['POST', '/v1/warehouse/episodes/x/step'],
+    ]
+    for (const [method, path] of publicRoutes) {
+      expect((await app.request(path, { method, headers: { 'content-type': 'application/json' }, body: method === 'POST' ? '{}' : undefined })).status, `${method} ${path}`).not.toBe(401)
+    }
+    const protectedRoutes: Array<[string, string]> = [
+      ['POST', '/v1/reference-episodes'], ['POST', '/v1/warehouse/reference-episodes'], ['POST', '/api/run-episode'], ['GET', '/api/runs/recent'], ['GET', '/api/evidence/status'], ['POST', '/api/nebius-action'], ['POST', '/api/voice/structure'],
+      ['POST', '/api/foundry/parse-floor'], ['POST', '/api/foundry/quorum-run'], ['POST', '/api/foundry/gym-rollout'], ['POST', '/api/foundry/speed-race'], ['POST', '/api/foundry/soc-run'], ['POST', '/api/foundry/soc-race'], ['POST', '/api/foundry/leaderboard'], ['POST', '/api/foundry/soc-shootout'], ['POST', '/api/foundry/economics'], ['POST', '/api/foundry/ensemble'], ['POST', '/api/foundry/latency'], ['POST', '/api/foundry/accuracy'], ['POST', '/api/foundry/passport-run'], ['POST', '/api/foundry/supervision-run'],
+    ]
+    for (const [method, path] of protectedRoutes) {
+      expect((await app.request(path, { method, headers: { 'content-type': 'application/json' }, body: method === 'POST' ? '{}' : undefined })).status, `${method} ${path}`).toBe(401)
     }
   })
 })

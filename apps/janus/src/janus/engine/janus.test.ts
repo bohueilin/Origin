@@ -5,13 +5,16 @@ import { ToolRouter } from './toolRouter'
 import { GrantManager } from './grantManager'
 import { AuditLogger } from './auditLogger'
 import { IdFactory } from './ids'
+import { ApprovalManager } from './approvalManager'
+import { KillSwitchRegistry } from './killSwitch'
 import { CapabilityPolicyEngine } from './policyEngine'
 import { getConnector } from '../connectors'
 import { MockSecretBroker } from '../secrets/mockSecretBroker'
 import { pickBroker } from '../secrets/pickBroker'
 import { MOCK_SECRET_SENTINEL } from '../secrets/redact'
 import { SCENARIOS, getScenario } from '../scenarios'
-import type { CapabilityGrant, ToolExecutionContext, UserIntent } from '../types'
+import type { ApprovalPacketSpec } from '../scenarios/types'
+import type { CapabilityGrant, ToolAdapter, ToolExecutionContext, ToolResult, UserIntent } from '../types'
 
 // ---- a controllable clock ----
 function clock(start = 1_000_000) {
@@ -53,6 +56,71 @@ async function drive(session: JanusSession, decide: (s: JanusSnapshot) => 'appro
 }
 
 describe('ToolRouter fail-closed authorization', () => {
+  it('binds approved commits to intent/input, consumes before I/O, and honors every scoped stop', async () => {
+    const c = clock(); const grant = buildGrant(c.now(), [], ['messages.send']); const idf = new IdFactory()
+    const approvals = new ApprovalManager(idf, c.now); const stops = new KillSwitchRegistry()
+    const context = { environment_id: 'env', tenant_id: 'tenant', agent_id: grant.agent_id, session_id: 'session' }
+    const router = new ToolRouter(grant, new AuditLogger(idf, c.now), idf, c.now, undefined, { approvals, killSwitch: stops, killContext: () => context })
+    const packetSpec: ApprovalPacketSpec = { action_type: 'send', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'yes', deny_button_label: 'no', capability: 'messages.send' }
+    const make = () => { const p = approvals.create(packetSpec, fakeIntent(), 'send', { to: 'a' }); approvals.approve(p.approval_id); return p }
+    let calls = 0
+    const adapter: ToolAdapter = { name: 'send', requiredCapability: 'messages.send', riskLevel: 'high', sideEffecting: true, async execute(_input, executionContext) { calls++; expect(executionContext.approval?.status).toBe('consumed'); return { summary: 'sent', simulated: true, execution_mode: 'simulated', outcome_attestation: 'simulated' } } }
+    const mismatch = make(); expect((await router.route(adapter, { to: 'changed' }, ctx(grant, c.now), mismatch)).call.status).toBe('denied'); expect(calls).toBe(0)
+    const good = make(); expect((await router.route(adapter, { to: 'a' }, ctx(grant, c.now), good)).call.status).toBe('simulated'); expect(calls).toBe(1); expect(approvals.get(good.approval_id)?.status).toBe('consumed')
+    expect((await router.route(adapter, { to: 'a' }, ctx(grant, c.now), good)).call.status).toBe('denied'); expect(calls).toBe(1)
+    for (const [scope, target] of [['global', undefined], ['environment', 'env'], ['tenant', 'tenant'], ['agent', grant.agent_id], ['session', 'session']] as const) { const p = make(); stops.activate({ scope, target, reason: scope }); expect((await router.route(adapter, { to: 'a' }, ctx(grant, c.now), p)).call.status).toBe('denied'); stops.deactivate({ scope, target, reason: scope }) }
+    expect(calls).toBe(1)
+  })
+
+  it('uses only the stored packet and fails closed for intent, expiry, replay, and adapter errors', async () => {
+    const c = clock(); const grant = buildGrant(c.now(), [], ['messages.send']); const idf = new IdFactory()
+    const approvals = new ApprovalManager(idf, c.now); const stops = new KillSwitchRegistry()
+    const router = new ToolRouter(grant, new AuditLogger(idf, c.now), idf, c.now, undefined, { approvals, killSwitch: stops, killContext: () => ({ environment_id: 'env', tenant_id: 'tenant', agent_id: grant.agent_id, session_id: 'session' }) })
+    const packetSpec: ApprovalPacketSpec = { action_type: 'send', description: 'x', external_party: null, estimated_cost: null, data_shared: [], irreversible: false, approve_button_label: 'yes', deny_button_label: 'no', capability: 'messages.send' }
+    const make = () => { const p = approvals.create(packetSpec, fakeIntent(), 'send', { to: 'a' }); approvals.approve(p.approval_id); return p }
+    let calls = 0
+    const simulated: ToolAdapter = { name: 'send', requiredCapability: 'messages.send', riskLevel: 'high', sideEffecting: true, async execute() { calls++; await Promise.resolve(); return { summary: 'simulated', execution_mode: 'simulated', outcome_attestation: 'simulated' } } }
+
+    const forged = make()
+    const callerForgery = { ...forged, intent_id: 'forged', tool_name: 'other', capability: 'calendar.read', input_digest: '0'.repeat(64), nonce_digest: '1'.repeat(64) }
+    expect((await router.route(simulated, { to: 'a' }, ctx(grant, c.now), callerForgery)).call.status).toBe('simulated')
+    expect(calls).toBe(1)
+
+    const mismatch = make()
+    const wrongIntent = { ...ctx(grant, c.now), intent: { ...fakeIntent(), intent_id: 'another-intent' } }
+    expect((await router.route(simulated, { to: 'a' }, wrongIntent, mismatch)).call.status).toBe('denied')
+    expect(calls).toBe(1)
+
+    const expired = make(); c.advance(901_000)
+    expect((await router.route(simulated, { to: 'a' }, ctx(grant, c.now), expired)).call.status).toBe('denied')
+    expect(approvals.get(expired.approval_id)?.status).toBe('expired')
+    expect(calls).toBe(1)
+    c.advance(-901_000)
+
+    const replay = make()
+    const concurrent = await Promise.all([router.route(simulated, { to: 'a' }, ctx(grant, c.now), replay), router.route(simulated, { to: 'a' }, ctx(grant, c.now), replay)])
+    expect(concurrent.map((result) => result.call.status).sort()).toEqual(['denied', 'simulated'])
+    expect(calls).toBe(2)
+
+    const throwing = make()
+    const thrower = { ...simulated, async execute() { calls++; throw new Error('adapter boom') } }
+    expect((await router.route(thrower, { to: 'a' }, ctx(grant, c.now), throwing)).call.status).toBe('error')
+    expect(approvals.get(throwing.approval_id)?.status).toBe('consumed')
+
+    const claimed = make()
+    const live: ToolAdapter = { ...simulated, async execute(): Promise<ToolResult> { calls++; return { summary: 'provider not yet verified', execution_mode: 'live', outcome_attestation: 'claimed' } } }
+    expect((await router.route(live, { to: 'a' }, ctx(grant, c.now), claimed)).call.status).toBe('claimed')
+
+    const malformed = make()
+    const cyclic: Record<string, unknown> = { to: 'a' }; cyclic.self = cyclic
+    expect((await router.route(simulated, cyclic, ctx(grant, c.now), malformed)).call.status).toBe('denied')
+    expect(calls).toBe(4)
+
+    const noContextPacket = make()
+    const unavailableContext = new ToolRouter(grant, new AuditLogger(idf, c.now), idf, c.now, undefined, { approvals, killSwitch: stops, killContext: () => { throw new Error('context unavailable') } })
+    expect((await unavailableContext.route(simulated, { to: 'a' }, ctx(grant, c.now), noContextPacket)).call.status).toBe('denied')
+    expect(calls).toBe(4)
+  })
   it('1. denies a tool call when the required capability is not granted', async () => {
     const c = clock()
     const grant = buildGrant(c.now(), [] /* nothing allowed */)
@@ -149,7 +217,7 @@ describe('high-risk approval gating (airport pickup)', () => {
     await session.resolveApproval(id, 'approve')
     // After approval: the simulated commit ran (and is marked simulated).
     const ran = session.getState().toolCalls.find((t) => t.tool_name === 'ride.submit')
-    expect(ran?.status).toBe('ok')
+    expect(ran?.status).toBe('simulated')
     expect(session.getState().results['ride.submit']?.simulated).toBe(true)
   })
 
@@ -160,6 +228,42 @@ describe('high-risk approval gating (airport pickup)', () => {
     expect(final.toolCalls.some((t) => t.tool_name === 'ride.submit')).toBe(false)
     expect(final.prevented.some((p) => /denied/i.test(p))).toBe(true)
     expect(final.status).toBe('completed')
+  })
+
+  it('exposes a session-owned stop registry to prevent an approved commit', async () => {
+    const c = clock()
+    const session = new JanusSession(getScenario('airport-pickup')!, { now: c.now })
+    session.activateKillSwitch({ scope: 'global', reason: 'operator stop' })
+    await session.start()
+    await session.resolveApproval(session.getState().pendingApprovalId!, 'approve')
+    expect(session.getState().toolCalls.find((t) => t.tool_name === 'ride.submit')?.status).toBe('denied')
+  })
+
+  it('does not let a caller mutate the approval authority through a session snapshot', async () => {
+    const c = clock()
+    const session = new JanusSession(getScenario('airport-pickup')!, { now: c.now })
+    await session.start()
+    const exposed = session.getState().approvals.find((packet) => packet.capability === 'ride.booking.submit')!
+    exposed.tool_input = { attacker: true }
+    exposed.input_digest = '0'.repeat(64)
+    exposed.nonce_digest = '1'.repeat(64)
+    exposed.status = 'consumed'
+    exposed.expires_at = 0
+    exposed.tool_name = 'attacker.tool'
+    exposed.capability = 'attacker.capability'
+    await session.resolveApproval(exposed.approval_id, 'approve')
+    expect(session.getState().toolCalls.find((call) => call.tool_name === 'ride.submit')?.status).toBe('simulated')
+  })
+
+  it('audits and blocks a malformed approval input instead of throwing from the session boundary', async () => {
+    const c = clock(); const cyclic: Record<string, unknown> = {}; cyclic.self = cyclic
+    const base = getScenario('airport-pickup')!
+    const scenario = { ...base, steps: base.steps.map((step) => step.kind === 'approval' ? { ...step, commitInput: cyclic } : step) }
+    const session = new JanusSession(scenario, { now: c.now })
+    await expect(session.start()).resolves.toBeUndefined()
+    const state = session.getState()
+    expect(state.status).toBe('completed')
+    expect(state.audit.events.some((event) => event.kind === 'approval.input_invalid' && event.decision === 'deny')).toBe(true)
   })
 })
 
@@ -212,10 +316,9 @@ describe('spend ceiling enforcement', () => {
 
   it('refuses an approved commit that would breach the ceiling, and audits the refusal', async () => {
     const c = clock()
-    const session = new JanusSession(getScenario('airport-pickup')!, { now: c.now })
+    const scenario = { ...getScenario('airport-pickup')!, budget_limit: { amount: 5, currency: 'USD' } }
+    const session = new JanusSession(scenario, { now: c.now })
     await session.start()
-    // Shrink the ceiling below the ride cost ($47) so approving it is refused at the gate.
-    session.getState().grant.budget_limit = { amount: 5, currency: 'USD' }
     const id = session.getState().pendingApprovalId!
     await session.resolveApproval(id, 'approve')
     const s = session.getState()

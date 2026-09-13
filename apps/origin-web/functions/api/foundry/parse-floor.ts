@@ -19,8 +19,11 @@
 
 import { handleParseFloor } from '../../../server/foundryHandler.ts'
 import type { CerebrasConfig } from '../../../server/config.ts'
+import { authorizeService } from '../../../server/requestAuth.ts'
 
 interface ParseFloorEnv {
+  /** Required on every Pages request; browser bundles must never receive this value. */
+  SERVICE_AUTH_TOKEN?: string
   CEREBRAS_API_KEY?: string
   CEREBRAS_MODEL?: string
   CEREBRAS_BASE_URL?: string
@@ -28,11 +31,13 @@ interface ParseFloorEnv {
   PARSE_DISABLED?: string
   /** Per-isolate requests/minute (default 20). */
   PARSE_RATE_PER_MIN?: string
+  /** Exact server-side enablement; browser flags never grant authority. */
+  PARSE_EXTERNAL_ENABLED?: string
 }
 
 // The handler refuses data URIs over 10MB; anything larger than that plus JSON
 // envelope headroom is junk — reject before JSON.parse allocates for it.
-const MAX_BODY = 10_500_000
+export const MAX_PARSE_BODY_BYTES = 10_500_000
 
 // ABUSE GUARD, honestly scoped: this endpoint spends a paid Cerebras key when
 // the key is configured, so it must not be a free relay. The bucket below is
@@ -42,33 +47,86 @@ const MAX_BODY = 10_500_000
 let windowStart = 0
 let windowCount = 0
 
+export const resetParseRateLimitForTest = (): void => {
+  windowStart = 0
+  windowCount = 0
+}
+
 const json = (body: unknown, status = 200): Response =>
   new Response(JSON.stringify(body), {
     status,
     headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
   })
 
-export const onRequestPost = async (ctx: { request: Request; env: ParseFloorEnv }): Promise<Response> => {
-  if (ctx.env.PARSE_DISABLED === '1') {
-    return json({ ok: false, error: 'Parse endpoint is temporarily disabled.' }, 503)
+const unauthorized = (): Response => {
+  const response = json({ ok: false, error: 'unauthorized' }, 401)
+  response.headers.set('WWW-Authenticate', 'Bearer')
+  return response
+}
+
+async function readBoundedBody(request: Request): Promise<string> {
+  if (!request.body) return ''
+  const reader = request.body.getReader()
+  const chunks: Uint8Array[] = []
+  let size = 0
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    size += value.byteLength
+    if (size > MAX_PARSE_BODY_BYTES) {
+      void reader.cancel('body_too_large').catch(() => undefined)
+      throw new RangeError('body_too_large')
+    }
+    chunks.push(value)
   }
-  const limit = Math.max(1, Number(ctx.env.PARSE_RATE_PER_MIN) || 20)
+  const bytes = new Uint8Array(size)
+  let offset = 0
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+  return new TextDecoder().decode(bytes)
+}
+
+function consumeProviderRate(limitValue: string | undefined): boolean {
+  const limit = Math.max(1, Number(limitValue) || 20)
   const now = Date.now()
   if (now - windowStart >= 60_000) {
     windowStart = now
     windowCount = 0
   }
+  if (windowCount >= limit) return false
   windowCount += 1
-  if (windowCount > limit) {
-    return json({ ok: false, error: 'Rate limit exceeded — try again in a minute.' }, 429)
+  return true
+}
+
+function parseStatus(fallback: string | undefined): number {
+  if (fallback === 'external_parse_disabled') return 503
+  if (fallback === 'consent_required') return 400
+  if (fallback === 'rate_limited') return 429
+  return 200
+}
+
+export const onRequestPost = async (ctx: { request: Request; env: ParseFloorEnv }): Promise<Response> => {
+  // Pages Functions are the public deployment authority. Authenticate before every
+  // kill-switch, rate-limit, declared-length, or body operation so unauthenticated
+  // callers cannot consume provider/rate-limit resources or learn parse behavior.
+  const decision = authorizeService(ctx.request.headers, ctx.env.SERVICE_AUTH_TOKEN)
+  if (decision === 'not_configured') return json({ ok: false, error: 'auth_not_configured' }, 503)
+  if (decision === 'unauthorized') return unauthorized()
+  if (ctx.env.PARSE_DISABLED === '1') {
+    return json({ ok: false, error: 'Parse endpoint is temporarily disabled.' }, 503)
   }
   // Reject an oversize declared length BEFORE buffering the body at all.
   const declared = Number(ctx.request.headers.get('content-length'))
-  if (Number.isFinite(declared) && declared > MAX_BODY) {
+  if (Number.isFinite(declared) && declared > MAX_PARSE_BODY_BYTES) {
     return json({ ok: false, error: 'Body too large — images are capped at ~7MB.' }, 413)
   }
-  const raw = await ctx.request.text()
-  if (raw.length > MAX_BODY) {
+  let raw: string
+  try {
+    raw = await readBoundedBody(ctx.request)
+  } catch (error) {
+    if (!(error instanceof RangeError)) throw error
     return json({ ok: false, error: 'Body too large — images are capped at ~7MB.' }, 413)
   }
   let body: { imageDataUri?: string; hint?: string }
@@ -83,6 +141,12 @@ export const onRequestPost = async (ctx: { request: Request; env: ParseFloorEnv 
     apiKey: ctx.env.CEREBRAS_API_KEY,
     model: ctx.env.CEREBRAS_MODEL || 'gemma-4-31b',
     baseUrl: (ctx.env.CEREBRAS_BASE_URL || 'https://api.cerebras.ai/v1').replace(/\/+$/, ''),
+    externalEnabled: ctx.env.PARSE_EXTERNAL_ENABLED === '1',
   }
-  return json(await handleParseFloor(body, cfg))
+  const result = await handleParseFloor(body, cfg, {
+    // The shared handler invokes this only after every non-spending request
+    // check and immediately before the provider call.
+    beforeProvider: () => consumeProviderRate(ctx.env.PARSE_RATE_PER_MIN),
+  })
+  return json(result, parseStatus(result.fallback))
 }

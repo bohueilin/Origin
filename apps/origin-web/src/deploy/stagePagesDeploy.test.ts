@@ -230,4 +230,23 @@ describe('stage-pages-deploy', () => {
     expect(ci).toContain('npm exec --yes --package=wrangler@4.92.0 -- wrangler pages functions build functions --outdir .wrangler-pages-build')
     expect(ci).toContain('needs: [workspace-apps, chronos-ui, python-services, functions-typecheck, evidence-verify, secret-scan, honesty-lint, browser-e2e, pages-stage, production-audit]')
   })
+
+  it('runs every pinned Wrangler Pages compilation on Node 22 or newer', () => {
+    const wranglerCommand = 'npm exec --yes --package=wrangler@4.92.0 -- wrangler pages functions build functions --outdir .wrangler-pages-build'
+    const workflows = [
+      fs.readFileSync(path.join(repoRoot, '.github/workflows/ci.yml'), 'utf8'),
+      fs.readFileSync(path.join(repoRoot, '.github/workflows/deploy-origin-web.yml'), 'utf8'),
+    ]
+
+    for (const workflow of workflows) {
+      const jobs = [...workflow.matchAll(/^ {2}([\w-]+):\n([\s\S]*?)(?=^ {2}[\w-]+:|(?![\s\S]))/gm)]
+      const wranglerJobs = jobs.filter(([, , body]) => body.includes(wranglerCommand))
+      expect(wranglerJobs.length).toBeGreaterThan(0)
+      for (const [, , body] of wranglerJobs) {
+        const nodeVersion = body.match(/^\s+node-version:\s*['"]?(\d+)/m)
+        expect(nodeVersion).not.toBeNull()
+        expect(Number(nodeVersion?.[1])).toBeGreaterThanOrEqual(22)
+      }
+    }
+  })
 })

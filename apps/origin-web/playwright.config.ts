@@ -9,7 +9,7 @@ const authTestEnv = {
   VITE_DISABLE_OPTIONAL_BACKEND_FETCHES: '1',
   // PUBLIC test values. Every browser test stubs the related network surface.
   VITE_INSFORGE_URL: 'https://82fs5fqk.us-west.insforge.app',
-  VITE_INSFORGE_ANON_KEY: 'anon_d727beb831e1f5c4ee7c36f0484a51375574f443d4f3421add387932f9c0b44d',
+  VITE_INSFORGE_ANON_KEY: 'anon_public_test_fixture_only',
 }
 
 export default defineConfig({

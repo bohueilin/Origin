@@ -198,10 +198,4 @@ jobs:
           accountId: ecf2451e81261e8de3295b4a3b4e439c
           workingDirectory: .origin-pages-stage
           packageManager: npm
-          # --branch is LOAD-BEARING. Without it wrangler infers the branch from git,
-          # so the deploy lands on a PREVIEW alias (main.origin-physical-ai.pages.dev) and
-          # never reaches production — while the step, the job and the run all still report
-          # success. That is the worst shape a deploy bug can take. hud-factorydad-1 is this
-          # project's production branch; a deploy that hits it prints no alias URL, which is
-          # how you can tell from the log that it actually went live.
-          command: pages deploy ../origin-web-dist --project-name=origin-physical-ai --branch=hud-factorydad-1
+          command: pages deploy ../origin-web-dist --project-name=origin-physical-ai

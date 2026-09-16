@@ -190,6 +190,23 @@ jobs:
             echo "::warning title=Deploy skipped::Set repo secret CLOUDFLARE_API_TOKEN (Account › Cloudflare Pages › Edit) to enable manual deploys."
           fi
 
+      - name: Preflight — refuse to deploy to a preview
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # wrangler deploys the checked-out branch (main). If the Pages project's production
+          # branch is anything else, the upload lands on a PREVIEW alias while every step
+          # reports success — a deploy that lies. Every release between 2026-09-12 and
+          # 2026-09-16 did exactly that. Read the truth from the API and refuse instead.
+          PB=$(curl -sS "https://api.cloudflare.com/client/v4/accounts/ecf2451e81261e8de3295b4a3b4e439c/pages/projects/origin-physical-ai" \
+                 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result.production_branch // "unreadable"')
+          echo "Pages production branch: $PB"
+          if [ "$PB" != "main" ]; then
+            echo "::error title=Refusing to deploy to a preview::Project origin-physical-ai has production branch '$PB', not 'main'. This run would only reach main.origin-physical-ai.pages.dev. Fix: Pages → origin-physical-ai → Settings → Builds → Production branch → main."
+            exit 1
+          fi
+
       - name: Deploy to Cloudflare Pages (production)
         if: steps.gate.outputs.ready == 'true'
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3

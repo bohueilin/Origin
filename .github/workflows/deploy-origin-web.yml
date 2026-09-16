@@ -114,6 +114,11 @@ jobs:
         # not work no matter what the client did. Do not point this back without checking
         # `npx @insforge/cli list` for project status first.
         env:
+          # The live host. vite.config.ts's siteUrlRewrite() rewrites every canonical,
+          # og:url, og:image, sitemap, robots and llms.txt entry in the built dist to this
+          # value — no source edits, and unset is a complete no-op. The apex is canonical;
+          # www serves the same content and points its canonical here.
+          SITE_URL: https://originphysicalai.com
           VITE_INSFORGE_URL: https://82fs5fqk.us-west.insforge.app
           VITE_INSFORGE_ANON_KEY: anon_d727beb831e1f5c4ee7c36f0484a51375574f443d4f3421add387932f9c0b44d
         run: npm run build:web

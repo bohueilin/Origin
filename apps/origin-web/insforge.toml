@@ -3,7 +3,7 @@ allowed_redirect_urls = ["http://localhost:5275", "http://localhost:5275/admin",
 require_email_verification = true
 verify_email_method = "code"
 reset_password_method = "code"
-disable_signup = false
+disable_signup = true
 
 [auth.password]
 min_length = 6

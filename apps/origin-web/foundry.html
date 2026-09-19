@@ -27,12 +27,13 @@
       content="Origin Foundry: a local sample floor and deterministic simulated evaluation—not robot training, deployment, or execution. External image processing is local/backend demo only."
     />
     <!-- Social share (Open Graph + Twitter) -->
-    <meta property="og:url" content="https://origin-physical-ai.pages.dev/foundry" />
-    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
+    <meta property="og:url" content="https://originphysicalai.com/foundry" />
+    <link rel="canonical" href="https://originphysicalai.com/foundry" />
+    <meta property="og:image" content="https://originphysicalai.com/og-cover.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:description" content="Origin Foundry: a local sample floor and deterministic simulated evaluation—not robot training, deployment, or execution. External image processing is local/backend demo only." />
-    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
+    <meta name="twitter:image" content="https://originphysicalai.com/og-cover.jpg" />
     <meta name="theme-color" content="#faf9f5" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin Physical AI" />
@@ -40,12 +41,6 @@
     <meta property="og:description" content="Inspect a browser-local sample under a deterministic verifier. External model proposals are local/backend demo only; no robot is trained, deployed, or executed." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Origin Foundry — deterministic simulated floor evaluation" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <title>Origin Foundry — deterministic simulated floor evaluation</title>
     <style>
       .skip-link {
@@ -55,10 +50,12 @@
       }
       .skip-link:focus { top: 12px; text-decoration: none; }
     </style>
+  <link rel="stylesheet" href="/lab-shell.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <main id="main"><div id="root"></div></main>
+    <header class="lab-masthead"><a class="lab-brand" href="/" aria-label="Origin — home"><img src="/brand/origin-mark.svg" width="32" height="32" alt="" /><span>origin</span></a><span class="lab-location">Labs / Foundry</span><nav aria-label="Lab navigation"><a href="/labs">All experiments <span aria-hidden="true">↗</span></a><a href="/trust">Trust center</a></nav></header>
+    <main id="main"><div id="root"></div></main><footer class="lab-footer"><span>Origin Labs · experimental surfaces</span><a href="/proof">Evidence &amp; provenance</a><a href="/legal/privacy-policy.html">Privacy</a></footer>
     <script type="module" src="/src/foundry/main.tsx"></script>
   </body>
 </html>

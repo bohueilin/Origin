@@ -74,7 +74,7 @@ npm run test -w @origin/origin-web
 npm run build -w @origin/origin-web
 node scripts/honesty-lint.mjs
 npx vitest run apps/origin-web/src/deploy/stagePagesDeploy.test.ts
-npm --prefix apps/origin-web run test:e2e -- tests/e2e/smoke.spec.ts tests/e2e/investor-ready.spec.ts
+npm --prefix apps/origin-web run test:e2e
 npm audit --omit=dev --audit-level=moderate
 ```
 

@@ -124,9 +124,9 @@ export function SimulationPage() {
   return (
     <div className="sim-wrap">
       <div className="sim-controls">
-        <div className="sim-viewtoggle" role="tablist" aria-label="View">
-          <button className={view === '2d' ? 'is-on' : ''} onClick={() => setView('2d')}>2D floor</button>
-          <button className={view === '3d' ? 'is-on' : ''} onClick={() => setView('3d')}>3D</button>
+        <div className="sim-viewtoggle" role="group" aria-label="View">
+          <button aria-pressed={view === '2d'} className={view === '2d' ? 'is-on' : ''} onClick={() => setView('2d')}>2D floor</button>
+          <button aria-pressed={view === '3d'} className={view === '3d' ? 'is-on' : ''} onClick={() => setView('3d')}>3D</button>
         </div>
         <div className="sim-btns">
           <button className="btn btn--primary btn--sm" onClick={togglePlay}>{playing ? 'Pause' : 'Play'}</button>

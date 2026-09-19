@@ -8,28 +8,28 @@
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
-    <meta property="og:url" content="https://origin-physical-ai.pages.dev/reference-check-vs-runtime" />
+    <meta property="og:url" content="https://originphysicalai.com/reference-check-vs-runtime" />
     <meta property="og:title" content="Reference check vs runtime enforcement | Origin" />
     <meta property="og:description" content="How Origin's implemented pre-access reference check differs from proposed runtime enforcement: trust boundaries, evidence, verdicts and limitations." />
-    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
+    <meta property="og:image" content="https://originphysicalai.com/og-cover.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Reference check vs runtime enforcement | Origin" />
     <meta name="twitter:description" content="How Origin's implemented pre-access reference check differs from proposed runtime enforcement: trust boundaries, evidence, verdicts and limitations." />
-    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
-    <link rel="canonical" href="https://origin-physical-ai.pages.dev/reference-check-vs-runtime" />
+    <meta name="twitter:image" content="https://originphysicalai.com/og-cover.jpg" />
+    <link rel="canonical" href="https://originphysicalai.com/reference-check-vs-runtime" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "TechArticle",
         "headline": "Reference check vs runtime enforcement",
         "description": "A source-backed explanation of Origin's implemented synthetic pre-access reference check and proposed runtime enforcement architecture, trust boundaries, evidence, verdicts, and limitations.",
-        "url": "https://origin-physical-ai.pages.dev/reference-check-vs-runtime"
+        "url": "https://originphysicalai.com/reference-check-vs-runtime"
       }
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="stylesheet" href="/home.css?v=29cdd6e3" />
+    <link rel="stylesheet" href="/home.css?v=e7514f0a" />
     <style>
       .mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:24px; }
       .mode-card { border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--surface,#fff); }
@@ -47,13 +47,14 @@
         .site-header__burger, .site-header__cta, .site-header__cta-mobile { display: none; }
       }
     </style>
+    <link rel="stylesheet" href="/editorial.css" />
   </head>
-  <body>
+  <body class="editorial explainer-page">
     <a class="skip-link" href="#main">Skip to main content</a>
     <header class="site-header">
       <div class="shell site-header__inner">
         <a class="brand" href="/" aria-label="Origin — home">
-          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" />
           <span class="brand__name">Origin</span>
         </a>
 
@@ -75,17 +76,19 @@
       </div>
     </header>
     <main id="main">
-      <section class="section"><div class="shell">
+      <section class="editorial-hero"><div class="shell"><div class="editorial-hero__grid"><div>
         <p class="kicker">Technical explainer · source-backed</p>
         <h1>Reference check vs runtime enforcement</h1>
-        <p class="section__lede"><b>Origin is the evidence layer for AI agents:</b> prototype/private-pilot infrastructure for agent-platform, security, trust, and infrastructure teams. It tests proposed actions with deterministic verifiers, separates capability from permission, and produces evidence that can be independently rechecked.</p>
+        <p class="section__lede"><b>Origin is the evidence layer for AI agents:</b> a working prototype for agent-platform, security, trust, and infrastructure teams, currently seeking design partners. It tests proposed actions with deterministic verifiers, separates capability from permission, and produces evidence that can be independently rechecked.</p>
         <p class="mono-note">The model proposes. The environment verifies. The gate decides. The trace proves. Capability is not permission.</p>
+        </div><figure class="editorial-hero__media"><img src="/brand/review.webp" width="1024" height="1024" alt="" /><figcaption class="editorial-caption">Generated illustration of a review environment; not a customer deployment.</figcaption></figure></div>
+        <nav class="editorial-jumps" aria-label="On this page"><a href="#reference-check"><span>01</span>Implemented today</a><a href="#runtime-enforcement"><span>02</span>Proposed architecture</a><a href="#boundaries"><span>03</span>Trust boundaries</a><a href="#provenance"><span>04</span>Evidence provenance</a></nav>
         <div class="mode-grid">
-          <article class="mode-card" id="reference-check"><span class="status">Implemented today</span><h2>Synthetic pre-access reference check</h2><p>The checked-in browser flow runs synthetic support and IAM task batteries against deterministic policy logic before production access. It mints configuration-bound evidence; changing a bound tool or configuration makes verification fail.</p><p><a href="/reference-check">Run the synthetic reference check →</a></p></article>
+          <article class="mode-card" id="reference-check"><span class="status">Implemented today</span><h2>Synthetic pre-access reference check</h2><p>The checked-in browser flow runs synthetic support and IAM task batteries against deterministic policy logic before production access. It produces synthetic, session-signed, unpinned evidence; execution is not attempted. Changing a bound tool or configuration makes verification fail. A valid demo signature does not establish trusted Origin issuance.</p><p><a href="/reference-check">Run the synthetic reference check →</a></p></article>
           <article class="mode-card" id="runtime-enforcement"><span class="status status--future">Proposed architecture</span><h2>Runtime enforcement through a controlled proxy</h2><p>The broader design places a deterministic gate between an agent proposal and a consequential side effect. The gate would evaluate permission, scope, policy, budget, and approval requirements; only an allowed action would reach a controlled executor. This page does not claim that architecture is generally available or deployed for customers.</p><p><a href="/trust">Inspect the trust model →</a></p></article>
         </div>
       </div></section>
-      <section class="section section--tint" aria-labelledby="boundaries"><div class="shell">
+      <section class="section section--tint editorial-section" aria-labelledby="boundaries"><div class="shell">
         <h2 id="boundaries">Trust boundaries and verdicts</h2>
         <ul class="evidence-list">
           <li><b>Proposal is not permission.</b> Model output is an input to deterministic evaluation, not its own authorization.</li>
@@ -94,7 +97,7 @@
           <li><b>Evidence integrity is not issuer identity or safety.</b> A valid digest, signature, or chain establishes consistency under the relevant verifier and bindings; it does not establish that an action is universally safe.</li>
         </ul>
       </div></section>
-      <section class="section" aria-labelledby="provenance"><div class="shell">
+      <section class="section editorial-section" aria-labelledby="provenance"><div class="shell">
         <h2 id="provenance">Evidence provenance and limitations</h2>
         <p>Origin keeps four checked-in categories distinct: machine-emitted sandbox evidence, authored examples, synthetic evaluations, and authorized fixtures. None is presented here as external customer evidence, production adoption, certification, or reviewer acceptance.</p>
         <ul class="evidence-list">
@@ -108,24 +111,10 @@
         <!-- Video band. GENERATED footage, labelled as such in the pill and the caption.
          Poster-first, preload="none", plays once on scroll via src/shared/videoBand.ts,
          and falls back to poster + native controls with no JS or under reduced motion. -->
-    <section class="section vband" aria-label="Held at the threshold">
-      <div class="shell">
-        <figure class="vband__fig">
-          <div class="vband__wrap">
-            <video class="vband__v" data-band poster="/video/01-threshold.jpg"
-                   width="1280" height="720" muted playsinline controls preload="none"
-                   aria-label="Abstract illustration: particles drifting toward a slit of light, most passing, some held.">
-              <source src="/video/01-threshold.mp4" type="video/mp4" />
-            </video>
-            <span class="pill pill--ill vband__pill">Illustration</span>
-          </div>
-          <figcaption class="vband__cap"><b>Illustration.</b> Generated footage, not a recording of the product. It stands for the gate this page describes, nothing more.</figcaption>
-        </figure>
-      </div>
-    </section>
+
 
 </main>
-    <footer class="site-footer"><div class="shell site-footer__inner"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><span class="brand__name">Origin</span></a><p>Prototype/private-pilot infrastructure; not generally available production SaaS.</p></div></div></footer>
+    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Independent verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Check an agent</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@gmail.com">Contact</a><a href="/auth" rel="nofollow">Sign in</a></span></div></footer>
     <script type="module" src="/src/shared/videoBand.ts"></script>
   </body>
 </html>

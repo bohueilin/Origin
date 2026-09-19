@@ -20,6 +20,7 @@
 // "safe" or "correct". All payloads below are SYNTHETIC demo artifacts.
 // =============================================================================
 import { useState } from 'react'
+import '../shared/product-workspace.css'
 import type { ReactNode } from 'react'
 import { generateSigningKey, signSigil, verifySigil } from '@origin/verifier-core/sigil'
 import type { Sigil } from '@origin/verifier-core/sigil'
@@ -100,11 +101,11 @@ function Peek({ title, value }: { title: string; value: unknown }) {
   )
 }
 
-function DemoCard(props: { kicker: string; title: string; lede: string; children: ReactNode }) {
+function DemoCard(props: { id: string; kicker: string; title: string; lede: string; children: ReactNode }) {
   return (
-    <article className="card">
+    <article className="card sec-card" id={props.id} aria-labelledby={`${props.id}-title`}>
       <p className="kicker">{props.kicker}</p>
-      <h2 style={{ marginTop: 6 }}>{props.title}</h2>
+      <h2 id={`${props.id}-title`} style={{ marginTop: 6 }}>{props.title}</h2>
       <p className="section__lede" style={{ marginTop: 8 }}>
         {props.lede}
       </p>
@@ -183,7 +184,8 @@ function SigilPanel() {
 
   return (
     <DemoCard
-      kicker="Origin Attestation · portable signed receipt"
+      id="signatures"
+      kicker="01 · Signature integrity"
       title="Flip one byte and it voids."
       lede="Sign a synthetic score receipt with ECDSA P-256 in your browser (Web Crypto — the private key never leaves this page), then verify it offline with only the attestation itself. Then try to cheat."
     >
@@ -275,7 +277,8 @@ function MerklePanel() {
 
   return (
     <DemoCard
-      kicker="Merkle batch · signed once, proven individually"
+      id="batches"
+      kicker="02 · Batch inclusion"
       title="Eight receipts. One signature. Each provable alone."
       lede="Batch eight synthetic receipts into a Merkle tree, sign only the root, then prove one receipt's inclusion without revealing the others. Leaves are beneficiary-bound and domain-separated (leaf: vs node:) against second-preimage games."
     >
@@ -350,7 +353,8 @@ function PolicyPanel() {
 
   return (
     <DemoCard
-      kicker="Proof-carrying policy · versioned, hash-chained"
+      id="policy-history"
+      kicker="03 · Policy history"
       title="Yesterday's decision, judged by yesterday's policy."
       lede="A policy is not a mutable blob — it's a hash-chained sequence of versions, and every decision binds to the exact version it ran under. Amend the policy all you like; you can't retroactively make a past decision look compliant."
     >
@@ -456,18 +460,19 @@ function ReferenceCheckPanel() {
     })
     setSteps((prev) => [
       ...prev,
-      info('config drift', 'the agent’s model changed after certification (demo-agent-v1 → v2)'),
+      info('config drift', 'the declared model changed after evaluation (demo-agent-v1 → v2)'),
       v.code === 4
-        ? ok('credential VOID', 'config drift detected (code 4) — a cert earned by one config cannot be carried onto another')
+        ? ok('credential VOID', 'config drift detected (code 4) — evidence bound to one config cannot be carried onto another')
         : bad('MISSED', `expected VOID, got code ${v.code}`),
     ])
   }
 
   return (
     <DemoCard
-      kicker="Crucible + IAM gym · configuration-bound reference checks + attestations"
-      title="A reference check for agents — issued by the oracle, bound to the config."
-      lede="Run an agent policy through a deterministic IAM/least-privilege gym and mint a config-bound credential: the Verified Readiness Level, the before/after lift, and the receipts that back it. Change the model, tools, context, or harness — and it voids."
+      id="config-binding"
+      kicker="04 · Configuration binding"
+      title="Change the configuration. Re-check the evidence."
+      lede="Evaluate a synthetic policy against the deterministic IAM battery, inspect its config-bound credential, then change the declared model. No named agent is contacted or executed."
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={runHarnessed}>
@@ -480,7 +485,7 @@ function ReferenceCheckPanel() {
           Drift the config
         </button>
         <button className="btn btn--ghost btn--sm" onClick={download} disabled={!result}>
-          Download the attestation
+          Download the credential
         </button>
         <button className="btn btn--ghost btn--sm" onClick={() => void share()} disabled={!result}>
           {copied ? 'Link copied' : 'Copy a /verify link'}
@@ -500,8 +505,9 @@ function ReferenceCheckPanel() {
       <Log steps={steps} />
       <Peek title="Peek at the credential" value={result ? result.credential : null} />
       <p className="sec-note">
-        "Certified" here means <b>reproducible least-privilege behavior under this verifier + this config</b> —
-        never "safe". Synthetic demo battery; real design-partner evidence stays blocked until authorized.
+        This credential records <b>reproducible policy behavior under this verifier + this config</b>.
+        It is an unsigned, digest-bound synthetic example, not a permission grant or certification.
+        Real design-partner evidence stays blocked until authorized.
       </p>
       <div className="sec-actions" style={{ marginTop: 4 }}>
         <a className="btn btn--primary btn--sm" href="/reference-check">
@@ -573,7 +579,8 @@ export function DelegationPanel() {
 
   return (
     <DemoCard
-      kicker="Attenuation"
+      id="delegation"
+      kicker="05 · Delegated authority"
       title="Widen one edge. Watch the root's blast radius move."
       lede="A correct capability token can only narrow as it is delegated, so an ancestor reaches exactly its own grant. Break that on any edge and authority flows back up the tree."
     >
@@ -721,9 +728,10 @@ export function OverGrantPanel() {
 
   return (
     <DemoCard
-      kicker="Over-grant analyzer · authorization-risk metrics from a tool-call log"
-      title="How much authority is held and never used — and what one hijacked identity could reach."
-      lede="The reference check above scores a policy. This scores the authority a fleet actually holds, against what it actually exercised: five metrics, each with a stated denominator, over a synthetic agent fleet and its RPC log. Then widen a single delegation edge and watch the blast radius move at the root."
+      id="fleet-analysis"
+      kicker="06 · Authority analysis"
+      title="Inspect the authority that goes unused."
+      lede="Compare granted and exercised authority across a seeded synthetic fleet. Inspect five metrics with stated denominators, widen one delegation edge, or measure detection against planted ground truth."
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={analyze}>
@@ -765,7 +773,16 @@ export function OverGrantPanel() {
 // ── page ─────────────────────────────────────────────────────────────────────
 export function SecurityPage() {
   return (
-    <div className="sec-grid">
+    <div className="sec-grid product-workspace">
+      <div className="workspace-intro">
+        <span className="workspace-eyebrow">Six experiments · synthetic inputs</span>
+        <p>Run a check, challenge it, and inspect the underlying artifact. Each panel uses the published verification modules in your browser. An intact signature establishes integrity; trusted identity and deployment authority require separate evidence.</p>
+      </div>
+      <nav className="workspace-nav" aria-label="Verification experiments">
+        <a href="#signatures">01 · Signatures</a><a href="#batches">02 · Batches</a>
+        <a href="#policy-history">03 · Policy history</a><a href="#config-binding">04 · Configuration</a>
+        <a href="#delegation">05 · Delegation</a><a href="#fleet-analysis">06 · Authority</a>
+      </nav>
       <SigilPanel />
       <MerklePanel />
       <PolicyPanel />

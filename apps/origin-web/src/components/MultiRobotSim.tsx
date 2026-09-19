@@ -10,7 +10,7 @@ import { EMBODIMENT_CODE, type RobotEmbodiment } from '../environmentPlan'
 
 // One colour per FLEET. Robots, their items, and their drop inherit the fleet
 // colour, so the grouping — which robots serve which work — reads at a glance.
-const FLEET_COLORS = ['#2f6df6', '#0f9d6e', '#b97400', '#7c3aed', '#db2777', '#0891b2']
+const FLEET_COLORS = ['#2b523b', '#1e6a52', '#8a5200', '#6940a3', '#9d2e68', '#0b637a']
 
 export function MultiRobotSim({
   siteMap,

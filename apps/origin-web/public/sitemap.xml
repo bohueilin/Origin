@@ -1,87 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://origin-physical-ai.pages.dev/</loc>
+    <loc>https://originphysicalai.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/app</loc>
+    <loc>https://originphysicalai.com/app</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/proof</loc>
+    <loc>https://originphysicalai.com/proof</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/trust</loc>
+    <loc>https://originphysicalai.com/trust</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/verify</loc>
+    <loc>https://originphysicalai.com/verify</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/over-grant</loc>
+    <loc>https://originphysicalai.com/over-grant</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/security</loc>
+    <loc>https://originphysicalai.com/security</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/reference-check</loc>
+    <loc>https://originphysicalai.com/reference-check</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/labs</loc>
+    <loc>https://originphysicalai.com/labs</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/simulation</loc>
+    <loc>https://originphysicalai.com/simulation</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/operations</loc>
+    <loc>https://originphysicalai.com/operations</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/proving-ground</loc>
+    <loc>https://originphysicalai.com/proving-ground</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/brief</loc>
+    <loc>https://originphysicalai.com/brief</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/legal/privacy-policy.html</loc>
+    <loc>https://originphysicalai.com/legal/privacy-policy.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/legal/terms-of-service.html</loc>
+    <loc>https://originphysicalai.com/legal/terms-of-service.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/reference-check-vs-runtime</loc>
+    <loc>https://originphysicalai.com/reference-check-vs-runtime</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://origin-physical-ai.pages.dev/foundry</loc>
+    <loc>https://originphysicalai.com/foundry</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

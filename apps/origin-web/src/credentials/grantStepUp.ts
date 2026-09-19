@@ -71,7 +71,7 @@ function randomBuffer(n: number): ArrayBuffer {
 }
 
 // rpId must equal (or be a registrable parent of) the page's host. The full hostname always
-// satisfies that — origin-physical-ai.pages.dev for prod, localhost for dev (both secure ctx).
+// satisfies that — originphysicalai.com for prod, localhost for dev (both secure ctx).
 function rpId(): string {
   try { return window.location.hostname } catch { return 'localhost' }
 }

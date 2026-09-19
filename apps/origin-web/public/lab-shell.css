@@ -1,0 +1,11 @@
+/* Isolated chrome for experimental consoles; no generic control selectors. */
+.lab-masthead { display: flex; align-items: center; gap: 24px; padding: 22px max(24px,calc((100vw - 1144px)/2)); background: #f8f7f4; border-bottom: 1px solid #dce3d4; color: #272d26; font-family: 'Avenir Next',Avenir,system-ui,sans-serif; }
+.lab-brand { display: inline-flex; align-items: center; gap: 10px; color: #272d26; text-decoration: none; font-size: 29px; letter-spacing: -.05em; }
+.lab-brand img { flex-shrink: 0; }
+.lab-location { font-size: 12px; color: #64705d; }
+.lab-masthead nav { margin-left: auto; display: flex; gap: 24px; }
+.lab-masthead nav a, .lab-footer a { color: #2b523b; font-size: 13px; font-weight: 600; text-decoration: none; }
+.lab-masthead nav a:hover, .lab-footer a:hover { text-decoration: underline; }
+.lab-footer { display: flex; gap: 28px; justify-content: center; padding: 30px 24px; border-top: 1px solid #dce3d4; background: #edf1e7; color: #4e5b48; font: 12px/1.5 'Avenir Next',Avenir,system-ui,sans-serif; }
+.lab-masthead a:focus-visible, .lab-footer a:focus-visible { outline: 3px solid #2b523b; outline-offset: 5px; }
+@media(max-width:680px) { .lab-masthead { padding: 18px 20px; flex-wrap: wrap; gap: 8px 16px; }.lab-location { margin-left: auto; }.lab-masthead nav { width: 100%; padding-top: 12px; }.lab-footer { flex-wrap: wrap; gap: 12px 22px; } }

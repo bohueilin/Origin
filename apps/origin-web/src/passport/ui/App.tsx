@@ -248,9 +248,9 @@ function TopBar({ crumb, onBack, status }: { crumb?: string; onBack?: () => void
   return (
     <header className="pp-top">
       <div className="pp-top-brand">
-        <img className="pp-top-mark" src="/origin-logo.png" alt="" aria-hidden="true" />
-        <span className="pp-top-name">Passport</span>
-        <span className="pp-top-sub">delegated autonomy you can trust</span>
+        <img className="pp-top-mark" src="/brand/origin-mark.svg" alt="" aria-hidden="true" />
+        <a className="pp-top-name" href="/labs">Passport</a>
+        <span className="pp-top-sub">Origin Labs · delegated access</span>
       </div>
       {crumb && (
         <nav className="pp-top-nav">

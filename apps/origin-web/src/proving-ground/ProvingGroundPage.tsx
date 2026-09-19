@@ -6,6 +6,7 @@
 // credential that re-verifies on /verify. Placements are DESCRIPTIVE — they
 // drive the animation, never the verdict (the oracle scores geometry + policy).
 import { useMemo, useRef, useState } from 'react'
+import '../shared/product-workspace.css'
 import { ReflectAlign } from '../components/ReflectAlign'
 import { MultiRobotSim } from '../components/MultiRobotSim'
 import { ProvingGround3D } from '../components/ProvingGround3D'
@@ -30,7 +31,9 @@ export function ProvingGroundPage() {
   const [snapshot, setSnapshot] = useState<FloorPlanSnapshot | null>(null)
   const [frozen, setFrozen] = useState<FrozenWorkflow | null>(null)
   const [view, setView] = useState<'2d' | '3d'>('2d')
-  const [sigil, setSigil] = useState<{ thumb: string; obj: unknown } | null>(null)
+  const [signedEvidence, setSigil] = useState<{ thumb: string; obj: unknown; inputDigest: string } | null>(null)
+  const [signing, setSigning] = useState(false)
+  const [signError, setSignError] = useState<string | null>(null)
   const resultsRef = useRef<HTMLDivElement | null>(null)
 
   const siteMap = snapshot?.siteMap ?? draft.siteMap
@@ -42,6 +45,10 @@ export function ProvingGroundPage() {
     [siteMap, embodiment],
   )
   const level = readiness.level
+  const inputDigest = sha256(canonical(digestInput))
+  // A signature is displayed only beside the exact evaluated input it seals,
+  // including when the visitor edits the floor while Web Crypto is still busy.
+  const sigil = signedEvidence?.inputDigest === inputDigest ? signedEvidence : null
   const uniformVerdict = episodes.every((e) => e.evaluation.verdict === episodes[0]?.evaluation.verdict)
 
   const approve = (f: FrozenWorkflow) => {
@@ -51,10 +58,18 @@ export function ProvingGroundPage() {
   }
 
   const signCredential = async () => {
-    const payload = { ...digestInput, receipt_digest: sha256(canonical(digestInput)) }
-    const kp = await generateSigningKey()
-    const s = await signSigil(payload, kp, { issuer: 'origin-proving-ground', kind: 'fleet-readiness-credential' })
-    setSigil({ thumb: await keyThumbprint(s.pubkey_jwk), obj: s })
+    setSigning(true)
+    setSignError(null)
+    try {
+      const payload = { ...digestInput, receipt_digest: sha256(canonical(digestInput)) }
+      const kp = await generateSigningKey()
+      const s = await signSigil(payload, kp, { issuer: 'origin-proving-ground', kind: 'fleet-readiness-credential' })
+      setSigil({ thumb: await keyThumbprint(s.pubkey_jwk), obj: s, inputDigest })
+    } catch (e) {
+      setSignError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setSigning(false)
+    }
   }
 
   const download = () => {
@@ -69,17 +84,22 @@ export function ProvingGroundPage() {
   }
 
   return (
-    <div className="pg-wrap">
+    <div className="pg-wrap product-workspace">
+      <ol className="workspace-steps" aria-label="Proving-ground workflow">
+        <li><span>01</span><div><b>Edit the synthetic floor</b>Geometry and fleet composition</div></li>
+        <li><span>02</span><div><b>Explore the playback</b>The same floor in 2D or 3D</div></li>
+        <li><span>03</span><div><b>Inspect the oracle result</b>Per-type episodes and demo evidence</div></li>
+      </ol>
       {/* 1 · Paint the floor + the mixed fleet (the original console step, intact) */}
-      <ReflectAlign draft={draft} onApprove={approve} onEdit={setSnapshot} onBack={() => window.location.assign('/labs')} backLabel="← Back to Labs" />
+      <ReflectAlign draft={draft} onApprove={approve} onEdit={setSnapshot} onBack={() => window.location.assign('/labs')} backLabel="← Back to Labs" mode="proving-ground" />
 
       {/* 2 · Watch the SAME floor in 2D / 3D — descriptive playback of the deployment */}
       <div className="pg-stage">
         <div className="pg-stage__bar">
-          <p className="pg-h">Watch the deployment — the floor you just painted</p>
-          <div className="pg-toggle" role="tablist" aria-label="View">
-            <button role="tab" aria-selected={view === '2d'} className={view === '2d' ? 'is-on' : ''} onClick={() => setView('2d')}>2D</button>
-            <button role="tab" aria-selected={view === '3d'} className={view === '3d' ? 'is-on' : ''} onClick={() => setView('3d')}>3D</button>
+          <div><p className="pg-h">02 · Descriptive playback</p><h2>The floor you just painted.</h2></div>
+          <div className="pg-toggle" role="group" aria-label="Playback view">
+            <button aria-pressed={view === '2d'} className={view === '2d' ? 'is-on' : ''} onClick={() => setView('2d')}>2D</button>
+            <button aria-pressed={view === '3d'} className={view === '3d' ? 'is-on' : ''} onClick={() => setView('3d')}>3D</button>
           </div>
         </div>
         {view === '2d'
@@ -94,7 +114,7 @@ export function ProvingGroundPage() {
 
       {/* 3 · The oracle's verdicts + the earned Verified Readiness Level */}
       <div className="pg-results" ref={resultsRef}>
-        <p className="pg-h">One episode per robot type — scored by the deterministic oracle</p>
+        <div><p className="pg-h">03 · The oracle record</p><h2>One episode per robot type.</h2></div>
         <div className="pg-episodes">
           {episodes.map((e) => (
             <div key={e.embodiment} className="pg-episode">
@@ -104,10 +124,10 @@ export function ProvingGroundPage() {
               <span className="pg-episode__verdict">{e.evaluation.verdict}</span>
               <span className="pg-episode__meta">
                 {e.evaluation.verdict === 'finish'
-                  ? `autonomy earned · reward ${e.verdict.reward.toFixed(2)}`
+                  ? `finish in this synthetic gym · reward ${e.verdict.reward.toFixed(2)}`
                   : e.evaluation.verdict === 'escalate'
-                    ? 'no autonomy — must escalate to a human'
-                    : 'no autonomy — must refuse the order'}
+                    ? 'gym verdict — escalate to a human'
+                    : 'gym verdict — refuse the order'}
                 {e.verdict.catastrophic ? ' · CATASTROPHIC' : ''}
               </span>
             </div>
@@ -148,15 +168,15 @@ export function ProvingGroundPage() {
                 ? `${readiness.catastrophicCount} catastrophic episode(s) hard-cap the level — the right to act cannot be averaged back.`
                 : `Pass rate ${Math.round(readiness.passRate * 100)}% and average reward ${readiness.avgReward.toFixed(2)} across ${readiness.episodes} embodiment episode(s), zero catastrophic.`}
             </p>
-            <p className="pg-verdict__perm">{level.permission}</p>
-            <p className="pg-verdict__scope">A level means "reproducible under this verifier" on this exact floor — never "safe."</p>
+            <p className="pg-verdict__perm">An illustrative readiness level for this synthetic floor and fixed verifier. It grants no deployment permission.</p>
+            <p className="pg-verdict__scope">A level means "reproducible under this verifier" on this exact floor — never "safe." Simulation evidence is not real-world validation or robot certification.</p>
           </div>
         </div>
 
         <div className="pg-evidence">
           {!sigil
-            ? <button className="btn btn--primary btn--sm" onClick={signCredential} disabled={!frozen && !snapshot}>
-                Sign this floor → fleet readiness credential
+            ? <button className="btn btn--primary btn--sm" onClick={signCredential} disabled={signing || (!frozen && !snapshot)} aria-busy={signing}>
+                {signing ? 'Signing this floor…' : 'Sign this floor → fleet readiness credential'}
               </button>
             : <>
                 <button className="btn btn--ghost btn--sm" onClick={download}>Download the credential</button>
@@ -164,11 +184,12 @@ export function ProvingGroundPage() {
                 <span className="pg-thumb">signed · {level.id} · key {sigil.thumb.slice(0, 10)}…</span>
               </>}
         </div>
+        {signError && <p className="rc-error" role="alert">Could not sign this floor: {signError}</p>}
+        {!sigil && <p className="pg-note">Signing creates a browser-session integrity artifact for the current evaluated inputs. Change the geometry or fleet composition and sign again.</p>}
         {sigil && (
           <p className="pg-note">
             Signed with an <b>in-session key</b> (thumbprint above) for offline integrity — a{' '}
-            <b>demo credential</b>, not an Origin-issued attestation. Production credentials issue
-            under Origin's pinned issuer key.
+            <b>demo credential</b>, not an Origin-issued attestation. A trusted production issuer and runtime enforcement are proposed architecture; this page does not provide them.
           </p>
         )}
       </div>

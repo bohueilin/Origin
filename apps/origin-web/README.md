@@ -1,5 +1,7 @@
 # Origin Web — public trust layer, evidence formats, and demos
 
+[Website](https://originphysicalai.com) · [Public source](https://github.com/bohueilin/Origin)
+
 > **Canonical product boundary:** see the repository-root [`README.md`](../../README.md).
 > Proprietary algorithm work stays in its private repository. This public app contains
 > the trust layer, deterministic verifiers, evidence formats, and explicitly labeled demos.

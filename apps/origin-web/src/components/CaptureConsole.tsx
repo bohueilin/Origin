@@ -506,16 +506,15 @@ export function CaptureConsole({
         <p className="pilot-banner" role="note" aria-label="Preview environment notice">
           <span className="pilot-dot" aria-hidden="true" />
           <span>
-            <strong>Private-pilot preview · simulated data</strong> — this is step one: set up and
-            verify your site. The live operator console runs it on your floor during a supervised pilot.
+            <strong>Research preview · simulated data</strong> — organize site inputs and inspect a bounded synthetic evaluation. No robot is connected or deployed by this page.
           </span>
         </p>
         <h1>Create your site before the robot ever steps on it.</h1>
         <p className="flow-sub">
           Give Origin the context a robotics team normally has to reconstruct by hand: floor plans,
           walkthrough videos, photos, SOPs, links, constraints, and the work the robot must perform.
-          Origin turns that evidence into a site map, plans safe task steps, and verifies them against
-          operator-grade telemetry before any live deployment.
+          Use the local preview to structure a site map and task brief, then inspect simulated outcomes and
+          deterministic checks. Real-world readiness requires separately authorized evidence and validation.
         </p>
 
         <div className="site-thesis" aria-label="How Origin turns site context into robot readiness">

@@ -35,7 +35,7 @@ test('home carries the agent-evidence thesis, one h1, clean console', async ({ p
   await page.goto('/')
   await expect(page).toHaveTitle(/Origin/)
   await expect(page.locator('h1')).toHaveCount(1)
-  await expect(page.locator('h1')).toHaveText('Evaluate a policy before security review, and show the evidence limits.')
+  await expect(page.locator('h1')).toHaveText('Move AI forward. With evidence.')
   await page.waitForTimeout(800)
   expect(errors.filter((e) => !benign(e)), errors.join('\n')).toHaveLength(0)
 })
@@ -50,9 +50,9 @@ test('home content is in the server HTML (crawler-readable, not client-rendered)
   // with nothing rather than a space, so text broken across elements in a way that would
   // change reading order still fails.
   const text = (await res.text()).replace(/<[^>]+>/g, '')
-  expect(html).toContain('The evidence layer for high-consequence AI agents')
-  expect(text).toContain('Evaluate a policy before security review, and show the evidence limits.')
-  expect(html).toContain('For the owner of a high-consequence agent that a reviewer can’t yet approve: agents touching production, internal tools, code, PII, or money. Prototype in private pilot: synthetic sandbox evidence, not production SaaS, and not compliance certification.')
+  expect(html).toContain('The evidence layer for high-consequence AI')
+  expect(text).toContain('Move AI forward. With evidence.')
+  expect(html).toContain('Origin does not contact or execute your named agent. Browser evidence is untrusted by default.')
   expect(html).toContain('Book an Agent Evidence Review')
   expect(html).toContain('tamper-evident')
   expect(html).toContain('application/ld+json')
@@ -215,7 +215,7 @@ test('reference-check versus runtime explainer is crawlable and source-linked', 
   const jsonLd = JSON.parse(jsonLdSource!) as Record<string, unknown>
   expect(jsonLd['@type']).toBe('TechArticle')
   expect(jsonLd.headline).toBe('Reference check vs runtime enforcement')
-  expect(jsonLd.url).toBe('https://origin-physical-ai.pages.dev/reference-check-vs-runtime')
+  expect(jsonLd.url).toBe('https://originphysicalai.com/reference-check-vs-runtime')
   expect(jsonLd.description).toBe("A source-backed explanation of Origin's implemented synthetic pre-access reference check and proposed runtime enforcement architecture, trust boundaries, evidence, verdicts, and limitations.")
   expect(Object.keys(jsonLd).sort()).toEqual(['@context', '@type', 'description', 'headline', 'url'])
   await page.goto('/reference-check-vs-runtime')
@@ -281,7 +281,7 @@ test('TR-A002 is a real, tamper-evident SHA-256 hash chain (12 events, verifiabl
 test('proving ground keeps a single h1', async ({ page }) => {
   await page.goto('/proving-ground')
   await expect(page.locator('h1')).toHaveCount(1)
-  await expect(page.locator('h1')).toHaveText('Draw the floor. Deploy the fleet. Earn the level.')
+  await expect(page.locator('h1')).toHaveText('Draw a floor. Test a fleet. Inspect the evidence.')
 })
 
 test('the evidence console (/app) is a simulated, scenario-switchable preview', async ({ page }) => {
@@ -305,7 +305,7 @@ test('reference-check versus runtime explainer is discoverable from home and sit
   const sitemap = await page.request.get('/sitemap.xml')
   expect(sitemap.status()).toBe(200)
   expect(await sitemap.text()).toContain(
-    'https://origin-physical-ai.pages.dev/reference-check-vs-runtime',
+    'https://originphysicalai.com/reference-check-vs-runtime',
   )
 })
 

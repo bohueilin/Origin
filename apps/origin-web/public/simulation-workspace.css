@@ -1,0 +1,13 @@
+.sim-editorial-hero { padding: 72px 0 48px; }
+.sim-editorial-hero h1 { font-size: clamp(38px,5vw,64px); max-width: 22ch; line-height: 1.07; letter-spacing: -.05em; }
+.sim-editorial-hero .section__lede { max-width: 72ch; font-size: 18px; }
+.simulation-workspace .section--tint { padding: 48px 0 80px; background: #edf1e7; }
+.simulation-workspace .sim-wrap { margin-top: 0; gap: 24px; }
+.simulation-workspace .sim-controls, .simulation-workspace .ops-controls { background: #f9faf6; border: 1px solid #d8e0d0; border-radius: 18px; padding: 20px; }
+.simulation-workspace .sim-stage { border-radius: 22px; }
+.simulation-workspace .sim-scores > div { border-radius: 16px; padding: 20px 14px; }
+.simulation-workspace .sim-scores b { font-size: 27px; font-weight: 500; }
+.simulation-workspace .sim-verdict { border-radius: 16px; padding: 22px; }
+.simulation-workspace .sim-note { max-width: 90ch; }
+.simulation-workspace .ops-panel { border-radius: 22px; padding: 24px; }
+@media(max-width:680px) { .sim-editorial-hero { padding: 42px 0 32px; }.sim-editorial-hero .section__lede { font-size: 16px; }.simulation-workspace .sim-controls,.simulation-workspace .ops-controls { padding: 16px; }.simulation-workspace .section--tint { padding-top: 28px; } }

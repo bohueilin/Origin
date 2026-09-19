@@ -14,6 +14,7 @@
 // and nothing is persisted (no cookies, no localStorage).
 // =============================================================================
 import { useRef, useState } from 'react'
+import '../shared/product-workspace.css'
 import { decodeArtifact } from '../shared/shareLink'
 import { KIND_LABELS, parseArtifact, detectArtifact, verifyArtifact, tamperArtifact } from './detect.mjs'
 import type { ReportLine, ReportTone, VerifyReport } from './detect.mjs'
@@ -153,8 +154,17 @@ export function VerifyPage() {
   const [busy, setBusy] = useState(false)
   const [selectedExample, setSelectedExample] = useState<ExampleKind | null>(null)
   const pristineRef = useRef<string | null>(null)
+  const inputRevision = useRef(0)
+
+  const invalidateReport = () => {
+    inputRevision.current += 1
+    setReport(null)
+    setError(null)
+    setNotes([])
+  }
 
   const reset = (nextText: string, nextNotes: string[]) => {
+    inputRevision.current += 1
     setText(nextText)
     setNotes(nextNotes)
     setReport(null)
@@ -162,9 +172,11 @@ export function VerifyPage() {
   }
 
   const loadExample = async (kind: ExampleKind) => {
+    const revision = inputRevision.current
     setBusy(true)
     try {
       const artifact = await makeExample(kind)
+      if (revision !== inputRevision.current) return
       // tamper/label by DETECTED kind — an example may wrap another artifact
       // (e.g. the factory reference check is an attestation-wrapped credential)
       const detected = detectArtifact(artifact)
@@ -204,6 +216,7 @@ export function VerifyPage() {
   }
 
   const runVerify = async () => {
+    const revision = inputRevision.current
     setBusy(true)
     try {
       const parsed = parseArtifact(text)
@@ -214,10 +227,13 @@ export function VerifyPage() {
       }
       setError(null)
       const pin = thumbprint.trim()
-      setReport(await verifyArtifact(parsed.value, pin ? { expectedThumbprint: pin } : {}))
+      const nextReport = await verifyArtifact(parsed.value, pin ? { expectedThumbprint: pin } : {})
+      if (revision === inputRevision.current) setReport(nextReport)
     } catch (e) {
-      setReport(null)
-      setError(e instanceof Error ? e.message : String(e))
+      if (revision === inputRevision.current) {
+        setReport(null)
+        setError(e instanceof Error ? e.message : String(e))
+      }
     } finally {
       setBusy(false)
     }
@@ -234,128 +250,97 @@ export function VerifyPage() {
   const resetExample = () => {
     if (pristineRef.current == null) return
     setTampered(false)
-    reset(pristineRef.current, ['Reset the selected example to its original untampered evidence. Verify again for VALID.'])
+    reset(pristineRef.current, ['Restored the original example. Verify again to inspect its integrity and trust status.'])
   }
 
   const verdictTone = report ? (report.ok ? 'ok' : report.verdict === 'UNRECOGNIZED' || report.verdict === 'UNTRUSTED' ? 'info' : 'bad') : null
 
   return (
-    <div className="vfy-grid">
-      <article className="card">
-        <p className="kicker">Paste + verify · offline</p>
-        <h2 style={{ marginTop: 6 }}>One artifact in, one honest verdict out.</h2>
-        <p className="section__lede" style={{ marginTop: 8 }}>
-          Paste the JSON of any Origin evidence artifact. The kind is auto-detected from its shape and
-          re-verified right here — digests recomputed, signatures checked, chains re-derived. Or mint a
-          synthetic example below and tamper with it yourself.
-        </p>
-
-        <div className="field">
-          <label htmlFor="vfy-artifact">Artifact JSON</label>
-          <textarea
-            id="vfy-artifact"
-            className="vfy-input"
-            rows={14}
-            spellCheck={false}
-            autoComplete="off"
-            placeholder='{ "sigil_schema_version": "1.0.0", … }  — an Origin Attestation, Crucible credential, ScoreReceipt, episode trace, or Merkle inclusion proof'
-            aria-describedby="vfy-hint"
-            value={text}
-            onChange={(e) => {
-              const nextText = e.target.value
-              setText(nextText)
-              if (selectedExample != null && nextText !== pristineRef.current) {
-                setSelectedExample(null)
-                setTampered(false)
-                pristineRef.current = null
-              }
-            }}
-          />
+    <div className="vfy-grid product-workspace">
+      <ol className="workspace-steps" aria-label="Verification workflow">
+        <li><span>01</span><div><b>Bring an artifact</b>Paste JSON or load an example</div></li>
+        <li><span>02</span><div><b>Check its integrity</b>Inspect the verdict and its scope</div></li>
+        <li><span>03</span><div><b>Challenge the result</b>Change one field, then re-verify</div></li>
+      </ol>
+      <article className="product-panel">
+        <div className="workspace-heading">
+          <p className="workspace-eyebrow">Evidence verifier · runs locally</p>
+          <h2>Put the evidence to the test.</h2>
+          <p className="section__lede">Start with a synthetic example or paste your own artifact. A signature, a trusted issuer, and a confirmed execution each mean something different. The result explains what this artifact establishes.</p>
         </div>
-        <p className="vfy-note" id="vfy-hint">
-          Client-side only: nothing you paste is uploaded, and nothing is stored. Verification runs the
-          published <code>@origin/verifier-core</code> + <code>@origin/evidence</code> modules in this tab.
-        </p>
-
-        <div className="field">
-          <label htmlFor="vfy-thumbprint">Pin issuer thumbprint (optional — Origin Attestations only)</label>
-          <input
-            id="vfy-thumbprint"
-            type="text"
-            spellCheck={false}
-            autoComplete="off"
-            placeholder="expected signer thumbprint (sha256 of the RFC-7638 JWK members) — rejects a valid-but-wrong-signer attestation"
-            value={thumbprint}
-            onChange={(e) => setThumbprint(e.target.value)}
-          />
-        </div>
-
-        <div className="vfy-actions">
-          <button className="btn btn--primary btn--sm" onClick={() => void runVerify()} disabled={busy || text.trim() === ''}>
-            Verify
-          </button>
-          <button className="btn btn--ghost btn--sm" onClick={clearAll} disabled={busy || (text === '' && !report && !error)}>
-            Clear
-          </button>
-          <button className="btn btn--ghost btn--sm" onClick={resetExample} disabled={busy || selectedExample == null}>
-            Reset selected example
-          </button>
-          <label className="vfy-toggle">
-            <input type="checkbox" checked={tampered} onChange={(e) => toggleTamper(e.target.checked)} disabled={busy} />
-            Tamper one field (see it void)
-          </label>
-        </div>
-
         <div className="vfy-examples">
           <span id="vfy-examples-label">Load a synthetic example:</span>
           {EXAMPLES.map((ex) => (
-            <button
-              key={ex.kind}
-              className="btn btn--ghost btn--sm"
-              onClick={() => void loadExample(ex.kind)}
-              disabled={busy}
-              aria-describedby="vfy-examples-label"
-              aria-pressed={selectedExample === ex.kind}
-            >
+            <button key={ex.kind} className="btn btn--ghost btn--sm" onClick={() => void loadExample(ex.kind)} disabled={busy}
+              aria-describedby="vfy-examples-label" aria-pressed={selectedExample === ex.kind}>
               {ex.label}
             </button>
           ))}
         </div>
-
-        <div className="vfy-result" aria-live="polite">
-          {notes.map((n, i) => (
-            <p className="vfy-note" key={i}>
-              {n}
-            </p>
-          ))}
-          {error ? (
-            <div className="vfy-verdict vfy-verdict--bad" role="status">
-              <b>NOT VERIFIABLE</b>
-              <span>{error}</span>
+        <div className="vfy-workbench">
+          <div className="vfy-editor">
+            <div className="field">
+              <label htmlFor="vfy-artifact">Artifact JSON</label>
+              <textarea id="vfy-artifact" className="vfy-input" rows={14} spellCheck={false} autoComplete="off"
+                placeholder='{ "sigil_schema_version": "1.0.0", … }'
+                aria-describedby="vfy-hint" value={text}
+                onChange={(e) => {
+                  const nextText = e.target.value
+                  invalidateReport()
+                  setText(nextText)
+                  setTampered(false)
+                  setSelectedExample(null)
+                  pristineRef.current = null
+                }} />
             </div>
-          ) : null}
-          {report && verdictTone ? (
-            <>
-              <div className={`vfy-verdict vfy-verdict--${verdictTone}`} role="status">
-                <b>{report.verdict}</b>
-                <span>
-                  {KIND_LABELS[report.kind]}
-                  {report.code != null ? ` · code ${report.code}` : ''}
-                </span>
+            <p className="vfy-note" id="vfy-hint">Nothing you paste is uploaded or stored. Verification runs entirely in this tab.</p>
+            <div className="field vfy-pin">
+              <label htmlFor="vfy-thumbprint">Pin issuer thumbprint (optional — Origin Attestations only)</label>
+              <input id="vfy-thumbprint" type="text" spellCheck={false} autoComplete="off"
+                placeholder="Expected signer thumbprint"
+                value={thumbprint} onChange={(e) => { invalidateReport(); setThumbprint(e.target.value) }} />
+              <p className="vfy-note">For standalone Origin Attestation signatures: compare the signer with a thumbprint you already trust. This field does not configure issuer trust for Action/Run evidence.</p>
+            </div>
+            <div className="vfy-actions">
+              <button className="btn btn--primary btn--sm" onClick={() => void runVerify()} disabled={busy || text.trim() === ''} aria-busy={busy}>Verify</button>
+              <button className="btn btn--ghost btn--sm" onClick={clearAll} disabled={busy || (text === '' && !report && !error)}>Clear</button>
+              <button className="btn btn--ghost btn--sm" onClick={resetExample} disabled={busy || selectedExample == null}>Reset selected example</button>
+              <label className="vfy-toggle">
+                <input type="checkbox" checked={tampered} onChange={(e) => toggleTamper(e.target.checked)} disabled={busy} />
+                Tamper one field (see it void)
+              </label>
+            </div>
+          </div>
+          <div className="vfy-result" aria-live="polite" aria-label="Verification result">
+            <span className="workspace-eyebrow">The verification record</span>
+            {!report && !error ? (
+              <div className="workspace-empty">
+                <b>{text.trim() ? 'Ready to inspect.' : 'Your result starts here.'}</b>
+                <p>{text.trim() ? 'Select Verify to check the current artifact. Editing the JSON or signer pin clears the previous verdict.' : 'Load an example or paste JSON, then select Verify. You will see the checks, their outcome, and the limits of that outcome.'}</p>
               </div>
-              <p className="section__lede" style={{ marginTop: 12 }}>
-                {report.headline}
-              </p>
-              <Log lines={report.lines} />
-              <p className="vfy-note">
-                <b>Scope, honestly:</b> {report.scope}
-              </p>
-            </>
-          ) : null}
+            ) : null}
+            {notes.map((n, i) => <p className="vfy-note" key={i}>{n}</p>)}
+            {error ? (
+              <div className="vfy-verdict vfy-verdict--bad" role="status"><b>NOT VERIFIABLE</b><span>{error}</span></div>
+            ) : null}
+            {report && verdictTone ? (
+              <>
+                <div className={`vfy-verdict vfy-verdict--${verdictTone}`} role="status">
+                  <b>{report.verdict}</b>
+                  <span>{KIND_LABELS[report.kind]}{report.code != null ? ` · code ${report.code}` : ''}</span>
+                </div>
+                <p className="section__lede" style={{ marginTop: 16 }}>{report.headline}</p>
+                <Log lines={report.lines} />
+                <p className="vfy-note"><b>What this establishes:</b> {report.scope}</p>
+              </>
+            ) : null}
+          </div>
         </div>
       </article>
-
-      <DetectionTable />
+      <details className="product-panel vfy-detection workspace-details">
+        <summary>Which artifacts can I verify? See formats, checks, and verdict codes.</summary>
+        <DetectionTable />
+      </details>
     </div>
   )
 }

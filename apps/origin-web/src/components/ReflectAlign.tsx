@@ -37,18 +37,18 @@ type Tool = 'wall' | 'hazard' | 'human' | 'robot' | 'item' | 'drop' | 'clear'
 type FleetLayer = 'robots' | 'items' | 'drops'
 
 // One colour per fleet, matching the proving-ground sim (up to MAX_FLEETS).
-const FLEET_COLORS = ['#2f6df6', '#0f9d6e', '#b97400', '#7c3aed', '#db2777', '#0891b2']
+const FLEET_COLORS = ['#2b523b', '#1e6a52', '#8a5200', '#6940a3', '#9d2e68', '#0b637a']
 
 // The placement palette doubles as the legend (paint-program model): a tool is
 // always selected; tap the grid to place it, tap a placed element (or use Erase)
 // to remove it. Glyph + colour here match exactly what's drawn on the grid.
 const PALETTE: { id: Tool; glyph: string; label: string; color: string }[] = [
-  { id: 'robot', glyph: 'R', label: 'Robot', color: '#2f6df6' },
-  { id: 'item', glyph: 'I', label: 'Item', color: '#0f9d6e' },
-  { id: 'drop', glyph: 'D', label: 'Drop', color: '#1d4ed8' },
+  { id: 'robot', glyph: 'R', label: 'Robot', color: '#2b523b' },
+  { id: 'item', glyph: 'I', label: 'Item', color: '#1e6a52' },
+  { id: 'drop', glyph: 'D', label: 'Drop', color: '#294b99' },
   { id: 'wall', glyph: 'W', label: 'Wall', color: '#475569' },
-  { id: 'hazard', glyph: '!', label: 'Hazard', color: '#e5484d' },
-  { id: 'human', glyph: 'H', label: 'Human-only', color: '#b97400' },
+  { id: 'hazard', glyph: '!', label: 'Hazard', color: '#962e28' },
+  { id: 'human', glyph: 'H', label: 'Human-only', color: '#704400' },
   { id: 'clear', glyph: '⌫', label: 'Erase', color: '#64748b' },
 ]
 
@@ -250,6 +250,7 @@ function TriadCard({
         {facts.map((fact, index) => (
           <label className="triad-rule" key={fact.id}>
             <textarea
+              aria-label={`${name} rule ${index + 1}`}
               value={fact.text}
               rows={2}
               onChange={(e) =>
@@ -278,6 +279,7 @@ function StoryboardEditor({
           <span className="sb-num">{index + 1}</span>
           <textarea
             className="sb-text"
+            aria-label={`Storyboard step ${index + 1}`}
             value={fact.text}
             rows={2}
             onChange={(e) =>
@@ -296,6 +298,7 @@ export function ReflectAlign({
   onBack,
   onEdit,
   backLabel = '← Back to capture',
+  mode = 'capture',
 }: {
   draft: WorkflowUnderstanding
   onApprove: (frozen: FrozenWorkflow) => void
@@ -305,6 +308,8 @@ export function ReflectAlign({
   onEdit?: (snapshot: FloorPlanSnapshot) => void
   /** Copy for the back control — pages without a capture step pass their own. */
   backLabel?: string
+  /** Distinguish the standalone synthetic lab from the capture workflow. */
+  mode?: 'capture' | 'proving-ground'
 }) {
   const [domain, setDomain] = useState<PhysicalDomain>(draft.domain)
   const [embodiment, setEmbodiment] = useState<RobotEmbodiment>(draft.embodiment)
@@ -486,21 +491,21 @@ export function ReflectAlign({
         <button className="btn ghost back" onClick={onBack}>
           {backLabel}
         </button>
-        <div className="flow-kicker">Review &amp; confirm</div>
-        <h2 className="flow-title">Does this match the real workflow?</h2>
+        <div className="flow-kicker">{mode === 'proving-ground' ? '01 · Synthetic floor editor' : 'Review & confirm'}</div>
+        <h2 className="flow-title">{mode === 'proving-ground' ? 'Make this floor your experiment.' : 'Does this match the real workflow?'}</h2>
         <p className="flow-sub">
-          Origin drafted the floor, the plan, and the safety calls below from what you submitted. Fix
+          {mode === 'proving-ground' ? <>Start with this synthetic template. Change walls, hazards, and robot types to see the fixed oracle's evaluation update below. The editable storyboard and rules are descriptive notes; they do not change the oracle.</> : <>Origin drafted the floor, the plan, and the safety calls below from what you submitted. Fix
           anything that’s wrong — none of it is graded yet. When you approve, this exact version is
-          locked, and evidence-backed verification scores <em>that</em>, never a moving target.
+          locked, and evidence-backed verification scores <em>that</em>, never a moving target.</>}
         </p>
 
-        <StepBridge done="Brain drafted your plan + the three safety calls" next="confirm them — on approve, this exact version is frozen and scored." />
+        {mode === 'capture' && <StepBridge done="Brain drafted your plan + the three safety calls" next="confirm them — on approve, this exact version is frozen and scored." />}
 
-        <ol className="align-flow" aria-label="What happens to your edits">
+        {mode !== 'proving-ground' && <ol className="align-flow" aria-label="What happens to your edits">
           <li><b>Now</b> — your draft, fully editable</li>
           <li><b>On approve</b> — locked into a frozen snapshot</li>
           <li><b>Then</b> — verified against telemetry, never a model</li>
-        </ol>
+        </ol>}
 
         <div className="align-grid">
           <div className="align-panel site-map-panel">
@@ -519,7 +524,7 @@ export function ReflectAlign({
                 disabled={siteMap === draft.siteMap}
                 title="Reset the floor and grid size to this template’s default"
               >
-                ↺ Clear all
+                ↺ Reset floor
               </button>
             </div>
 
@@ -565,19 +570,12 @@ export function ReflectAlign({
                     key={fi}
                     className={`smp-fleet ${active ? 'on' : ''}`}
                     style={{ '--smp-c': color } as CSSProperties}
-                    role="button"
-                    tabIndex={0}
-                    aria-pressed={active}
-                    onClick={() => setActiveFleet(fi)}
-                    onKeyDown={(e) => {
-                      if (e.target !== e.currentTarget) return
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        setActiveFleet(fi)
-                      }
-                    }}
+                    role="group"
+                    aria-label={`Fleet ${fi + 1}`}
                   >
                     <div className="smp-fleet-head">
+                      <button type="button" className="smp-fleet-select" aria-label={`Select fleet ${fi + 1}`} aria-pressed={active} onClick={() => setActiveFleet(fi)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'transparent', border: 0, color: 'inherit', font: 'inherit', padding: 0, cursor: 'pointer', textAlign: 'left' }}>
                       <span className="smp-fleet-dot" style={{ background: color }} aria-hidden="true" />
                       <span className="smp-fleet-name">Fleet {fi + 1}</span>
                       {active ? (
@@ -585,6 +583,7 @@ export function ReflectAlign({
                       ) : (
                         <span className="smp-fleet-pick">tap to select</span>
                       )}
+                      </button>
                       {fleets.length > 1 && (
                         <button
                           className="smp-fleet-remove"
@@ -845,8 +844,7 @@ export function ReflectAlign({
             <span className="panel-kicker">The plan</span>
             <h2>What {robotTotal > 1 ? `your ${robotTotal} robots` : 'the robot'} will do</h2>
             <p>
-              The sequence Origin read from your site — pick up, route, drop. Edit any step; it’s
-              descriptive only, and verification scores nothing until you freeze.
+              {mode === 'proving-ground' ? 'Describe the intended sequence — pick up, route, drop. These notes do not change the geometry-based evaluation below.' : 'The sequence Origin read from your site — pick up, route, drop. Edit any step; it’s descriptive only, and verification scores nothing until you freeze.'}
             </p>
           </div>
           {(fleets.length > 1 || robotTotal > 1 || itemTotal > 1 || dropTotal > 1) && (
@@ -859,7 +857,7 @@ export function ReflectAlign({
                 ? 'Each fleet works on its own (matching colour) — its robots carry only its items to its nearest drop, '
                 : 'Each item is assigned to its nearest robot, '}
               one item per trip, routing around hazards and human-only cells, then home. You’ll watch
-              the fleets run together in the supervised run next.
+              the fleets run together in {mode === 'proving-ground' ? 'the descriptive playback below.' : 'the supervised run next.'}
             </p>
           )}
           <StoryboardEditor facts={storyboard} onChange={setStoryboard} />
@@ -868,9 +866,9 @@ export function ReflectAlign({
         <div className="align-block">
           <div className="align-block-head">
             <span className="panel-kicker">The three calls</span>
-            <h2>When it may act — and when it must stop</h2>
+            <h2>{mode === 'proving-ground' ? 'Record the intended boundaries.' : 'When it may act — and when it must stop'}</h2>
             <p>
-              Every job ends exactly one way. Confirm when the robot may{' '}
+              {mode === 'proving-ground' ? 'These editable notes describe intended behavior, not executable policy. Record when the robot should ' : 'Every job ends exactly one way. Confirm when the robot may '}
               <span className="lbl-finish">finish</span> on its own, when it must{' '}
               <span className="lbl-escalate">escalate</span> to a human, and when it must{' '}
               <span className="lbl-refuse">refuse</span> outright.
@@ -885,12 +883,11 @@ export function ReflectAlign({
 
         <div className="flow-actions">
           <button className="btn primary hero-action" onClick={approve}>
-            Approve workflow
+            {mode === 'proving-ground' ? 'Inspect this floor’s results' : 'Approve workflow'}
           </button>
-          <span className="trust-note">Approving locks this exact snapshot — evidence-backed verification scores it, not a model.</span>
+          <span className="trust-note">{mode === 'proving-ground' ? 'The deterministic oracle scores geometry and robot types. No real robot executes.' : 'Approving locks this exact snapshot — evidence-backed verification scores it, not a model.'}</span>
         </div>
       </div>
     </section>
   )
 }
-

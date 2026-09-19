@@ -1,67 +1,55 @@
-# Domain cutover — `originphysicalai.com`
+# Website identity — `originphysicalai.com`
 
-`vite.config.ts` has referenced this document since the `siteUrlRewrite()` plugin was written;
-it is now real. It records what the cutover actually was, so the next person does not have to
-re-derive it from a diff.
+The canonical product website is **https://originphysicalai.com**. Its public source repository is
+**https://github.com/bohueilin/Origin**. They are distinct destinations: website metadata identifies
+the product site; source links identify the repository.
 
-## What the site serves
+## Source and build behavior
 
-| Host | Role |
-|---|---|
-| `originphysicalai.com` | **Canonical.** Every `rel=canonical`, `og:url`, sitemap and `llms.txt` entry points here. |
-| `www.originphysicalai.com` | Serves the same content; its canonical points at the apex. |
-| `origin-physical-ai.pages.dev` | Still serves. Kept deliberately — it is the fallback if DNS is ever mis-set, and the Pages project's own name. |
+Public HTML canonicals, Open Graph and Twitter URLs, structured data, sitemap, robots, `llms.txt`,
+and current project documentation use the canonical domain directly. A normal local or CI build
+therefore emits the correct identity without a deployment-only environment variable.
 
-DNS is on Cloudflare (`nikon` / `kallie` nameservers), and both hosts are attached to the
-`origin-physical-ai` Pages project as custom domains.
+`siteUrlRewrite()` in `apps/origin-web/vite.config.ts` supports an explicit `SITE_URL` (or
+`PUBLIC_SITE_URL`) override for an alternate website origin. The deployment workflow can retain
+`SITE_URL: https://originphysicalai.com`; this matches the source default. `CONTACT_EMAIL` can
+separately override the public contact address. Without either override, the plugin is a no-op.
 
-## How the rewrite works
+The plugin rewrites entry-page HTML and only these copied public assets in Vite's configured
+output directory:
 
-There is exactly one lever. `SITE_URL` in the deploy workflow's build env:
+- Top-level HTML pages, including `404.html`.
+- `llms.txt`, `sitemap.xml`, and `robots.txt`.
+- HTML pages immediately inside `legal/`.
 
-```yaml
-SITE_URL: https://originphysicalai.com
-```
+It does **not** rewrite copied evidence, JSON, research snapshots, compiled JavaScript/CSS, or
+backend configuration. Historical signed and hashed artifacts must keep their original bytes;
+an embedded historical hostname is provenance, not a current canonical destination. Source links
+to GitHub and independent service subdomains are also left intact.
 
-`siteUrlRewrite()` in `apps/origin-web/vite.config.ts` then rewrites the built `dist` —
-`transformIndexHtml` for the HTML entries, `closeBundle` for the copied public assets
-(`llms.txt`, `sitemap.xml`, `robots.txt`, `legal/*`, `404.html`). **Source files keep the
-`pages.dev` host**, which is deliberate:
+Regression checks live in `apps/origin-web/src/deploy/siteIdentity.test.ts`. They cover canonical
+metadata consistency, preview overrides, source/service separation, and evidence preservation.
 
-- the repo's own rule is to keep `apps/origin-web` deploy-critical files byte-for-byte, and a
-  build-time rewrite honours that while still shipping the right host;
-- `unset` is a complete no-op, so local builds, previews and the e2e suite all still run
-  against `pages.dev` and the tests that pin it keep passing
-  (`tests/e2e/smoke.spec.ts:148` and `:238` assert the JSON-LD `url`).
+## Compatibility and release boundaries
 
-`CONTACT_EMAIL` is the same mechanism for the contact address. It is **not** set — the address
-is unchanged.
+The `origin-physical-ai` Cloudflare Pages project identifier and its `origin-physical-ai.pages.dev`
+host remain deployment compatibility details. Neither the project nor backend OAuth/CORS allowlists
+is renamed by this source update. The existing `www` host is separate from the canonical apex.
 
-## What the rewrite does NOT cover
+`src/auth/AuthProvider.tsx` derives browser callbacks from `window.location.origin`, preserving
+local, preview, and production sign-in behavior. The non-browser fallback uses the canonical
+website. `insforge.toml` contains the allowed callback configuration; applying backend changes
+requires separate authorization. Root-level InsForge Deno functions are not the three Pages API
+routes staged by the website release.
 
-Two things sit outside `dist` and had to be handled in source. Both are easy to miss because
-nothing fails loudly:
+Production release remains human-dispatched under [`DEPLOY.md`](DEPLOY.md). Repository updates do
+not apply DNS, redirects, backend configuration, or a production deployment. Live host behavior was
+not re-verified as part of this source identity pass.
 
-1. **OAuth redirects.** `src/auth/AuthProvider.tsx` builds its redirect from
-   `window.location.origin` at runtime, so on the new host it asks InsForge to return to
-   `https://originphysicalai.com/auth`. That URL must be in `insforge.toml`'s
-   `allowed_redirect_urls` or sign-in fails with a redirect error. Ten entries were added
-   (apex and `www`, each with `/`, `/admin`, `/app`, `/auth`, `/passport`).
-   **`insforge.toml` is source of truth, not live config** — it must be applied to the
-   InsForge project for the change to take effect.
-2. **Cloudflare Functions.** The deploy stages only `functions/api/`, and none of those three
-   routes (`lead`, `foundry/parse-floor`, `evidence/status`) carry an origin allowlist — they
-   are same-origin calls, so nothing to change. The `ALLOWED_ORIGINS` list in
-   `functions/credential-broker.ts` looks like it matters and does not: that file is an
-   InsForge Deno function, never staged into the Pages deployment.
+## Separate operational follow-ups
 
-## Still open
+- Verify any desired `www` → apex or legacy-host redirect in Cloudflare before changing it.
+- Verify the canonical-domain property and indexing in Search Console if needed.
+- Keep the current deliverable contact inbox until a replacement mailbox and MX are verified.
 
-- **`www` → apex redirect.** Both hosts serve 200 today. The canonical resolves this for search
-  engines, but a Cloudflare Redirect Rule (`www.originphysicalai.com/*` → `https://originphysicalai.com/$1`,
-  301) would make it unambiguous for everyone else. Dashboard action.
-- **Search Console.** Add `originphysicalai.com` as a property so indexing follows the new
-  canonicals.
-- **Email / MX.** Untouched. The contact address is still the personal one; `docs/CUTOVER.md`
-  notes an inbox on the real domain as later polish. Setting MX is a separate exercise and
-  nothing in the build depends on it.
+These are operational changes, not prerequisites for a correct source build.

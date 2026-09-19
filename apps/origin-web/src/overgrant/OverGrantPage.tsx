@@ -5,6 +5,7 @@
 // Everything computed here is computed in the visitor's browser over the seeded
 // SYNTHETIC corpus, by the same functions the published bench artifact re-derives from.
 import { useMemo } from 'react'
+import '../shared/product-workspace.css'
 import { DelegationPanel, OverGrantPanel } from '../security/SecurityPage'
 import { generateCorpus, grantUtilization, blastRadius } from '@origin/verifier-core/overGrant'
 
@@ -29,17 +30,19 @@ export function OverGrantPage() {
   const pct = (n: number) => `${(n * 100).toFixed(0)}%`
 
   return (
-    <>
+    <div className="product-workspace og-workspace">
       <section className="section" aria-labelledby="og-table-title">
         <div className="shell">
-          <p className="kicker">The widest standing grants</p>
-          <h2 id="og-table-title">Eight identities, holding the most authority they never use.</h2>
+          <div className="workspace-heading">
+          <p className="workspace-eyebrow">01 · The authority inventory</p>
+          <h2 id="og-table-title">What is held. What is used. What remains.</h2>
           <p className="section__lede">
-            Computed in your browser from the seeded synthetic fleet (seed {SEED}, {ROOTS} roots
-            &mdash; the published bench runs the same generator at 2,000). Dormant = granted scopes
-            with zero allowed calls in the window.
+            These eight synthetic identities have the most unused granted scopes in this sample.
+            Dormant means a granted scope had zero allowed calls in the observation window; it does not by itself prove that permission should be removed.
           </p>
-          <div style={{ overflowX: 'auto' }} tabIndex={0} role="region" aria-label="Most over-granted identities (scrollable)">
+          <p className="og-table-scope"><span><b>Input</b> Synthetic fleet</span><span><b>Sample</b> {ROOTS} roots</span><span><b>Seed</b> {SEED}</span></p>
+          </div>
+          <div className="scorecard-wrap" style={{ overflowX: 'auto' }} tabIndex={0} role="region" aria-label="Most over-granted identities (scrollable)">
             <table className="scorecard" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
@@ -55,16 +58,17 @@ export function OverGrantPage() {
                 {rows.map((r) => (
                   <tr key={r.id}>
                     <th scope="row" style={{ textAlign: 'left', fontFamily: 'var(--font-sans)' }}><code>{r.id}</code></th>
-                    <td style={{ textAlign: 'right' }}>{r.granted}</td>
-                    <td style={{ textAlign: 'right' }}>{r.used}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 600 }}>{r.dormant}</td>
-                    <td style={{ textAlign: 'right' }}>{pct(r.gur)}</td>
-                    <td style={{ textAlign: 'right' }}>{pct(r.bri)}</td>
+                    <td data-label="Granted" style={{ textAlign: 'right' }}>{r.granted}</td>
+                    <td data-label="Exercised" style={{ textAlign: 'right' }}>{r.used}</td>
+                    <td data-label="Dormant" style={{ textAlign: 'right', fontWeight: 600 }}>{r.dormant}</td>
+                    <td data-label="Utilization" style={{ textAlign: 'right' }}>{pct(r.gur)}</td>
+                    <td data-label="Blast radius" style={{ textAlign: 'right' }}>{pct(r.bri)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          <p className="sec-note">The analyzer below uses 400 roots; the published benchmark uses 2,000. All use the same seeded generator. Sample sizes differ, so their totals are not directly interchangeable.</p>
         </div>
       </section>
 
@@ -79,6 +83,6 @@ export function OverGrantPage() {
           <OverGrantPanel />
         </div>
       </section>
-    </>
+    </div>
   )
 }

@@ -13,26 +13,20 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:title" content="Evidence traces, the honest ladder, Origin" />
     <meta name="twitter:description" content="Origin publishes evidence in rungs and never dresses one up as another: TR-A001 an authored specimen, TR-A002 a machine-emitted, re-verifiable hash chain." />
-    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og/proof.jpg" />
-    <link rel="canonical" href="https://origin-physical-ai.pages.dev/proof" />
+    <meta name="twitter:image" content="https://originphysicalai.com/og/proof.jpg" />
+    <link rel="canonical" href="https://originphysicalai.com/proof" />
     <meta name="theme-color" content="#f6f5f2" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
-    <meta property="og:url" content="https://origin-physical-ai.pages.dev/proof" />
+    <meta property="og:url" content="https://originphysicalai.com/proof" />
     <meta property="og:title" content="Evidence traces — the honest ladder — Origin" />
     <meta property="og:description" content="Evidence in rungs, never dressed up as another. TR-A001 an authored specimen; TR-A002 a machine-emitted trace with a re-verifiable SHA-256 chain." />
-    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og/proof.jpg" />
+    <meta property="og:image" content="https://originphysicalai.com/og/proof.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/home.css?v=29cdd6e3" />
+    <link rel="stylesheet" href="/home.css?v=e7514f0a" />
     <style>
       /* Standalone page shell — same pattern as brief.html */
       .proof { max-width: 960px; margin: 0 auto; padding: 32px 24px 72px; }
@@ -166,15 +160,16 @@
         .site-header__burger, .site-header__cta, .site-header__cta-mobile { display: none; }
       }
     </style>
+    <link rel="stylesheet" href="/editorial.css" />
   </head>
-  <body>
+  <body class="editorial proof-page">
     <a class="skip-link" href="#main">Skip to main content</a>
 
     <!-- ===================== SiteHeader ===================== -->
     <header class="site-header">
       <div class="shell site-header__inner">
         <a class="brand" href="/" aria-label="Origin — home">
-          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" />
           <span class="brand__name">Origin</span>
         </a>
 
@@ -207,15 +202,13 @@
         </div>
       </div>
 
-      <p class="kicker" style="margin-top:22px">Evidence · traces</p>
-      <h1>Evidence traces, the honest ladder.</h1>
-      <p class="proof__lede">
-        Origin publishes evidence in rungs and never dresses one up as another. Available
-        <b>now</b>: an <b>authored specimen</b> that shows the exact format of an evidence package
-        (TR-A001), and a <b>machine-emitted sandbox trace</b> whose SHA-256 hash chain you can
-        re-verify yourself (TR-A002). The first <b>design-partner</b> trace is <b>forthcoming</b>, and this page will not show it until a design partner has actually run it.
-      </p>
-
+      <section class="editorial-hero" aria-labelledby="proof-title"><div class="editorial-hero__grid"><div>
+        <p class="kicker">Evidence / The public record</p>
+        <h1 id="proof-title">Evidence traces, the honest ladder.</h1>
+        <p class="proof__lede">Start with the artifact. Check how it was produced, what its chain establishes, and where its authority ends.</p>
+        <p class="editorial-caption">TR-A002 is a machine-emitted sandbox trace. TR-A001 is an authored format specimen. An external design-partner trace has not been earned yet.</p>
+        <div class="editorial-actions"><a class="btn btn--primary" href="/proof/tr-a002.json" download>Download the sandbox trace</a><a class="btn btn--ghost" href="#tr-a002">Inspect TR-A002</a></div>
+      </div><figure class="editorial-hero__media"><img src="/brand/trace.webp" width="1024" height="1024" alt="" /><figcaption class="editorial-caption">Generated illustration of an evidence record; the downloadable artifact is the evidence.</figcaption></figure></div></section>
       <!-- Proof-status ladder — scannable in five seconds -->
       <div class="proofladder" aria-label="Proof-status ladder">
         <p class="proofladder__cap">Proof status</p>
@@ -270,90 +263,7 @@
       </section>
 
       <!-- ═══════════ TR-A001 — authored specimen ═══════════ -->
-      <section id="tr-a001" aria-label="TR-A001 — authored evidence specimen">
-        <p class="kicker">TR-A001 · available now</p>
-        <h2>Authored evidence specimen, the format of a package.</h2>
-        <p class="proof__label">
-          Authored specimen · illustrative, not a machine-emitted run. The fields below show the
-          exact shape of an Origin evidence package; the scenario, timestamps, and hash are authored
-          to that schema, not recorded from a live agent.
-        </p>
-        <p class="proof__sub">
-          A single high-consequence action, a payments-ops agent proposing a refund above its
-          auto-cap, worked through Origin's runtime semantics: the policy verdict, the controlled
-          tool-call proxy, the human approval, a blocked over-scope action, and the audit-chain
-          digest. This is the payments-ops sample from the homepage console, written out in full.
-        </p>
 
-        <dl class="spec">
-          <div class="is-wide">
-            <dt>Agent workflow</dt>
-            <dd><b>payments-ops-agent</b>, an internal-ops agent authorized to issue customer refunds, within scope and budget.</dd>
-          </div>
-          <div>
-            <dt>Proposed action</dt>
-            <dd>Refund <b>$480.00</b> for <span class="mono">order_8842</span> via tool <span class="mono">payments.refund</span>.</dd>
-          </div>
-          <div>
-            <dt>Policy in force</dt>
-            <dd>Tool in allowlist · auto-cap <b>$250</b> · above-cap refunds require a human approval.</dd>
-          </div>
-          <div>
-            <dt>Policy verdict</dt>
-            <dd><b>require-approval</b>, $480.00 is over the $250 auto-cap, so the action is held rather than auto-executed.</dd>
-          </div>
-          <div>
-            <dt>Risk owner</dt>
-            <dd><b>payments on-call</b>, the named human who owns the decision on above-cap refunds.</dd>
-          </div>
-          <div class="is-wide">
-            <dt>Tool-call proxy event</dt>
-            <dd><span class="mono">payments.refund</span> is <b>held at the proxy</b> until approval, the agent has no path to the side effect except through the controlled proxy, so nothing moves while the verdict is <span class="mono">require-approval</span>.</dd>
-          </div>
-          <div class="is-wide">
-            <dt>Human approval</dt>
-            <dd>payments on-call <b>approves</b> the held refund. The proxy then executes exactly the approved action ($480.00 → <span class="mono">order_8842</span>) and the approval is recorded with who, when, and scope.</dd>
-          </div>
-          <div class="is-wide">
-            <dt>Blocked over-scope action</dt>
-            <dd>A second refund attempt <b>above the approved scope</b> is <b>blocked at the proxy and recorded</b>, the earlier approval covered one action only; it does not widen the agent's standing authority.</dd>
-          </div>
-          <div class="is-wide">
-            <dt>Audit-chain digest</dt>
-            <dd>Every entry, proposal, verdict, proxy hold, approval, execution, and the blocked over-scope call, is written into a <b>hash-chained, tamper-evident</b> record that can be replayed and exported as the evidence package.</dd>
-          </div>
-        </dl>
-
-        <div class="spec-json">
-          <h3>Illustrative package shape, authored / illustrative</h3>
-          <pre tabindex="0"><code>// authored / illustrative — NOT a machine-emitted run
-{
-  "artifact": "TR-A001",
-  "kind": "authored_specimen",
-  "agent": "payments-ops-agent",
-  "events": [
-    { "t": "09:41:02", "type": "proposal",
-      "tool": "payments.refund",
-      "action": "refund $480.00 → order_8842" },
-    { "t": "09:41:02", "type": "policy_verdict",
-      "checks": { "scope": "in_allowlist", "budget": "over_auto_cap($250)" },
-      "verdict": "require-approval",
-      "risk_owner": "payments on-call" },
-    { "t": "09:41:02", "type": "proxy_event",
-      "tool": "payments.refund", "state": "held_pending_approval" },
-    { "t": "09:41:26", "type": "approval",
-      "approver": "payments on-call", "scope": "order_8842 · one action" },
-    { "t": "09:41:27", "type": "execution",
-      "via": "proxy", "result": "verified" },
-    { "t": "09:42:10", "type": "proxy_event",
-      "action": "second refund above approved scope",
-      "state": "blocked", "recorded": true }
-  ],
-  "audit_chain": { "algorithm": "sha256", "state": "illustrative_digest" }
-}</code></pre>
-          <p class="proof__sub">The values above are authored to the evidence-package schema to show its shape. The digest is a placeholder, no machine-emitted hash is claimed for TR-A001.</p>
-        </div>
-      </section>
 
       <!-- ═══════════ Shows / does-not-show ═══════════ -->
       <section aria-label="What TR-A001 shows and does not show">
@@ -496,7 +406,7 @@ npm run proof:verify
 <span class="tr2-verify__c"># → PASS every event hash + prev_hash link verifies · digest recomputes</span>
 
 <span class="tr2-verify__c"># or verify the *published* artifact directly:</span>
-curl -sO https://origin-physical-ai.pages.dev/proof/tr-a002.json
+curl -sO https://originphysicalai.com/proof/tr-a002.json
 node scripts/verify-tr-a002.mjs tr-a002.json
 <span class="tr2-verify__c"># → PASS. Now edit one amount / actor / verdict and re-run → FAIL</span></pre>
           <p class="tr2-verify__cap">The verifier recomputes every event hash from its own bytes and checks the links. Edit any field of any event and it exits non-zero, that is what "tamper-evident" means here. This demonstrates tamper-evident trace plumbing in sandbox, not production security.</p>
@@ -525,6 +435,91 @@ node scripts/verify-tr-a002.mjs tr-a002.json
         </div>
       </section>
 
+      <section id="tr-a001" aria-label="TR-A001 — authored evidence specimen">
+        <p class="kicker">TR-A001 · available now</p>
+        <h2>Authored evidence specimen, the format of a package.</h2>
+        <p class="proof__label">
+          Authored specimen · illustrative, not a machine-emitted run. The fields below show the
+          exact shape of an Origin evidence package; the scenario, timestamps, and hash are authored
+          to that schema, not recorded from a live agent.
+        </p>
+        <p class="proof__sub">
+          A single high-consequence action, a payments-ops agent proposing a refund above its
+          auto-cap, worked through Origin's runtime semantics: the policy verdict, the controlled
+          tool-call proxy, the human approval, a blocked over-scope action, and the audit-chain
+          digest. This is the payments-ops sample from the homepage console, written out in full.
+        </p>
+
+        <dl class="spec">
+          <div class="is-wide">
+            <dt>Agent workflow</dt>
+            <dd><b>payments-ops-agent</b>, an internal-ops agent authorized to issue customer refunds, within scope and budget.</dd>
+          </div>
+          <div>
+            <dt>Proposed action</dt>
+            <dd>Refund <b>$480.00</b> for <span class="mono">order_8842</span> via tool <span class="mono">payments.refund</span>.</dd>
+          </div>
+          <div>
+            <dt>Policy in force</dt>
+            <dd>Tool in allowlist · auto-cap <b>$250</b> · above-cap refunds require a human approval.</dd>
+          </div>
+          <div>
+            <dt>Policy verdict</dt>
+            <dd><b>require-approval</b>, $480.00 is over the $250 auto-cap, so the action is held rather than auto-executed.</dd>
+          </div>
+          <div>
+            <dt>Risk owner</dt>
+            <dd><b>payments on-call</b>, the named human who owns the decision on above-cap refunds.</dd>
+          </div>
+          <div class="is-wide">
+            <dt>Tool-call proxy event</dt>
+            <dd><span class="mono">payments.refund</span> is <b>held at the proxy</b> until approval, the agent has no path to the side effect except through the controlled proxy, so nothing moves while the verdict is <span class="mono">require-approval</span>.</dd>
+          </div>
+          <div class="is-wide">
+            <dt>Human approval</dt>
+            <dd>payments on-call <b>approves</b> the held refund. The proxy then executes exactly the approved action ($480.00 → <span class="mono">order_8842</span>) and the approval is recorded with who, when, and scope.</dd>
+          </div>
+          <div class="is-wide">
+            <dt>Blocked over-scope action</dt>
+            <dd>A second refund attempt <b>above the approved scope</b> is <b>blocked at the proxy and recorded</b>, the earlier approval covered one action only; it does not widen the agent's standing authority.</dd>
+          </div>
+          <div class="is-wide">
+            <dt>Audit-chain digest</dt>
+            <dd>Every entry, proposal, verdict, proxy hold, approval, execution, and the blocked over-scope call, is written into a <b>hash-chained, tamper-evident</b> record that can be replayed and exported as the evidence package.</dd>
+          </div>
+        </dl>
+
+        <div class="spec-json">
+          <h3>Illustrative package shape, authored / illustrative</h3>
+          <pre tabindex="0"><code>// authored / illustrative — NOT a machine-emitted run
+{
+  "artifact": "TR-A001",
+  "kind": "authored_specimen",
+  "agent": "payments-ops-agent",
+  "events": [
+    { "t": "09:41:02", "type": "proposal",
+      "tool": "payments.refund",
+      "action": "refund $480.00 → order_8842" },
+    { "t": "09:41:02", "type": "policy_verdict",
+      "checks": { "scope": "in_allowlist", "budget": "over_auto_cap($250)" },
+      "verdict": "require-approval",
+      "risk_owner": "payments on-call" },
+    { "t": "09:41:02", "type": "proxy_event",
+      "tool": "payments.refund", "state": "held_pending_approval" },
+    { "t": "09:41:26", "type": "approval",
+      "approver": "payments on-call", "scope": "order_8842 · one action" },
+    { "t": "09:41:27", "type": "execution",
+      "via": "proxy", "result": "verified" },
+    { "t": "09:42:10", "type": "proxy_event",
+      "action": "second refund above approved scope",
+      "state": "blocked", "recorded": true }
+  ],
+  "audit_chain": { "algorithm": "sha256", "state": "illustrative_digest" }
+}</code></pre>
+          <p class="proof__sub">The values above are authored to the evidence-package schema to show its shape. The digest is a placeholder, no machine-emitted hash is claimed for TR-A001.</p>
+        </div>
+      </section>
+
       <div class="proof__cta">
         <a class="btn btn--primary" href="/#offer">Book an Agent Evidence Review</a>
         <a class="btn btn--ghost" href="/#evidence">See the evidence roadmap</a>
@@ -537,22 +532,9 @@ node scripts/verify-tr-a002.mjs tr-a002.json
         <!-- Video band. GENERATED footage, labelled as such in the pill and the caption.
          Poster-first, preload="none", plays once on scroll via src/shared/videoBand.ts,
          and falls back to poster + native controls with no JS or under reduced motion. -->
-    <section class="section vband" aria-label="One altered link">
-      <div class="shell">
-        <figure class="vband__fig">
-          <div class="vband__wrap">
-            <video class="vband__v" data-band poster="/video/03-chain.jpg"
-                   width="1280" height="720" muted playsinline controls preload="none"
-                   aria-label="Abstract illustration: a chain of steel links on slate, one link a different alloy.">
-              <source src="/video/03-chain.mp4" type="video/mp4" />
-            </video>
-            <span class="pill pill--ill vband__pill">Illustration</span>
-          </div>
-          <figcaption class="vband__cap"><b>Illustration.</b> Generated footage, not a recording of the product. The hash chains described below are real and re-derivable; this clip is atmosphere.</figcaption>
-        </figure>
-      </div>
-    </section>
 
+
+<p id="copy-status" class="sr-only" role="status" aria-live="polite"></p>
 </main>
     <script>
       var y = document.getElementById('yr');
@@ -561,12 +543,15 @@ node scripts/verify-tr-a002.mjs tr-a002.json
       document.querySelectorAll('[data-copy]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var text = btn.getAttribute('data-copy');
-          var done = function () { var o = btn.textContent; btn.textContent = 'Copied ✓'; setTimeout(function () { btn.textContent = o; }, 1600); };
+          var label = btn.textContent;
+          var report = function (message) { btn.textContent = message; document.getElementById('copy-status').textContent = message; setTimeout(function () { btn.textContent = label; }, 2200); };
+          var done = function () { report('Copied ✓'); };
+          var failed = function () { report('Copy unavailable — select the command'); };
           if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(done).catch(done);
+            navigator.clipboard.writeText(text).then(done).catch(failed);
           } else {
             var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
-            try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done();
+            var copied = false; try { copied = document.execCommand('copy'); } catch (e) { copied = false; } document.body.removeChild(ta); if (copied) done(); else failed();
           }
         });
       });

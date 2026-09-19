@@ -22,12 +22,12 @@
       gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
     </script>
 
-    <title>Origin, the Agent Reference Check for high-consequence AI agents</title>
+    <title>Origin — Move AI forward. With evidence.</title>
     <meta
       name="description"
-      content="Origin’s browser demo evaluates a selected policy against a deterministic synthetic battery and emits tamper-evident, untrusted-by-default evidence; it does not execute your named agent."
+      content="Explore working prototypes for AI evidence review: deterministic policy checks, independently verifiable artifacts, and bounded Physical AI simulations."
     />
-    <link rel="canonical" href="https://origin-physical-ai.pages.dev/" />
+    <link rel="canonical" href="https://originphysicalai.com/" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
 
@@ -38,73 +38,68 @@
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
-    <meta property="og:url" content="https://origin-physical-ai.pages.dev/" />
-    <meta property="og:title" content="Origin — the evidence layer for high-consequence AI agents" />
-    <meta property="og:description" content="A deterministic synthetic policy evaluation with tamper-evident browser evidence; it does not contact or execute the named agent." />
-    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
+    <meta property="og:url" content="https://originphysicalai.com/" />
+    <meta property="og:title" content="Origin — Move AI forward. With evidence." />
+    <meta property="og:description" content="Explore working prototypes for AI evidence review: deterministic policy checks, independently verifiable artifacts, and bounded Physical AI simulations." />
+    <meta property="og:image" content="https://originphysicalai.com/og-cover.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Origin — the evidence layer for high-consequence AI agents" />
-    <meta name="twitter:description" content="Deterministic synthetic policy evaluation with browser evidence that is untrusted by default; it does not contact or execute the named agent." />
-    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og-cover.jpg" />
+    <meta name="twitter:title" content="Origin — Move AI forward. With evidence." />
+    <meta name="twitter:description" content="Explore working prototypes for AI evidence review: deterministic policy checks, independently verifiable artifacts, and bounded Physical AI simulations." />
+    <meta name="twitter:image" content="https://originphysicalai.com/og-cover.jpg" />
 
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
 
-    <link rel="stylesheet" href="/home.css?v=29cdd6e3" />
+    <link rel="stylesheet" href="/home.css?v=e7514f0a" />
+    <link rel="stylesheet" href="/cinematic.css" />
 
-    <!-- Structured data for search engines & AI agents. Contact is the founder's
-         deliverable inbox; swap to the company address once the custom domain lands
-         (originphysical.ai is not registered yet — never publish an address with no MX). -->
+    <!-- Structured data keeps the canonical product website and public source distinct.
+         Contact remains the founder's deliverable inbox. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://origin-physical-ai.pages.dev/#org",
+          "@id": "https://originphysicalai.com/#org",
           "name": "Origin",
-          "url": "https://origin-physical-ai.pages.dev/",
-          "logo": "https://origin-physical-ai.pages.dev/origin-logo.png",
+          "url": "https://originphysicalai.com/",
+          "logo": "https://originphysicalai.com/brand/origin-mark.svg",
+          "sameAs": ["https://github.com/bohueilin/Origin"],
           "email": "bohueilin@gmail.com",
           "founder": { "@type": "Person", "name": "Bo-Huei Lin" },
           "description": "The evidence layer for high-consequence AI agents. The public browser demo evaluates a selected policy against a deterministic synthetic battery and emits tamper-evident evidence; it does not execute the named agent."
         },
         {
           "@type": "WebSite",
-          "@id": "https://origin-physical-ai.pages.dev/#site",
-          "url": "https://origin-physical-ai.pages.dev/",
+          "@id": "https://originphysicalai.com/#site",
+          "url": "https://originphysicalai.com/",
           "name": "Origin",
-          "publisher": { "@id": "https://origin-physical-ai.pages.dev/#org" }
+          "publisher": { "@id": "https://originphysicalai.com/#org" }
         },
         {
           "@type": "SoftwareApplication",
-          "@id": "https://origin-physical-ai.pages.dev/#app",
+          "@id": "https://originphysicalai.com/#app",
           "name": "Origin",
           "applicationCategory": "SecurityApplication",
           "operatingSystem": "Vendor-neutral — any cloud or model provider",
           "description": "Origin’s public browser demo evaluates a selected policy against a deterministic synthetic battery and emits tamper-evident browser evidence. It does not contact or execute the named agent, confirm a provider effect, or grant deployment authority.",
-          "publisher": { "@id": "https://origin-physical-ai.pages.dev/#org" }
+          "publisher": { "@id": "https://originphysicalai.com/#org" }
         }
       ]
     }
     </script>
   </head>
 
-  <body>
+  <body class="origin-cinematic">
     <a class="skip-link" href="#main">Skip to main content</a>
 
     <!-- ===================== SiteHeader ===================== -->
     <header class="site-header">
       <div class="shell site-header__inner">
         <a class="brand" href="#main" aria-label="Origin — home">
-          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" />
           <span class="brand__name">Origin</span>
         </a>
 
@@ -126,147 +121,33 @@
       </div>
     </header>
 
-    <main id="main">
-      <!-- ===================== Hero ===================== -->
-      <section class="hero" id="product" data-investor-section aria-labelledby="hero-title">
-        <div class="shell hero__grid">
-          <div class="hero__copy">
-            <p class="eyebrow">The evidence layer for high-consequence AI agents</p>
-            <h1 id="hero-title">Evaluate a policy before security review, and <em>show</em> the evidence limits.</h1>
-            <p class="hero__lede">The public browser demo evaluates a selected policy against a deterministic synthetic battery and emits tamper-evident, untrusted-by-default evidence. It does not execute the named agent.</p>
-            <div class="hero__actions cta-row">
-              <a class="btn btn--primary" href="/reference-check" data-analytics="hero_reference_check_click">Run the synthetic reference check</a>
-              <a class="btn btn--ghost" href="#demo" data-analytics="hero_demo_click">Step through the 5-stage demo</a>
+    <main id="main" class="cinematic-home">
+      <section class="cin-hero" id="product" data-investor-section aria-labelledby="hero-title">
+        <div class="cin-hero__scene">
+          <video class="cin-hero__film" data-cinematic-film poster="/brand/review.webp" muted playsinline preload="none" aria-label="Illustrative scene of two people reviewing a laptop">
+            <source src="/brand/review-loop.mp4" type="video/mp4" />
+          </video>
+          <div class="cin-hero__shade"></div>
+          <div class="cin-hero__copy">
+            <p class="eyebrow">The evidence layer for high-consequence AI</p>
+            <h1 id="hero-title">Move AI forward.<br> <span>With evidence.</span></h1>
+            <p class="hero__lede">Give the people reviewing your AI a clearer basis for the next decision. Bind the inputs. Challenge the policy. Share evidence they can check.</p>
+            <div class="cta-row hero__actions">
+              <a class="btn btn--primary" href="/reference-check" data-analytics="hero_reference_check_click">Run the synthetic reference check <span aria-hidden="true">↗</span></a>
+              <a class="cin-text-link" href="#demo" data-analytics="hero_demo_click">Step through the 5-stage demo <span aria-hidden="true">↓</span></a>
             </div>
-            <!-- The hero previously carried seven text blocks, and .hero__status and
-                 .honesty-line stated the same boundary twice inside one viewport
-                 ("not compliance certification"). A disclaimer repeated in a single
-                 screen reads as boilerplate, which weakens the honesty it exists to
-                 establish. One line, below the CTAs, carrying the buyer and the
-                 maturity boundary once each. The full simulated-lanes / prototype
-                 statement is not lost: it is the section lede at #product below. -->
-            <p class="hero__status">For the owner of a high-consequence agent that a reviewer can’t yet approve: agents touching production, internal tools, code, PII, or money. Prototype in private pilot: synthetic sandbox evidence, not production SaaS, and not compliance certification.</p>
           </div>
-
-
-          <figure class="hero__visual" aria-labelledby="console-cap">
-            <div class="console" role="img" aria-label="Origin Evidence Console: an agent proposes a refund, a policy gate returns a verdict with scope and budget checks, the tool-call proxy is the configured path to the side effect, and a hash-chained audit trail records the decision, approver, and result.">
-              <!-- The accurate label leads. A green dot at the left edge is the universal
-                   connected/live signifier, and pushing "Simulated" to the far right made
-                   the eye path dot → title → scope → and only then the disclosure. Every
-                   row below is a literal; the pill is the first thing that should say so. -->
-              <div class="console__bar">
-                <span class="pill pill--sim">Simulated</span>
-                <span class="console__title">Origin Evidence Console</span>
-                <span class="console__scope">Agent · payments-ops</span>
-              </div>
-
-              <div class="console__grid">
-                <div class="panel panel--feed">
-                  <p class="panel__label">Agent proposal</p>
-                  <ul class="tags">
-                    <li>Action · refund $480.00 → order_8842</li>
-                    <li>Tool · payments.refund</li>
-                    <li class="tag--warn">Scope · above $250 auto-cap</li>
-                  </ul>
-                </div>
-
-                <div class="panel panel--plan">
-                  <p class="panel__label">Policy verdict</p>
-                  <ol class="steps">
-                    <li class="step step--done"><span>Scope</span><b>in allowlist</b></li>
-                    <li class="step step--done"><span>Budget</span><b>over auto-cap</b></li>
-                    <li class="step step--active"><span>Verdict</span><b>require-approval</b></li>
-                    <li class="step"><span>Proxy</span><b>held</b></li>
-                  </ol>
-                  <div class="robotstate">
-                    <span class="robotstate__label">Risk owner</span>
-                    <span class="robotstate__val">payments on-call</span>
-                  </div>
-                </div>
-
-                <div class="panel panel--log">
-                  <p class="panel__label">Audit trail</p>
-                  <ul class="log">
-                    <li class="log--ok"><time>09:41:02</time> Proposed · payments.refund · hash ✓</li>
-                    <li class="log--warn"><time>09:41:02</time> Gate · over cap · require-approval</li>
-                    <li class="log--ok"><time>09:41:26</time> Approved · payments on-call</li>
-                    <li class="log--ok"><time>09:41:27</time> Executed via proxy · verified</li>
-                    <li class="log--esc"><time>09:42:10</time> Over-scope call · <b>blocked</b> &amp; recorded</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <!-- Self-verification. The page claims the record is independently
-                 checkable; this lets the visitor check it, in their own browser, with
-                 no network call and nothing of ours running. Same computation /verify
-                 performs on a real exported package. -->
-            <div class="chaincheck" data-chain-check>
-              <div class="chaincheck__row">
-                <button type="button" class="btn btn--ghost btn--sm" data-chain-run>Re-verify this trail</button>
-                <button type="button" class="linklike" data-chain-tamper>Alter one entry</button>
-              </div>
-              <output class="chaincheck__out" data-chain-out aria-live="polite">Runs in your browser, no upload, no server of ours.</output>
-            </div>
-            <!-- The "every lane is simulated / no live money" boundary moved here from the
-                 hero copy column when that column was cut from seven text blocks to four.
-                 It is not dropped and not softened: this caption is the element it actually
-                 describes, so it now sits beside the thing it qualifies instead of in a
-                 paragraph four blocks away. -->
-            <figcaption id="console-cap" class="hero__cap">
-              Simulated Evidence Console: representative UI covering agent proposal, policy verdict, controlled proxy, and a hash-chained audit trail for every action. Every lane shown here is simulated: no live money and no live tool has ever moved through Origin. The re-verify button recomputes the chain over these entries locally; a real package is checked the same way at <a href="/verify">/verify</a>.
-            </figcaption>
-          </figure>
+          <div class="cin-hero__bottom"><span>AI-generated illustration · fictional people and setting</span><button class="cin-motion" type="button" data-cinematic-toggle hidden aria-pressed="false">Play scene</button></div>
         </div>
-
-        <!-- Early trust strip -->
-        <div class="truststrip" aria-label="What Origin checks today, and what is proposed">
-          <div class="shell truststrip__inner">
-            <span class="truststrip__lead">Implemented today, check, then prove</span>
-            <ul class="truststrip__items">
-              <li>Configuration digest</li>
-              <li>Deterministic battery</li>
-              <li>Origin Attestation</li>
-              <li>Offline re-verification</li>
-            </ul>
-            <a class="truststrip__link" href="#evidence">See the evidence ladder →</a>
-          </div>
-        </div>
-
-        <!-- Interop row. This is the slot where funded competitors put customer logos.
-             Origin has no customers, so it states what its evidence format actually
-             SPEAKS instead — every item here is a format the verifier reads or emits
-             today, which is checkable rather than borrowed. Do not add a vendor name
-             to this list unless an integration genuinely exists. -->
-        <div class="truststrip" aria-label="Formats Origin's evidence speaks">
-          <div class="shell truststrip__inner">
-            <span class="truststrip__lead">Speaks the formats your reviewer already reads</span>
-            <ul class="truststrip__items">
-              <li>SHA-256 hash chains</li>
-              <li>Canonical JSON</li>
-              <li>ES256 score receipts</li>
-              <li>Offline re-verification</li>
-            </ul>
-            <a class="truststrip__link" href="/verify">Check one yourself →</a>
-          </div>
+        <div class="shell cin-intro">
+          <p class="hero__status"><b>Explore the working prototype.</b> Evaluate a selected policy in your browser using synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is untrusted by default.</p>
+          <a class="cin-text-link" href="/reference-check-vs-runtime">What works today <span aria-hidden="true">↗</span></a>
         </div>
       </section>
 
-      <!-- Mobile-only section index — orientation on a long page -->
-      <nav class="sectionindex" aria-label="Jump to a section">
-        <a href="#demo">Demo</a>
-        <a href="#product">Product</a>
-        <a href="#evidence">Evidence</a>
-        <a href="#offer">Review</a>
-        <a href="#trust">Trust</a>
-        <a href="/brief">Brief</a>
-      </nav>
-      <!-- ===================== Signature demo: the reference check ===================== -->
-      <section class="section section--tint" id="demo" data-investor-section aria-labelledby="demo-title">
+      <section class="section cin-demo" id="demo" data-investor-section aria-labelledby="demo-title">
         <div class="shell">
-          <p class="kicker">The demo</p>
-          <h2 id="demo-title">One declared configuration, one selected policy evaluation.</h2>
-          <p class="section__lede">The browser reference check binds declared configuration metadata, evaluates the selected policy against a deterministic synthetic battery, and grades those policy decisions with the oracle, never an LLM judging an LLM. It does not run the named agent.</p>
+          <div class="cin-section-head"><div><p class="kicker">01 / The reference check</p><h2 id="demo-title">From an assumption<br>to something checkable.</h2></div><p class="section__lede">A clear sequence for a complicated review. Try the five stages, then run the synthetic policy evaluation yourself.</p></div>
           <div class="demo" data-demo aria-label="Walkthrough: bind, challenge, grade, attest, reverify">
             <div class="demo__rail" role="tablist" aria-label="Reference check stages">
               <button type="button" class="demo__dot" data-demo-step="1" role="tab" id="demo-tab-1" aria-controls="demo-panel-1" aria-selected="true" tabindex="0"><span>1</span>Bind</button>
@@ -289,94 +170,33 @@
               <span class="demo__cap" aria-live="polite" data-demo-cap>Stage 1 of 5 · The exact configuration is bound.</span>
             </div>
           </div>
-          <div class="blockline" role="note">
-            <p class="blockline__t">Change one bound field and the attestation stops verifying. <b>Drift invalidates the evidence.</b></p>
-          </div>
-          <div class="cta-row" style="margin-top: 26px;">
-            <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="demo_cta_click">Book an Agent Evidence Review</button>
-            <a class="btn btn--ghost" href="/proof#tr-a002" data-analytics="demo_proof_link">See the machine-emitted trace</a>
-          </div>
+          <div class="cin-footnote"><p>A deterministic oracle grades the selected policy. The demo does not run the named agent or grant permission to deploy it.</p><a class="cin-text-link" href="/reference-check">Open the workspace <span aria-hidden="true">↗</span></a></div>
         </div>
       </section>
-<!-- ===================== Buyer problem + differentiation ===================== -->
-      <section class="section" id="problem" data-investor-section aria-labelledby="problem-title">
-        <div class="shell">
-          <h2 id="problem-title">High-consequence agents get stuck before launch.</h2>
-          <p class="section__lede">Agents are moving from chat into action: they touch production systems, internal tools, infrastructure, code, PII, and money. A reviewer cannot approve what nobody can bound or verify, so the launch date slips. Origin starts exactly there: internal-ops and production-access agents, where the blast radius is concrete and the reviewer is one identifiable person.</p>
-          <div class="cards cards--3">
-            <article class="card"><span class="card__k">Can't bound it</span><h3>No agreed blast radius</h3><p>Nothing pins which model, tools, scopes, and budget the approval actually covers, so the reviewer is asked to bless a moving target.</p></article>
-            <article class="card"><span class="card__k">Can't verify it</span><h3>Scattered logs, no artifact</h3><p>Prompts here, logs there, a screenshot in Slack. Nothing the reviewer can re-check independently, and nothing that notices when the configuration changes afterward.</p></article>
-            <article class="card card--tint"><span class="card__k">Origin</span><h3>The approval question, answered</h3><p>Identity tells you who the agent is; observability helps engineers debug. Origin answers the reviewer's question: has <em>this exact configuration</em> earned the right to act, and can I verify the evidence myself, offline?</p></article>
+
+      <section class="section cin-problem" id="problem" data-investor-section aria-labelledby="problem-title">
+        <div class="shell cin-split">
+          <div><p class="kicker">02 / Why Origin</p><h2 id="problem-title">A powerful model.<br>A different question.</h2><p class="section__lede">Your model provider helps make an agent capable. Your reviewer needs to know what a specific policy allows, where it fails, and what the evidence actually covers.</p><a class="cin-text-link" href="/reference-check-vs-runtime">Where Origin fits <span aria-hidden="true">↗</span></a></div>
+          <div class="cin-principles">
+            <article><span>01</span><div><h3>Make the review specific.</h3><p>Bind declared tools, policy and scenario inputs to the result, so a reviewer knows exactly what was evaluated.</p></div></article>
+            <article><span>02</span><div><h3>Make the limits visible.</h3><p>Show allowed, denied and escalated cases. Keep synthetic results distinct from customer evidence and deployment authority.</p></div></article>
+            <article><span>03</span><div><h3>Make it independently checkable.</h3><p>Export an artifact that a reviewer can inspect and re-verify. A changed bound field invalidates its integrity.</p></div></article>
           </div>
         </div>
       </section>
 
-
-      <!-- ===================== Evidence roadmap ===================== -->
-      <section class="section" id="evidence" data-investor-section aria-labelledby="evidence-title">
+      <section class="section cin-evidence" id="evidence" data-investor-section aria-labelledby="evidence-title">
         <div class="shell">
-          <h2 id="evidence-title">Proof lands here, as it's earned.</h2>
-          <p class="section__lede">We publish evidence in rungs, and we never dress one rung up as another. Available today: an authored specimen <b>and</b> a machine-emitted sandbox trace with a re-verifiable hash chain. The design-partner trace is forthcoming.</p>
-          <div class="proofladder" aria-label="Proof-status ladder">
-            <p class="proofladder__cap">Proof status</p>
-            <div class="proofladder__row"><span class="proofladder__id">TR-A001</span><span class="proofladder__label">Authored specimen, shows the evidence-package format</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
-            <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted sandbox trace, real, re-verifiable SHA-256 hash chain</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
-            <div class="proofladder__row"><span class="proofladder__id">TR-A003</span><span class="proofladder__label">First external design-partner trace</span><span class="proofladder__status proofladder__status--pending">Not earned yet</span></div>
-          </div>
-          <!-- 2 + 1, not a third equal triad: the two AVAILABLE rungs pair, and the one
-               that is NOT earned sits alone on its own row. The layout now states the
-               distinction that the badges alone were carrying. -->
-          <div class="cards cards--2">
-            <article class="card"><span class="card__k">TR-A001 · available</span><h3>Authored evidence specimen</h3><p>Shows the shape of the evidence a reviewer receives: policy verdicts, approvals, proxy events, blocked actions, audit digests. It does not claim a machine-emitted run. <a href="/proof#tr-a001" style="color:var(--signal-ink);font-weight:600">See it →</a></p></article>
-            <article class="card"><span class="card__k">TR-A002 · available</span><h3>Machine-emitted sandbox trace</h3><p>Origin's trace engine emitting a real 12-event, hash-chained record over a sandboxed agent action, digest <code>ca1d4690…</code>, re-verifiable with <code>npm run proof:verify</code>. Sandbox only; no live money. <a href="/proof#tr-a002" style="color:var(--signal-ink);font-weight:600">See it →</a></p></article>
-          </div>
-          <div class="cards">
-            <article class="card card--pending"><span class="card__k">TR-A003 · when earned</span><h3>First design-partner trace</h3><p>Evidence from a real external workflow, published only once a design partner runs it.</p></article>
-          </div>
-
-          <!-- Reviewer-facing evidence package — what a security reviewer receives -->
-          <div class="evpack" aria-label="What a reviewer receives">
-            <div class="evpack__bar"><span class="pill pill--sim">Authored specimen</span><b>Evidence package, order_8842 refund</b></div>
-            <div class="evpack__body">
-              <div class="evpack__col">
-                <span class="evpack__k">The record</span>
-                <ul>
-                  <li>Agent · <code>payments-ops-agent</code></li>
-                  <li>Proposed · <code>payments.refund $480.00 → order_8842</code></li>
-                  <li>Verdict · <code>require-approval</code> (over $250 auto-cap)</li>
-                  <li>Approved · <code>payments on-call</code> · 14s hold</li>
-                  <li>Executed · via proxy · within scope</li>
-                  <li>Over-scope retry · <code>blocked &amp; recorded</code></li>
-                </ul>
-              </div>
-              <div class="evpack__col">
-                <span class="evpack__k">The proof</span>
-                <ul>
-                  <li>Every step hash-chained &amp; tamper-evident</li>
-                  <li>Who owned the risk, and when they approved</li>
-                  <li>Exportable, replayable audit digest</li>
-                  <li class="evpack__chain">chain intact ✓ · digest sealed</li>
-                </ul>
-              </div>
+          <div class="cin-section-head"><div><p class="kicker">03 / The evidence</p><h2 id="evidence-title">Trust grows from<br>what you can verify.</h2></div><p class="section__lede">Inspect the record, its source and its limits. Each evidence level says what has been earned—and what is still ahead.</p></div>
+          <div class="cin-evidence-grid">
+            <figure class="cin-image"><img src="/brand/trace.webp" width="1672" height="941" loading="lazy" alt="Sunlight refracting through sculptural glass forms" /><figcaption>AI-generated illustration · a visual study of traceability</figcaption></figure>
+            <div class="cin-evidence-list" aria-label="Proof-status ladder">
+              <a href="/proof#tr-a002"><span class="cin-status">Available · sandbox</span><h3>Follow a machine-emitted trace.</h3><p>TR-A002 · 12 events, a real SHA-256 hash chain and an independent verification command.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
+              <a href="/proof#tr-a001"><span class="cin-status">Available · authored</span><h3>Understand the evidence format.</h3><p>TR-A001 · an authored specimen showing the record a reviewer could receive.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
+              <div class="cin-evidence-pending"><span class="cin-status cin-status--pending">Not earned yet</span><h3>A real customer's workflow.</h3><p>TR-A003 · external design-partner evidence has not been collected. No customer validation is claimed.</p></div>
             </div>
           </div>
-
-          <!-- What it does / does not prove -->
-          <div class="prooftwo">
-            <article class="card card--shows"><h3><span aria-hidden="true">✓</span> What this shows</h3><p>The shape of the evidence a reviewer receives: proposal, policy verdict, approval, execution, and an over-scope action blocked and recorded. The machine-emitted version of this same loop is <a href="/proof#tr-a002" style="color:var(--signal-ink);font-weight:600">TR-A002</a>.</p></article>
-            <article class="card card--not"><h3><span aria-hidden="true">, </span> What it does not show</h3><p>Not a customer deployment. Not a performance claim. No reviewer has accepted it. This specimen is authored (illustrative); the sandbox run with real hashes is TR-A002.</p></article>
-          </div>
-
-          <p class="mono-note" style="margin-top: 18px;">Plumbing proof ≠ customer proof. A human-created payment link + a signed webhook would prove the evidence system can capture a real transaction end-to-end, that lane has not been run yet. Either way the agent never touches live money, and it wouldn't be customer revenue.</p>
-          <div class="cta-row" style="margin-top: 22px;">
-            <a class="btn btn--primary" href="/proof" data-analytics="evidence_proof_link">Open the evidence traces</a>
-          </div>
-        </div>
-      
-        <!-- Recorded footage, not generated: scripts/rec-shot01.mjs films the live /verify
-             page, cuts the network mid-run, and nothing inside the run is trimmed or
-             re-timed. Poster-first; plays once on scroll via src/shared/videoBand.ts. -->
-        <figure class="vband__fig" style="margin-top: 26px">
+          <details class="cin-recording"><summary>Watch the recorded verifier: intact → tampered → restored <span aria-hidden="true">+</span></summary><figure class="vband__fig" style="margin-top: 26px">
           <div class="vband__wrap">
             <video class="vband__v" data-band poster="/video/shot01-tamper.jpg"
                    width="1280" height="800" muted playsinline controls preload="none"
@@ -388,117 +208,28 @@
           <figcaption class="vband__cap"><b>One take on the live <a href="/verify">/verify</a> page.</b>
             The network is disabled mid-run &mdash; the VOID and the closing VALID are computed
             entirely in the browser. Re-film it yourself: <code>node scripts/rec-shot01.mjs</code>.</figcaption>
-        </figure>
-      </section>
-<!-- ===================== Offer ===================== -->
-      <section class="section section--tint" id="offer" data-investor-section aria-labelledby="offer-title">
-        <div class="shell">
-          <p class="kicker">Start here</p>
-          <h2 id="offer-title">Start with an Agent Launch Evidence Review.</h2>
-          <p class="section__lede">A founder-led engagement for one blocked agent workflow: we map the approval blocker, bind the exact agent configuration, run the deterministic reference check against it, and produce the attestation and evidence your reviewer needs to evaluate the launch.</p>
-          <div class="two-col">
-            <div class="card">
-              <span class="card__k">You bring</span>
-              <ul class="deflist">
-                <li><span class="dl-mark">→</span><span>The agent workflow you're trying to ship</span></li>
-                <li><span class="dl-mark">→</span><span>The tools and systems it touches</span></li>
-                <li><span class="dl-mark">→</span><span>What's blocking approval, and who signs off</span></li>
-                <li><span class="dl-mark">→</span><span>What that reviewer needs to evaluate the launch</span></li>
-              </ul>
-            </div>
-            <div class="card card--tint">
-              <span class="card__k">Origin provides</span>
-              <ul class="deflist">
-                <li><span class="dl-mark">✓</span><span>A bound configuration digest for the workflow</span></li>
-                <li><span class="dl-mark">✓</span><span>A deterministic reference check over that configuration</span></li>
-                <li><span class="dl-mark">✓</span><span>An Origin Attestation you can re-verify offline</span></li>
-                <li><span class="dl-mark">✓</span><span>A review-ready, tamper-evident evidence package</span></li>
-              </ul>
-            </div>
-          </div>
-          <div class="cta-row" style="margin-top: 28px;">
-            <button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="offer_cta_click">Book an Agent Evidence Review</button>
-            <button type="button" class="btn btn--ghost" data-open-lead data-intent="design-partner" data-analytics="offer_design_partner_cta">Become a design partner</button>
-            <button type="button" class="btn btn--ghost" data-open-lead data-intent="blocker" data-analytics="offer_blocker_cta">Send us the reviewer blocker</button>
-          </div>
+        </figure></details>
+          <div class="cin-footnote"><p>Artifact integrity does not establish execution, issuer trust, real-world safety or approval.</p><a class="cin-text-link" href="/verify">Verify an attestation <span aria-hidden="true">↗</span></a></div>
         </div>
       </section>
 
-
-
-      <!-- ===================== Trust ===================== -->
-      <section class="section" id="trust" data-investor-section aria-labelledby="trust-title">
-        <div class="shell">
-          <h2 id="trust-title">Built for reviewers, not just builders.</h2>
-          <div class="cards cards--3">
-            <article class="card"><h3>Configuration-bound attestation</h3><p>The attestation is bound to the exact model, tools, policy, budget and battery that were checked. Change a bound field and it returns VOID.</p></article>
-            <article class="card"><h3>Tamper-evident audit chain</h3><p>A hash-chained record of every proposal, verdict, approval, and action.</p></article>
-            <article class="card"><h3>Escalation scenarios</h3><p>The battery includes actions that must escalate to a named human; the oracle grades whether the agent escalated when it should have.</p></article>
-            <article class="card"><h3>Deterministic oracle</h3><p>Verdicts come from a deterministic oracle, never an LLM judging an LLM, the same battery returns the same result every run.</p></article>
-            <article class="card"><h3>Runtime gate &amp; proxy <em>(proposed)</em></h3><p>A runtime gate, controlled tool-call proxy, and kill switch are the <b>proposed pilot architecture</b>, not deployed general enforcement. See <a href="/reference-check-vs-runtime">how this differs from runtime enforcement</a>.</p></article>
-            <article class="card"><h3>Vendor-neutral · exportable</h3><p>Across clouds and model providers, with an evidence package you can export.</p></article>
-          </div>
-          <h3 class="trust__founder-h">Built by someone who has owned the launch gate.</h3>
-          <p class="section__lede">
-            Origin comes from ~20 years building the "prove it's safe before you ship" layer, payment-grade
-            biometric authentication (designing the false-accept / false-reject operating points that let a
-            face unlock a payment), frontier-safety launch gates and residual-risk ownership, and RL
-            environments with verifier integrity. I've <b>been</b> the reviewer who couldn't approve a launch
-            because there was no way to bound what a system could do or prove what it did. Origin is that
-            missing layer, built for agents.
-          </p>
-          <p class="honesty-line" style="max-width:64ch">Origin starts with software agents. The longer arc is any high-consequence system where actions need policy, control, and proof. That's the vision, not today's product.</p>
-          <p class="mono-note" style="margin-top: 18px;">Origin is decision-support and evidence infrastructure. We use "tamper-evident" to mean alteration is detectable by replay and digest checks; "review-ready," meaning a reviewer can check it, never that a reviewer has signed off. It does not provide legal or compliance certification, and the customer stays responsible for the agents and tools they connect.</p>
-          <div class="cta-row" style="margin-top: 20px;">
-            <a class="btn btn--primary" href="/reference-check" data-analytics="refcheck_link">Run the reference check &rarr;</a>
-            <a class="btn btn--ghost" href="/trust" data-analytics="trust_center_link">Read the trust center</a>
-            <a class="btn btn--ghost" href="/security" data-analytics="security_demo_link">Run the verifiers live &rarr;</a>
-            <a class="btn btn--ghost" href="/verify" data-analytics="verify_page_link">Verify a credential yourself &rarr;</a>
-          </div>
+      <section class="section cin-offer" id="offer" data-investor-section aria-labelledby="offer-title">
+        <div class="shell cin-split">
+          <div><p class="kicker">04 / Work with us</p><h2 id="offer-title">Start with one<br>decision that matters.</h2><p class="section__lede">We're looking for design partners with an agent workflow and a reviewer who needs better evidence. Begin with a founder-led Agent Evidence Review.</p><div class="cta-row"><button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="offer_cta_click">Book an Agent Evidence Review <span aria-hidden="true">↗</span></button><a class="cin-text-link" href="/brief">Read the one-page brief</a></div></div>
+          <div class="cin-review-card"><p class="cin-status">A focused first conversation</p><h3>Bring the workflow.<br>And the approval question.</h3><ul><li><span>01</span> Map the action, tools and potential consequences.</li><li><span>02</span> Agree what the reviewer needs to see.</li><li><span>03</span> Identify the tests and evidence gaps.</li><li><span>04</span> Scope a pilot only if there is a useful fit.</li></ul><p class="cin-small">The public demo is a prototype, not production SaaS or compliance certification. Customer-specific execution and runtime enforcement require separately agreed work.</p></div>
         </div>
       </section>
 
-      <!-- ===================== Discovery / final CTA ===================== -->
-    <section class="section section--tint" id="not" aria-labelledby="not-title">
-      <div class="shell">
-        <p class="kicker">The boundaries</p>
-        <h2 id="not-title">What Origin is not.</h2>
-        <p class="section__lede">
-          Every claim on this site is scoped on purpose. The limits are part of the product —
-          an evidence layer that overclaimed would be selling the one thing it exists to end.
-        </p>
-        <div class="notgrid">
-          <div class="card"><h3>Not yet validated by a customer</h3>
-              <p>No design partner, no pilot, no paying user &mdash; today. Every number here is
-              measured on synthetic evidence, and that is the honest boundary of what this proves.
-              The next rung is a real workflow from a real reviewer; when it exists it will appear
-              on <a href="/proof">/proof</a>, labelled as plainly as everything else.</p></div>
-              <div class="card"><h3>Not production SaaS</h3>
-            <p>A prototype in private pilot, on synthetic sandbox evidence. Real-customer
-            readiness stays blocked by default until authorized.</p></div>
-          <div class="card"><h3>Not a compliance certification</h3>
-            <p>Origin issues evidence; your gate decides. Nothing we issue certifies anything —
-            it records what happened, re-derivably.</p></div>
-          <div class="card"><h3>Not &ldquo;safe&rdquo; or &ldquo;correct&rdquo;</h3>
-            <p>A green verdict means <b>reproducible under this verifier</b> — a claim you can
-            re-derive, which is exactly why it is the only claim we make.</p></div>
-          <div class="card"><h3>Not prompt-injection prevention</h3>
-            <p>We contain it: the destructive action never executes at the gate. Containment is
-            checkable; prevention is a promise.</p></div>
-        </div>
-      </div>
-    </section>
-
-      <section class="section" id="contact" data-investor-section aria-labelledby="final-title">
-        <div class="shell final">
-          <h2 id="final-title">Have an agent stuck in security review?</h2>
-          <p class="section__lede">Show us one blocked workflow. We'll map the risk, run the evidence loop, and tell you honestly whether Origin can produce the evidence your reviewer needs.</p>
-          <div class="cta-row">
-            <a class="btn btn--primary btn--lg" href="/reference-check" data-analytics="final_check_agent_click">Run the reference check</a>
-            <button type="button" class="btn btn--ghost btn--lg" data-open-lead data-intent="review" data-analytics="final_primary_cta_click">Book an evidence review</button>
-          </div>
+      <section class="section cin-trust" id="trust" data-investor-section aria-labelledby="trust-title">
+        <div class="shell"><div class="cin-section-head"><div><p class="kicker">05 / Built around the reviewer</p><h2 id="trust-title">Evidence, with<br>the boundaries included.</h2></div><p class="section__lede">Capability, permission, execution and verification are different questions. A useful record keeps them separate.</p></div>
+          <div class="cin-trust-grid"><article><span class="cin-icon" aria-hidden="true">⌘</span><h3>Deterministic evaluation</h3><p>A defined oracle grades the policy against a synthetic battery. Never an LLM grading another LLM.</p></article><article><span class="cin-icon" aria-hidden="true">◈</span><h3>Visible provenance</h3><p>Authored, synthetic, machine-emitted and customer-owned evidence stay distinct. Unpinned browser signers stay UNTRUSTED.</p></article><article><span class="cin-icon" aria-hidden="true">↗</span><h3>Your authority to decide</h3><p>The artifact supports review. It does not certify an agent, confirm an external effect or approve a deployment.</p></article></div>
+          <div class="cin-footnote"><p>Runtime gate, controlled proxy and kill switch: proposed pilot architecture.</p><a class="cin-text-link" href="/trust">Explore the trust center <span aria-hidden="true">↗</span></a></div>
         </div>
       </section>
+
+      <section class="cin-labs" aria-labelledby="labs-title"><div class="shell cin-labs__grid"><figure class="cin-image"><img src="/brand/lab.webp" width="1672" height="941" loading="lazy" alt="Illustrative researcher beside a mobile robot in a sunlit workspace" /><figcaption>AI-generated illustration · not an Origin facility or deployment</figcaption></figure><div class="cin-labs__copy"><p class="kicker">Origin Labs / Physical AI</p><h2 id="labs-title">The next decision<br>may move something.</h2><p class="section__lede">Explore the same questions in synthetic fleet operations, simulation and physical systems: what was tested, under which conditions, and what should happen next?</p><p class="cin-small">Simulation evidence is a step toward understanding a system. It is not real-world safety validation or robot certification.</p><a class="btn btn--primary" href="/labs">Explore the proving grounds <span aria-hidden="true">↗</span></a></div></div></section>
+
+      <section class="section cin-contact" id="contact" data-investor-section aria-labelledby="final-title"><div class="shell"><p class="kicker">Let's make the next step clear</p><h2 id="final-title">What would your reviewer<br>need to say yes?</h2><p class="section__lede">Bring us the question. Let's find out whether Origin can help make the evidence clearer.</p><div class="cta-row"><button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="final_primary_cta_click">Book an evidence review <span aria-hidden="true">↗</span></button><a class="btn btn--ghost" href="/reference-check">Try the reference check</a></div></div></section>
     </main>
 
     <!-- Gate freshness. Progressive enhancement: enhance.ts fills this from the
@@ -509,74 +240,14 @@
       <p class="gatesfresh" id="gates-freshness" hidden></p>
     </div>
 
-        <!-- Video band. GENERATED footage, labelled as such in the pill and the caption.
-         Poster-first, preload="none", plays once on scroll via src/shared/videoBand.ts,
-         and falls back to poster + native controls with no JS or under reduced motion. -->
-    <section class="section vband" aria-label="Evidence accumulating">
-      <div class="shell">
-        <figure class="vband__fig">
-          <div class="vband__wrap">
-            <video class="vband__v" data-band poster="/video/06-ledger.jpg"
-                   width="1280" height="720" muted playsinline controls preload="none"
-                   aria-label="Abstract illustration: sheets of paper stacking one at a time into a dense, settled pile.">
-              <source src="/video/06-ledger.mp4" type="video/mp4" />
-            </video>
-            <span class="pill pill--ill vband__pill">Illustration</span>
-          </div>
-          <figcaption class="vband__cap"><b>Illustration.</b> Generated footage, not a recording of the product. Every real verdict on this site is produced by the deterministic oracle and re-checkable at <a href="/verify">/verify</a>.</figcaption>
-        </figure>
-      </div>
-    </section>
-
-<!-- ===================== Footer ===================== -->
-    <footer class="site-footer">
-      <div class="shell site-footer__inner">
-        <div class="site-footer__brand">
-          <a class="brand" href="#main" aria-label="Origin — home">
-            <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
-            <span class="brand__name">Origin</span>
-          </a>
-          <p>The evidence layer for high-consequence AI agents.</p>
-        </div>
-        <nav class="site-footer__nav" aria-label="Footer">
-          <div>
-            <p class="site-footer__h">Product</p>
-            <a href="#demo">Demo</a>
-            <a href="#product">Product</a>
-            <a href="/proof">Evidence · traces</a>
-            <a href="/over-grant">Over-grant analyzer</a>
-            <a href="/app">Evidence Console (preview)</a>
-            <a href="#trust">Trust &amp; controls</a>
-            <a href="/trust">Trust center</a>
-          </div>
-          <div>
-            <p class="site-footer__h">Company</p>
-            <a href="#offer">Agent Evidence Review</a>
-            <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
-            <a href="/reference-check-vs-runtime">Reference check vs runtime</a>
-            <a href="/llms.txt">For AI agents</a>
-            <!-- Founder inbox, deliverable today. Swap to the company address once the custom domain lands. Primary lead path is the /api/lead function; this mailto is a fallback only. -->
-            <a href="mailto:bohueilin@gmail.com">bohueilin@gmail.com</a>
-          </div>
-        </nav>
-      </div>
-      <div class="shell site-footer__legal">
-        <span>© <span data-year>2026</span> Origin</span>
-        <span class="site-footer__legal-links">
-          <a href="/legal/privacy-policy.html">Privacy</a>
-          <a href="/legal/terms-of-service.html">Terms</a>
-          <button type="button" class="site-footer__contact" data-open-lead data-intent="review">Contact</button>
-          <a href="/auth" rel="nofollow">Sign in</a>
-        </span>
-      </div>
-    </footer>
+    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Independent verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Check an agent</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@gmail.com">Contact</a><a href="/auth" rel="nofollow">Sign in</a></span></div></footer>
 
     <!-- ===================== LeadFormModal ===================== -->
     <dialog id="lead-modal" class="modal" aria-labelledby="lead-title">
       <form method="dialog" class="modal__form" id="lead-form" novalidate>
         <button type="button" class="modal__close" data-close-lead aria-label="Close">×</button>
         <h2 id="lead-title" class="modal__title">Book an Agent Evidence Review</h2>
-        <p class="modal__sub" id="lead-sub">Tell us about the agent that's stuck in review. We follow up to learn, not to pitch.</p>
+        <p class="modal__sub" id="lead-sub">Tell us about the agent that's stuck in review. We’ll follow up to understand the workflow and the evidence your reviewer needs.</p>
 
         <div class="field">
           <label for="lead-name">Name<span aria-hidden="true"> *</span></label>

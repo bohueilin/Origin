@@ -209,7 +209,7 @@ export function Home({ onRun, canRun = true }: { onRun: (s: ScenarioSpec) => voi
             <button className="pp-arrow" onClick={() => scrollEx(1)} aria-label="Next examples">›</button>
           </div>
         </div>
-        <div className="pp-examples-track" ref={exRef}>
+        <div className="pp-examples-track" ref={exRef} tabIndex={0} role="region" aria-label="Scenario examples">
           {SCENARIOS.map((s, i) => (
             <button key={s.id} className="pp-example-card" onClick={() => onRun(s)} disabled={!canRun} aria-disabled={!canRun}>
               <span className="pp-scenario-num">{String(i + 1).padStart(2, '0')}</span>

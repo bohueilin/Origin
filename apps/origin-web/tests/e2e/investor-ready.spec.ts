@@ -13,7 +13,7 @@
 import { test, expect } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 
-const HERO = 'Evaluate a policy before security review, and show the evidence limits.'
+const HERO = 'Move AI forward. With evidence.'
 
 // The approved design keeps the existing mobile burger, so on the mobile project
 // the primary nav is collapsed until it is opened. Open it before asserting on
@@ -31,11 +31,11 @@ test('home presents one implemented product and one primary path', async ({ page
 
   await expect(page.locator('h1')).toHaveCount(1)
   await expect(page.locator('h1')).toHaveText(HERO)
-  await expect(page.getByText('The evidence layer for high-consequence AI agents', { exact: true })).toBeVisible()
+  await expect(page.getByText('The evidence layer for high-consequence AI', { exact: true })).toBeVisible()
   // The hero's maturity boundary and buyer line were merged into one .hero__status line
   // when the hero was cut from seven text blocks to four; the boundary itself is
   // unchanged in substance and must stay visible in the hero, so keep pinning it.
-  await expect(page.getByText('For the owner of a high-consequence agent that a reviewer can’t yet approve: agents touching production, internal tools, code, PII, or money. Prototype in private pilot: synthetic sandbox evidence, not production SaaS, and not compliance certification.', { exact: true })).toBeVisible()
+  await expect(page.locator('.hero__status')).toContainText('Origin does not contact or execute your named agent. Browser evidence is untrusted by default.')
 
   await openPrimaryNav(page)
   const nav = page.getByRole('navigation', { name: 'Primary' })
@@ -129,8 +129,8 @@ test('demo tabs support keyboard navigation', async ({ page }) => {
 
 test('social card presents the current product at 1200 by 630', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /Agent Reference Check|evidence layer/i)
-  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /deterministic synthetic policy evaluation/i)
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Origin — Move AI forward. With evidence.')
+  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /working prototypes.*deterministic policy checks/i)
 
   await page.goto('/og-cover.jpg')
   const dimensions = await page.locator('img').evaluate((image: HTMLImageElement) => ({

@@ -8,7 +8,7 @@
 > license" / certification framing here — it contradicts the live site.
 
 **This app:** the live marketing site + the evidence console + the public `/security`,
-`/verify`, `/trust`, `/proof` pages. Live: https://origin-physical-ai.pages.dev.
+`/verify`, `/trust`, `/proof` pages. Website: https://originphysicalai.com. Public source: https://github.com/bohueilin/Origin.
 
 ## Build / test / gates
 - `npm run build` — `tsc -b && vite build`.

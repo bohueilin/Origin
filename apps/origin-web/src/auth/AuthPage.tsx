@@ -1,6 +1,5 @@
-// Dedicated auth page (a real URL: /auth.html), Luma-style split layout: form on the
-// left, a brand "imagine" canvas on the right (placeholder for art we design later).
-// Default view is "Create with Origin" (sign up). Reuses the InsForge AuthProvider.
+// Account access: a closed-pilot introduction and existing-account sign-in.
+// Reuses the InsForge AuthProvider and its existing OAuth/session contracts.
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from './AuthProvider'
 
@@ -176,44 +175,55 @@ export function AuthPage() {
     : mode === 'signup' ? (step === 'password' ? 'Create a password' : 'Private pilot access')
     : 'Welcome back'
   const sub = step === 'verify' ? note
-    : mode === 'signup' ? (step === 'password' ? 'Set a secure password for your account.' : 'Origin Evidence Console access is invite-only during private pilot. Account creation is paused during the closed pilot. Book an Agent Evidence Review to request access.')
-    : 'Invited teams use the Console to review policy verdicts, approvals, proxy events, blocked actions, and evidence packages.'
+    : mode === 'signup' ? (step === 'password' ? 'Set a secure password for your account.' : 'A closer look at what an agent is allowed to do, and the evidence behind it.')
+    : 'Sign in to review permissions, approvals, and the evidence behind each action.'
 
   // `ap-paused-note` is the id of the paused-signups note — and the denial notice takes
   // that note's place in the ternary below. Anything pointing an aria-describedby at it
   // has to agree about when it is on screen, or a screen-reader user is handed a
   // reference to an element that is not in the document and hears nothing.
-  const pausedNote = !auth.deniedEmail && mode === 'signup' && !SIGNUPS_OPEN
+  const pausedSignup = mode === 'signup' && !SIGNUPS_OPEN && step !== 'verify'
+  const pausedNote = !auth.deniedEmail && pausedSignup
 
   return (
     <div className="ap-shell">
       <main className="ap-form-col">
         <a className="ap-brand" href="/" aria-label="Origin home">
-          <img className="ap-logo" src="/origin-logo.png" alt="" aria-hidden="true" />
-          <span>Origin</span>
+          <img className="ap-logo" src="/brand/origin-mark.svg" alt="" aria-hidden="true" />
+          <span>origin</span>
         </a>
 
         <div className="ap-form-wrap">
           <div className="ap-form-card">
+            <p className="ap-kicker">Origin Console</p>
             <h1 className="ap-title">{heading}</h1>
             <p className="ap-sub">{sub}</p>
 
             {auth.deniedEmail ? (
               <div className="ap-denied" role="alert">
                 <strong>Access is restricted.</strong> You signed in as <b>{auth.deniedEmail}</b>, which isn’t an
-                approved account. Origin is owner-only while we build — use the owner Google account.
+                approved account. Access is currently restricted to the Origin owner. Choose the owner Google account to continue.
               </div>
             ) : pausedNote ? (
               <div className="ap-paused" role="note" id="ap-paused-note">
-                🔒 <strong>Private pilot only.</strong> Account creation is paused during the closed pilot. Invited teams use the Console to review policy verdicts, approvals, proxy events, blocked actions, and evidence packages.{' '}
-                <a className="ap-link" href="/#offer" data-analytics="auth_return_to_demo">Book an Agent Evidence Review →</a>
+                <strong>Account creation is paused.</strong>
+                Access is invite-only while the prototype is being developed. Start with an Agent Evidence Review to discuss your workflow.
               </div>
             ) : (
-              <div className="ap-owner-note" role="note">🔒 Owner access only — sign in with the Origin owner Google account.</div>
+              <div className="ap-owner-note" role="note">Owner access only. Use the Origin owner account to continue.</div>
+            )}
+
+            {pausedSignup && (
+              <div className="ap-pilot">
+                <a className="ap-submit ap-pilot-action" href="/#offer" data-analytics="auth_return_to_demo" aria-describedby={pausedNote ? 'ap-paused-note' : undefined}>
+                  Book an Agent Evidence Review <span aria-hidden="true">↗</span>
+                </a>
+                <p className="ap-pilot-note">Bring a workflow, a permission boundary, or a decision you need to verify.</p>
+              </div>
             )}
 
             {/* Google + divider only on the first screen of each mode */}
-            {step === 'details' && (
+            {!pausedSignup && step === 'details' && (
               <>
                 <button type="button" className="ap-google" onClick={onGoogle} disabled={busy || (mode === 'signup' && !SIGNUPS_OPEN)}
                   aria-describedby={pausedNote ? 'ap-paused-note' : undefined}>
@@ -223,7 +233,7 @@ export function AuthPage() {
               </>
             )}
 
-            <form className="ap-fields" onSubmit={submit}>
+            {!pausedSignup && <form className="ap-fields" onSubmit={submit}>
               {step === 'verify' ? (
                 <label className="ap-field">
                   <span>6-digit code</span>
@@ -295,35 +305,35 @@ export function AuthPage() {
                     ? (step === 'password' ? (SIGNUPS_OPEN ? 'Create account' : 'Sign-ups paused') : 'Continue')
                     : 'Continue'}
               </button>
-            </form>
+            </form>}
 
             {step === 'verify' ? (
               <button type="button" className="ap-switch" onClick={async () => { setError(''); const { error } = await auth.resendVerification(email.trim()); setNote(error ? '' : 'Code resent.'); if (error) setError(error) }}>
                 Resend code
               </button>
             ) : mode === 'signup' ? (
-              <p className="ap-alt">Already have an account? <button type="button" className="ap-link" onClick={() => switchMode('signin')}>Sign in</button></p>
+              <p className="ap-alt">Already have access? <button type="button" className="ap-link" onClick={() => switchMode('signin')}>Sign in</button></p>
             ) : (
-              <p className="ap-alt">New to Origin? <button type="button" className="ap-link" onClick={() => switchMode('signup')}>Create an account</button></p>
+              <p className="ap-alt">New to Origin? <button type="button" className="ap-link" onClick={() => switchMode('signup')}>{SIGNUPS_OPEN ? 'Create an account' : 'Explore pilot access'}</button></p>
             )}
           </div>
         </div>
 
-        {mode === 'signup' && (
-          <p className="ap-legal">
-            By creating an account, you agree to the{' '}
-            <a href="/legal/terms-of-service.html">Terms of Service</a> and{' '}
-            <a href="/legal/privacy-policy.html">Privacy Policy</a>.
-          </p>
-        )}
+        <p className="ap-legal">
+          {mode === 'signup' && SIGNUPS_OPEN && <>By creating an account, you agree to our </>}
+          <a href="/legal/terms-of-service.html">Terms of Service</a><span aria-hidden="true"> · </span>{' '}
+          <a href="/legal/privacy-policy.html">Privacy Policy</a>
+        </p>
       </main>
 
-      {/* Imagine space — placeholder brand canvas; real art comes later. */}
+      {/* Decorative original brand scene; not a customer or pilot photograph. */}
       <aside className="ap-art" aria-hidden="true">
+        <img className="ap-art-photo" src="/brand/review.webp" alt="" fetchPriority="high" />
         <div className="ap-art-inner">
-          <img className="ap-art-mark" src="/origin-logo.png" alt="Origin" />
-          <p className="ap-art-line">Enforce, then prove.</p>
-          <p className="ap-art-sub">Propose · Gate · Proxy · Verify.</p>
+          <p className="ap-art-label">Capability is not permission.</p>
+          <p className="ap-art-line">Make trust visible.</p>
+          <p className="ap-art-sub">Clear boundaries. Reviewable decisions. Evidence you can inspect.</p>
+          <span className="ap-art-rule" />
         </div>
       </aside>
     </div>

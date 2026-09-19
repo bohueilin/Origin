@@ -8,145 +8,32 @@
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
-    <meta property="og:url" content="https://origin-physical-ai.pages.dev/brief" />
+    <meta property="og:url" content="https://originphysicalai.com/brief" />
     <meta property="og:title" content="Origin, one-page brief" />
     <meta property="og:description" content="A one-page brief on Origin: a deterministic, configuration-bound reference check that issues a tamper-evident attestation a reviewer re-verifies offline." />
-    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og/brief.jpg" />
+    <meta property="og:image" content="https://originphysicalai.com/og/brief.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Origin, one-page brief" />
     <meta name="twitter:description" content="A one-page brief on Origin: a deterministic, configuration-bound reference check that issues a tamper-evident attestation a reviewer re-verifies offline." />
-    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og/brief.jpg" />
-    <link rel="canonical" href="https://origin-physical-ai.pages.dev/brief" />
+    <meta name="twitter:image" content="https://originphysicalai.com/og/brief.jpg" />
+    <link rel="canonical" href="https://originphysicalai.com/brief" />
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#f6f5f2" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/home.css?v=29cdd6e3" />
-    <style>
-      /* ---- scoped to the brief; never touches home.css ---- */
-      .brief { max-width: 940px; margin: 0 auto; padding: 40px 24px 64px; }
-      .brief__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
-      .brief__brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); }
-      .brief__brand img { width: 30px; height: 30px; border-radius: 7px; }
-      .brief__brand b { font-family: var(--font-display); font-size: 20px; }
-      .brief__brand span { color: var(--steel); font-size: 14px; }
-      .brief__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    <link rel="stylesheet" href="/home.css?v=e7514f0a" />
 
-      .brief__meta { margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 12px; color: var(--steel); }
-      .brief__ver { font-weight: 700; letter-spacing: .04em; color: var(--ink); background: var(--paper-3); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px 10px; }
-      .brief__ver-sim { color: var(--steel); }
-
-      .brief h1 { font-size: clamp(26px, 4vw, 36px); letter-spacing: -0.02em; margin: 16px 0 8px; max-width: 22ch; }
-      .brief__eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--signal-ink); font-weight: 700; margin: 22px 0 0; }
-      .brief__lede { font-size: 17px; color: var(--ink-soft); max-width: 64ch; }
-
-      .brief__grid { margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-      @media (max-width: 700px) { .brief__grid { grid-template-columns: 1fr; } }
-      .brief__card { background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--sh-sm); }
-      .brief__card.is-wide { grid-column: 1 / -1; }
-      .brief__card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--signal-ink); margin-bottom: 10px; }
-      .brief__card p, .brief__card li { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
-      .brief__card ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; }
-      .brief__lead { font-weight: 600; color: var(--ink); margin: 6px 0 4px; }
-
-      /* ---- Evidence Package diagram ---- */
-      .brief__pipe { margin-top: 4px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; align-items: stretch; }
-      @media (max-width: 720px) { .brief__pipe { grid-template-columns: 1fr 1fr; } }
-      .brief__step { position: relative; background: #fff; border: 1px solid var(--line-2); border-radius: 10px; padding: 12px 12px 12px 14px; box-shadow: var(--sh-sm); margin: 4px; }
-      .brief__step .n { font-size: var(--fs-11); font-weight: 700; letter-spacing: .05em; color: var(--steel); }
-      .brief__step .t { display: block; font-size: var(--fs-13); font-weight: 700; color: var(--ink); margin-top: 3px; line-height: 1.25; }
-      .brief__step .d { display: block; font-size: 11px; color: var(--ink-soft); margin-top: 4px; line-height: 1.35; }
-      .brief__step[data-tone="plan"]   { border-color: #bcccff; background: var(--signal-wash); }
-      .brief__step[data-tone="plan"] .t   { color: var(--signal-ink); }
-      .brief__step[data-tone="hold"]   { border-color: #e6c98a; background: #fbf3df; }
-      .brief__step[data-tone="hold"] .t   { color: var(--warn); }
-      .brief__step[data-tone="done"]   { border-color: #9fd2be; background: #eaf6f0; }
-      .brief__step[data-tone="done"] .t   { color: var(--verify); }
-      .brief__legend { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: var(--fs-12); color: var(--steel); }
-      .brief__legend b { font-weight: 700; }
-      .brief__legend .k { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: baseline; border: 1px solid rgba(0,0,0,.15); }
-      .k--plan { background: var(--signal-wash); border-color: #bcccff; }
-      .k--hold { background: #fbf3df; border-color: #e6c98a; }
-      .k--done { background: #eaf6f0; border-color: #9fd2be; }
-
-      .brief__flow { margin-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-      .brief__flow span { font-size: var(--fs-13); font-weight: 600; color: var(--ink); background: #fff; border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 12px; box-shadow: var(--sh-sm); }
-      .brief__flow span.is-core { color: var(--signal-ink); border-color: #bcccff; background: var(--signal-wash); }
-      .brief__flow em { color: var(--steel); font-style: normal; font-weight: 700; }
-
-      .brief__two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 2px; }
-      @media (max-width: 560px) { .brief__two { grid-template-columns: 1fr; } }
-
-      /* ---- evidence ladder ---- */
-      .rung { display: grid; gap: 3px; padding: 10px 0; border-top: 1px solid var(--line); }
-      .rung:first-of-type { border-top: 0; padding-top: 2px; }
-      .rung__id { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--ink); }
-      .rung__tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: 1px; }
-      .rung__tag--now { color: var(--verify); background: #eaf6f0; border: 1px solid #9fd2be; }
-      .rung__tag--spec { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
-      .rung__tag--soon { color: var(--signal-ink); background: var(--signal-wash); border: 1px solid #bcccff; }
-      .rung p { font-size: var(--fs-13); }
-      .rung code, .brief code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-12); background: var(--paper-3); border: 1px solid var(--line-2); border-radius: 5px; padding: 1px 5px; color: var(--ink); word-break: break-all; }
-
-      /* Links in prose must be distinguishable without colour alone (WCAG 1.4.1). */
-      .brief__foot a, .brief__meta a, .brief__lede a, .brief__card p a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
-      .brief__foot { margin-top: 30px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 18px; font-size: 13px; color: var(--steel); }
-      .brief__note { margin-top: 18px; font-size: var(--fs-13); color: var(--steel); font-style: italic; }
-      .brief__print-only { display: none; }
-
-      /* ---- forward-internally callout ---- */
-      .brief__forward { margin-top: 26px; display: flex; align-items: flex-start; gap: 14px; background: var(--signal-wash); border: 1px solid #bcccff; border-left: 4px solid var(--signal-ink); border-radius: 12px; padding: 16px 18px; box-shadow: var(--sh-sm); }
-      .brief__forward .fw-ic { flex: none; font-size: 18px; line-height: 1.2; }
-      .brief__forward p { margin: 0; font-size: var(--fs-15); line-height: 1.5; color: var(--ink); }
-      .brief__forward b { color: var(--signal-ink); font-weight: 700; }
-      .brief__forward .fw-q { display: block; margin-top: 5px; font-weight: 600; color: var(--ink); }
-
-      /* ---- prominent live shortlink ---- */
-      .brief__link { margin-top: 22px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 12px; text-align: center; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; box-shadow: var(--sh-sm); }
-      .brief__link .ll-cap { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); }
-      .brief__link a { font-family: var(--font-display); font-size: clamp(17px, 2.4vw, 21px); font-weight: 700; letter-spacing: -0.01em; color: var(--signal-ink); text-decoration: none; }
-      .brief__link a:hover { text-decoration: underline; }
-
-      @media print {
-        @page { margin: 14mm; }
-        .brief__actions, .site-header, .skip-link { display: none !important; }
-        html, body { background: #fff !important; }
-        .brief { max-width: none; padding: 0; color: #000; }
-        .brief h1, .brief__lede, .brief__card p, .brief__card li, .brief__step .t, .brief__step .d, .rung__id, .rung p { color: #000 !important; }
-        .brief__eyebrow, .brief__card h2, .rung__id { color: #000 !important; }
-        .proofladder__cap, .proofladder__id, .proofladder__label, .proofladder__status { color: #000 !important; }
-        .brief__forward p, .brief__forward b, .brief__forward .fw-q, .brief__link .ll-cap, .brief__link a { color: #000 !important; }
-        .brief__card, .brief__step, .brief__flow span, .proofladder, .brief__forward, .brief__link { box-shadow: none !important; }
-        .brief__card, .rung, .brief__pipe, .brief__two, .proofladder, .brief__forward, .brief__link { break-inside: avoid; page-break-inside: avoid; }
-        h1, h2 { break-after: avoid; }
-        a { color: #000 !important; text-decoration: none; }
-        .brief__print-only { display: block; }
-      }
-    
-      /* No-JS burger fallback: these static pages do not load enhance.ts */
-      @media (max-width: 960px) {
-        .site-header__inner { display: grid; grid-template-columns: auto 1fr; height: auto; min-height: 66px; padding: 12px 0; row-gap: 8px; align-items: center; }
-        .site-nav { grid-column: 1 / -1; margin-left: 0; display: flex; flex-wrap: wrap; gap: 0 16px; }
-        .site-nav a { min-height: 44px; display: inline-flex; align-items: center; }
-        .site-header__burger, .site-header__cta, .site-header__cta-mobile { display: none; }
-      }
-    </style>
+    <link rel="stylesheet" href="/editorial.css" />
   </head>
-  <body>
+  <body class="editorial brief-page">
     <a class="skip-link" href="#main">Skip to main content</a>
 
     <!-- ===================== SiteHeader ===================== -->
     <header class="site-header">
       <div class="shell site-header__inner">
         <a class="brand" href="/" aria-label="Origin — home">
-          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" />
           <span class="brand__name">Origin</span>
         </a>
 
@@ -168,199 +55,24 @@
       </div>
     </header>
     <main class="brief" id="main">
-      <div class="brief__top">
-        <a class="brief__brand" href="/" aria-label="Origin — home">
-          <img src="/origin-logo.png" alt="" />
-          <b>Origin</b> <span>the evidence layer for AI agents</span>
-        </a>
-        <div class="brief__actions">
-          <button type="button" class="btn btn--ghost btn--sm" onclick="window.print()">Print / Save PDF</button>
-          <a class="btn btn--ghost btn--sm" href="/#offer">Book an Agent Evidence Review</a>
-        </div>
+      <div class="brief__top"><p><b>Origin / One-page brief</b><br />September 2026 · Working prototype. Seeking design partners.</p><div class="brief__actions"><button type="button" class="btn btn--ghost btn--sm" onclick="window.print()">Print / Save PDF</button><a class="btn btn--primary btn--sm" href="/#offer">Book an Agent Evidence Review</a></div></div>
+      <div class="brief__intro"><div><p class="kicker">The evidence layer for AI agents</p><h1>A reference check before the right to act.</h1></div><div><p class="brief__lede">Origin binds an agent configuration, challenges a policy with deterministic synthetic tasks, and produces a tamper-evident evidence artifact a reviewer can recheck.</p><p class="brief__boundary">The public demo is browser-local, synthetic, session-signed, and unpinned. Execution is not attempted. Not production SaaS or compliance certification.</p></div></div>
+      <div class="brief__flow" aria-label="The five-stage reference check">
+        <section class="brief__step"><span>01</span><h2>Bind</h2><p>Record the model, tools, policy, budget, and scenario battery.</p></section>
+        <section class="brief__step"><span>02</span><h2>Challenge</h2><p>Exercise the policy against a synthetic task battery.</p></section>
+        <section class="brief__step"><span>03</span><h2>Grade</h2><p>A deterministic oracle evaluates the decisions.</p></section>
+        <section class="brief__step"><span>04</span><h2>Attest</h2><p>Seal the result and configuration in a demo artifact.</p></section>
+        <section class="brief__step"><span>05</span><h2>Reverify</h2><p>Check the artifact offline. A changed bound field returns VOID.</p></section>
       </div>
-
-      <div class="brief__meta">
-        <span class="brief__ver">v2 · 2026-07-04</span>
-        <span class="brief__ver-sim">Private pilot · prototype, not production SaaS · forwardable one-pager</span>
-      </div>
-
-      <p class="brief__eyebrow">The evidence layer for AI agents</p>
-      <h1>Get your agent through security review, and prove what it did.</h1>
-      <p class="brief__lede">
-        Origin is the evidence layer for high-consequence AI agents. Its first product is a
-        configuration-bound <b>Agent Reference Check</b>: it binds an exact agent configuration, model, tools, policy, budget, scenario battery, runs a deterministic battery against it,
-        grades the result with a deterministic oracle rather than an LLM, and issues a tamper-evident
-        <b>Origin Attestation</b> a security reviewer can re-verify offline. Change one bound field and
-        the attestation returns VOID.
-      </p>
-      <p class="brief__lede">
-        A runtime gate and controlled tool-call proxy are the proposed pilot architecture, not
-        deployed general enforcement. Evidence shown today is synthetic sandbox evidence from a
-        private-pilot prototype; it is not compliance certification.
-      </p>
-
       <div class="brief__grid">
-        <div class="brief__card is-wide">
-          <h2>The evidence package, how one action is bounded and proven</h2>
-          <div class="brief__pipe" role="img" aria-label="Evidence pipeline: proposal, policy verdict, controlled proxy, approval or block, hash-chained audit trail, then a review-ready evidence package.">
-            <div class="brief__step" data-tone="plan">
-              <span class="n">01</span><span class="t">Proposal</span>
-              <span class="d">Agent proposes a side effect before it can act.</span>
-            </div>
-            <div class="brief__step" data-tone="plan">
-              <span class="n">02</span><span class="t">Policy verdict</span>
-              <span class="d">allow / cap / require-approval / deny / pause.</span>
-            </div>
-            <div class="brief__step" data-tone="plan">
-              <span class="n">03</span><span class="t">Controlled proxy</span>
-              <span class="d">The configured path to a real side effect.</span>
-            </div>
-            <div class="brief__step" data-tone="hold">
-              <span class="n">04</span><span class="t">Approval / block</span>
-              <span class="d">Human gate on risky actions; over-scope is blocked.</span>
-            </div>
-            <div class="brief__step" data-tone="done">
-              <span class="n">05</span><span class="t">Audit chain</span>
-              <span class="d">Every event hash-chained, tamper-evident.</span>
-            </div>
-            <div class="brief__step" data-tone="done">
-              <span class="n">06</span><span class="t">Evidence package</span>
-              <span class="d">Review-ready export: what, why, who owned the risk.</span>
-            </div>
-          </div>
-          <div class="brief__legend" aria-hidden="true">
-            <span><span class="k k--plan"></span>enforce / plan</span>
-            <span><span class="k k--hold"></span>held / approval</span>
-            <span><span class="k k--done"></span>verified / recorded</span>
-            <span><b>red</b> = blocked · <b>gray</b> = simulated</span>
-          </div>
-        </div>
-
-        <div class="brief__card is-wide">
-          <h2>The 90-second evidence loop</h2>
-          <div class="brief__flow">
-            <span>Agent <em>proposes</em></span><em>→</em>
-            <span class="is-core">Policy gate</span><em>→</em>
-            <span>Verdict</span><em>→</em>
-            <span class="is-core">Tool-call proxy</span><em>→</em>
-            <span>Human approval</span><em>→</em>
-            <span>Bounded action</span><em>→</em>
-            <span class="is-core">Audit digest</span>
-          </div>
-          <p style="margin-top:12px">Watch one workflow run end to end. In scoped workflows the proxy is the configured path to a side effect. Flip one input and Origin blocks an over-scope action, and records the block. Side effects are sandboxed; any real-money path stays human-created and human-gated, so the agent never touches live money.</p>
-          <div class="blockline" role="note" style="margin-top:14px">
-            <p class="blockline__t">The agent tried to exceed its scope. <b>Origin blocked it.</b> The block became evidence.</p>
-          </div>
-        </div>
-
-        <div class="brief__card">
-          <h2>Who it's for</h2>
-          <p>The owner of a high-consequence AI agent that's blocked in security review because no one can bound the blast radius or prove what it did.</p>
-          <ul>
-            <li>Agents that touch production, internal tools, infrastructure, code, PII, or money-adjacent workflows.</li>
-            <li>First wedge: internal-ops / production-access agents.</li>
-          </ul>
-        </div>
-
-        <div class="brief__card">
-          <h2>What the evidence package contains</h2>
-          <ul>
-            <li>Each proposal, verdict, approval, action, block, and exception</li>
-            <li>The tool-call proxy events (the only side-effect path)</li>
-            <li>Who owned the risk, and when they approved</li>
-            <li>A hash-chained, tamper-evident audit digest, replayable and exportable</li>
-          </ul>
-        </div>
-
-        <div class="brief__card is-wide">
-          <h2>Start with an Agent Launch Evidence Review</h2>
-          <p>A founder-led engagement for one blocked agent workflow: map the approval blocker, define the runtime policy, route risky actions through the proxy, and produce the evidence package your reviewer needs to evaluate the launch.</p>
-          <div class="brief__two">
-            <div>
-              <p class="brief__lead">You bring</p>
-              <ul>
-                <li>The agent workflow you're trying to ship</li>
-                <li>The tools and systems it touches</li>
-                <li>What's blocking approval, and who signs off</li>
-              </ul>
-            </div>
-            <div>
-              <p class="brief__lead">Origin provides</p>
-              <ul>
-                <li>A policy map for the workflow</li>
-                <li>A controlled proxy path for side effects</li>
-                <li>A demo trace + a review-ready evidence package</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="brief__card">
-          <h2>You're ready if</h2>
-          <ul>
-            <li>You have a high-consequence agent workflow</li>
-            <li>There's a real reviewer and a real blocker</li>
-            <li>There's a tool-call path we can route through a proxy</li>
-            <li>Someone owns approvals for risky actions</li>
-            <li>You're willing to instrument the agent's events</li>
-          </ul>
-        </div>
-
-        <div class="brief__card">
-          <h2>Not ready if</h2>
-          <ul>
-            <li>No high-consequence workflow, the stakes don't warrant it</li>
-            <li>No reviewer or blocker, nothing is actually gating the launch</li>
-            <li>No tool-call path to route through a proxy</li>
-            <li>No owner for approvals on risky actions</li>
-            <li>No willingness to instrument the agent's events</li>
-          </ul>
-          <p style="margin-top:10px">If any of these is true, we'll say so, early.</p>
-        </div>
-
-        <div class="brief__card is-wide">
-          <h2>The evidence ladder, proof honesty</h2>
-          <p>We publish evidence in rungs and never dress one up as another.</p>
-          <div class="proofladder" aria-label="Proof-status ladder">
-            <p class="proofladder__cap">Proof status</p>
-            <div class="proofladder__row"><span class="proofladder__id">TR-A001</span><span class="proofladder__label">Authored specimen, shows the evidence-package format</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
-            <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted sandbox trace, real, re-verifiable SHA-256 hash chain</span><span class="proofladder__status proofladder__status--ok">Available</span></div>
-            <div class="proofladder__row"><span class="proofladder__id">TR-A003</span><span class="proofladder__label">First external design-partner trace</span><span class="proofladder__status proofladder__status--pending">Not earned yet</span></div>
-          </div>
-          <div class="rung">
-            <span class="rung__id">TR-A001<span class="rung__tag rung__tag--spec">Authored specimen</span></span>
-            <p>An authored evidence specimen that shows the package <em>format</em> only, illustrative, not a machine-emitted run. See <a href="/proof#tr-a001">/proof#tr-a001</a>.</p>
-          </div>
-          <div class="rung">
-            <span class="rung__id">TR-A002<span class="rung__tag rung__tag--now">Available now</span></span>
-            <p>A machine-emitted sandbox trace: <b>12 events</b>, a real <b>SHA-256 hash chain</b>, final digest <code>ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32</code>. Re-verifiable with <code>npm run proof:verify</code>; download at <a href="/proof/tr-a002.json">/proof/tr-a002.json</a>. Sandbox only, no live money, no customer data, not a performance claim. See <a href="/proof#tr-a002">/proof#tr-a002</a>.</p>
-          </div>
-          <div class="rung">
-            <span class="rung__id">TR-A003<span class="rung__tag rung__tag--soon">When earned</span></span>
-            <p>The first external design-partner trace, forthcoming. We won't show data for it until it exists.</p>
-          </div>
-          <p style="margin-top:12px;font-size:var(--fs-13);color:var(--steel)">The prototype runs; it is not production SaaS. Tamper-evident means alteration is detectable by replay and digest checks. Review-ready, built to be checked by a reviewer, never a claim that one has signed off. Decision-support, not a guarantee of approval.</p>
-        </div>
+        <section class="brief__card"><h2>For the team facing security review.</h2><p>Agent-platform, security, and infrastructure teams need to make a specific workflow reviewable: the permissions requested, the policy decisions observed, and the limits of the evidence.</p><p><b>First wedge:</b> internal-ops and production-access agent workflows. Capability alone does not establish permission.</p></section>
+        <section class="brief__card"><h2>One artifact, explicit boundaries.</h2><ul><li>The configuration and evaluation context are bound to the result.</li><li>The deterministic oracle is the sole grading authority.</li><li>Signature and digest checks establish integrity under their bindings; an unpinned demo signer does not establish trusted Origin issuance.</li><li>A synthetic pass does not establish production readiness.</li></ul></section>
+        <section class="brief__card"><h2>The evidence ladder.</h2><div class="brief__rung"><b>TR-A001</b><p><a href="/proof#tr-a001">Authored specimen</a> — evidence-package format only.</p></div><div class="brief__rung"><b>TR-A002</b><p><a href="/proof#tr-a002">Machine-emitted sandbox trace</a> — 12 events with a re-verifiable SHA-256 chain. <a href="/proof/tr-a002.json">Download JSON</a>.</p></div><div class="brief__rung"><b>TR-A003</b><p>First external design-partner trace — not earned yet.</p></div><p>No customer data, live money, performance claim, or reviewer acceptance is implied by the published sandbox trace.</p></section>
+        <section class="brief__card"><h2>Start with one blocked workflow.</h2><p>Bring the proposed agent configuration, the tools it would touch, and the approval question. A founder-led Agent Evidence Review scopes what can be evaluated and what evidence remains missing.</p><p>Runtime gating and a controlled tool-call proxy are <b>proposed pilot architecture</b>, not deployed general enforcement. Real customer evidence requires separate authorization.</p></section>
       </div>
-
-      <div class="brief__forward">
-        <span class="fw-ic" aria-hidden="true">↪</span>
-        <p><b>Send this internally.</b> Forward this to your platform or security reviewer with one question:
-          <span class="fw-q">“Would this evidence package unblock your review?”</span></p>
-      </div>
-
-      <div class="brief__link">
-        <span class="ll-cap">See it live</span>
-        <a href="https://origin-physical-ai.pages.dev/">origin-physical-ai.pages.dev</a>
-      </div>
-
-      <p class="brief__note">Origin is decision-support and evidence infrastructure, not legal or compliance certification. No customers, logos, or metrics are claimed here unless independently verifiable. Send this to your security or platform lead.</p>
-
-      <div class="brief__foot">
-        <span>Origin · the evidence layer for AI agents</span>
-        <span>See it live: <a href="https://origin-physical-ai.pages.dev/">origin-physical-ai.pages.dev</a> · Brief v2 · 2026-07-04</span>
-      </div>
-      <p class="brief__print-only" style="margin-top:14px;font-size:12px;color:#000;">Live site (type this in): origin-physical-ai.pages.dev · Demo: origin-physical-ai.pages.dev/#demo · Proof: origin-physical-ai.pages.dev/proof</p>
+      <div class="brief__foot"><p><b>Model proposes. Environment verifies. Gate decides. Trace proves.</b><br />Forward this to the reviewer who needs to understand the evidence boundary.</p><a class="btn btn--primary" href="/reference-check">Run the synthetic reference check</a></div>
+      <p class="brief__print-only">Try: originphysicalai.com/reference-check · Evidence: originphysicalai.com/proof · Trust: originphysicalai.com/trust · Contact: bohueilin@gmail.com</p>
     </main>
+  <script type="module" src="/src/home/enhance.ts"></script>
   </body>
 </html>

@@ -1,15 +1,14 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs'
-import { resolve, join, extname } from 'node:path'
+import { resolve, join } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// ── Clean-domain / contact cutover, driven by config (see docs/domain-and-inbox-cutover.md).
-// Default host + contact are the current Cloudflare Pages deployment. Set SITE_URL (or
-// PUBLIC_SITE_URL) and/or CONTACT_EMAIL in the build env to rewrite canonical/OG/llms/
-// sitemap/robots + the contact email across the whole dist at build time — no source edits.
-// Unset ⇒ complete no-op (output byte-identical to today).
-const DEFAULT_HOST = 'origin-physical-ai.pages.dev'
+// Public identity defaults to the canonical product website in source. Optional
+// build overrides affect only website pages and discovery files; copied evidence,
+// archived research, JavaScript and backend compatibility configuration stay intact.
+// See ../../docs/domain-and-inbox-cutover.md.
+const DEFAULT_HOST = 'originphysicalai.com'
 const DEFAULT_EMAIL = 'bohueilin@gmail.com'
 
 function siteUrlRewrite(): Plugin {
@@ -17,39 +16,48 @@ function siteUrlRewrite(): Plugin {
   const contactEmail = process.env.CONTACT_EMAIL || ''
   const newHost = siteUrl.replace(/^https?:\/\//, '')
   const active = Boolean(siteUrl) || Boolean(contactEmail)
+  let outDir = resolve(__dirname, 'dist')
 
   const rewrite = (s: string): string => {
     let out = s
     if (siteUrl) {
-      out = out.split(`https://${DEFAULT_HOST}`).join(siteUrl)
-      out = out.split(`http://${DEFAULT_HOST}`).join(siteUrl)
-      out = out.split(DEFAULT_HOST).join(newHost) // any bare-host references
+      // One pass avoids rewriting the replacement (e.g. a preview subdomain).
+      // Host boundaries keep independent subdomains and addresses untouched.
+      out = out.replace(
+        /(?<![\w.@-])(?:https?:\/\/)?originphysicalai\.com(?=[:/?#\s"'<>]|$)/g,
+        (match) => match.startsWith('http') ? siteUrl : newHost,
+      )
     }
     if (contactEmail) out = out.split(DEFAULT_EMAIL).join(contactEmail)
     return out
   }
 
-  const TEXT_EXT = new Set(['.html', '.txt', '.xml', '.json', '.webmanifest', '.js', '.css'])
-  const walk = (dir: string) => {
-    for (const name of readdirSync(dir)) {
-      const p = join(dir, name)
-      if (statSync(p).isDirectory()) { walk(p); continue }
-      if (!TEXT_EXT.has(extname(name))) continue
-      const before = readFileSync(p, 'utf8')
-      const after = rewrite(before)
-      if (after !== before) writeFileSync(p, after)
-    }
+  const rewriteFile = (path: string) => {
+    if (!statSync(path).isFile()) return
+    const before = readFileSync(path, 'utf8')
+    const after = rewrite(before)
+    if (after !== before) writeFileSync(path, after)
   }
 
   return {
     name: 'origin-site-url-rewrite',
-    // rewrites the entry HTMLs (canonical / OG / og:url) during build
+    configResolved(config) { outDir = resolve(config.root, config.build.outDir) },
     transformIndexHtml(html) { return active ? rewrite(html) : html },
-    // rewrites the copied public assets (llms.txt, sitemap.xml, robots.txt, legal/*, 404.html)
     closeBundle() {
       if (!active) return
-      walk(resolve(__dirname, 'dist'))
-      console.log(`[site-url] rewrote host → ${newHost || DEFAULT_HOST}${contactEmail ? `, contact → ${contactEmail}` : ''}`)
+      // Explicit public identity boundary: never rewrite JSON, signed proof,
+      // benchmark/research snapshots or compiled application code.
+      for (const name of readdirSync(outDir)) {
+        const path = join(outDir, name)
+        if (name.endsWith('.html') || ['llms.txt', 'sitemap.xml', 'robots.txt'].includes(name)) {
+          rewriteFile(path)
+        } else if (name === 'legal' && statSync(path).isDirectory()) {
+          for (const legalName of readdirSync(path)) {
+            if (legalName.endsWith('.html')) rewriteFile(join(path, legalName))
+          }
+        }
+      }
+      console.log(`[site-url] rewrote website identity → ${newHost || DEFAULT_HOST}${contactEmail ? `, contact → ${contactEmail}` : ''}`)
     },
   }
 }

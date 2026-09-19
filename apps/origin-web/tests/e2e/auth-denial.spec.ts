@@ -20,6 +20,18 @@ const DENIED = 'not-the-owner@example.com'
 // from the module under test could not catch that module changing it.
 const OWNER = 'bohueilin@gmail.com'
 
+test.beforeEach(async ({ page }) => {
+  // Keep auth tests local. Later stubSession routes take precedence over this guard.
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url())
+    if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+      || url.pathname === '/api' || url.pathname.startsWith('/api/')) {
+      return route.abort('blockedbyclient')
+    }
+    await route.continue()
+  })
+})
+
 /** Seed the provider's record of a refused sign-in, as a real denial would leave it. */
 async function seedDenial(page: import('@playwright/test').Page, email = DENIED) {
   await page.addInitScript((e) => { window.sessionStorage.setItem('origin.auth.denied', e) }, email)

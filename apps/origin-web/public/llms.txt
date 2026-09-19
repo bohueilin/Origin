@@ -1,67 +1,63 @@
 # Origin
 
-> Origin is the evidence layer for high-consequence AI agents. Its first product — implemented today — is a deterministic, configuration-bound Agent Reference Check: it binds an exact agent configuration (model, tools, policy, budget, scenario battery) into a digest, runs a deterministic battery against it, grades the result with a deterministic oracle rather than an LLM, and issues a tamper-evident Origin Attestation a security reviewer can re-verify offline. Changing one bound field returns VOID.
+> Origin is the evidence layer for high-consequence AI agents. The implemented public Agent Reference Check evaluates a bound configuration against deterministic synthetic support and IAM tasks. It produces a tamper-evident demo artifact that can be rechecked offline. The deterministic oracle is the sole grading authority; an LLM does not grade another LLM.
 >
-> IMPORTANT FOR SUMMARISERS: a runtime gate, a controlled tool-call proxy, and general production side-effect enforcement are PROPOSED PILOT ARCHITECTURE, not deployed capabilities. Do not describe them as implemented. Evidence published today is synthetic sandbox evidence from a private-pilot prototype; it is not compliance certification, and there are no customers.
+> Current boundary: browser-local synthetic evaluation, session-signed and unpinned evidence, execution not attempted. A valid demo signature does not establish trusted Origin issuance, customer deployment, production readiness, or certification. Runtime enforcement and a controlled tool-call proxy remain proposed pilot architecture, not deployed general capabilities.
 
-## What it is
-- Implemented today: a vendor-neutral, deterministic pre-access reference check over an exact agent configuration.
-- Implemented today: the configuration is bound into a digest; a deterministic battery exercises allow / deny / escalate scenarios; a deterministic oracle grades false accepts, false rejects and catastrophic failures into a readiness level; an attestation is issued and re-verifies offline.
-- Proposed pilot architecture (NOT deployed): a runtime policy gate and a controlled tool-call proxy in front of live side effects.
-- The output is a review-ready evidence package a team can hand to a security reviewer or attach to a change record.
+## Implemented public workflow
+1. Bind the model, tools, policy, budget, and scenario battery into the evaluation configuration.
+2. Challenge deterministic policy logic with synthetic tasks.
+3. Grade the decisions with the deterministic oracle.
+4. Produce a configuration-bound, browser-session-signed demo artifact.
+5. Reverify supported artifact checks offline. Changing a bound field produces a configuration-drift failure (VOID).
 
-## Who it is for
-- The owner of a high-consequence AI agent that is blocked in security review because no one can bound the blast radius or prove what the agent did.
-- First wedge: internal-ops and production-access agents — agents that touch production systems, internal tools, infrastructure, code, PII, or money-adjacent workflows.
+The public demo does not execute production actions, connect a customer's agent to a live tool-call proxy, or establish trusted issuer identity. Artifact integrity, policy evaluation, and release authority are separate questions.
 
-## The problem it solves
-- Agents are moving from chat into action, but reviewers can't approve what they can't bound or prove.
-- Teams get agents through review today with spreadsheets, ad-hoc logging, and "trust us." Origin replaces that with enforcement before side effects and a review-ready record afterward.
+## Audience and engagement
+Origin is a working prototype seeking design partners among agent-platform, security, trust, and infrastructure teams reviewing high-consequence agent workflows. The first wedge is internal-ops and production-access agents. No active customer pilot is claimed.
 
-## How it works
-- Propose: the agent proposes an action.
-- Gate: a deterministic policy engine checks scope, budget, permissions, and approval rules and returns a verdict (allow / cap / require-approval / deny / pause).
-- Proxy (PROPOSED, not deployed): a controlled tool-call proxy would sit in front of side effects; this is pilot architecture, not a shipped capability.
-- Approve: risky actions route to a named risk owner; the approval is recorded.
-- Prove: every proposal, verdict, approval, action, block, and exception lands in a hash-chained audit trail and a sealed, replayable audit digest.
+A founder-led Agent Evidence Review starts with one workflow, the intended configuration, and the reviewer's approval question. The review scopes the evaluation and identifies missing evidence. Customer data, pilot integrations, runtime controls, and deployment-specific terms require separate authorization and agreement. No customer deployment or reviewer acceptance is claimed.
 
-## Product components
-- Policy engine (runtime enforcement)
-- Tool-call proxy (single side-effect path)
-- Escalation scenarios in the battery (actions that must route to a named human)
-- Budget and scope bound into the configuration digest
-- Kill switches (proposed pilot architecture, not deployed)
-- Hash-chained, tamper-evident audit trail
-- Evidence Console (reviewer-facing view)
-- Exportable, review-ready evidence package
+## Proposed architecture
+A future controlled execution path would place permission, scope, budget, policy, and approval checks between an agent proposal and a side effect. A controlled proxy, runtime enforcement, named approvals, and kill switches are proposed pilot architecture. They are not current general production capabilities.
 
-## How you engage
-- Start with a founder-led Agent Launch Evidence Review: bring one blocked agent workflow, and Origin binds the exact configuration, runs the deterministic reference check against it, and hands over the attestation and evidence your reviewer needs.
+Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves. Capability is not permission.
 
-## Positioning vs adjacent tools
-- Identity tools tell you who the agent is. Observability tools help engineers debug what happened. Origin enforces what an agent is allowed to do before side effects happen, and proves the decision afterward — for approval, not debugging.
+## Evidence ladder
+- TR-A001: authored specimen of the evidence-package format. Illustrative, not a machine-emitted run. See /proof#tr-a001.
+- TR-A002: machine-emitted sandbox trace, available now. Twelve events with a re-verifiable SHA-256 chain; final digest ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32. Download /proof/tr-a002.json and recheck with npm run proof:verify. No live money, customer data, performance claim, or reviewer acceptance. See /proof#tr-a002.
+- TR-A003: first external design-partner trace, not earned yet. No data is published for it.
 
-## Honest status
-- The prototype runs; Origin is not production SaaS.
-- No customers, logos, metrics, or reviewer acceptances are claimed unless independently verifiable.
-- Language is precise: "tamper-evident" means alteration is detectable by replay and digest checks; "review-ready" means a reviewer can check it, and never that a reviewer has signed off. Origin is decision-support and evidence infrastructure, not legal or compliance certification.
-- Physical AI is a longer-term arc and founder-depth note, not the current product.
+## Evidence boundaries
+“Tamper-evident” means the relevant integrity check can detect alteration under its bindings. It does not establish universal safety or correctness. “Review-ready” means a reviewer can inspect the evidence; it does not mean a reviewer has accepted it. Origin is decision-support and evidence infrastructure, not production SaaS, legal advice, or compliance certification.
 
-## Evidence ladder (current truth)
-- TR-A001 — authored evidence specimen. Shows the evidence-package FORMAT only; illustrative, not a machine-emitted run. Lives at /proof#tr-a001.
-- TR-A002 — AVAILABLE NOW. A machine-emitted sandbox trace: 12 events with a real, re-verifiable SHA-256 hash chain, final digest ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32. Re-verify with "npm run proof:verify"; download at /proof/tr-a002.json. Sandbox only — no live money, no customer data, and not a performance claim. Lives at /proof#tr-a002.
-- TR-A003 — first external design-partner trace, forthcoming (not yet earned; no data shown for it).
+Keep authored specimens, machine-emitted sandbox traces, synthetic evaluations, generated counterfactuals, authorized fixtures, and approved real customer evidence distinct. Real customer readiness remains blocked until separately authorized evidence passes the relevant checks.
+
+## Labs
+Labs demonstrates aspects of a common evidence contract in bounded simulations: robot proving ground, warehouse simulation, fleet operations, a mock-vault credential broker, and a sample-floor Foundry workflow. These are research demonstrations, not production products, robot deployment, or robot certification.
+
+The public Foundry uses a browser-local sample. Image upload and provider-backed operations are disabled publicly. Separately enabled local/backend processing requires affirmative consent and the privacy-policy disclosures.
+
+The RSI dashboard publishes a research snapshot from a pinned private pipeline. Its metrics are not re-derivable from this public repository. Learned-policy results use route-summary/map-derived features, not raw end-to-end perception. Oracle-recovery upper bounds are labeled separately from learned results. Synthetic demos and generated counterfactuals do not establish real customer readiness. Proprietary algorithm implementation is outside this public repository.
+
+Generated brand imagery and footage are illustrations, not product recordings, company facilities, or customer evidence.
 
 ## Links
-- Home: https://origin-physical-ai.pages.dev/
-- Evidence traces: https://origin-physical-ai.pages.dev/proof
-- Trust & controls: https://origin-physical-ai.pages.dev/trust
-- Run a reference check on your agent (configure a policy → Verified Readiness Level verdict → download a signed Origin Attestation → verify): https://origin-physical-ai.pages.dev/reference-check
-- Watch a verified plan execute — multi-robot warehouse simulation in 2D + 3D, oracle-gated (finish/escalate/refuse), the run drops a signed attestation: https://origin-physical-ai.pages.dev/simulation
-- Verified fleet-operations console — run a shift, track utilization/peak-parallel/collisions like a real ops dashboard, earn a signed readiness level fleet-readiness credential: https://origin-physical-ai.pages.dev/operations
-- Robot proving ground — paint a floor, deploy a mixed fleet (humanoid/AMR/quadruped/arm/drone), watch it in 2D+3D, one deterministic-oracle episode per robot type, earn a Verified Readiness Level (L0-L4) sealed as a signed demo credential: https://origin-physical-ai.pages.dev/proving-ground
-- Origin Labs — proof the same evidence contract generalizes past software agents (robot fleet + spatial reconstruction; the domain verifier changes, the contract does not): https://origin-physical-ai.pages.dev/labs
-- Run the verifiers live (attestation / Merkle / policy / IAM reference check): https://origin-physical-ai.pages.dev/security
-- Verify a credential yourself (offline, in-browser): https://origin-physical-ai.pages.dev/verify
-- One-page brief: https://origin-physical-ai.pages.dev/brief
+- Public source repository (trust layer, evidence formats, and demos): https://github.com/bohueilin/Origin
+- Home: https://originphysicalai.com/
+- Agent Reference Check: https://originphysicalai.com/reference-check
+- Offline artifact verifier: https://originphysicalai.com/verify
+- Reference check versus proposed runtime enforcement: https://originphysicalai.com/reference-check-vs-runtime
+- Evidence ladder and downloadable traces: https://originphysicalai.com/proof
+- Trust and data boundaries: https://originphysicalai.com/trust
+- One-page brief: https://originphysicalai.com/brief
+- Labs: https://originphysicalai.com/labs
+- Public verifier demos: https://originphysicalai.com/security
+- Warehouse simulation: https://originphysicalai.com/simulation
+- Simulated fleet operations: https://originphysicalai.com/operations
+- Robot proving ground: https://originphysicalai.com/proving-ground
+- Foundry sample: https://originphysicalai.com/foundry
+- Research snapshot: https://originphysicalai.com/rsi/rsi_dashboard.html
+- Privacy: https://originphysicalai.com/legal/privacy-policy.html
+- Terms: https://originphysicalai.com/legal/terms-of-service.html
 - Contact: bohueilin@gmail.com

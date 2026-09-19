@@ -1,7 +1,7 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Avenir Next', Avenir, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   /* Distinctive display face for headings — technical, frontier, used with restraint. */
-  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-display: 'Avenir Next', Avenir, system-ui, sans-serif;
   line-height: 1.5;
   color-scheme: light;
   font-synthesis: none;

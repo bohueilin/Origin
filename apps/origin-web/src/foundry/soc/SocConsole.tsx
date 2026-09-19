@@ -44,7 +44,7 @@ export function Leaderboard() {
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
         <h2>Raw speed: one prompt, every model</h2>
-        <p>gemma-4-31b on Cerebras vs every frontier model we can reach, live — real tok/s measured this run. The gap is the whole reason per-step verification is free.</p>
+        <p>Compare response throughput across configured providers for one synthetic prompt. Read each lane’s availability and timing provenance; throughput does not establish verification quality or cost.</p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Racing the field…' : data ? 'Run again' : 'Run the leaderboard'}
@@ -83,9 +83,9 @@ export function ControlPlaneThesis() {
       <div className="cpt__eyebrow">The control plane for autonomy</div>
       <h2 className="cpt__slogan">Capability is not permission.</h2>
       <p className="cpt__lede">
-        Gemma-4 proposes. A <strong>deterministic oracle — never an LLM</strong> — ratifies every action before it executes. A bad
-        action is made <em>impossible</em>, not just unlikely. The only reason you can afford that check on <em>every</em> step is that
-        Cerebras makes verification effectively free.
+        A model proposes an action. A <strong>deterministic policy</strong> evaluates the defined synthetic action boundary.
+        These demonstrations explore whether the declared policy rejects the fixture; they do not prove that every dangerous action is covered,
+        or that a production system enforces the same boundary.
       </p>
       <div className="cpt__loop">
         {loop.map((s, i) => (
@@ -96,9 +96,9 @@ export function ControlPlaneThesis() {
         ))}
       </div>
       <p className="cpt__honest">
-        <strong>3 gemma-4 agents per decision · 1 judge no model can bribe.</strong>{' '}
+        <strong>Model proposals · deterministic policy checks.</strong>{' '}
         The Perceiver, Planner, and Guardian all run on gemma-4-31b — they perceive, propose, and guard. The verdict itself is a
-        deterministic oracle (the fail-closed policy floor): the only judge, and the one component no prompt, model, or injection can move.
+        deterministic oracle (the fail-closed policy floor): the authority for the defined policy decision. Its correctness still depends on the policy, the implementation and the scenario coverage.
       </p>
       <div className="cpt__cols">
         <div className="cpt__col">
@@ -325,8 +325,8 @@ export function EnsemblePanel() {
   return (
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
-        <h2>A committee, for the price of one</h2>
-        <p>On a GPU you get one nervous reviewer. On Cerebras you run an independent committee in parallel — for roughly the same latency. The deterministic floor still sits underneath.</p>
+        <h2>Explore a committee of reviewers</h2>
+        <p>Compare parallel model responses to a synthetic incident. The miss-rate curve below is a model under its stated assumptions; it is not measured production reliability.</p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Convening the committee…' : data ? 'Run again' : 'Run N Guardians'}
@@ -341,7 +341,7 @@ export function EnsemblePanel() {
           </div>
           <div className="fdy-race__verdict">
             {data.total} independent Guardians ran in <strong>{data.cerebrasAllMs}ms</strong> on Cerebras (parallel). The same {data.total} on the GPU: ~{gpu7Ms}ms.
-            A {data.total}-vote committee cuts a single reviewer&rsquo;s miss rate to ~{data.points[data.points.length - 1].missRatePct}% — free, because verification is free at Cerebras speed.
+            Under the independence assumption, this model estimates a committee miss rate of ~{data.points[data.points.length - 1].missRatePct}%. Correlated errors can invalidate that estimate.
           </div>
         </div>
       )}
@@ -612,7 +612,7 @@ function LoopRace() {
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
         <h2>The loop-race</h2>
-        <p>Same incident queue. In the wall-clock the GPU baseline spends triaging ONE alert, how many can Cerebras fully triage <em>and verify</em>? Per-step verification is only free at ~1,500 tok/s.</p>
+        <p>Same incident queue. In the wall-clock the GPU baseline spends triaging ONE alert, how many can Cerebras fully triage <em>and verify</em>? Inspect the timing and baseline assumptions before drawing a throughput conclusion.</p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Racing…' : data ? 'Race again' : 'Run the loop-race'}
@@ -721,16 +721,15 @@ export default function SocConsole() {
   return (
     <div className="fdy">
       <header className="fdy-hero">
-        <div className="fdy-hero__eyebrow">Origin Autonomy-Control · powered by gemma-4-31b on Cerebras</div>
+        <div className="fdy-hero__eyebrow">Origin Labs · Autonomy Control</div>
         <h1>
-          Your AI agent has the keys.<br />
-          Make sure it <span className="fdy-hero__mark">can&rsquo;t be tricked</span> into using them.
+          Explore the action boundary.<br />
+          Make each decision <span className="fdy-hero__mark">open to inspection</span>.
         </h1>
         <p className="fdy-hero__sub">
-          Give an autonomous agent real tools and someone will hide an instruction in the data it reads — and it will run{' '}
-          <code>disable_firewall</code> or <code>delete_logs</code> for them. Origin puts a Guardian on <em>every</em> action and a fail-closed
-          policy floor under it. The judge of "is this action allowed" is a deterministic policy — never an LLM. Per-step verification is only
-          free because Cerebras runs gemma-4-31b at ~1,500 tok/s.
+          Experimental security scenarios for delegated tools, hostile inputs and policy decisions.
+          Inspect deterministic allow, deny and escalate rules alongside model-assisted proposals.
+          Panels identify measured results, illustrative baselines and backend-dependent runs. These demonstrations do not establish production enforcement or prompt-injection prevention.
         </p>
       </header>
 
@@ -781,7 +780,7 @@ export default function SocConsole() {
             {done && (
               <div className="soc-verdict">
                 <strong>{run.threatsBlocked} destructive action{run.threatsBlocked === 1 ? '' : 's'} blocked synchronously, before execution.</strong> Zero executed.
-                The deterministic policy — not an LLM — decided every "allowed" (DeepMind&rsquo;s R3 synchronous block), and the Guardian ran on every step because it&rsquo;s free at Cerebras speed. This trace is the audit trail &mdash; the independently verifiable record. Origin issues no certificate; the gate decides.
+                The deterministic policy decides allow/deny within this synthetic workflow. The trace records these scenario decisions; it does not demonstrate a connected production tool or certify an agent.
               </div>
             )}
           </>

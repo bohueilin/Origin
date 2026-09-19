@@ -2,15 +2,15 @@
   /* Warm-paper palette (Anthropic-frontier): warm neutral stack, blue accent kept.
      The paper bg + barely-warm white cards + warm hairlines do the "frontier" lift;
      the finish/escalate/refuse triad stays legible against it. */
-  --bg: #faf9f5;
-  --panel: #fffefb;
-  --panel-2: #f2efe6;
-  --con-line: #e8e3d7;
-  --text: #1a1813;
-  --text-soft: #57534a;
-  --muted: #6e6a5f;
-  --accent: #2f6df6;
-  --accent-ink: #1d4ed8;
+  --bg: #f8f7f4;
+  --panel: #ffffff;
+  --panel-2: #edf1e7;
+  --con-line: #dce3d4;
+  --text: #272d26;
+  --text-soft: #4e5b48;
+  --muted: #64705d;
+  --accent: #2b523b;
+  --accent-ink: #244630;
   --pos: #0f9d6e;
   --neg: #d6534a;
   --con-warn: #b97400;
@@ -22,7 +22,7 @@
   --con-warn-ink: #6b4400;
   --glass: rgba(38, 33, 24, 0.04);
   --con-paper: #f4efe6;
-  --code-bg: #f2efe6;
+  --code-bg: #edf1e7;
   --shadow-sm: 0 1px 2px rgba(38, 33, 24, 0.04), 0 1px 3px rgba(38, 33, 24, 0.06);
   --shadow-md: 0 6px 20px rgba(38, 33, 24, 0.08), 0 2px 6px rgba(38, 33, 24, 0.05);
   --shadow-lg: 0 18px 48px rgba(38, 33, 24, 0.12), 0 6px 16px rgba(38, 33, 24, 0.06);
@@ -36,10 +36,10 @@
    users, suppressed for mouse clicks (:focus-visible). Components may override.
 
    The ring must be OPAQUE and OFFSET, matching public/home.css:93-97. The previous
-   `box-shadow: 0 0 0 3px rgba(47,109,246,.4)` composited to #a9c1f5 — 1.71:1 against
-   --bg #faf9f5 and 1.73:1 against --panel #fffefb, far under the 3:1 WCAG 1.4.11 floor
+   `box-shadow: 0 0 0 3px rgba(65,95,53,.4)` composited to #a9c1f5 — 1.71:1 against
+   --bg #f8f7f4 and 1.73:1 against --panel #ffffff, far under the 3:1 WCAG 1.4.11 floor
    for a focus indicator, and it was the ONLY cue (unlike the field rule further down,
-   these controls get no compensating border flip). Solid --accent #2f6df6 measures
+   these controls get no compensating border flip). Solid --accent #2b523b measures
    4.30:1 on --bg and 4.49:1 on --panel. An `outline` with offset is used rather than a
    solid box-shadow because `.btn.primary` is filled with --accent — a ring abutting it
    would sit at 1.00:1 against the control it surrounds; the offset clears the fill and
@@ -62,12 +62,12 @@ textarea:focus-visible,
 body {
   margin: 0;
   background:
-    radial-gradient(1100px 560px at 12% -12%, rgba(47, 109, 246, 0.07), transparent 60%),
+    radial-gradient(1100px 560px at 12% -12%, rgba(65, 95, 53, 0.07), transparent 60%),
     radial-gradient(900px 480px at 92% -4%, rgba(15, 157, 110, 0.06), transparent 55%),
     var(--bg);
   background-attachment: fixed;
   color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'Avenir Next', Avenir, system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -2300,9 +2300,9 @@ select.field-input {
 .flow-kicker {
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgba(47, 109, 246, 0.3);
+  border: 1px solid rgba(65, 95, 53, 0.3);
   color: var(--accent-ink);
-  background: rgba(47, 109, 246, 0.1);
+  background: rgba(65, 95, 53, 0.1);
   border-radius: 999px;
   padding: 5px 10px;
   font-size: 11px;
@@ -2393,9 +2393,9 @@ select.field-input {
   justify-content: flex-start;
   gap: 18px;
   border-style: solid;
-  border-color: rgba(47, 109, 246, .24);
+  border-color: rgba(65, 95, 53, .24);
   background:
-    radial-gradient(circle at 12% 0%, rgba(47, 109, 246, .16), transparent 33%),
+    radial-gradient(circle at 12% 0%, rgba(65, 95, 53, .16), transparent 33%),
     linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.035));
 }
 .upload-zone.dragging {
@@ -2441,9 +2441,9 @@ select.field-input {
 }
 .site-output-grid span {
   padding: 10px 11px;
-  border: 1px solid rgba(47, 109, 246, .18);
+  border: 1px solid rgba(65, 95, 53, .18);
   border-radius: 11px;
-  background: rgba(47, 109, 246, .07);
+  background: rgba(65, 95, 53, .07);
   color: var(--text-soft);
   font-size: 12.5px;
   line-height: 1.35;
@@ -2513,10 +2513,10 @@ select.field-input {
   font: 600 12px/1 inherit; color: var(--text-soft); background: var(--panel); border: 1px solid var(--con-line);
   border-radius: 999px; padding: 7px 11px; cursor: pointer; transition: background .12s, color .12s, border-color .12s;
 }
-.embodiment-chip:hover:not(:disabled) { border-color: var(--accent, #2f6df6); }
-.embodiment-chip.on { background: var(--accent, #2f6df6); color: #fff; border-color: var(--accent, #2f6df6); }
+.embodiment-chip:hover:not(:disabled) { border-color: var(--accent, #2b523b); }
+.embodiment-chip.on { background: var(--accent, #2b523b); color: #fff; border-color: var(--accent, #2b523b); }
 .embodiment-chip:disabled { opacity: .45; cursor: not-allowed; }
-.embodiment-chip:focus-visible { outline: 2px solid var(--accent, #2f6df6); outline-offset: 1px; }
+.embodiment-chip:focus-visible { outline: 2px solid var(--accent, #2b523b); outline-offset: 1px; }
 /* Builder: robot-type paint selector (per-robot mixed types) */
 .smp-rtype { margin: 0 0 10px; padding: 9px 11px; background: var(--panel-2, #f4f1e9); border: 1px solid var(--con-line); border-radius: 11px; }
 .smp-rtype-label { display: block; font: 600 11.5px/1.4 inherit; color: var(--muted); margin-bottom: 7px; }
@@ -2527,9 +2527,9 @@ select.field-input {
   border-radius: 8px; padding: 6px 9px; min-height: 32px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
 }
 .smp-rtype-chip b { font: 800 10px/1 var(--mono, monospace); color: var(--muted); }
-.smp-rtype-chip.on { background: var(--accent, #2f6df6); color: #fff; border-color: var(--accent, #2f6df6); }
+.smp-rtype-chip.on { background: var(--accent, #2b523b); color: #fff; border-color: var(--accent, #2b523b); }
 .smp-rtype-chip.on b { color: #fff; }
-.smp-rtype-chip:focus-visible { outline: 2px solid var(--accent, #2f6df6); outline-offset: 1px; }
+.smp-rtype-chip:focus-visible { outline: 2px solid var(--accent, #2b523b); outline-offset: 1px; }
 .capture-items {
   display: grid;
   gap: 10px;
@@ -2743,7 +2743,7 @@ select.field-input {
 .cell-I,
 .cell-D,
 .cell-item {
-  background: rgba(47, 109, 246, 0.14);
+  background: rgba(65, 95, 53, 0.14);
   color: var(--accent-ink);
 }
 .cell-item {
@@ -2796,7 +2796,7 @@ select.field-input {
 .sb-num {
   width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
   background: var(--accent); color: #fff; font-family: var(--font-display); font-weight: 700;
-  font-size: 14px; box-shadow: 0 3px 10px rgba(47, 109, 246, 0.28); z-index: 1;
+  font-size: 14px; box-shadow: 0 3px 10px rgba(65, 95, 53, 0.28); z-index: 1;
 }
 .sb-text {
   width: 100%; resize: vertical; border: 1px solid var(--con-line); border-radius: 12px;
@@ -2898,7 +2898,7 @@ select.field-input {
   font-size: 18px;
 }
 .sim-cell.path {
-  background: rgba(47, 109, 246, 0.12);
+  background: rgba(65, 95, 53, 0.12);
 }
 .sim-cell.wall {
   background: #1f2937;
@@ -2919,11 +2919,11 @@ select.field-input {
   background: var(--accent);
   color: #ffffff;
   border-color: var(--accent);
-  box-shadow: 0 10px 24px rgba(47, 109, 246, 0.34);
+  box-shadow: 0 10px 24px rgba(65, 95, 53, 0.34);
 }
 .simulation-copy h2 {
   margin: 8px 0 0;
-  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-family: var(--font-display, 'Avenir Next', Avenir, sans-serif);
   font-size: 36px;
   letter-spacing: -0.02em;
 }
@@ -3049,8 +3049,8 @@ select.field-input {
   background: rgba(15, 157, 110, 0.06);
 }
 .lane-stat.preview {
-  border-color: rgba(47, 109, 246, 0.3);
-  background: rgba(47, 109, 246, 0.04);
+  border-color: rgba(65, 95, 53, 0.3);
+  background: rgba(65, 95, 53, 0.04);
 }
 .lane-stat-k {
   display: flex;
@@ -3079,7 +3079,7 @@ select.field-input {
 }
 .lane-stat.preview .lane-stat-k em {
   color: var(--accent-ink);
-  background: rgba(47, 109, 246, 0.12);
+  background: rgba(65, 95, 53, 0.12);
 }
 .lane-bridge {
   margin: 2px 0 12px;
@@ -3221,10 +3221,10 @@ select.field-input {
 }
 .btn.primary {
   background: linear-gradient(180deg, #4f86ff, var(--accent));
-  box-shadow: 0 8px 18px rgba(47, 109, 246, 0.28);
+  box-shadow: 0 8px 18px rgba(65, 95, 53, 0.28);
 }
 .btn.primary:hover {
-  box-shadow: 0 10px 24px rgba(47, 109, 246, 0.34);
+  box-shadow: 0 10px 24px rgba(65, 95, 53, 0.34);
 }
 .btn.ghost {
   background: transparent;
@@ -3301,7 +3301,7 @@ select.field-input {
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
-  box-shadow: 0 4px 10px rgba(47, 109, 246, 0.3);
+  box-shadow: 0 4px 10px rgba(65, 95, 53, 0.3);
 }
 .flow-stepper .step-done {
   color: var(--text-soft);
@@ -3424,7 +3424,7 @@ select.field-input {
   padding: 28px 30px;
 }
 .upload-zone {
-  background: linear-gradient(180deg, #fffefb, #f5f1e8);
+  background: linear-gradient(180deg, #ffffff, #f5f1e8);
   border: 2px dashed #b9cdf0;
   border-radius: 16px;
 }
@@ -3435,7 +3435,7 @@ select.field-input {
 .upload-orb {
   background: linear-gradient(160deg, #5b8bff, var(--accent));
   color: #fff;
-  box-shadow: 0 10px 22px rgba(47, 109, 246, 0.35);
+  box-shadow: 0 10px 22px rgba(65, 95, 53, 0.35);
 }
 
 /* Nav must never clip the upload CTA on narrow viewports. */
@@ -3529,7 +3529,7 @@ select.field-input {
   flex: none;
   font: 700 12px/1 inherit;
   color: #fff;
-  background: var(--accent, #2f6df6);
+  background: var(--accent, #2b523b);
   border: none;
   border-radius: 9px;
   padding: 8px 12px;
@@ -3549,11 +3549,11 @@ select.field-input {
   font: 600 12.5px/1 inherit; color: var(--text); background: var(--panel, #fff); border: 1px solid var(--con-line);
   border-radius: 9px; padding: 9px 13px; cursor: pointer; transition: border-color .12s, background .12s;
 }
-.smp-plans-action:hover { border-color: var(--accent, #2f6df6); }
+.smp-plans-action:hover { border-color: var(--accent, #2b523b); }
 .smp-plans-action.danger { color: var(--neg, #b2271d); }
 .smp-plans-action.danger:hover { border-color: var(--neg, #b2271d); background: rgba(178, 39, 29, 0.06); }
 .smp-sync-note { font: 500 12px/1.4 inherit; color: var(--muted); flex-basis: 100%; }
-.smp-plans-select:focus-visible, .smp-save-btn:focus-visible, .smp-plans-action:focus-visible { outline: 2px solid var(--accent, #2f6df6); outline-offset: 2px; }
+.smp-plans-select:focus-visible, .smp-save-btn:focus-visible, .smp-plans-action:focus-visible { outline: 2px solid var(--accent, #2b523b); outline-offset: 2px; }
 
 .smp-clear {
   flex: none;
@@ -3799,14 +3799,14 @@ select.field-input {
 .smp-fleet-emb-select {
   flex: 1;
   font: 600 12px/1 inherit;
-  color: var(--ink, #1a1813);
+  color: var(--ink, #272d26);
   background: #fff;
   border: 1px solid var(--con-line);
   border-radius: 8px;
   padding: 6px 8px;
   cursor: pointer;
 }
-.smp-fleet-emb-select:focus-visible { outline: 2px solid var(--accent, #2f6df6); outline-offset: 1px; }
+.smp-fleet-emb-select:focus-visible { outline: 2px solid var(--accent, #2b523b); outline-offset: 1px; }
 .smp-add-fleet {
   align-self: flex-start;
   border: 1px dashed var(--con-line);
@@ -3823,7 +3823,7 @@ select.field-input {
   border-color: var(--accent);
   color: var(--accent);
   border-style: solid;
-  background: rgba(47, 109, 246, 0.05);
+  background: rgba(65, 95, 53, 0.05);
 }
 .smp-add-fleet span {
   font-size: 15px;
@@ -3876,8 +3876,8 @@ select.field-input {
 .site-legend .lg-sid,
 .sim-legend .lg-sid {
   color: var(--accent-ink);
-  background: rgba(47, 109, 246, 0.1);
-  border-color: rgba(47, 109, 246, 0.28);
+  background: rgba(65, 95, 53, 0.1);
+  border-color: rgba(65, 95, 53, 0.28);
 }
 .site-legend .lg-robot,
 .sim-legend .lg-robot {
@@ -3908,7 +3908,7 @@ select.field-input {
   display: flex;
   justify-content: center;
   padding: 20px 16px 8px;
-  background: linear-gradient(180deg, #f5f1e8, #fffefb);
+  background: linear-gradient(180deg, #f5f1e8, #ffffff);
 }
 .phone {
   position: relative;
@@ -3978,7 +3978,7 @@ select.field-input {
   grid-template-columns: auto 1fr auto;
   gap: 18px;
   align-items: center;
-  background: linear-gradient(180deg, #fffefb, #f7f3ea);
+  background: linear-gradient(180deg, #ffffff, #f7f3ea);
   border: 1px solid var(--con-line);
   border-radius: 16px;
   padding: 18px 20px;
@@ -4408,7 +4408,7 @@ select.field-input {
 .trust-diagram {
   margin: 56px 0 0;
   padding: 28px 30px;
-  background: linear-gradient(180deg, #fffefb, #f7f3ea);
+  background: linear-gradient(180deg, #ffffff, #f7f3ea);
   border: 1px solid var(--con-line);
   border-radius: 20px;
   box-shadow: var(--shadow-md);
@@ -4455,8 +4455,8 @@ select.field-input {
 }
 .td-ai {
   color: var(--accent-ink);
-  background: rgba(47, 109, 246, 0.1);
-  border-color: rgba(47, 109, 246, 0.28);
+  background: rgba(65, 95, 53, 0.1);
+  border-color: rgba(65, 95, 53, 0.28);
 }
 .td-oracle {
   color: #fff;
@@ -4581,8 +4581,8 @@ select.field-input {
 }
 .credibility .cred-pilot {
   color: var(--accent-ink);
-  background: rgba(47, 109, 246, 0.08);
-  border-color: rgba(47, 109, 246, 0.3);
+  background: rgba(65, 95, 53, 0.08);
+  border-color: rgba(65, 95, 53, 0.3);
 }
 @media (max-width: 760px) {
   .audience-grid {
@@ -4622,7 +4622,7 @@ select.field-input {
   max-width: 660px;
 }
 .footage-card .phone-shell {
-  background: linear-gradient(180deg, #f5f1e8, #fffefb);
+  background: linear-gradient(180deg, #f5f1e8, #ffffff);
 }
 .footage-body {
   padding: 16px 20px 20px;
@@ -4776,7 +4776,7 @@ select.field-input {
 /* ============================================================ */
 .voice {
   margin: 18px 0 6px;
-  background: linear-gradient(180deg, #f7f3ea, #fffefb);
+  background: linear-gradient(180deg, #f7f3ea, #ffffff);
   border: 1px solid var(--con-line);
   border-radius: 14px;
   padding: 16px 18px;
@@ -4801,10 +4801,10 @@ select.field-input {
   border-radius: 10px;
   padding: 11px 18px;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(47, 109, 246, 0.28);
+  box-shadow: 0 8px 18px rgba(65, 95, 53, 0.28);
 }
 .voice-btn:hover {
-  box-shadow: 0 10px 24px rgba(47, 109, 246, 0.34);
+  box-shadow: 0 10px 24px rgba(65, 95, 53, 0.34);
 }
 .voice-mic {
   font-size: 18px;
@@ -4929,15 +4929,15 @@ select.field-input {
 }
 .field.field-filled .field-input {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.16);
+  box-shadow: 0 0 0 3px rgba(65, 95, 53, 0.16);
   animation: field-flash 1.1s ease-out 1;
 }
 @keyframes field-flash {
   0% {
-    box-shadow: 0 0 0 6px rgba(47, 109, 246, 0.28);
+    box-shadow: 0 0 0 6px rgba(65, 95, 53, 0.28);
   }
   100% {
-    box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.16);
+    box-shadow: 0 0 0 3px rgba(65, 95, 53, 0.16);
   }
 }
 
@@ -4948,7 +4948,7 @@ select.field-input {
   gap: 12px;
   margin: 14px 0 4px;
   padding: 14px 16px;
-  background: linear-gradient(180deg, #f5f1e8, #fffefb);
+  background: linear-gradient(180deg, #f5f1e8, #ffffff);
   border: 1px solid rgba(15, 157, 110, 0.3);
   border-left: 4px solid var(--pos);
   border-radius: 12px;
@@ -5002,7 +5002,7 @@ select.field-input {
 /* Tips — one primary + progressive disclosure (native details). */
 .tips {
   margin-top: 16px;
-  background: linear-gradient(180deg, #f7f3ea, #fffefb);
+  background: linear-gradient(180deg, #f7f3ea, #ffffff);
   border: 1px solid var(--con-line);
   border-left: 3px solid var(--accent);
   border-radius: 12px;
@@ -5032,8 +5032,8 @@ select.field-input {
   font-size: 12px;
   font-weight: 700;
   color: var(--accent-ink);
-  background: rgba(47, 109, 246, 0.1);
-  border: 1px solid rgba(47, 109, 246, 0.28);
+  background: rgba(65, 95, 53, 0.1);
+  border: 1px solid rgba(65, 95, 53, 0.28);
   border-radius: 999px;
   padding: 4px 10px;
 }
@@ -5241,7 +5241,7 @@ select.field-input {
   padding: 14px 16px;
   border: 1px dashed var(--accent);
   border-radius: 14px;
-  background: rgba(47, 109, 246, 0.05);
+  background: rgba(65, 95, 53, 0.05);
 }
 .agent-under-test .aut-badge {
   flex: none;
@@ -5359,7 +5359,7 @@ select.field-input {
 }
 .sim-chip.on {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(47, 109, 246, 0.16);
+  box-shadow: 0 0 0 2px rgba(65, 95, 53, 0.16);
 }
 .sim-chip .lbl-finish,
 .sim-chip .lbl-escalate,
@@ -5475,7 +5475,7 @@ select.field-input {
   flex: none; width: 30px; height: 30px; border-radius: 50%;
   background: var(--accent); color: #fff; font-family: var(--font-display);
   font-weight: 700; font-size: 15px; display: grid; place-items: center;
-  box-shadow: 0 4px 12px rgba(47, 109, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(65, 95, 53, 0.3);
 }
 .capture-divider-title { font-size: 20px; font-weight: 600; margin: 2px 0 0; letter-spacing: -0.01em; }
 .capture-divider-sub { margin: 5px 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 62ch; }
@@ -5532,10 +5532,10 @@ select.field-input {
   display: grid;
   gap: 14px;
   padding: 16px;
-  border: 1px solid rgba(47, 109, 246, .18);
+  border: 1px solid rgba(65, 95, 53, .18);
   border-radius: 18px;
   background:
-    radial-gradient(circle at 100% 0%, rgba(47, 109, 246, .12), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(65, 95, 53, .12), transparent 32%),
     linear-gradient(180deg, #ffffff, #f8fbff);
   box-shadow: var(--shadow-sm);
 }
@@ -5615,7 +5615,7 @@ select.field-input {
   display: inline-flex;
   padding: 3px 7px;
   border-radius: 999px;
-  background: rgba(47, 109, 246, .08);
+  background: rgba(65, 95, 53, .08);
   color: var(--accent-ink);
   font-size: 9.5px;
   font-weight: 900;
@@ -5651,7 +5651,7 @@ select.field-input {
   display: inline-flex;
   padding: 3px 7px;
   border-radius: 999px;
-  background: rgba(47, 109, 246, .08);
+  background: rgba(65, 95, 53, .08);
   color: var(--accent-ink);
   font-size: 10px;
   font-weight: 900;
@@ -5763,7 +5763,7 @@ select.field-input {
 }
 .calibration-needed-demo {
   padding: 14px;
-  border: 1px solid rgba(47, 109, 246, .2);
+  border: 1px solid rgba(65, 95, 53, .2);
   border-radius: 15px;
   background:
     linear-gradient(180deg, rgba(239, 246, 255, .88), rgba(255, 255, 255, .96));
@@ -6013,9 +6013,9 @@ select.field-input {
 }
 .bundle-files span {
   padding: 7px 9px;
-  border: 1px solid rgba(47, 109, 246, .16);
+  border: 1px solid rgba(65, 95, 53, .16);
   border-radius: 10px;
-  background: rgba(47, 109, 246, .06);
+  background: rgba(65, 95, 53, .06);
   color: var(--text-soft);
   font-size: 11px;
   overflow-wrap: anywhere;
@@ -6041,7 +6041,7 @@ select.field-input {
   display: inline-flex;
   padding: 3px 7px;
   border-radius: 999px;
-  background: rgba(47, 109, 246, .08);
+  background: rgba(65, 95, 53, .08);
   color: var(--accent-ink);
   font-size: 9.5px;
   font-weight: 900;
@@ -6098,14 +6098,14 @@ select.field-input {
   font-size: 10px;
   font-weight: 900;
 }
-.site-map-cell.start { background: rgba(47, 109, 246, .16); color: var(--accent-ink); }
+.site-map-cell.start { background: rgba(65, 95, 53, .16); color: var(--accent-ink); }
 .site-map-cell.item { background: rgba(93, 95, 239, .16); color: #3b3fc8; }
 .site-map-cell.drop { background: rgba(15, 157, 110, .16); color: var(--pos-ink); }
 .site-map-cell.obstacle { background: #d9dee8; color: #475569; }
 .site-map-cell.hazard { background: rgba(229, 72, 77, .16); color: #a2292d; }
 .site-map-cell.restricted { background: rgba(229, 158, 53, .18); color: #8a5208; }
 .site-map-cell.robot { background: rgba(20, 30, 50, .1); color: #1f2a44; }
-.site-map-cell.uncertain { border-style: dashed; background: rgba(47, 109, 246, .05); color: var(--accent-ink); }
+.site-map-cell.uncertain { border-style: dashed; background: rgba(65, 95, 53, .05); color: var(--accent-ink); }
 .site-map-legend {
   display: flex;
   flex-wrap: wrap;
@@ -6173,7 +6173,7 @@ select.field-input {
   align-items: center;
   justify-content: center;
   background:
-    linear-gradient(135deg, rgba(47,109,246,.12), rgba(15,157,110,.12)),
+    linear-gradient(135deg, rgba(65,95,53,.12), rgba(15,157,110,.12)),
     repeating-linear-gradient(90deg, rgba(30,41,59,.04) 0 1px, transparent 1px 12px);
   color: var(--accent-ink);
   font-size: 11px;
@@ -6244,16 +6244,16 @@ select.field-input {
 .context3d-card span {
   padding: 8px 10px;
   border-radius: 10px;
-  background: rgba(47, 109, 246, .07);
+  background: rgba(65, 95, 53, .07);
   color: var(--text-soft);
   font-size: 12px;
   line-height: 1.4;
 }
 .site-gym-empty {
   padding: 16px;
-  border: 1px dashed rgba(47, 109, 246, .28);
+  border: 1px dashed rgba(65, 95, 53, .28);
   border-radius: 14px;
-  background: rgba(47, 109, 246, .05);
+  background: rgba(65, 95, 53, .05);
   color: var(--text-soft);
   font-size: 13px;
   line-height: 1.5;
@@ -6312,7 +6312,7 @@ select.field-input {
   height: 26px;
   padding: 0 8px;
   border-radius: 999px;
-  background: rgba(47, 109, 246, .1);
+  background: rgba(65, 95, 53, .1);
   color: var(--accent-ink);
   font-size: 11px;
   font-weight: 900;
@@ -6438,7 +6438,7 @@ select.field-input {
 .de-body { display: grid; grid-template-columns: minmax(220px, 0.9fr) 1.1fr; gap: 22px; margin-top: 20px; align-items: start; }
 .de-grid { cursor: default; }
 .de-grid .site-cell { cursor: default; }
-.cell-path { background: rgba(47, 109, 246, 0.16); box-shadow: inset 0 0 0 1px rgba(47,109,246,0.35); }
+.cell-path { background: rgba(65, 95, 53, 0.16); box-shadow: inset 0 0 0 1px rgba(65,95,53,0.35); }
 .de-readout { display: grid; gap: 14px; align-content: start; }
 .de-verdict {
   display: flex; gap: 12px; align-items: flex-start;
@@ -6475,7 +6475,7 @@ select.field-input {
   box-shadow: var(--shadow-sm); transition: border-color .15s, transform .15s, box-shadow .15s;
 }
 .floorlib-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.floorlib-card.sel { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(47,109,246,0.2), var(--shadow-md); }
+.floorlib-card.sel { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(65,95,53,0.2), var(--shadow-md); }
 
 /* Hero: real warehouse photo, click to enlarge. */
 .floorlib-hero {
@@ -6501,7 +6501,7 @@ select.field-input {
 .floorlib-use {
   margin-top: 6px; align-self: flex-start; cursor: pointer; font-size: 14px; font-weight: 600;
   color: #fff; background: var(--accent); border: none; border-radius: 11px; padding: 10px 18px;
-  box-shadow: 0 6px 16px rgba(47,109,246,0.26); transition: background .15s;
+  box-shadow: 0 6px 16px rgba(65,95,53,0.26); transition: background .15s;
 }
 .floorlib-use:hover { background: var(--accent-ink); }
 .floorlib-use.on { background: var(--pos); box-shadow: 0 6px 16px rgba(15,157,110,0.26); cursor: default; }
@@ -6611,7 +6611,7 @@ select.field-input {
 .stepper-val small { color: var(--muted); font-weight: 500; }
 
 /* #5: additional placed robots (descriptive) on the proving-ground sim */
-.sim-cell.robot-static { background: rgba(47, 109, 246, 0.14); color: var(--accent-ink); border-color: var(--accent); }
+.sim-cell.robot-static { background: rgba(65, 95, 53, 0.14); color: var(--accent-ink); border-color: var(--accent); }
 
 /* ---------- #10 dark Brain Stream (signature moment, Step 2) ---------- */
 .brainstream { text-align: left; background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; box-shadow: var(--shadow-md); margin: 18px 0; overflow: hidden; }
@@ -6667,7 +6667,7 @@ select.field-input {
   margin-top: 28px; display: flex; align-items: center; justify-content: space-between;
   gap: 24px; flex-wrap: wrap;
   background:
-    radial-gradient(120% 160% at 0% 0%, rgba(47, 109, 246, 0.10), transparent 60%),
+    radial-gradient(120% 160% at 0% 0%, rgba(65, 95, 53, 0.10), transparent 60%),
     var(--panel);
   border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--con-line));
   border-radius: 20px; padding: 24px 26px; box-shadow: var(--shadow-md);
@@ -6679,7 +6679,7 @@ select.field-input {
 .run-cta-btn {
   flex: none; display: inline-flex; align-items: center; gap: 10px;
   font-size: 17px; font-weight: 700; padding: 16px 26px; border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(47, 109, 246, 0.34);
+  box-shadow: 0 12px 30px rgba(65, 95, 53, 0.34);
 }
 .run-cta-play { font-size: 13px; opacity: 0.9; }
 .run-cta-main { font-family: var(--font-display); }
@@ -6697,12 +6697,12 @@ select.field-input {
 .sim-cell.cell-I.picked { opacity: 0.4; filter: grayscale(0.4); }
 
 /* ── 3D proving ground ───────────────────────────────────────────────────── */
-.dim-toggle { display: inline-flex; align-items: center; gap: 3px; margin: 0 10px; background: var(--panel-2, #f2efe6); border: 1px solid var(--con-line); border-radius: 11px; padding: 3px; }
+.dim-toggle { display: inline-flex; align-items: center; gap: 3px; margin: 0 10px; background: var(--panel-2, #edf1e7); border: 1px solid var(--con-line); border-radius: 11px; padding: 3px; }
 .dim-toggle-label { font: 700 10px/1 inherit; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 0 8px 0 4px; }
 .dim-toggle button { font: 600 13.5px/1 inherit; letter-spacing: .01em; color: var(--text-soft); background: transparent; border: 0; border-radius: 8px; padding: 8px 14px; cursor: pointer; transition: background .12s, color .12s, box-shadow .12s; }
 .dim-toggle button:hover:not(.on) { background: #ece8df; color: var(--text); }
-.dim-toggle button.on { background: #2f6df6; color: #fff; box-shadow: 0 2px 9px rgba(47, 109, 246, .32); }
-.dim-toggle button:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
+.dim-toggle button.on { background: #2b523b; color: #fff; box-shadow: 0 2px 9px rgba(65, 95, 53, .32); }
+.dim-toggle button:focus-visible { outline: 2px solid #244630; outline-offset: 2px; }
 
 /* #5 — "The oracle's call" kicker, three steps larger than the global 10px */
 .simulation-copy .panel-kicker { font-size: 13px; }
@@ -6725,7 +6725,7 @@ select.field-input {
 .pg3d-canvas canvas { display: block; border-radius: 14px; }
 .pg3d-progress { display: flex; align-items: center; gap: 12px; padding: 9px 14px; background: #fff; border-top: 1px solid #eef1f4; }
 .pg3d-prog-track { position: relative; flex: 1; height: 7px; border-radius: 999px; background: #e7ecf2; overflow: hidden; }
-.pg3d-prog-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 999px; background: linear-gradient(90deg, #2f6df6, #6aa0ff); transition: width .12s linear; }
+.pg3d-prog-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 999px; background: linear-gradient(90deg, #2b523b, #6aa0ff); transition: width .12s linear; }
 .pg3d-prog-fill.done { background: linear-gradient(90deg, #0b6e52, #18a06f); }
 .pg3d-prog-txt { font: 600 11.5px/1 inherit; color: #5b6470; white-space: nowrap; min-width: 118px; text-align: right; }
 /* Transport row — sits below the canvas, directly above the progress bar. Play is the
@@ -6734,9 +6734,9 @@ select.field-input {
 .pg3d-btn { font: 600 13.5px/1 inherit; color: #1a2230; background: #fff; border: 1px solid #d4d9e0; border-radius: 9px; padding: 9px 16px; cursor: pointer; transition: border-color .12s, background .12s, transform .08s, box-shadow .12s; }
 .pg3d-btn:hover:not(.primary) { background: #f3f5f8; border-color: #b9c1cc; }
 .pg3d-btn:active { transform: translateY(1px); }
-.pg3d-btn:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
-.pg3d-btn.primary { color: #fff; background: #2f6df6; border-color: #2f6df6; box-shadow: 0 4px 13px rgba(47, 109, 246, .3); }
-.pg3d-btn.primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+.pg3d-btn:focus-visible { outline: 2px solid #244630; outline-offset: 2px; }
+.pg3d-btn.primary { color: #fff; background: #2b523b; border-color: #2b523b; box-shadow: 0 4px 13px rgba(65, 95, 53, .3); }
+.pg3d-btn.primary:hover { background: #244630; border-color: #244630; }
 .pg3d-legend { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 10px 14px; font: 500 12.5px/1.4 inherit; color: #5b6470; background: #fff; border-top: 1px solid #e7e2d6; }
 .pg3d-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 .pg3d-legend .lg-box { background: #c79a5b; } .pg3d-legend .lg-rack { background: #e3741f; }
@@ -7113,7 +7113,7 @@ select.field-input {
 /* ── Cascade repair: pages that load BOTH home.css and this bundle ──────────
    proving-ground.html resolves the generic `.btn` above (0,1,0; later file)
    over home.css `.btn--primary` (0,1,0; earlier file): the primary CTA
-   measured white-on-#f2efe6 = 1.15:1. Re-assert the home.css primary skin,
+   measured white-on-#edf1e7 = 1.15:1. Re-assert the home.css primary skin,
    scoped to the shared header and the proving-ground mount. The #2149c9
    hover hex mirrors home.css `.btn--primary:hover`. */
 .site-header .btn--primary,
@@ -7129,3 +7129,14 @@ select.field-input {
   border-color: #2149c9;
   box-shadow: var(--sh-md);
 }
+
+/* Site-to-Gym follows the shared editorial rhythm; evidence controls remain opaque. */
+.capture .flow-shell { max-width: 1184px; padding: 46px 28px 80px; }
+.capture .flow-shell > h1 { font: 500 clamp(36px,4.6vw,60px)/1.08 'Avenir Next',Avenir,system-ui,sans-serif; letter-spacing: -.05em; max-width: 850px; }
+.capture .flow-sub { max-width: 780px; font-size: 17px; line-height: 1.65; }
+.capture .flow-kicker { font-size: 12px; letter-spacing: .1em; color: #2b523b; }
+.capture .pilot-banner { background: #edf1e7; border-color: #cdd7c3; color: #4e5b48; border-radius: 14px; }
+.capture .site-thesis { background: #edf1e7; border-radius: 20px; padding: 24px; }
+.capture .capture-divider { padding-top: 40px; margin-top: 40px; }
+.capture .capture-divider-n { background: #2b523b; color: #fff; }
+@media(max-width:640px) { .capture .flow-shell { padding: 28px 20px 60px; }.capture .flow-sub { font-size: 15px; } }

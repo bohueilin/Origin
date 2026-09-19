@@ -2,13 +2,15 @@
 
 The canonical tree. Start here.
 
+[Website](https://originphysicalai.com) · [Public source](https://github.com/bohueilin/Origin)
+
 ```
 Origin/
 ├─ README.md · PROJECT_OVERVIEW.md · REPO_STRUCTURE.md · CLAUDE.md · CODEX.md   # start here
 ├─ Makefile · package.json (npm workspaces) · tsconfig.base.json
 │
 ├─ apps/
-│   ├─ origin-web/     # LIVE site + /foundry /soc /rsi consoles + rlkit (nine-pillar RL evidence) + warehouse oracle. 360 tests.
+│   ├─ origin-web/     # public website + browser demos + evidence tooling + warehouse oracle.
 │   │   ├─ rlkit/                     # env-manifest, reward-module, executor, cost-ledger, checkpoint, env-promotion, …
 │   │   ├─ src/warehouse.ts           # the deterministic oracle (verifyWarehouseRollout + bfsOracle) — the only judge
 │   │   └─ docs/examples/*            # digest-valid bundle/episode/receipt trios

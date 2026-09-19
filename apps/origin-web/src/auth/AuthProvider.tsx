@@ -56,7 +56,7 @@ function msg(error: any): string {
 // code unexchanged and the visitor silently signed out with no error — the reported
 // "Google sign-in does nothing". /auth mounts authMain.tsx, exchanges the code, and
 // then forwards to `next` (AuthPage), so the destination UX is unchanged.
-const REDIRECT = typeof window !== 'undefined' ? `${window.location.origin}/auth` : 'https://origin-physical-ai.pages.dev/auth'
+const REDIRECT = typeof window !== 'undefined' ? `${window.location.origin}/auth` : 'https://originphysicalai.com/auth'
 
 // Our own record that a session was successfully established. See below for why the SDK
 // cannot tell us this on its own.

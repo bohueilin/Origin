@@ -1,8 +1,8 @@
 # Origin — the evidence layer for AI agents
-# https://origin-physical-ai.pages.dev
+# https://originphysicalai.com
 
 User-agent: *
 Allow: /
 
 # AI agents & assistants: a plain-language site summary lives at /llms.txt
-Sitemap: https://origin-physical-ai.pages.dev/sitemap.xml
+Sitemap: https://originphysicalai.com/sitemap.xml

@@ -81,7 +81,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Run the hermetic public browser flows
-        run: npm --prefix apps/origin-web run test:e2e -- tests/e2e/smoke.spec.ts tests/e2e/investor-ready.spec.ts
+        run: npm --prefix apps/origin-web run test:e2e
 
   pages-stage:
     name: origin-web — Pages allowlist and non-deploying bundle

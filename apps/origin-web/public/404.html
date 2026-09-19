@@ -7,23 +7,14 @@
     <title>Page not found — Origin</title>
     <meta name="theme-color" content="#f6f5f2" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="stylesheet" href="/home.css?v=29cdd6e3" />
-    <style>
-      .nf { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 24px; }
-      .nf__inner { max-width: 460px; }
-      .nf__code { font-family: var(--font-display); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--signal-ink); }
-      .nf h1 { font-size: clamp(28px, 6vw, 40px); margin: 14px 0 12px; }
-      .nf p { color: var(--ink-soft); margin-bottom: 26px; }
-    </style>
+    <link rel="stylesheet" href="/home.css?v=e7514f0a" />
+
+    <link rel="stylesheet" href="/editorial.css" />
   </head>
-  <body>
+  <body class="editorial notfound-page">
     <main class="nf">
-      <div class="nf__inner">
-        <p class="nf__code">Error 404</p>
-        <h1>This page isn’t in the record.</h1>
-        <p>The page you’re looking for doesn’t exist or has moved.</p>
-        <a class="btn btn--primary" href="/">Back to Origin</a>
-      </div>
+      <div class="nf__inner"><a class="brand" href="/" aria-label="Origin — home"><span class="brand__name">Origin</span></a><p class="nf__code">404 / Uncharted territory</p><h1>This page isn’t in the record.</h1><p>The address may have changed. Return to Origin or start with the public reference check.</p><div class="editorial-actions"><a class="btn btn--primary" href="/">Back to Origin</a><a class="btn btn--ghost" href="/reference-check">Try the reference check</a></div></div>
+      <figure class="nf__visual"><img src="/brand/trace.webp" alt="" /><figcaption>Generated illustration</figcaption></figure>
     </main>
   </body>
 </html>

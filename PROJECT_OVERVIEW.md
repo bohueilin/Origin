@@ -1,40 +1,52 @@
 # Origin — Project Overview
 
-> **Origin is the evidence layer for AI agents** (with a longer-term physical-AI arc on the same spine). It gives you a signed, reproducible, tamper-evident receipt of what an agent — or a robot — was *allowed* to do, what it *actually* did, and that it was *contained* if it went wrong, issued by a **deterministic oracle** (never an LLM grading an LLM). The physical arc turns site evidence into bounded Robot-Readiness Gyms with oracle-labeled **finish / escalate / refuse** cases and replayable evidence bundles — gym evidence, not certification.
->
-> **Model proposes. Environment verifies. Gate decides. Trace proves.**
+Origin is a public trust layer, evidence format, and set of working prototypes for AI evidence
+review. The canonical website is [originphysicalai.com](https://originphysicalai.com); the public
+source is [bohueilin/Origin](https://github.com/bohueilin/Origin).
 
-## What Origin is
-A control plane for autonomy with one non-negotiable rule: **capability is not permission.** A fast model may *propose* any action; a **deterministic oracle — never an LLM — ratifies it** before it can execute. Fast inference (gemma-4-31b on Cerebras) makes that per-step verification affordable, so the safety check rides on *every* step instead of being sampled around.
+> Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.
+> Capability is not permission.
 
-The same spine governs a **robot on a floor** (physical) and a **software agent with credentials** (digital): **identity → authority → verified action → trace**.
+## What is implemented publicly
 
-## Who it's for
-- **Physical-AI / robotics teams** deciding if an agent is ready for a real site.
-- **Agent / RL post-training teams** who need scores that *reproduce* and rewards that can't be hacked (Training Evidence).
-- **Safety / governance owners** who must answer "why was this allowed / promoted?" with a re-derivable receipt.
+1. **Browser reference check and artifact verification** (`apps/origin-web`): deterministic
+   synthetic support/IAM policy evaluation, configuration-bound demo evidence, offline checks,
+   and tamper/configuration-drift demonstrations. The check does not execute the named agent.
+   Browser-session signatures are unpinned and untrusted by default.
+2. **Evidence primitives** (`packages/evidence`, `packages/verifier-core`): canonical serialization,
+   hashes, trace chains, receipts, signatures, credentials, and deterministic verification.
+3. **Bounded Physical AI demonstrations** (`apps/origin-web`): robot, warehouse, fleet, and spatial
+   simulations. Public Foundry uses a browser-local sample; provider processing belongs to a
+   separately enabled local/backend workflow with explicit consent.
+4. **Authority prototypes** (`apps/janus`): credential-broker and autonomy-trace components for
+   scoped authority and fail-closed authorization.
+5. **Verifier-hardening tools** (`services/cobra`, `services/chronos`, `apps/chronos-ui`): research
+   and test workflows for reward-hack discovery, patching, and held-out evaluation.
 
-## Startup thesis
-Every autonomy demo shows a model that *can* act; none show what stops it from acting *wrong*. Origin makes the "what stops it" a **product**: a bounded gym + a deterministic verifier + a tamper-evident trace + a fail-closed gate. Safety is loop-bound — the cheaper per-step verification gets, the more unsafe completions you catch — which is exactly why fast inference turns verification from a cost you ration into a per-step check you can afford to run on every action.
+The proposed runtime gate/proxy and hosted verification API are design artifacts, not generally
+deployed public capabilities. Origin issues evidence; a customer's gate and risk owner retain
+release authority. The project is seeking design partners; no active customer pilot is claimed.
 
-## Current capabilities (all in this repo)
-1. **Training Evidence** (`apps/origin-web/rlkit`) — reproducible **ScoreReceipts**: an EnvironmentBundle + a recorded action trace + a pinned verifier → a re-derivable, tamper-evident receipt (`env:verify`). Nine pillars (env-as-artifact, verified reward, executor/Daytona, MCP tool registry, cost+dispute, checkpoint, curriculum, promotion), 360 tests.
-2. **The live site + consoles** (`apps/origin-web`) — `/foundry` (floor → gym → license), `/soc` (AI-SOC loop-race), `/rsi` (Gemma-proposes / Origin-verifies), deployed at `origin-physical-ai.pages.dev`.
-3. **Janus** (formerly Passport) (`apps/janus`) — agentic credential broker + Autonomy Trace Console: delegated authority you can trust (identity → authority → veto).
-4. **Verifier hardening** (`services/{chronos,cobra}`) — auto-harden RL verifiers against reward hacking (red-team → patch → measure).
+## Who the prototypes serve
 
-## Evidence layers
-- **Training evidence:** reproducible ScoreReceipts (`env:verify`), digest-valid examples in `apps/origin-web/docs/examples/`.
+- Agent-platform, security, and infrastructure reviewers evaluating consequential workflows.
+- ML and evaluation teams checking reproducibility and verifier failure modes.
+- Physical AI teams exploring which evidence a bounded simulation can support, and which
+  decisions still require higher-fidelity or real-world validation.
 
-## How to run
-```bash
-make install && make gates          # install + build/test the TS surface
-make dev-web                        # the live site locally (Vite :5275 + Hono :8787)
-cd apps/origin-web && npm run env:verify     # a reproducible ScoreReceipt
-```
+## Evidence and claim boundaries
 
-## Claim boundaries (always preserved)
-Bounded Robot-Readiness **Gym evidence**, not robot certification · deterministic oracle is the sole authority over labels, gates & hard-zeros (an optional post-gate shaper can only reduce reward within the oracle's verdict, off by default) · synthetic demo ≠ real customer proof · generated counterfactual ≠ customer-owned evidence · authorized fixture ≠ real customer data · **real customer readiness stays blocked** until approved real evidence passes gates · **training fail-closed** · external APIs blocked · learned-policy = route-summary/map-derived features, not raw perception · no production-autonomy claim · no deploy/push/stage without authorization.
+Only the deterministic oracle supplies labels and verdicts. Synthetic demos, generated
+counterfactuals, authorized fixtures, and customer-owned proof remain distinct evidence lanes.
+Artifact integrity is separate from trusted issuance, execution success, and permission to deploy.
 
-## Consolidated from
-`0619`/`0620`/`0620-test`/`Cerebras-0628`/`Chronos`/`Cobra` (already represented in `apps/`+`services/`) and `Cerebras-enterprise-0628` LoopForge + `agent-passport` (→ `legacy-imports/`). Future sessions start **only** from this repo.
+Simulation evidence is not robot certification or production-autonomy validation. Learned-policy
+examples use route-summary/map-derived features rather than raw end-to-end perception. The
+published research snapshot includes private-pipeline metrics that cannot be re-derived from this
+public repository. Proprietary algorithm implementation and internal strategy remain outside it.
+
+## Run and inspect
+
+See [`README.md`](README.md) for the public demo entry points and web quickstart,
+[`REPO_STRUCTURE.md`](REPO_STRUCTURE.md) for the tree, and `make help` for monorepo targets.
+Production releases follow [`docs/DEPLOY.md`](docs/DEPLOY.md) and remain separately human-gated.

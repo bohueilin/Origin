@@ -20,7 +20,6 @@ import { GrantStepUp, type StepUpMode } from './GrantStepUp'
 import { enableStepUp, isStepUpConfigured, isStepUpRequired } from '../credentials/grantStepUp'
 import type { ApprovalPolicy, CredentialGrant, CredentialScope } from '../credentials/types'
 import { describePolicy } from '../wallet/sessionPolicy'
-import { useDialog } from './useDialog'
 import { getMyRole, roleLabel, isStaff, type Role } from '../roleStore'
 import { adminListAccounts, adminAssignRole, listMyTickets, adminListTickets, adminUpdateTicket, adminListAudit, adminListLeads, adminUpdateLead, adminListUserTemplates, adminViewTemplate, type AdminAccount, type SupportTicket, type AdminTicket, type AuditEntry, type Lead, type UserTemplate, type TemplateDetail } from '../adminStore'
 import { SupportForm } from '../components/SupportForm'
@@ -74,34 +73,47 @@ function relExpiry(ms: number): string {
   return `in ${Math.max(1, Math.floor(d / 60_000))}m`
 }
 
-export function AccountSettings({ onClose }: { onClose: () => void }) {
+export function AccountSettings() {
   const auth = useAuth()
   const [tab, setTab] = useState<Tab>('overview')
-  const [role, setRole] = useState<Role>('user')
-  // Null until the lookup answers. A non-null value means the lookup FAILED — which is
-  // not the same as "you are a regular user" and must not be rendered as one.
+  // Loading/failed role reads are unresolved, never a confident User badge. The
+  // database still re-derives the caller's role on every privileged operation.
+  const [role, setRole] = useState<Role | null>(null)
   const [roleError, setRoleError] = useState<string | null>(null)
   const [roleNonce, setRoleNonce] = useState(0)
-  const shellRef = useDialog<HTMLDivElement>(onClose)
+  const [signingOut, setSigningOut] = useState(false)
 
   useEffect(() => {
     let alive = true
     void getMyRole().then((r) => {
       if (!alive) return
-      setRole(r.role)
+      setRole(r.ok ? r.role : null)
       setRoleError(r.ok ? null : r.error)
     })
     return () => { alive = false }
   }, [roleNonce])
   // Admin tab is hidden for non-staff. (The DB also rejects admin RPCs from non-staff —
   // this is convenience, not the gate.)
-  const visibleTabs = TABS.filter((t) => !t.staffOnly || isStaff(role))
+  const visibleTabs = TABS.filter((t) => !t.staffOnly || (role !== null && isStaff(role)))
+  const retryRole = () => { setRole(null); setRoleError(null); setRoleNonce((n) => n + 1) }
+  const signOut = async () => { setSigningOut(true); await auth.signOut(); setSigningOut(false) }
 
   return (
-    <div className="cset-overlay" role="dialog" aria-modal="true" aria-label="Account settings" onClick={onClose}>
-      <div className="cset-shell" ref={shellRef} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
+    <div className="cset-workspace">
+      <a className="cset-skip" href="#account-main">Skip to account content</a>
+      <header className="cset-topbar">
+        <a className="cset-brand" href="/" aria-label="Origin home">
+          <img src="/brand/origin-mark.svg" alt="" />origin <span>Console</span>
+        </a>
+        <div className="cset-top-actions">
+          <span className="cset-private">Restricted prototype</span>
+          <button className="cset-signout" onClick={signOut} disabled={signingOut}>{signingOut ? 'Signing out…' : 'Sign out'}</button>
+        </div>
+      </header>
+      <div className="cset-shell">
         <aside className="cset-rail">
           <div className="cset-rail-head">
+            <span className="cset-eyebrow">Signed in as</span>
             <strong>{auth.user?.name || 'Account'}</strong>
             <span>{auth.user?.email}</span>
             {roleError ? (
@@ -110,8 +122,10 @@ export function AccountSettings({ onClose }: { onClose: () => void }) {
               // genuine demotion, and the reason the portal looked broken for a month.
               <span className="cset-role-unknown" role="alert">
                 Couldn’t confirm your role — staff tools are hidden until it resolves.{' '}
-                <button type="button" className="cset-link" onClick={() => setRoleNonce((n) => n + 1)}>Retry</button>
+                <button type="button" className="cset-link" onClick={retryRole}>Retry</button>
               </span>
+            ) : role === null ? (
+              <span className="cset-role-loading" role="status">Checking your role…</span>
             ) : (
               <span className={`cset-role-badge role-${role}`}>{roleLabel(role)}</span>
             )}
@@ -125,8 +139,12 @@ export function AccountSettings({ onClose }: { onClose: () => void }) {
           </nav>
           <div className="cset-rail-foot">Agents act through scoped, revocable grants — never your raw secrets.</div>
         </aside>
-        <section className="cset-main">
-          <button className="cset-x" aria-label="Close" onClick={onClose}>×</button>
+        <main className="cset-main" id="account-main" tabIndex={-1}>
+          <header className="cset-page-head">
+            <p className="cset-eyebrow">Origin Console</p>
+            <h1>Account workspace</h1>
+            <p>Review permissions, follow the evidence, and keep authority in the right hands.</p>
+          </header>
           {tab === 'overview' && <OverviewTab onJump={setTab} />}
           {tab === 'integrations' && <IntegrationsTab />}
           {tab === 'fleet' && <FleetPermissions />}
@@ -134,10 +152,10 @@ export function AccountSettings({ onClose }: { onClose: () => void }) {
           {tab === 'approvals' && <ApprovalsTab />}
           {tab === 'wallets' && <WalletsTab />}
           {tab === 'support' && <SupportTab />}
-          {tab === 'admin' && <AdminTab role={role} />}
+          {tab === 'admin' && role !== null && isStaff(role) && <AdminTab role={role} />}
           {tab === 'audit' && <AuditTab />}
           {tab === 'danger' && <DangerTab />}
-        </section>
+        </main>
       </div>
     </div>
   )
@@ -984,10 +1002,27 @@ function AdminTab({ role }: { role: Role }) {
 function AdminLeads() {
   const [leads, setLeads] = useState<Lead[] | null>(null)
   const [error, setError] = useState('')
+  const [updateError, setUpdateError] = useState('')
+  const [updating, setUpdating] = useState<string | null>(null)
   const reload = async () => { const r = await adminListLeads(); if (!r.ok) { setError(r.error || 'Could not load review requests.'); setLeads([]) } else { setError(''); setLeads(r.leads) } }
   useEffect(() => { let alive = true; void (async () => { const r = await adminListLeads(); if (!alive) return; if (!r.ok) { setError(r.error || 'Could not load review requests.'); setLeads([]) } else setLeads(r.leads) })(); return () => { alive = false } }, [])
-  async function setStatus(id: string, status: string) { await adminUpdateLead(id, status); await reload() }
+  async function setStatus(id: string, status: string) {
+    if (updating) return
+    setUpdating(id); setUpdateError('')
+    try {
+      if (!await adminUpdateLead(id, status)) {
+        setUpdateError('Could not update the review request. The last confirmed status is still shown. Please try again.')
+        return
+      }
+      await reload()
+    } catch {
+      setUpdateError('Could not update the review request. The last confirmed status is still shown. Please try again.')
+    } finally { setUpdating(null) }
+  }
   return (
+    <>
+    {updating && <p className="cset-meta" role="status">Updating review request…</p>}
+    {updateError && <div className="cset-loaderr" role="alert">{updateError}</div>}
     <ListOrEmpty rows={leads} empty="No review requests yet." error={error || undefined} onRetry={reload}>
       {(leads ?? []).map((l) => (
         <div key={l.id} className="cset-item col">
@@ -1000,7 +1035,7 @@ function AdminLeads() {
               </span>
             </div>
             <div className="cset-item-actions">
-              <select className="cset-role-select" value={l.status} onChange={(e) => setStatus(l.id, e.target.value)} aria-label={`Status for ${l.name}`}>
+              <select className="cset-role-select" value={l.status} disabled={updating !== null} onChange={(e) => setStatus(l.id, e.target.value)} aria-label={`Status for ${l.name}`}>
                 <option value="new">New</option><option value="contacted">Contacted</option>
                 <option value="qualified">Qualified</option><option value="archived">Archived</option>
               </select>
@@ -1010,6 +1045,7 @@ function AdminLeads() {
         </div>
       ))}
     </ListOrEmpty>
+    </>
   )
 }
 
@@ -1083,10 +1119,27 @@ function AdminAccounts({ role }: { role: Role }) {
 function AdminTickets() {
   const [tickets, setTickets] = useState<AdminTicket[] | null>(null)
   const [error, setError] = useState('')
+  const [updateError, setUpdateError] = useState('')
+  const [updating, setUpdating] = useState<string | null>(null)
   const reload = async () => { const r = await adminListTickets(); if (!r.ok) { setError(r.error || 'Could not load tickets.'); setTickets([]) } else { setError(''); setTickets(r.tickets) } }
   useEffect(() => { let alive = true; void (async () => { const r = await adminListTickets(); if (!alive) return; if (!r.ok) { setError(r.error || 'Could not load tickets.'); setTickets([]) } else setTickets(r.tickets) })(); return () => { alive = false } }, [])
-  async function setStatus(id: string, status: string) { await adminUpdateTicket(id, status); await reload() }
+  async function setStatus(id: string, status: string) {
+    if (updating) return
+    setUpdating(id); setUpdateError('')
+    try {
+      if (!await adminUpdateTicket(id, status)) {
+        setUpdateError('Could not update the ticket. The last confirmed status is still shown. Please try again.')
+        return
+      }
+      await reload()
+    } catch {
+      setUpdateError('Could not update the ticket. The last confirmed status is still shown. Please try again.')
+    } finally { setUpdating(null) }
+  }
   return (
+    <>
+    {updating && <p className="cset-meta" role="status">Updating ticket…</p>}
+    {updateError && <div className="cset-loaderr" role="alert">{updateError}</div>}
     <ListOrEmpty rows={tickets} empty="No tickets in the queue." error={error || undefined} onRetry={reload}>
       {(tickets ?? []).map((t) => (
         <div key={t.id} className="cset-item col">
@@ -1096,7 +1149,7 @@ function AdminTickets() {
               <span className="cset-meta">{t.email} · {t.category} · {fmtDate(Date.parse(t.created_at))}</span>
             </div>
             <div className="cset-item-actions">
-              <select className="cset-role-select" value={t.status} onChange={(e) => setStatus(t.id, e.target.value)} aria-label="Ticket status">
+              <select className="cset-role-select" value={t.status} disabled={updating !== null} onChange={(e) => setStatus(t.id, e.target.value)} aria-label="Ticket status">
                 <option value="open">Open</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option>
               </select>
             </div>
@@ -1105,6 +1158,7 @@ function AdminTickets() {
         </div>
       ))}
     </ListOrEmpty>
+    </>
   )
 }
 

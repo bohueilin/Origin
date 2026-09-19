@@ -1,156 +1,122 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/The_Origin_github_darktheme.png" />
-    <img src="docs/assets/origin-thinking.png" alt="Origin — the reference check for AI agents" width="820" />
-  </picture>
+  <a href="https://originphysicalai.com">
+    <img src="apps/origin-web/public/og-cover.jpg" alt="Origin — Move AI forward. With evidence." width="960" />
+  </a>
 </p>
 
-# Origin — the reference check for AI agents
+# Origin — Move AI forward. With evidence.
 
-> **Model proposes. Environment verifies. Gate decides. Trace proves. — Capability is not permission.**
+**A public trust layer, evidence format, and working demos for AI evidence review.**
 
-Before an AI agent gets production access, Origin tests it against **your** policies and permissions,
-shows exactly where it is **over-granted**, and issues a signed **Origin Attestation** you can re-verify
-independently — one that **automatically voids** when the agent's model, tools, context, or environment
-change. Every verdict comes from a **deterministic oracle** (never an LLM grading an LLM), reproducibly,
-and is checkable **offline in your browser**.
+A capable agent and an authorized action are different things. Origin makes that boundary
+inspectable through deterministic policy evaluations, configuration-bound artifacts, and
+independent verification. Its Physical AI demos explore the same evidence questions in bounded
+simulations.
 
-On the same architecture — *one evidence spine, many domain verifiers* — the same signed receipt covers a
-**software agent**, a **factory/robot plan**, and a **spatial-reconstruction model**. The environment
-(the verifier) is the moat, not the model.
+> Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.
+> **Capability is not permission.**
 
-- **Live showcase:** https://origin-physical-ai.pages.dev · **Check an agent:** [`/reference-check`](https://origin-physical-ai.pages.dev/reference-check) · **Verify an attestation:** [`/verify`](https://origin-physical-ai.pages.dev/verify)
-- **Run the verifiers live:** [`/security`](https://origin-physical-ai.pages.dev/security) · **Labs (robot / fleet / spatial):** [`/labs`](https://origin-physical-ai.pages.dev/labs) · **Trust center:** [`/trust`](https://origin-physical-ai.pages.dev/trust)
+[**Explore the website**](https://originphysicalai.com) ·
+[**Run a reference check**](https://originphysicalai.com/reference-check) ·
+[**Verify an artifact**](https://originphysicalai.com/verify) ·
+[**Public source**](https://github.com/bohueilin/Origin)
 
----
+## Try the public workflow
 
-## The one insight (this is the whole company)
+| Start here | What you can inspect |
+|---|---|
+| [Agent Reference Check](https://originphysicalai.com/reference-check) | A selected policy evaluated against deterministic synthetic support and IAM tasks, with a configuration-bound demo artifact. |
+| [Artifact verifier](https://originphysicalai.com/verify) | Offline integrity, tamper, and configuration-drift checks for supported artifact formats. |
+| [Evidence traces](https://originphysicalai.com/proof) | Clearly separated authored specimens, a downloadable machine-emitted sandbox trace, and the external evidence that has not yet been earned. |
+| [Verifier demos](https://originphysicalai.com/security) | Browser demonstrations of deterministic policy and permission checks. |
+| [Physical AI labs](https://originphysicalai.com/labs) | Robot, warehouse, fleet, and spatial examples in bounded simulations. |
+| [Trust center](https://originphysicalai.com/trust) | Claim boundaries, provenance, verification records, and data-handling limits. |
 
-A deterministic verifier that gates a proposed plan and emits **tamper-evident, signed, reproducible
-evidence** is the **same product** whether the actor is a software agent touching an API, a humanoid
-robot touching a factory floor, or a model reconstructing a room from a photo. **One evidence spine,
-many domain verifiers** — demonstrated today with two actors (an agent action + a factory plan) that earn
-the *same* receipt. The environment is the moat, not the model.
+The public reference check runs browser-local policy logic; it does not contact or execute the
+named agent. Its evidence is signed by an unpinned browser-session key, so it is **untrusted by
+default**. An intact signature demonstrates an integrity check, not trusted Origin issuance or a
+verified provider effect. The proposed runtime gate/proxy and hosted verification API are design
+artifacts, not generally deployed public capabilities. See the
+[reference check versus runtime comparison](https://originphysicalai.com/reference-check-vs-runtime).
 
-```
-① INTENT     humans + agents express what they want            (a task, a site, a tool call)
-② CONTROL    propose a plan, then GATE it — identity → scoped grant → fail-closed authorization
-   PLANE      · measured intent (declared vs measured vs action)  · taint + blast-radius containment
-③ EVIDENCE   tamper-evident: hash-chained trace + ScoreReceipts + ES256 Sigil signatures
-   PLANE      · the deterministic oracle is the sole authority over labels, gates & hard-zeros
-```
+Origin is a working prototype seeking design partners. No active customer pilot, production
+readiness, reviewer acceptance, or certification is claimed.
 
-A **digital agent action** and a **physical factory plan** earn the *same* signed receipt — paste
-either into [`/verify`](https://origin-physical-ai.pages.dev/verify.html) and it re-checks offline:
-green means "reproducible under this verifier," tamper any field and it goes VOID.
+## One evidence contract, explicit authority
 
-## Wedge → moat → market
+The common architecture separates a proposal, permission, execution, verification, evidence, and
+release authority. Each domain needs a verifier suited to its question; sharing an evidence format
+does not make the domains equivalent.
 
-- **Wedge (land):** the self-serve **agent reference check** — a signed **Origin Attestation** +
-  per-decision over-grant breakdown + the **drift-void** moment, visceral in 60 seconds.
-- **Moat:** the **deterministic verified environment**. Digital = an IAM/agent gym; physical = a
-  verifier-gated factory/robot environment. We know of no other verifier-gated environment that spans
-  *both* actors on one evidence spine (see [`docs/PRIOR_ART.md`](docs/PRIOR_ART.md) for the adjacent
-  work we build on) — and, on the narrow tasks we target, the environment beats the model.
-- **Market:** config-bound **reference checks + attestations**, re-run on every config change (recurring),
-  priced on **agents, tools, evaluation volume, and drift-monitoring — never on the Verified Readiness
-  Level you earn** (the level is a deterministic result, not something you can buy). A catastrophic
-  over-grant hard-caps the level: the right to act cannot be averaged back.
+- **Deterministic authority:** the oracle supplies labels, verdicts, and hard-gated zeros. An LLM
+  never grades another LLM. Optional post-gate reward shaping cannot lift an oracle rejection and
+  is off by default.
+- **Inspectable evidence:** canonical JSON, hashes, trace chains, receipts, and signatures expose
+  the bindings a reviewer can recheck. Integrity, signer trust, execution success, and permission
+  to deploy remain separate checks.
+- **Verifier hardening:** Cobra and Chronos explore reward-hack discovery, verifier patches, and
+  held-out evaluation. A verifier result is bounded by the verifier and its inputs.
+- **Release authority:** Origin issues evidence. The customer's gate and named risk owner retain
+  the deployment decision.
 
-## The verified environment is a flywheel
+## What is in this repository
 
-The environment doesn't just gate — it **improves the actor, and can't lie to itself while doing it**,
-because the reward authority is a deterministic oracle the system cannot edit:
-
-- **[Cobra](services/cobra)** is an autoresearch loop that **hardens the verifier** against
-  reward-hacking (red-team → seal → measure on held-out ground truth).
-- The same discipline drives **verifier-gated recursive self-improvement**: a policy proposes, the
-  oracle gates and labels verified traces, a better policy is distilled, and it **only promotes on a
-  verifier-scored win** — so it **cannot regress on the verifier's metric**, and a fake win would have
-  to break the verifier itself, which is exactly the surface Cobra/Chronos red-team and harden. Bounded,
-  auditable self-improvement. *(The physical factory algorithm that instantiates this is private; only
-  its evidence format is public.)*
-
-## Why now
-
-Every enterprise is about to deploy agents (and soon humanoids) that touch money, data, production,
-and physical safety. The blocker isn't capability — it's **trust, governance, and liability**, and
-there's no standard "the actor earned the right to do X, here's the signed receipt." Origin is that
-standard. Per-step verification is what makes it real: verifying *every* action (not sampling around
-it) is where reward-hacking and prompt-injection get caught — and at frontier inference speed
-(e.g. `gemma-4-31b` on Cerebras, ~1,300 tok/s) that per-step tax is affordable, so the safety check
-rides on every step. **The speed is the architecture.**
-
-## Honest by design (the lines we don't cross)
-
-- **The deterministic oracle is the only judge** of labels, gates, and hard-gated zeros — never an LLM
-  grading an LLM. (An *optional* post-gate reward shaper exists in the env module; it can only reduce a
-  reward within the oracle's verdict, never lift a gated 0, and ships off by default — with no judge the
-  reward is byte-identical to the deterministic core.) We *contain* prompt
-  injection; we don't claim to *prevent* it — the destructive action just never executes at the gate.
-- Results are **"reproducible under this verifier,"** never "safe" or "correct." Synthetic data is
-  labeled synthetic; unmeasured numbers say **projected**. This is machine-enforced — see the
-  `honesty-lint` gate below.
-- **Prototype in private pilot** — decision-support + evidence infrastructure, not production SaaS and
-  not compliance certification. Real-customer readiness stays **blocked by default** until authorized.
-
----
-
-## What's inside
-
-| Part | Path | What it is |
+| Component | Path | Public scope |
 |---|---|---|
-| **Origin Web** | [`apps/origin-web`](apps/origin-web) | The live site + the evidence console, `/security` (run the verifiers in-browser), and public **[`/verify`](apps/origin-web/verify.html)**. |
-| **Janus** (formerly Passport) | [`apps/janus`](apps/janus) | The gate: identity → scoped grant → fail-closed authorization, with measured-intent (Tell) + containment (Cordon). |
-| **Chronos UI** | [`apps/chronos-ui`](apps/chronos-ui) | Front-end for the reward-hack discovery / verifier-hardening engine. |
-| **Cobra / Chronos** | [`services/{cobra,chronos}`](services) | Auto-harden RL verifiers against reward hacking (red-team → patch → measure on held-out ground truth). |
-| **Verifier SDK** | [`packages/verifier-core`](packages/verifier-core) + [`packages/evidence`](packages/evidence) | The shared evidence spine: canonical JSON, isomorphic SHA-256, hash-chained ScoreReceipts, ES256 **Origin Attestation** (Sigil) signatures, Merkle batches, config-bound **Crucible** credentials, the IAM + support gyms + the Verified Readiness Level ladder. Consumed by the apps *and* by external verifiers. |
+| Origin Web | [`apps/origin-web`](apps/origin-web) | Product website, reference check, artifact verifier, evidence console, and labeled demos. |
+| Janus | [`apps/janus`](apps/janus) | Credential-broker and autonomy-trace prototypes for scoped authority and fail-closed authorization. |
+| Chronos UI | [`apps/chronos-ui`](apps/chronos-ui) | Interface for verifier-hardening workflows. |
+| Cobra / Chronos | [`services`](services) | Python research and test tooling for verifier hardening. |
+| Verifier core | [`packages/verifier-core`](packages/verifier-core) | Deterministic gyms, configuration-bound credentials, signatures, and verification primitives. |
+| Evidence | [`packages/evidence`](packages/evidence) | Evidence contracts, canonical serialization, hashes, and receipt machinery. |
 
-## The cast — the pieces, and how they collaborate
+Proprietary algorithm implementation and internal strategy are kept outside this public repository.
+The public site includes a research snapshot whose private-pipeline metrics cannot be re-derived
+from this repository alone.
 
-The names aren't decoration: each guards one part of the threshold between *what an agent can do* and
-*what it's permitted to do.*
+## Evidence boundaries
 
-| Name | Myth | What it is in Origin | How it collaborates |
-|---|---|---|---|
-| **Origin** | — (the substrate / the world) | The evidence spine — the one contract every actor is measured against. | Everything below plugs into it; a verdict from any verifier becomes the same signed, offline-checkable artifact. |
-| **Janus** | **Roman** god of gates, doorways & thresholds — two-faced, watching what enters *and* what leaves | The runtime **gate + credential broker**: identity → scoped, revocable authority → fail-closed authorization, with measured intent (Tell) and blast-radius containment (Cordon). It brokers **handles, never raw secrets**. | Stands at the threshold when an agent proposes an action — routes every tool call through itself, and refuses the secret to a tainted agent. |
-| **Crucible** | a vessel where metal is tested by fire | The **test environment**: an agent's policy is run through a deterministic least-privilege gym and forged into a **Verified Readiness Level** (L0–L4). | Consumes the policy Janus would enforce; hands its verdicts to the Oracle to be judged and sealed. |
-| **the Oracle** | the **Greek** Oracle (Delphi) — the source of true judgment | The **deterministic verifier** — the *sole* authority over labels, gates, and hard-zeros. **Never an LLM grading an LLM.** | Judges every proposed action *finish / escalate / refuse*; its verdict is the only thing that can mint an attestation. |
-| **Origin Attestation** *(Sigil)* | a sigil — a sealed mark of authority | The **ES256-signed receipt** that seals a verdict: the level, the config it's bound to, the evidence. | Voids the moment the agent's model/tools/context/environment drift; re-verifies offline at `/verify`. |
-| **Chronos** | **Greek** Titan of **time** | The **reward-hack-discovery / verifier-hardening** engine (with the Chronos UI). | Over time, keeps hardening the Oracle so a policy can never learn to game the metric — the verifier gets *stronger* with every run. |
-| **Cobra** | the serpent — the adversary that makes the guardian stronger | The **red-team**: auto-attacks the verifier (red-team → patch → measure on held-out ground truth). | Feeds Chronos the exploits; a verifier that survives Cobra is one you can trust. |
-| **Foundry** | the forge | Where new **verified environments / gyms** are forged (the Labs). | Extends the one spine to new actors — a robot fleet, a spatial-reconstruction model — each with its own domain verifier. |
+- Synthetic demos, generated counterfactuals, authorized fixtures, and customer-owned proof are
+  different evidence lanes. None substitutes for another.
+- Simulation results mean reproducible under the named verifier, inputs, and environment. They
+  do not establish real-world safety, robot certification, or production-autonomy validation.
+- Learned-policy examples use route-summary and map-derived features, not raw end-to-end perception.
+- Public Foundry uses a deterministic browser-local sample. Provider-backed processing requires
+  a separately enabled local/backend workflow and affirmative consent.
+- Generated brand imagery and footage are illustrations, not product recordings, company
+  facilities, or customer evidence.
 
-**The loop, in one breath:** an agent proposes → **Janus** gates it and brokers scoped authority →
-**Crucible** puts the policy through the gym → **the Oracle** (deterministic, never an LLM) judges every
-step → the verdict is sealed as an **Origin Attestation** anyone can re-verify offline → **Cobra +
-Chronos** keep red-teaming and hardening the Oracle so it can't be gamed → **Foundry** forges the next
-verified environment. *Capability is never mistaken for permission.*
+## Run locally
 
-## Quickstart
+For the public web app, use Node 20+ and the root npm workspace install:
 
 ```bash
-make install        # npm workspaces (TS) + uv sync per Python service
-make gates-all      # ONE green scoreboard: TS build + all TS/Python suites + evidence-verify + honesty
-make dev-web        # run the live site locally
-make help           # all targets
+npm ci
+npm run dev -w @origin/origin-web
 ```
 
-`make gates-all` runs everything — the two TS apps, the evidence + verifier-core suites, the
-`services/{cobra,chronos}` Python suites (the deterministic-oracle moat), the evidence-verify scripts,
-and the `honesty-lint` overclaim tripwire — with real exit codes and a per-suite scoreboard. CI
-([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) gates the same surface on every push, plus a
-secret scan and dependency audit.
+Validate the app and published proof:
 
-## Where to look
+```bash
+npm run test -w @origin/origin-web
+npm run build -w @origin/origin-web
+npm run proof:verify -w @origin/origin-web
+node scripts/honesty-lint.mjs
+```
 
-- **The oracle (the only judge):** [`apps/origin-web/src/warehouse.ts`](apps/origin-web/src/warehouse.ts) → `verifyWarehouseRollout` + `bfsOracle`; property-tested in `warehouse.properties.test.ts` and `services/cobra/tests/test_oracle_properties.py`.
-- **The evidence spine:** [`packages/evidence/env-evidence.mjs`](packages/evidence/env-evidence.mjs) + [`packages/verifier-core`](packages/verifier-core) (Sigil, Merkle, Crucible, IAM gym).
-- **Verify it yourself:** [`/verify`](https://origin-physical-ai.pages.dev/verify.html) — paste any Origin receipt, credential, trace, or Sigil; it re-verifies offline in your browser.
+[`Makefile`](Makefile) is the monorepo front door. `make help` lists targets; `make install`
+includes the isolated Python service environments, and `make gates-all` runs the wider build,
+TypeScript/Python, evidence, and honesty gates. Gate results are scoped to the checked revision;
+a green test run is not deployment authority.
 
----
+## Navigate and contribute
 
-*Deploy note: pushing this repo does **not** deploy anything — the live site is a separate,
-human-owned Cloudflare Pages cutover. Secrets live only in per-app `.env.local` (gitignored), never
-committed.*
+Read [`PROJECT_OVERVIEW.md`](PROJECT_OVERVIEW.md), [`REPO_STRUCTURE.md`](REPO_STRUCTURE.md), and
+[`AGENTS.md`](AGENTS.md) for the component map and operating rules. Start with
+[`apps/origin-web/README.md`](apps/origin-web/README.md) for the web app's implemented behavior.
+
+The canonical website is [originphysicalai.com](https://originphysicalai.com); its public source
+is [bohueilin/Origin](https://github.com/bohueilin/Origin). Pushing or opening a pull request does
+not deploy the website. Production release is separately human-dispatched and gated; see
+[`docs/DEPLOY.md`](docs/DEPLOY.md). Secrets stay in ignored per-app `.env.local` files and must
+never be committed.

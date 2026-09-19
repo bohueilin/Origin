@@ -12,6 +12,7 @@ export {} // ensure this file is treated as a module (required for `declare glob
 // Video bands live on several static pages; enhance.ts already loads on three of
 // them, so importing here avoids a second module request on those.
 import './../shared/videoBand'
+import './cinematic'
 
 type Gtag = (...args: unknown[]) => void
 declare global {
@@ -59,6 +60,9 @@ if (burger && siteNav) {
     const t = e.target as Node
     if (!siteNav.contains(t) && !burger.contains(t)) setNav(false)
   })
+  // Collapse mobile navigation only after its controls are ready. Static HTML
+  // keeps ordinary links visible if scripting is disabled or the module fails.
+  document.documentElement.classList.add('nav-ready')
 }
 
 /* ---------- scroll reveal (motion-safe) ---------- */

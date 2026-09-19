@@ -29,17 +29,17 @@
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
-    <meta property="og:url" content="https://origin-physical-ai.pages.dev/over-grant" />
+    <meta property="og:url" content="https://originphysicalai.com/over-grant" />
     <meta property="og:title" content="The over-grant analyzer | Origin" />
     <meta property="og:description" content="Origin's over-grant analyzer, live in your browser: five authorization-risk metrics over a synthetic agent fleet, the widest standing grants, and the attenuation diagram." />
-    <meta property="og:image" content="https://origin-physical-ai.pages.dev/og/over-grant.jpg" />
+    <meta property="og:image" content="https://originphysicalai.com/og/over-grant.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="The over-grant analyzer | Origin" />
     <meta name="twitter:description" content="Origin's over-grant analyzer, live in your browser: five authorization-risk metrics over a synthetic agent fleet, the widest standing grants, and the attenuation diagram." />
-    <meta name="twitter:image" content="https://origin-physical-ai.pages.dev/og/over-grant.jpg" />
-    <link rel="canonical" href="https://origin-physical-ai.pages.dev/over-grant" />
+    <meta name="twitter:image" content="https://originphysicalai.com/og/over-grant.jpg" />
+    <link rel="canonical" href="https://originphysicalai.com/over-grant" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
 
@@ -47,14 +47,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <link rel="stylesheet" href="/home.css?v=29cdd6e3" />
+    <link rel="stylesheet" href="/home.css?v=e7514f0a" />
 
     <style>
       /* Local helpers for the live demo panels, layered on the shared design system. */
@@ -89,14 +82,14 @@
     </style>
   </head>
 
-  <body>
+  <body class="product-route product-route--over-grant">
     <a class="skip-link" href="#main">Skip to main content</a>
 
     <!-- ===================== SiteHeader ===================== -->
     <header class="site-header">
       <div class="shell site-header__inner">
         <a class="brand" href="/" aria-label="Origin — home">
-          <img class="brand__logo" src="/origin-logo.png" width="28" height="28" alt="" />
+          <img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" />
           <span class="brand__name">Origin</span>
         </a>
 
@@ -119,18 +112,13 @@
     </header>
 
     <main id="main">
-      <section class="section" aria-labelledby="og-title">
+      <section class="section product-hero" aria-labelledby="og-title">
         <div class="shell">
-          <p class="kicker">Over-grant analyzer &middot; live</p>
-          <h1 id="og-title">How much authority is held — and never used?</h1>
-          <p class="section__lede">
-            Five authorization-risk metrics — utilization, blast radius, attenuation violations,
-            taint reachability, standing authority — computed in your browser over a seeded
-            <b>synthetic</b> agent fleet by the same functions the published bench artifact
-            re-derives from. Definitions and denominators:
-            <a href="https://github.com/bohueilin/Origin/blob/main/docs/OVER-GRANT-METRICS.md">OVER-GRANT-METRICS.md</a> ·
-            the artifact: <a href="/trust/over-grant-bench.json">over-grant-bench.json</a>.
-          </p>
+          <p class="kicker">Synthetic authority analysis</p>
+          <h1 id="og-title">See the gap between access and use.</h1>
+          <p class="section__lede">Inspect standing permissions, exercised authority, and what a compromised identity could reach. Then widen a delegation edge and watch the result change.</p>
+          <p class="product-hero__scope">Every fleet and event on this page is synthetic and seeded. These numbers describe the demonstration, not a customer deployment. Definitions and denominators accompany the published benchmark.</p>
+          <div class="product-hero__links"><a href="https://github.com/bohueilin/Origin/blob/main/docs/OVER-GRANT-METRICS.md">Metric definitions ↗</a><a href="/trust/over-grant-bench.json">Published synthetic benchmark ↗</a><a href="#og-table-title">Explore the analyzer ↓</a></div>
 
           <!-- Recorded footage: scripts/rec-shot02.mjs films the live /security analyzer.
                Poster-first; plays once on scroll via src/shared/videoBand.ts. -->
@@ -155,48 +143,10 @@
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
           </div>
         </div>
-        </div>
-      </section>
     </main>
 
     <!-- ===================== Footer ===================== -->
-    <footer class="site-footer">
-      <div class="shell site-footer__inner">
-        <div class="site-footer__brand">
-          <a class="brand" href="/" aria-label="Origin — home">
-            <img class="brand__logo" src="/origin-logo.png" width="24" height="24" alt="" />
-            <span class="brand__name">Origin</span>
-          </a>
-          <p>The evidence layer for AI agents.</p>
-        </div>
-        <nav class="site-footer__nav" aria-label="Footer">
-          <div>
-            <p class="site-footer__h">Product</p>
-            <a href="/#demo">Demo</a>
-            <a href="/#product">Product</a>
-            <a href="/proof">Evidence · traces</a>
-            <a href="/app">Evidence Console (preview)</a>
-            <a href="/trust">Trust center</a>
-          </div>
-          <div>
-            <p class="site-footer__h">Company</p>
-            <a href="/#offer">Agent Evidence Review</a>
-            <a href="/brief" data-analytics="one_pager_click">One-page brief</a>
-            <a href="/llms.txt">For AI agents</a>
-            <a href="mailto:bohueilin@gmail.com">bohueilin@gmail.com</a>
-          </div>
-        </nav>
-      </div>
-      <div class="shell site-footer__legal">
-        <span>© <span data-year>2026</span> Origin</span>
-        <span class="site-footer__legal-links">
-          <a href="/legal/privacy-policy.html">Privacy</a>
-          <a href="/legal/terms-of-service.html">Terms</a>
-          <a href="/#offer">Contact</a>
-          <a href="/auth" rel="nofollow">Sign in</a>
-        </span>
-      </div>
-    </footer>
+    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Independent verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Check an agent</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@gmail.com">Contact</a><a href="/auth" rel="nofollow">Sign in</a></span></div></footer>
 
     <script type="module" src="/src/home/enhance.ts"></script>
     <script type="module" src="/src/overGrantMain.tsx"></script>

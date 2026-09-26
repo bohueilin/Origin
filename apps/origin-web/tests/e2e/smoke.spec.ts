@@ -315,3 +315,49 @@ test('key routes are served (brief, trust, llms, legal)', async ({ page }) => {
     expect(res.status(), path).toBe(200)
   }
 })
+
+test('no sitemap URL is noindex', async ({ page }) => {
+  const sitemap = await (await page.request.get('/sitemap.xml')).text()
+  const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname)
+  expect(locs.length).toBeGreaterThan(0)
+  for (const path of locs) {
+    const res = await page.request.get(path)
+    expect(res.status(), path).toBe(200)
+    expect(res.headers()['x-robots-tag'] ?? '', path).not.toMatch(/noindex/i)
+    expect(await res.text(), path).not.toMatch(/<meta[^>]*name=["']robots["'][^>]*noindex/i)
+  }
+})
+
+test('/foundry and /passport carry their scope as text without JavaScript', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  try {
+    await page.goto(`${baseURL}/foundry`)
+    const foundry = (await page.locator('main').innerText()).trim()
+    expect(foundry.length).toBeGreaterThanOrEqual(150)
+    expect(foundry).toContain('not robot training')
+    // getByText skips <noscript>, so read the rendered text instead.
+    expect(foundry).toContain('The interactive floor needs JavaScript.')
+    await expect(page.locator('main noscript p')).toBeVisible()
+
+    await page.goto(`${baseURL}/passport`)
+    const passport = await page.locator('main').innerText()
+    expect(passport).toContain('Passport is a local demo of scoped, revocable grants')
+    expect(passport).toContain('The interactive demo needs JavaScript.')
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/)
+  } finally {
+    await context.close()
+  }
+})
+
+test('with JavaScript, /foundry and /passport keep the scope line and drop the no-JS notice', async ({ page }) => {
+  await blockFoundryNetwork(page)
+  await page.goto('/foundry')
+  await expect(page.locator('.lab-static-intro').first()).toContainText('not robot training')
+  await expect(page.locator('#root')).not.toBeEmpty()
+  expect(await page.locator('main').innerText()).not.toContain('needs JavaScript')
+  await page.goto('/passport')
+  await expect(page.locator('.pp-static-intro').first()).toBeVisible()
+  await expect(page.locator('#passport-root')).not.toBeEmpty()
+  expect(await page.locator('main').innerText()).not.toContain('needs JavaScript')
+})

@@ -21,9 +21,10 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
     <meta
       name="description"
-      content="Passport, the control plane for delegated autonomy: an agent proposes, Passport issues a scoped revocable grant, and every action waits for your approval."
+      content="A local demo: an agent proposes, Passport issues a scoped, revocable grant, and every action waits for your approval. Static fixtures; no real accounts, tools, or money."
     />
     <meta name="theme-color" content="#faf9f5" />
     <!-- Social share (Open Graph + Twitter) -->
@@ -32,7 +33,7 @@
     <meta property="og:url" content="https://originphysicalai.com/passport" />
     <link rel="canonical" href="https://originphysicalai.com/passport" />
     <meta property="og:title" content="Passport — delegated autonomy you can trust · Origin" />
-    <meta property="og:description" content="An agent proposes a plan, Passport issues a scoped, revocable grant, and every real-world action waits for your approval. Capability is not permission." />
+    <meta property="og:description" content="A local demo: an agent proposes a plan, Passport issues a scoped, revocable grant, and every action waits for your approval. Static fixtures; no real accounts, tools, or money." />
     <meta property="og:image" content="https://originphysicalai.com/og/passport.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -48,11 +49,12 @@
         transition: top .15s ease;
       }
       .skip-link:focus { top: 12px; text-decoration: none; }
+      .pp-static-intro { max-width: 62ch; margin: 24px auto; padding: 0 24px; color: #4e5b48; font-family: 'Avenir Next',Avenir,system-ui,sans-serif; }
     </style>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <main id="main"><div id="passport-root"></div></main>
+    <main id="main"><p class="pp-static-intro">Passport is a local demo of scoped, revocable grants for delegated agent actions — static fixtures, no real accounts, tools, or money.</p><noscript><p class="pp-static-intro">The interactive demo needs JavaScript.</p></noscript><div id="passport-root"></div></main>
     <script type="module" src="/src/passport/main.tsx"></script>
   </body>
 </html>

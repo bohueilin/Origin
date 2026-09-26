@@ -59,3 +59,90 @@ test('reduced motion keeps the hero still until the visitor chooses playback', a
   await control.click()
   await expect(control).toHaveText('Play scene')
 })
+
+// W3-1 type floor, measure and targets on `/`. The viewports are set explicitly (375 and
+// 1440), so this runs once, in the desktop project.
+const INTEGRITY_LABELS = [
+  'AI-generated illustration',
+  'Not earned yet',
+  'No customer validation is claimed',
+  'does not contact or execute your named agent',
+]
+const PROSE = ['.hero__status', '.cin-demo .demo__panel p', '.cin-footnote p', '.cin-small', '.vband__cap',
+  '.gatesfresh', '.demo__cap', '.modal__note', '.site-footer__boundary']
+
+test('home type floor: integrity labels at least 12px, prose at least 14px, no text below 11px', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'viewports are set explicitly')
+  await localOnly(page)
+  for (const width of [375, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    const sizes = await page.evaluate(({ labels, prose }) => {
+      const px = (el: Element) => parseFloat(getComputedStyle(el).fontSize)
+      const texts: { text: string, size: number, visible: boolean }[] = []
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const el = node.parentElement
+        const text = node.textContent?.trim() ?? ''
+        if (el && text) texts.push({ text, size: px(el), visible: el.checkVisibility({ visibilityProperty: true }) })
+      }
+      return {
+        tooSmall: texts.filter((t) => t.visible && t.size < 11).map((t) => `${t.size}px ${t.text.slice(0, 40)}`),
+        labels: labels.map((label) => texts.filter((t) => t.text.includes(label)).map((t) => ({ label, size: t.size, visible: t.visible }))),
+        pill: px(document.querySelector('.vband__pill')!),
+        prose: prose.map((sel) => ({ sel, sizes: [...document.querySelectorAll(sel)].map(px) })),
+      }
+    }, { labels: INTEGRITY_LABELS, prose: PROSE })
+    expect(sizes.tooSmall, `${width}px`).toEqual([])
+    for (const found of sizes.labels) {
+      expect(found.length, `${width}px ${JSON.stringify(found)}`).toBeGreaterThan(0)
+      for (const hit of found) {
+        expect(hit.visible, `${width}px ${hit.label}`).toBe(true)
+        expect(hit.size, `${width}px ${hit.label}`).toBeGreaterThanOrEqual(12)
+      }
+    }
+    // "Recorded · one take" is a tag: uppercase, and held at the 11px tag floor.
+    expect(sizes.pill, `${width}px pill`).toBeGreaterThanOrEqual(11)
+    for (const { sel, sizes: found } of sizes.prose) {
+      expect(found.length, `${width}px ${sel}`).toBeGreaterThan(0)
+      for (const size of found) expect(size, `${width}px ${sel}`).toBeGreaterThanOrEqual(14)
+    }
+  }
+})
+
+test('home measure: boundary, demo and footnote prose stay within 75ch at 1440', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'viewport is set explicitly')
+  await localOnly(page)
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+  const measures = await page.evaluate(() => {
+    const out: { sel: string, width: number, limit: number }[] = []
+    for (const sel of ['.hero__status', '.cin-demo .demo__panel.is-on p', '.cin-footnote p']) {
+      for (const el of document.querySelectorAll<HTMLElement>(sel)) {
+        const probe = document.createElement('span')
+        probe.style.cssText = 'display:block;width:75ch;height:0;position:absolute;visibility:hidden'
+        el.appendChild(probe)
+        const limit = probe.getBoundingClientRect().width
+        probe.remove()
+        const cs = getComputedStyle(el)
+        out.push({ sel, width: el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight), limit })
+      }
+    }
+    return out
+  })
+  expect(measures.length).toBeGreaterThanOrEqual(5)
+  for (const m of measures) expect(m.width, m.sel).toBeLessThanOrEqual(m.limit)
+})
+
+test('home mobile targets: arrow links and the Play scene control are at least 44px tall at 375', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'viewport is set explicitly')
+  await localOnly(page)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto('/')
+  await expect(page.locator('[data-cinematic-toggle]')).toBeVisible()
+  const heights = await page.locator('.cin-text-link, .cin-motion').evaluateAll((els) =>
+    els.filter((el) => el.checkVisibility()).map((el) => ({ text: el.textContent?.trim(), height: el.getBoundingClientRect().height })))
+  expect(heights.length).toBeGreaterThanOrEqual(8)
+  for (const h of heights) expect(h.height, h.text).toBeGreaterThanOrEqual(44)
+})

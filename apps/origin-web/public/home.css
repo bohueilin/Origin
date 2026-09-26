@@ -656,7 +656,7 @@ a:hover { text-decoration: underline; }
 .field__checks label:has(input:checked) { border-color: #bcccff; background: var(--signal-wash); color: var(--signal-ink); font-weight: 600; }
 .field__error { color: var(--danger); font-size: var(--fs-14); margin-top: 10px; font-weight: 600; }
 .modal__actions { margin-top: 22px; display: flex; gap: 10px; }
-.modal__note { margin-top: 14px; font-size: var(--fs-13); color: var(--steel); }
+.modal__note { margin-top: 14px; font-size: var(--fs-14); color: var(--steel); }
 .modal__success { text-align: center; padding: 20px 4px; }
 .modal__success-mark { width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 50%; background: #eaf6f0; color: var(--verify); border: 1px solid #bfe3d3; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; }
 .modal__success h3 { font-size: var(--fs-19); margin-bottom: 8px; }
@@ -1067,7 +1067,7 @@ a:hover { text-decoration: underline; }
    already exists. Deliberately quiet: this is a footnote a skeptic checks, not a
    banner. Hidden until enhance.ts has real numbers to put in it. */
 .gatesfresh { margin: 0 0 26px; padding-top: 22px; border-top: 1px solid var(--line);
-  font-size: var(--fs-13); color: var(--steel); display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  font-size: var(--fs-14); font-variant-numeric: tabular-nums; color: var(--steel); display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
 .gatesfresh[hidden] { display: none; }
 .gatesfresh b { color: var(--ink-soft); font-weight: 600; }
 .gatesfresh .gatesfresh__ok { color: var(--verify); font-weight: 600; }
@@ -1124,7 +1124,7 @@ a:hover { text-decoration: underline; }
   background: rgba(255,255,255,.92); backdrop-filter: blur(6px);
 }
 .vband__cap {
-  margin-top: 10px; font-size: var(--fs-13); line-height: 1.55; color: var(--steel);
+  margin-top: 10px; font-size: var(--fs-14); line-height: 1.55; color: var(--steel);
   max-width: 62ch;
 }
 .vband__cap b { color: var(--ink-soft); font-weight: 600; }
@@ -1149,7 +1149,7 @@ a:hover { text-decoration: underline; }
 .deflist li { display: flex; gap: 11px; align-items: flex-start; font-size: var(--fs-15); color: var(--ink-soft); }
 .deflist b { color: var(--ink); font-weight: 600; }
 .deflist .dl-mark { flex: none; width: 20px; height: 20px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-12); font-weight: 800; background: var(--signal-wash); color: var(--signal-ink); margin-top: 1px; }
-.mono-note { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-13); line-height: 1.65; color: var(--steel); max-width: 78ch; }
+.mono-note { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-14); line-height: 1.65; color: var(--steel); max-width: 78ch; }
 .compare-row { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 26px; }
 .compare-line { display: grid; grid-template-columns: 190px 1fr; gap: 16px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper-2); align-items: baseline; }
 .compare-line--origin { border-color: #cfdcff; background: var(--signal-wash); }
@@ -1246,7 +1246,7 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 @media (max-width: 560px) { .demo__readout .rd-state { margin-left: 0; } }
 .demo__bar { display: none; }
 .demo.is-enhanced .demo__bar { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--line); background: var(--paper-3); flex-wrap: wrap; }
-.demo__cap { font-size: var(--fs-13); color: var(--ink-soft); margin-left: 6px; }
+.demo__cap { font-size: var(--fs-14); color: var(--ink-soft); margin-left: 6px; }
 @media (max-width: 560px) { .demo__cap { width: 100%; margin: 8px 0 0; } .demo__screen { min-height: 240px; } }
 
 /* Mobile-compressed loop — Propose → Gate → Act/Block → Prove (replaces the 8-node diagram ≤680px) */
@@ -1306,6 +1306,6 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 /* Shared brand finish across the complete public site. */
 .site-footer { background: #edf1e7; }
 .site-footer__brand > p { font-size: 22px; line-height: 1.4; color: var(--ink); letter-spacing: -.025em; margin-top: 22px; }
-.site-footer__brand > .site-footer__boundary { font-size: 12px; color: var(--steel); letter-spacing: 0; margin-top: 18px; }
+.site-footer__brand > .site-footer__boundary { font-size: var(--fs-14); color: var(--steel); letter-spacing: 0; margin-top: 18px; }
 .site-footer__nav { column-gap: 64px; }
 @media(max-width:680px) { .site-header__inner { height: 74px; gap: 12px; }.brand__name { font-size: 27px; }.brand__logo { width: 28px; height: 28px; }.site-header__cta { gap: 9px; }.site-header__cta-mobile { font-size: 11px; padding: 10px 13px; }.site-footer__nav { gap: 30px; } }

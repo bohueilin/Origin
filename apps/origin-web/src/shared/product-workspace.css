@@ -4,7 +4,7 @@
 .product-route .product-hero h1 { max-width: 22ch; font-size: clamp(36px, 4.3vw, 56px); line-height: 1.08; letter-spacing: -.045em; font-weight: 500; }
 .product-route .section--tint { padding-block: 48px; }
 .product-route .product-hero > .shell > .section__lede { max-width: 65ch; font-size: clamp(17px, 1.7vw, 20px); line-height: 1.65; margin-top: 24px; }
-.product-route .product-hero__scope { max-width: 86ch; font-size: 13px; line-height: 1.75; color: var(--ink-soft); padding-left: 18px; border-left: 2px solid #adbd9d; margin: 24px 0 0; }
+.product-route .product-hero__scope { max-width: 86ch; font-size: var(--fs-14); line-height: 1.75; color: var(--ink-soft); padding-left: 18px; border-left: 2px solid #adbd9d; margin: 24px 0 0; }
 .product-route .product-hero__links { display: flex; flex-wrap: wrap; gap: 12px 26px; margin-top: 24px; font-size: 13px; font-weight: 600; }
 .product-route .product-hero__links a { color: var(--signal-ink); }
 .product-workspace {

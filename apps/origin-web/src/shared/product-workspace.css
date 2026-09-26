@@ -215,3 +215,16 @@
   .product-workspace :is(.btn:hover, .btn:active, .pg3d-btn:active) { transform: none !important; }
   .product-workspace .pg3d-prog-fill { transition: none; }
 }
+
+/* A check changes the record immediately; the verdict itself stays still. */
+.product-workspace :is(.vfy-verdict, .rc-verdict) { scroll-margin-top: 96px; scroll-margin-bottom: 16px; }
+.vfy-checked, .rc-checked { flex-basis: 100%; margin: 0; font-size: var(--fs-12); color: var(--steel); font-variant-numeric: tabular-nums; }
+@media (min-width: 961px) {
+  .product-workspace .vfy-result { position: sticky; top: 103px; }
+}
+.deleg__inheritance { animation: delegationPathIn 200ms cubic-bezier(.23,1,.32,1) both; }
+@keyframes delegationPathIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  /* The explanatory path fades without moving; counters and verdicts stay instant. */
+  .product-workspace .deleg__inheritance { animation: delegationPathIn 200ms cubic-bezier(.23,1,.32,1) both !important; }
+}

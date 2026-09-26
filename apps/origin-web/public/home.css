@@ -1279,3 +1279,13 @@ html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root,
   min-height: 100vh;
   display: flow-root; /* Keep mounted content margins inside the reserved space. */
 }
+
+/* Opening a dialog establishes a new layer; closing remains immediate. */
+.modal[open] { animation: modalIn 180ms cubic-bezier(.23,1,.32,1); }
+.modal[open]::backdrop { animation: modalBackdropIn 180ms linear; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(6px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes modalBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .modal[open] { animation: modalBackdropIn 120ms linear; }
+  .modal[open]::backdrop { animation-duration: 120ms; }
+}

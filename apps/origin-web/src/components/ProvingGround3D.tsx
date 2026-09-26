@@ -18,7 +18,7 @@ const FLEET_COLORS = [0x2f6df6, 0x0f9d6e, 0xb97400, 0x7c3aed, 0xdb2777, 0x0891b2
 const TICK_SECONDS = 0.78
 const CARGO = 0xc79a5b
 const RACK_H = 5.6 // high-bay racking height in cells (≈ a tall warehouse aisle)
-const CYCLE: RobotEmbodiment[] = ['amr', 'humanoid', 'dog', 'arm', 'drone', 'carrier']
+const CYCLE: RobotEmbodiment[] = ['amr', 'humanoid', 'dog', 'arm', 'drone', 'carrier', 'forklift', 'tugger', 'scrubber', 'delivery']
 
 function smoother(t: number) {
   const c = Math.max(0, Math.min(1, t))
@@ -107,6 +107,62 @@ function robotModel(emb: RobotEmbodiment, color: number): Built {
     lip.position.set(0, 0.32, -0.5); g.add(lip)
     for (const sz of [-0.36, 0, 0.36]) { wheel(-0.36, sz, 0.12); wheel(0.36, sz, 0.12) }
     cargo.position.set(0, 0.5, 0) // on the flatbed
+    g.add(cargo)
+  } else if (emb === 'forklift') {
+    // Driverless forklift: rear counterweight body, a mast at the front, forks carrying a pallet.
+    const bodyM = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.46, 0.52), body)
+    bodyM.position.set(0, 0.35, -0.2); bodyM.castShadow = true; g.add(bodyM)
+    const puck = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.08, 18), dark)
+    puck.position.set(0, 0.62, -0.2); g.add(puck)
+    for (const sx of [-0.22, 0.22]) {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.1, 0.06), dark)
+      post.position.set(sx, 0.62, 0.1); post.castShadow = true; g.add(post)
+      const fork = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.62), dark)
+      fork.position.set(sx * 0.8, 0.24, 0.42); g.add(fork)
+    }
+    const pallet = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.08, 0.6), cargoMat)
+    pallet.position.set(0, 0.3, 0.42); pallet.castShadow = true; g.add(pallet)
+    wheel(-0.26, -0.34); wheel(0.26, -0.34); wheel(-0.26, 0.3, 0.09); wheel(0.26, 0.3, 0.09)
+    cargo.position.set(0, 0.47, 0.42) // on the pallet
+    g.add(cargo)
+  } else if (emb === 'tugger') {
+    // Tow AGV: a compact tractor at the front pulling two small carts behind it.
+    const tractor = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.34, 0.5), body)
+    tractor.position.set(0, 0.27, 0.34); tractor.castShadow = true; g.add(tractor)
+    wheel(-0.2, 0.2); wheel(0.2, 0.2); wheel(-0.2, 0.48); wheel(0.2, 0.48)
+    for (const cz of [-0.26, -0.86]) {
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.06, 0.5), dark)
+      deck.position.set(0, 0.2, cz); deck.castShadow = true; g.add(deck)
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.12), dark)
+      bar.position.set(0, 0.16, cz + 0.31); g.add(bar)
+      wheel(-0.2, cz - 0.16, 0.08); wheel(0.2, cz - 0.16, 0.08); wheel(-0.2, cz + 0.16, 0.08); wheel(0.2, cz + 0.16, 0.08)
+    }
+    cargo.position.set(0, 0.4, -0.26) // on the first cart
+    g.add(cargo)
+  } else if (emb === 'scrubber') {
+    // Floor scrubber: a low rounded body, a tank on top, a brush disc at the front.
+    const shellM = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.38, 0.38, 28), body)
+    shellM.position.y = 0.27; shellM.castShadow = true; g.add(shellM)
+    const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.16, 24), dark)
+    tank.position.set(0, 0.54, -0.06); g.add(tank)
+    const brush = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.04, 24), dark)
+    brush.position.set(0, 0.04, 0.26); g.add(brush)
+    const squeegee = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.04, 0.05), dark)
+    squeegee.position.set(0, 0.05, -0.38); g.add(squeegee)
+    cargo.position.set(0, 0.72, 0) // a supply caddy on top
+    g.add(cargo)
+  } else if (emb === 'delivery') {
+    // Indoor delivery robot: a tall cabinet with two compartment doors and a small screen.
+    const cab = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.92, 0.5), body)
+    cab.position.y = 0.58; cab.castShadow = true; g.add(cab)
+    for (const dy of [0.4, 0.74]) {
+      const door = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.28, 0.02), new THREE.MeshStandardMaterial({ color: 0xedf1e7, roughness: 0.6 }))
+      door.position.set(0, dy, 0.26); g.add(door)
+    }
+    const screen = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.1, 0.02), new THREE.MeshStandardMaterial({ color: 0x0b1220 }))
+    screen.position.set(0, 0.96, 0.26); g.add(screen)
+    wheel(-0.2, -0.18, 0.08); wheel(0.2, -0.18, 0.08); wheel(-0.2, 0.18, 0.08); wheel(0.2, 0.18, 0.08)
+    cargo.position.set(0, 0.4, 0.34) // at the open lower compartment
     g.add(cargo)
   } else { // amr (default)
     const shell = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.24, 0.76), body)

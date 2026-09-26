@@ -1,27 +1,30 @@
-// Licensed robot media for each embodiment, shown as a live preview when the
-// operator picks a robot in Align (#4). Assets live in public/robots/ and are
-// served from the site root. 'other' has no canonical image and falls back to a
-// schematic placeholder. AMR ships as a short muted loop (mp4); the rest are
-// stills — the preview component branches on `kind`.
+// Reference illustrations for each robot type, shown when the operator picks a
+// robot in Align. They are original, generic drawings made for this site — no
+// manufacturer's product, logo or photo — so a customer can recognise the TYPE.
+// Assets live in public/robots/ as SVG. 'other' has no canonical drawing and
+// falls back to the "No reference image" placeholder.
 
 import type { RobotEmbodiment } from './environmentPlan'
 
 export interface EmbodimentMedia {
   src: string
-  kind: 'image' | 'video'
   alt: string
 }
 
 const EMBODIMENT_MEDIA: Partial<Record<RobotEmbodiment, EmbodimentMedia>> = {
-  humanoid: { src: '/robots/humanoid.jpg', kind: 'image', alt: 'Humanoid robot' },
-  carrier: { src: '/robots/carrier.webp', kind: 'image', alt: 'Carrier / mobile base robot' },
-  dog: { src: '/robots/dog.avif', kind: 'image', alt: 'Quadruped (robot dog)' },
-  amr: { src: '/robots/amr.mp4', kind: 'video', alt: 'Autonomous mobile robot (AMR)' },
-  arm: { src: '/robots/arm.webp', kind: 'image', alt: 'Mobile manipulator arm' },
-  drone: { src: '/robots/drone.webp', kind: 'image', alt: 'Aerial drone' },
+  humanoid: { src: '/robots/humanoid.svg', alt: 'Illustration of a humanoid robot' },
+  carrier: { src: '/robots/carrier.svg', alt: 'Illustration of a carrier (mobile flatbed) robot' },
+  dog: { src: '/robots/dog.svg', alt: 'Illustration of a quadruped (legged) robot' },
+  amr: { src: '/robots/amr.svg', alt: 'Illustration of an autonomous mobile robot (AMR)' },
+  arm: { src: '/robots/arm.svg', alt: 'Illustration of a mobile manipulator arm' },
+  drone: { src: '/robots/drone.svg', alt: 'Illustration of a quadcopter drone' },
+  forklift: { src: '/robots/forklift.svg', alt: 'Illustration of a driverless forklift carrying a pallet' },
+  tugger: { src: '/robots/tugger.svg', alt: 'Illustration of a tugger (tow AGV) pulling two carts' },
+  scrubber: { src: '/robots/scrubber.svg', alt: 'Illustration of an autonomous floor scrubber' },
+  delivery: { src: '/robots/delivery.svg', alt: 'Illustration of an indoor delivery robot' },
 }
 
-/** Media for an embodiment, or null when none is licensed (e.g. 'other'). */
+/** Reference illustration for an embodiment, or null when none exists (e.g. 'other'). */
 export function embodimentMedia(embodiment: RobotEmbodiment): EmbodimentMedia | null {
   return EMBODIMENT_MEDIA[embodiment] ?? null
 }

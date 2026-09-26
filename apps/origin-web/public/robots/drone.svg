@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img"><title>Delivery drone (quadcopter)</title>
+<ellipse cx="160" cy="214" rx="74" ry="11" fill="#272d26" opacity=".05"/>
+<g stroke="#272d26" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<path d="M154.3 90.9L95.8 59.1" stroke-width="9" fill="none"/><path d="M154.3 90.9L95.8 59.1" stroke="#fff" stroke-width="5" fill="none"/>
+<path d="M88.8 65.1v-17a7 2.7 0 0 1 14 0v17a7 2.7 0 0 1-14 0Z" fill="#4e5b48"/><ellipse cx="95.8" cy="43.1" rx="36" ry="13.7" fill="#e7eedf"/><path d="M67 47.9L124.6 38.3" stroke="#4e5b48" stroke-width="1.25"/><ellipse cx="95.8" cy="43.1" rx="4" ry="2" fill="#272d26" stroke="none"/>
+<path d="M168.2 91.8L251.7 69.6" stroke-width="9" fill="none"/><path d="M168.2 91.8L251.7 69.6" stroke="#fff" stroke-width="5" fill="none"/>
+<path d="M244.7 75.6v-17a7 2.7 0 0 1 14 0v17a7 2.7 0 0 1-14 0Z" fill="#4e5b48"/><ellipse cx="251.7" cy="53.6" rx="36" ry="13.7" fill="#e7eedf"/><path d="M222.9 58.4L280.5 48.8" stroke="#4e5b48" stroke-width="1.25"/><ellipse cx="251.7" cy="53.6" rx="4" ry="2" fill="#272d26" stroke="none"/>
+<path d="M160 102V134.5" fill="none"/>
+<path d="M138.3 154.5L160 139.5M160 139.5L181.7 157.5" stroke-width="1.25" fill="none"/>
+<circle cx="160" cy="137" r="2.5" fill="#fff"/>
+<path d="M138.3 154.5L156.2 164.2L156.2 188.2L138.3 178.5Z" fill="#d9c9a8"/>
+<path d="M156.2 164.2L181.7 157.5L181.7 181.5L156.2 188.2Z" fill="#b9a27a"/>
+<path d="M181.7 157.5L156.2 164.2L138.3 154.5L163.8 147.8Z" fill="#d9c9a8"/>
+<path d="M151.1 151.2L168.9 160.8" stroke="#b9a27a" stroke-width="3.5" fill="none"/>
+<path d="M140.5 117.7v-18M151.7 123.7v-18" stroke-width="2.5" fill="none"/>
+<path d="M137.5 116L154.7 125.4" stroke-width="4" fill="none"/>
+<path d="M168.3 110.3v-18M179.5 116.3v-18" stroke-width="2.5" fill="none"/>
+<path d="M165.3 108.6L182.5 118" stroke-width="4" fill="none"/>
+<path d="M121.6 77.4L153.2 94.6L153.2 116.6L121.6 99.4Z" fill="#fff"/>
+<path d="M153.2 94.6L198.4 82.6L198.4 104.6L153.2 116.6Z" fill="#edf1e7"/>
+<path d="M198.4 82.6L153.2 94.6L121.6 77.4L166.8 65.4Z" fill="#fff"/>
+<path d="M128.6 84.7L146.3 94.3L146.3 99.3L128.6 89.7Z" fill="#272d26" stroke-width="1.25"/>
+<path d="M161.4 97.4L190.3 89.7" stroke="#2b523b" stroke-width="2.5"/>
+<ellipse cx="161" cy="79" rx="13" ry="4.9" fill="#edf1e7" stroke-width="1.25"/>
+<path d="M137.4 100L68.3 118.4" stroke-width="9" fill="none"/><path d="M137.4 100L68.3 118.4" stroke="#fff" stroke-width="5" fill="none"/>
+<path d="M61.3 124.4v-17a7 2.7 0 0 1 14 0v17a7 2.7 0 0 1-14 0Z" fill="#4e5b48"/><ellipse cx="68.3" cy="102.4" rx="36" ry="13.7" fill="#e7eedf"/><path d="M39.5 107.2L97.1 97.6" stroke="#4e5b48" stroke-width="1.25"/><ellipse cx="68.3" cy="102.4" rx="4" ry="2" fill="#272d26" stroke="none"/>
+<path d="M175.8 102.6L224.2 128.9" stroke-width="9" fill="none"/><path d="M175.8 102.6L224.2 128.9" stroke="#fff" stroke-width="5" fill="none"/>
+<path d="M217.2 134.9v-17a7 2.7 0 0 1 14 0v17a7 2.7 0 0 1-14 0Z" fill="#4e5b48"/><ellipse cx="224.2" cy="112.9" rx="36" ry="13.7" fill="#e7eedf"/><path d="M195.4 117.7L253 108.1" stroke="#4e5b48" stroke-width="1.25"/><ellipse cx="224.2" cy="112.9" rx="4" ry="2" fill="#272d26" stroke="none"/>
+</g></svg>

@@ -39,7 +39,7 @@ export function policyForSpec(spec: PolicySpec) {
 export const PRESETS: Record<string, { label: string; blurb: string; spec: PolicySpec }> = {
   'least-privilege': {
     label: 'Least-privilege (recommended)',
-    blurb: 'Every guard on; auto-allow only up to medium. The posture that earns a high Verified Readiness Level.',
+    blurb: 'Every guard on; auto-allow only up to medium. The strictest posture in this battery.',
     spec: { honorRoleAllowlist: true, denyForbidden: true, denyTainted: true, escalateOnApproval: true, autoAllowUpTo: 'medium' },
   },
   moderate: {
@@ -85,7 +85,7 @@ export function supportPolicyForSpec(spec: SupportPolicySpec) {
 export const SUPPORT_PRESETS: Record<string, { label: string; blurb: string; spec: SupportPolicySpec }> = {
   'least-privilege': {
     label: 'Least-privilege (recommended)',
-    blurb: 'Refund cap $100, never disclose PII, no destructive actions, fraud + bank changes go to a human. Earns a high Verified Readiness Level.',
+    blurb: 'Refund cap $100, never disclose PII, no destructive actions, fraud + bank changes go to a human.',
     spec: { refundCap: 100, denyPii: true, denyForbidden: true, denyTainted: true, requireApprovalHigh: true },
   },
   moderate: {

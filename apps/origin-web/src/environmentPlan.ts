@@ -30,7 +30,10 @@ export type PhysicalDomain =
   | 'logistics'
   | 'lab'
 
-export type RobotEmbodiment = 'humanoid' | 'carrier' | 'dog' | 'amr' | 'arm' | 'drone' | 'other'
+export type RobotEmbodiment =
+  | 'humanoid' | 'carrier' | 'dog' | 'amr' | 'arm' | 'drone'
+  | 'forklift' | 'tugger' | 'scrubber' | 'delivery'
+  | 'other'
 
 /** What a customer brings to the console. Inputs beyond the structured selectors
  *  are captured as free text / attachment placeholders in this phase — not parsed. */
@@ -108,13 +111,19 @@ export const ROBOT_EMBODIMENTS: RobotEmbodiment[] = [
   'amr',
   'arm',
   'drone',
+  'forklift',
+  'tugger',
+  'scrubber',
+  'delivery',
   'other',
 ]
 
 // Short codes for grid labels so a placed robot reads as its TYPE, not just "R1"
-// (HU = humanoid, DG = quadruped/dog, AM = AMR, AR = mobile arm, CR = carrier, DR = drone).
+// (HU = humanoid, DG = quadruped/dog, AM = AMR, AR = mobile arm, CR = carrier, DR = drone,
+//  FL = autonomous forklift, TG = tugger / tow AGV, SC = floor scrubber, DL = indoor delivery).
 export const EMBODIMENT_CODE: Record<RobotEmbodiment, string> = {
-  humanoid: 'HU', dog: 'DG', amr: 'AM', arm: 'AR', carrier: 'CR', drone: 'DR', other: 'R',
+  humanoid: 'HU', dog: 'DG', amr: 'AM', arm: 'AR', carrier: 'CR', drone: 'DR',
+  forklift: 'FL', tugger: 'TG', scrubber: 'SC', delivery: 'DL', other: 'R',
 }
 
 const DOMAIN_THEMES: Record<PhysicalDomain, DomainTheme> = {
@@ -216,6 +225,36 @@ const EMBODIMENT_PROFILES: Record<RobotEmbodiment, EmbodimentProfile> = {
     batteryMul: 1.15,
     stepMul: 1.1,
     note: 'Extended reach with a tighter per-move energy budget.',
+  },
+  // The four below are modelling assumptions for this synthetic gym, chosen to be
+  // plausible and distinct — not measured specs of any product (same basis as above).
+  forklift: {
+    embodiment: 'forklift',
+    label: 'Autonomous forklift',
+    batteryMul: 1.1,
+    stepMul: 0.8,
+    note: 'Long shift battery, but a wide turning radius and pallet-safe speeds tighten the step budget.',
+  },
+  tugger: {
+    embodiment: 'tugger',
+    label: 'Tugger (tow AGV)',
+    batteryMul: 1.15,
+    stepMul: 0.85,
+    note: 'Tows a cart train: long range, but the train limits tight manoeuvres, so fewer steps fit a shift.',
+  },
+  scrubber: {
+    embodiment: 'scrubber',
+    label: 'Floor scrubber',
+    batteryMul: 0.9,
+    stepMul: 1.15,
+    note: 'Methodical coverage allows a longer step budget; brush and water load shorten battery range.',
+  },
+  delivery: {
+    embodiment: 'delivery',
+    label: 'Indoor delivery robot',
+    batteryMul: 1.05,
+    stepMul: 1,
+    note: 'Corridor delivery: steady battery and standard manoeuvring, with payload locked in its compartments.',
   },
   other: {
     embodiment: 'other',

@@ -30,7 +30,17 @@ export function ProvingGroundPage() {
   const [draft] = useState(starterUnderstanding)
   const [snapshot, setSnapshot] = useState<FloorPlanSnapshot | null>(null)
   const [frozen, setFrozen] = useState<FrozenWorkflow | null>(null)
-  const [view, setView] = useState<'2d' | '3d'>('2d')
+  // 3D is the default view. Fall back to 2D where 3D can't run or shouldn't move:
+  // no WebGL, or the reader asked for reduced motion (the 3D scene animates; 2D holds still).
+  const [view, setView] = useState<'2d' | '3d'>(() => {
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return '2d'
+      const c = document.createElement('canvas')
+      return c.getContext('webgl') || c.getContext('experimental-webgl') ? '3d' : '2d'
+    } catch {
+      return '2d'
+    }
+  })
   const [signedEvidence, setSigil] = useState<{ thumb: string; obj: unknown; inputDigest: string } | null>(null)
   const [signing, setSigning] = useState(false)
   const [signError, setSignError] = useState<string | null>(null)

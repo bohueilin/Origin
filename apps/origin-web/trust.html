@@ -181,13 +181,14 @@
               + `<td>${detail}</td></tr>`
           }).join('')
           const when = (data.generated_at || '').slice(0, 10)
+          const commit = data.tracked_clean === true && /^[0-9a-f]{7,40}$/.test(data.commit || '') ? data.commit.slice(0, 7) : ''
           const ageDays = (Date.now() - Date.parse(data.generated_at)) / 86400000
           const stale = !Number.isFinite(ageDays) || ageDays > 14
           const bannerLine = stale
             ? `<b style="color:var(--warn)">Snapshot from ${when} — stale; regenerate with <code>make gates-all</code>.</b>`
             : (data.all_green
-                ? `${when} · <b style="color:var(--verify)">ALL GATES GREEN</b> · ${data.suites.length} suites — reproduced by <code>make gates-all</code>, enforced in CI on every push.`
-                : `${when} · <b style="color:#b3261e">gates failing — see CI</b> · ${data.suites.length} suites — reproduced by <code>make gates-all</code>, enforced in CI on every push.`)
+                ? `${when} · <b style="color:var(--verify)">ALL GATES GREEN</b> · ${data.suites.length} suites — local run of <code>make gates-all</code>${commit ? ' at ' + commit : ''}. CI runs its own checks on pushes to main.`
+                : `${when} · <b style="color:#b3261e">gates failing in this local run</b> · ${data.suites.length} suites — local run of <code>make gates-all</code>${commit ? ' at ' + commit : ''}. CI runs its own checks on pushes to main.`)
           document.getElementById('gates-scoreboard').innerHTML =
             `<div style="margin-bottom:10px">${bannerLine}</div>`
             + `<div style="overflow-x:auto" tabindex="0" role="region" aria-label="Gate results table (scrollable)"><table style="border-collapse:collapse;font-size:13px;line-height:1.7">`

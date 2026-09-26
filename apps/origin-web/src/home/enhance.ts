@@ -618,8 +618,18 @@ if (chainRoot && window.crypto?.subtle) {
       try {
         const res = await fetch('/trust/gates-summary.json', { cache: 'no-store' })
         if (!res.ok) return
-        const data = (await res.json()) as { generated_at?: string; all_green?: boolean; suites?: { result: string }[] }
+        const data = (await res.json()) as {
+          generated_at?: string
+          all_green?: boolean
+          suites?: { result: string }[]
+          commit?: string
+          tracked_clean?: boolean
+        }
         const when = (data.generated_at ?? '').slice(0, 10)
+        // Name the commit only when the run was at a clean tracked tree, so the sha
+        // actually identifies the code that was tested.
+        const commit =
+          data.tracked_clean === true && /^[0-9a-f]{7,40}$/.test(data.commit ?? '') ? (data.commit ?? '').slice(0, 7) : ''
         const ageDays = (Date.now() - Date.parse(data.generated_at ?? '')) / 86_400_000
         if (!Number.isFinite(ageDays) || !when) return
         const suites = data.suites?.length ?? 0
@@ -629,13 +639,13 @@ if (chainRoot && window.crypto?.subtle) {
         const status = stale
           ? `<span class="gatesfresh__stale">snapshot from ${when} — stale</span>`
           : data.all_green
-            ? `<span class="gatesfresh__ok">all ${suites} suites green</span>`
+            ? `<span class="gatesfresh__ok">${passing}/${suites} suites green</span>`
             : `<span class="gatesfresh__stale">${passing}/${suites} suites passing</span>`
 
         el.innerHTML =
-          `<b>Verified ${when}</b>` +
+          `<b>Local gate run ${when}${commit ? ` at <code>${commit}</code>` : ''}</b>` +
           `<span>${status}</span>` +
-          `<span>reproduced by <code>make gates-all</code>, enforced in CI on every push</span>` +
+          `<span>re-run with <code>make gates-all</code> · CI runs its own checks on pushes to main</span>` +
           `<a href="/trust">See the full scoreboard &rarr;</a>`
         el.hidden = false
       } catch {

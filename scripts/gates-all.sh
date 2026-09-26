@@ -17,6 +17,12 @@ declare -a RESULTS=()   # PASS / FAIL
 declare -a DETAILS=()   # short count/summary
 FAILED=0
 
+# Record which code this run tested, captured BEFORE any suite runs. tracked_clean
+# ignores untracked files by design (local uncommitted notes must not flip it); the
+# public strips name the commit only when it is true.
+COMMIT="$(git rev-parse --short HEAD 2>/dev/null || true)"
+git diff --quiet HEAD 2>/dev/null && TRACKED_CLEAN=true || TRACKED_CLEAN=false
+
 run() {
   local name="$1"; shift
   local log; log="$(mktemp)"
@@ -82,6 +88,7 @@ SUMMARY="apps/origin-web/public/trust/gates-summary.json"
 mkdir -p "$(dirname "$SUMMARY")"
 {
   printf '{\n  "generated_at": "%s",\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '  "commit": "%s",\n  "tracked_clean": %s,\n' "$COMMIT" "$TRACKED_CLEAN"
   printf '  "all_green": %s,\n  "suites": [\n' "$([ "$FAILED" -eq 0 ] && echo true || echo false)"
   for i in "${!NAMES[@]}"; do
     sep=","; [ "$i" -eq $(( ${#NAMES[@]} - 1 )) ] && sep=""

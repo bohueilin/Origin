@@ -173,3 +173,46 @@ test('evidence console downloads the displayed simulated JSON locally', async ({
   const artifact = JSON.parse(await readFile(path!, 'utf8'))
   expect(JSON.stringify(artifact)).toMatch(/simulated|sandbox/i)
 })
+
+// The gates strip (/) and scoreboard (/trust) render a LOCAL `make gates-all` run.
+// They must say so, name the commit only for a clean tracked tree, and never claim
+// that CI enforced the result. Served from a fixture so the date never goes stale.
+const GATES_SHA = 'abc1234'
+function gatesFixture(trackedClean: boolean) {
+  return {
+    generated_at: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'),
+    commit: GATES_SHA,
+    tracked_clean: trackedClean,
+    all_green: true,
+    suites: [
+      { name: 'ts:origin-web', result: 'PASS', detail: 'Tests  1 passed (1)' },
+      { name: 'honesty-lint', result: 'PASS', detail: 'honesty-lint: clean' },
+    ],
+  }
+}
+
+test('home gates strip names a local run and its commit, not CI enforcement', async ({ page }) => {
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: gatesFixture(true) }))
+  await page.goto('/')
+  const strip = page.locator('#gates-freshness')
+  await expect(strip).toContainText('Local gate run')
+  await expect(strip).toContainText(GATES_SHA)
+  await expect(strip).toContainText('2/2 suites green')
+  await expect(strip).not.toContainText('Verified')
+  await expect(strip).not.toContainText('enforced in CI')
+
+  // A run over a dirty tracked tree does not identify the tested code: no sha.
+  await page.unroute('**/trust/gates-summary.json')
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: gatesFixture(false) }))
+  await page.reload()
+  await expect(strip).toContainText('Local gate run')
+  await expect(strip).not.toContainText(GATES_SHA)
+})
+
+test('trust scoreboard names a local run and its commit, not CI enforcement', async ({ page }) => {
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: gatesFixture(true) }))
+  await page.goto('/trust')
+  const board = page.locator('#gates-scoreboard')
+  await expect(board).toContainText('local run of make gates-all at ' + GATES_SHA)
+  await expect(board).not.toContainText('enforced in CI')
+})

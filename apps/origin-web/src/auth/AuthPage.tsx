@@ -206,7 +206,7 @@ export function AuthPage() {
               </div>
             ) : pausedNote ? (
               <div className="ap-paused" role="note" id="ap-paused-note">
-                <strong>Account creation is paused.</strong>
+                <strong>Account creation is closed.</strong>
                 Owner-only prototype console. There are no customer accounts. To discuss your workflow, book an Agent Evidence Review.
               </div>
             ) : (
@@ -302,7 +302,7 @@ export function AuthPage() {
                 {busy ? 'Working…'
                   : step === 'verify' ? 'Verify & continue'
                   : mode === 'signup'
-                    ? (step === 'password' ? (SIGNUPS_OPEN ? 'Create account' : 'Sign-ups paused') : 'Continue')
+                    ? (step === 'password' ? (SIGNUPS_OPEN ? 'Create account' : 'Sign-ups closed') : 'Continue')
                     : 'Continue'}
               </button>
             </form>}
@@ -314,7 +314,7 @@ export function AuthPage() {
             ) : mode === 'signup' ? (
               <p className="ap-alt">Already have access? <button type="button" className="ap-link" onClick={() => switchMode('signin')}>Sign in</button></p>
             ) : (
-              <p className="ap-alt">New to Origin? <button type="button" className="ap-link" onClick={() => switchMode('signup')}>{SIGNUPS_OPEN ? 'Create an account' : 'Explore pilot access'}</button></p>
+              <p className="ap-alt">New to Origin? <button type="button" className="ap-link" onClick={() => switchMode('signup')}>{SIGNUPS_OPEN ? 'Create an account' : 'Work with Origin'}</button></p>
             )}
           </div>
         </div>

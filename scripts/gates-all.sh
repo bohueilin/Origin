@@ -37,6 +37,10 @@ run() {
   local d
   d="$(grep -hoE '[0-9]+ passed[^,]*(, [0-9]+ (failed|skipped)[^,]*)*|Tests +[0-9]+ passed[^)]*\)|[0-9]+ passed, [0-9]+ skipped|[0-9]+ passed' "$log" | tail -1)"
   [ -z "$d" ] && d="$(tail -1 "$log" | cut -c1-70)"
+  # CI terminals get coloured output (vite/picocolors colour when CI is set). Raw ESC
+  # bytes are not valid inside a JSON string, so strip ANSI sequences and any other
+  # control characters here, before the detail reaches the table or the summary.
+  d="$(printf '%s' "$d" | sed $'s/\033\\[[0-9;]*[A-Za-z]//g' | tr -d '\000-\037\177')"
   DETAILS+=("$d")
   # surface failing logs immediately so failures are never hidden
   # (bash 3.2 on macOS has no negative array index — use the computed last index)

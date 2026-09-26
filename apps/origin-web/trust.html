@@ -47,7 +47,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <link rel="stylesheet" href="/home.css?v=015b01b2" />
+    <link rel="stylesheet" href="/home.css?v=9e4ed233" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -160,7 +160,7 @@
       </div></section>
       <section class="editorial-section" id="gated" aria-labelledby="gated-title"><div class="shell">
         <div class="editorial-heading"><p class="kicker">02 / Verification</p><div><h2 id="gated-title">The checks have a record, too.</h2><p>The deterministic oracle is the sole label and reward authority. <code>make gates-all</code> runs the public repository's build, tests, evidence checks, and honesty checks. Inspect the <a href="https://github.com/bohueilin/Origin/blob/main/.github/workflows/ci.yml">CI definition</a> or reproduce the checks locally.</p></div></div>
-        <div id="gates-scoreboard" class="mono-note">Reproduce locally with <code>make gates-all</code>. The committed verification snapshot loads here.</div>
+        <div id="gates-scoreboard" class="mono-note">Reproduce locally with <code>make gates-all</code>. The gate snapshot shipped with this release loads here (needs JavaScript).</div>
         <p class="editorial-caption">A timestamped snapshot is evidence of that run, not a live assurance. Numbers in this scoreboard are reproducible under this verifier on the public repository. Private research metrics published elsewhere have separate provenance.</p>
       </div></section>
             <script type="module">
@@ -211,7 +211,7 @@
         <div class="editorial-heading"><p class="kicker">03 / Data &amp; retention</p><div><h2 id="data-title">Different workflows. Different data boundaries.</h2><p>The public reference check, a contact request, and an authorized pilot are different activities. Their data handling should not be conflated.</p></div></div>
         <div class="editorial-table-wrap" tabindex="0" role="region" aria-label="Data handling table, horizontally scrollable"><table class="editorial-table"><thead><tr><th scope="col">Workflow</th><th scope="col">Data boundary</th><th scope="col">Retention posture</th></tr></thead><tbody>
           <tr><td>Synthetic reference check</td><td>Browser-local policy evaluation and downloadable demo artifacts. No production action is attempted.</td><td>Public evaluation does not require submitting customer traces or credentials.</td></tr>
-          <tr><td>Contact and pilot account</td><td>Information you choose to provide when requesting a review or using an invited account.</td><td>Contact deletion can be requested. Account and service handling are described in the <a href="/legal/privacy-policy.html">privacy policy</a>.</td></tr>
+          <tr><td>Contact request</td><td>Information you choose to provide when requesting a review. There are no customer accounts; the console is owner-only.</td><td>Contact deletion can be requested. Account and service handling are described in the <a href="/legal/privacy-policy.html">privacy policy</a>.</td></tr>
           <tr><td>Foundry image processing</td><td>The public site offers a local sample. An enabled local/backend demo requires affirmative consent before an image is sent to Cerebras.</td><td>The Origin handler does not intentionally persist the image; provider terms and retention apply. See the <a href="/legal/privacy-policy.html">processing disclosure</a>.</td></tr>
           <tr><td>Separately authorized pilot</td><td>Evidence, permissions, redaction, and data-use scope must be agreed before customer material is used.</td><td>Retention, deletion, and deployment-specific controls are not finalized; settle them in the pilot agreement and DPA.</td></tr>
         </tbody></table></div>

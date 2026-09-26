@@ -102,7 +102,7 @@ test('home type floor: integrity labels at least 12px, prose at least 14px, no t
       }
     }
     // "Recorded · one take" is a tag: uppercase, and held at the 11px tag floor.
-    expect(sizes.pill, `${width}px pill`).toBeGreaterThanOrEqual(11)
+    expect(sizes.pill, `${width}px pill`).toBeGreaterThanOrEqual(12)
     for (const { sel, sizes: found } of sizes.prose) {
       expect(found.length, `${width}px ${sel}`).toBeGreaterThan(0)
       for (const size of found) expect(size, `${width}px ${sel}`).toBeGreaterThanOrEqual(14)

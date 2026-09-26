@@ -43,27 +43,30 @@ export function listFloorPlans(): SavedFloorPlan[] {
   }
 }
 
-function write(plans: SavedFloorPlan[]): void {
+/** Persist, reporting whether the write actually landed (private mode / quota reject it). */
+function write(plans: SavedFloorPlan[]): boolean {
   try {
     localStorage.setItem(KEY, JSON.stringify(plans))
+    return true
   } catch {
-    /* private mode / quota — saving is best-effort */
+    return false
   }
 }
 
-/** Save (or overwrite a same-named plan). Returns the stored entry. */
-export function saveFloorPlan(name: string, snapshot: FloorPlanSnapshot): SavedFloorPlan {
+/** Save (or overwrite a same-named plan). Returns the stored entry, or null when the
+ *  write was refused — callers must not treat a rejected save as a stored plan (a
+ *  rename that deletes the original on the strength of a failed save loses the plan). */
+export function saveFloorPlan(name: string, snapshot: FloorPlanSnapshot): SavedFloorPlan | null {
   const trimmed = name.trim() || 'Untitled floor'
   const plans = listFloorPlans()
   const entry: SavedFloorPlan = {
     ...snapshot,
-    id: `fp-${Date.now().toString(36)}`,
+    id: `fp-${crypto.randomUUID()}`,
     name: trimmed,
     savedAt: Date.now(),
   }
   const others = plans.filter((p) => p.name.toLowerCase() !== trimmed.toLowerCase())
-  write([entry, ...others].slice(0, MAX_PLANS))
-  return entry
+  return write([entry, ...others].slice(0, MAX_PLANS)) ? entry : null
 }
 
 export function deleteFloorPlan(id: string): void {

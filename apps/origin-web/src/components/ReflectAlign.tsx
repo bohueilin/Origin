@@ -16,6 +16,7 @@ import type { GridPos } from '../warehouse'
 import { embodimentMedia } from '../embodimentImages'
 import { listFloorPlans, saveFloorPlan, deleteFloorPlan, type SavedFloorPlan, type FloorPlanSnapshot } from '../floorPlanStore'
 import { cloudListFloorPlans, cloudSaveFloorPlan, cloudDeleteFloorPlan } from '../cloudFloorPlans'
+import { renameFloorPlan, planStoreFor, SAVE_FAILED_NOTICE, type FloorPlanWriter } from '../floorPlanActions'
 import { useAuth } from '../auth/AuthProvider'
 import { StepBridge } from './StepBridge'
 import { GRID_MIN, GRID_MAX, clampN, resizeSiteMap } from '../siteMapResize'
@@ -322,23 +323,31 @@ export function ReflectAlign({
   const [escalateRules, setEscalateRules] = useState(draft.escalateRules)
   const [refuseRules, setRefuseRules] = useState(draft.refuseRules)
   const auth = useAuth()
-  const signedIn = auth.user != null
-  const [savedPlans, setSavedPlans] = useState<SavedFloorPlan[]>(() => listFloorPlans())
+  // Which store the plan controls read and write. `pending` until auth answers:
+  // mid-restore, `user` is null but that is not yet "signed out", and acting on it
+  // wrote a signed-in user's plan to this device where their account never sees it.
+  const planStore = planStoreFor(auth)
+  const [savedPlans, setSavedPlans] = useState<SavedFloorPlan[]>(() =>
+    planStore === 'device' ? listFloorPlans() : [],
+  )
   const [selectedPlanId, setSelectedPlanId] = useState('')
+  // A store failure the user has to see — chiefly a rename that did not land.
+  const [planNotice, setPlanNotice] = useState('')
   // saved plans come from the account when signed in, else from this device.
   const refreshPlans = useCallback(async () => {
-    const next = signedIn ? await cloudListFloorPlans() : listFloorPlans()
-    setSavedPlans(next)
-  }, [signedIn])
-  // load saved plans on mount and whenever auth state changes (async data load).
+    if (planStore === 'pending') return
+    setSavedPlans(planStore === 'account' ? await cloudListFloorPlans() : listFloorPlans())
+  }, [planStore])
+  // load saved plans on mount and whenever the store changes (async data load).
   useEffect(() => {
+    if (planStore === 'pending') return
     let alive = true
     void (async () => {
-      const next = signedIn ? await cloudListFloorPlans() : listFloorPlans()
+      const next = planStore === 'account' ? await cloudListFloorPlans() : listFloorPlans()
       if (alive) setSavedPlans(next)
     })()
     return () => { alive = false }
-  }, [signedIn])
+  }, [planStore])
 
   // Push every edit up to the parent so navigating away + back never resets the
   // floor (the parent keeps the latest as the working draft). The callback lives
@@ -434,13 +443,28 @@ export function ReflectAlign({
     setActiveFleet((a) => (a >= fleetIdx && a > 0 ? a - 1 : a))
   }
   // ── Saved floor plans (account when signed in, else this device) ──
+  // Every plan write goes through here, so the account/device choice is made once.
+  const planWriter: FloorPlanWriter = {
+    save: async (name, snapshot) =>
+      planStore === 'account' ? await cloudSaveFloorPlan(name, snapshot) : saveFloorPlan(name, snapshot),
+    remove: async (id) => {
+      if (planStore === 'account') await cloudDeleteFloorPlan(id)
+      else deleteFloorPlan(id)
+    },
+  }
+
   async function handleSavePlan() {
+    if (planStore === 'pending') return
     const suggested = `${getDomainTheme(domain).label} — ${robotTotal} robot${robotTotal === 1 ? '' : 's'}`
     const name = window.prompt('Name this floor plan', suggested)
     if (name === null) return
+    setPlanNotice('')
     const snapshot = { domain, embodiment, siteMap, storyboard, finishRules, escalateRules, refuseRules }
-    if (signedIn) await cloudSaveFloorPlan(name, snapshot)
-    else saveFloorPlan(name, snapshot)
+    // A rejected write used to pass silently, leaving the user sure they had saved.
+    if (!(await planWriter.save(name, snapshot))) {
+      setPlanNotice(SAVE_FAILED_NOTICE)
+      return
+    }
     await refreshPlans()
   }
   function handleLoadPlan(p: SavedFloorPlan) {
@@ -454,8 +478,9 @@ export function ReflectAlign({
     setActiveFleet(0)
   }
   async function handleDeletePlan(id: string) {
-    if (signedIn) await cloudDeleteFloorPlan(id)
-    else deleteFloorPlan(id)
+    if (planStore === 'pending') return
+    setPlanNotice('')
+    await planWriter.remove(id)
     setSelectedPlanId((s) => (s === id ? '' : s))
     await refreshPlans()
   }
@@ -465,16 +490,23 @@ export function ReflectAlign({
     const p = savedPlans.find((x) => x.id === id)
     if (p) handleLoadPlan(p)
   }
-  // Rename = save under the new name, then drop the old one (same-name overwrite is handled by the store).
+  // Rename = save under the new name, then drop the old one (same-name overwrite is
+  // handled by the store). `renameFloorPlan` gates that delete on a CONFIRMED save —
+  // it used to be unconditional, so a failed save destroyed the plan being renamed.
   async function handleRenamePlan() {
+    if (planStore === 'pending') return
     const p = savedPlans.find((x) => x.id === selectedPlanId)
     if (!p) return
     const name = window.prompt('Rename floor plan', p.name)
-    if (name === null || !name.trim() || name.trim() === p.name) return
-    const snapshot = { domain: p.domain, embodiment: p.embodiment, siteMap: p.siteMap, storyboard: p.storyboard, finishRules: p.finishRules, escalateRules: p.escalateRules, refuseRules: p.refuseRules }
-    if (signedIn) await cloudSaveFloorPlan(name.trim(), snapshot)
-    else saveFloorPlan(name.trim(), snapshot)
-    await handleDeletePlan(p.id)
+    if (name === null) return
+    setPlanNotice('')
+    const result = await renameFloorPlan(p, name, planWriter)
+    if (result.status === 'failed') {
+      setPlanNotice(result.message)
+      return
+    }
+    if (result.status === 'unchanged') return
+    setSelectedPlanId(result.plan.id)
     await refreshPlans()
   }
 
@@ -545,15 +577,16 @@ export function ReflectAlign({
                     ))}
                   </select>
                 </label>
-                <button className="smp-save-btn" onClick={handleSavePlan}>💾 Save current</button>
-                {selectedPlanId && <button className="smp-plans-action" onClick={handleRenamePlan}>Rename</button>}
-                {selectedPlanId && <button className="smp-plans-action danger" onClick={() => handleDeletePlan(selectedPlanId)}>Delete</button>}
+                <button className="smp-save-btn" onClick={handleSavePlan} disabled={planStore === 'pending'}>💾 Save current</button>
+                {selectedPlanId && <button className="smp-plans-action" onClick={handleRenamePlan} disabled={planStore === 'pending'}>Rename</button>}
+                {selectedPlanId && <button className="smp-plans-action danger" onClick={() => handleDeletePlan(selectedPlanId)} disabled={planStore === 'pending'}>Delete</button>}
               </div>
               <span className="smp-sync-note">
-                {signedIn
-                  ? '🔒 Synced to your account — your templates are private to you and load on any device.'
-                  : 'Saved on this device only. Sign in to sync your templates to your account and use them anywhere.'}
+                {planStore === 'account' && '🔒 Synced to your account — your templates are private to you and load on any device.'}
+                {planStore === 'device' && 'Saving to this device — these templates stay in this browser. Sign in to sync them to your account and use them anywhere.'}
+                {planStore === 'pending' && 'Checking your account — saving is paused until we know where your templates belong.'}
               </span>
+              {planNotice && <p className="smp-plans-notice" role="status">{planNotice}</p>}
             </div>
 
             <div className="smp-fleets" role="group" aria-label="Fleets to deploy">

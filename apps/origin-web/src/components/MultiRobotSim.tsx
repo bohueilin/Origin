@@ -60,6 +60,14 @@ export function MultiRobotSim({
   const stepMax = Math.max(plan.ticks - 1, 0)
   const [step, setStep] = useState(() => reduced ? stepMax : 0)
   const [playing, setPlaying] = useState(!reduced)
+  const [playbackPlan, setPlaybackPlan] = useState(plan)
+  // Reconcile before rendering a changed floor: an old tick is not a position
+  // in the new route. Preserve a manual pause; reduced motion shows its end.
+  if (playbackPlan !== plan) {
+    setPlaybackPlan(plan)
+    setStep(reduced ? stepMax : 0)
+    if (reduced) setPlaying(false)
+  }
   const advancing = playing && step < stepMax
   useEffect(() => {
     if (!advancing || !visible) return

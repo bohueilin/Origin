@@ -88,3 +88,22 @@ test('2D floor playback can pause and does not advance off screen', async ({ pag
   await page.waitForTimeout(600)
   expect(await grid.innerHTML()).toBe(outside)
 })
+
+test('reduced-motion floor edits show the new plan at its final frame', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  const siteMap = { width: 5, height: 5, start: { x: 0, y: 0 }, item: { x: 1, y: 0 }, drop: { x: 0, y: 0 }, robots: [{ x: 0, y: 0 }], obstacles: [], hazards: [], humanOnly: [] }
+  await page.route('**/src/proving-ground/starterFloor.ts*', async route => {
+    const response = await route.fetch()
+    const source = await response.text()
+    expect(source).toContain('siteMap: starterSiteMap(),')
+    await route.fulfill({ response, body: source.replace('siteMap: starterSiteMap(),', `siteMap: ${JSON.stringify(siteMap)},`) })
+  })
+  await page.goto('/proving-ground')
+  const robotCells = () => page.locator('.sim-grid .sim-cell').evaluateAll(cells => cells.flatMap((cell, i) => cell.classList.contains('robot') ? [i] : []))
+  await expect.poll(robotCells).toEqual([0])
+  await page.locator('.smp-tool').filter({ hasText: 'Item' }).click()
+  await page.getByRole('button', { name: /^Cell 4,4 / }).click()
+  await expect.poll(robotCells).toEqual([0])
+  await expect(page.locator('.sim-grid .sim-cell').nth(24)).toHaveClass(/picked/)
+  await expect(page.getByRole('button', { name: 'Play floor playback', exact: true })).toBeVisible()
+})

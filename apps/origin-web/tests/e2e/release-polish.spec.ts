@@ -68,7 +68,7 @@ const INTEGRITY_LABELS = [
   'No customer validation is claimed',
   'does not contact or execute your named agent',
 ]
-const PROSE = ['.hero__status', '.cin-demo .demo__panel p', '.cin-footnote p', '.cin-small', '.vband__cap',
+const PROSE = ['.hero__status', '.cin-demo .demo__panel p', '.cin-footnote p', '.cin-small',
   '.gatesfresh', '.demo__cap', '.modal__note', '.site-footer__boundary']
 
 test('home type floor: integrity labels at least 12px, prose at least 14px, no text below 11px', async ({ page }, testInfo) => {
@@ -89,7 +89,6 @@ test('home type floor: integrity labels at least 12px, prose at least 14px, no t
       return {
         tooSmall: texts.filter((t) => t.visible && t.size < 11).map((t) => `${t.size}px ${t.text.slice(0, 40)}`),
         labels: labels.map((label) => texts.filter((t) => t.text.includes(label)).map((t) => ({ label, size: t.size, visible: t.visible }))),
-        pill: px(document.querySelector('.vband__pill')!),
         prose: prose.map((sel) => ({ sel, sizes: [...document.querySelectorAll(sel)].map(px) })),
       }
     }, { labels: INTEGRITY_LABELS, prose: PROSE })
@@ -101,8 +100,6 @@ test('home type floor: integrity labels at least 12px, prose at least 14px, no t
         expect(hit.size, `${width}px ${hit.label}`).toBeGreaterThanOrEqual(12)
       }
     }
-    // "Recorded · one take" is a tag: uppercase, and held at the 11px tag floor.
-    expect(sizes.pill, `${width}px pill`).toBeGreaterThanOrEqual(12)
     for (const { sel, sizes: found } of sizes.prose) {
       expect(found.length, `${width}px ${sel}`).toBeGreaterThan(0)
       for (const size of found) expect(size, `${width}px ${sel}`).toBeGreaterThanOrEqual(14)

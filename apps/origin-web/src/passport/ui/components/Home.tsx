@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import type { ScenarioSpec } from '../../scenarios/types'
 import { SCENARIOS, SECONDARY_USE_CASES, getScenario } from '../../scenarios'
 import { IntentParser } from '../../engine/intentParser'
@@ -19,27 +19,6 @@ const SPONSORS = [
 ]
 
 export function Home({ onRun, canRun = true }: { onRun: (s: ScenarioSpec) => void; canRun?: boolean }) {
-  // Play the hero clip once, when it is actually on screen and the reader has not
-  // asked for reduced motion. `once` is the point: it disconnects after firing, so
-  // scrolling back up never restarts it. Everything degrades to the poster.
-  const heroVideo = useRef<HTMLVideoElement>(null)
-  useEffect(() => {
-    const el = heroVideo.current
-    if (!el) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    if (!('IntersectionObserver' in window)) return
-    const io = new IntersectionObserver(
-      ([entry], obs) => {
-        if (!entry.isIntersecting) return
-        void el.play().catch(() => { /* autoplay policy said no; the poster stands */ })
-        obs.disconnect()
-      },
-      { threshold: 0.4 },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-
   const [text, setText] = useState('')
   const [thinking, setThinking] = useState(false)
   const [heard, setHeard] = useState<BrainRoute | null>(null)
@@ -80,44 +59,9 @@ export function Home({ onRun, canRun = true }: { onRun: (s: ScenarioSpec) => voi
         </div>
         <h1 className="pp-hero-title">Capability is not permission.</h1>
         <p className="pp-hero-lede">
-          Passport is the control plane for <b>delegated autonomy</b> — the agent proposes a plan, Passport issues a{' '}
-          <b>scoped, revocable</b> grant, and every real-world action waits for your approval. Watch one run the loop:
+          In this local demo of <b>delegated autonomy</b>, the agent proposes a plan, Passport issues a{' '}
+          <b>scoped, revocable</b> grant, and every real-world action waits for your approval.
         </p>
-
-        <figure className="pp-hero-stage">
-          <div className="pp-hero-glow" aria-hidden="true" />
-          <div className="pp-hero-screen">
-            <div className="pp-hero-chrome" aria-hidden="true">
-              <span className="pp-hero-light" />
-              <span className="pp-hero-light" />
-              <span className="pp-hero-light" />
-              <em>passport · agent journey</em>
-            </div>
-            {/*
-              Plays once when scrolled into view, then holds its last frame.
-              It used to `autoPlay loop`, which is ambient infinite motion on a trust
-              surface — the thing DESIGN_PRINCIPLES.md now forbids — and it ran
-              regardless of the reader's reduced-motion setting. The poster also
-              removes the blank first frame and the layout shift that came with it.
-            */}
-            <video
-              ref={heroVideo}
-              className="pp-hero-video"
-              src="/agent-journey.mp4"
-              poster="/agent-journey.jpg"
-              width={1280}
-              height={720}
-              muted
-              playsInline
-              controls
-              preload="metadata"
-              aria-label="Agent journey: an agent reorders your usual DoorDash, gated by Passport approval"
-            />
-          </div>
-          <figcaption className="pp-hero-cap">
-            <span className="pp-hero-dot" /> An agent reorders your usual DoorDash — and stops to ask <b>before it acts</b>.
-          </figcaption>
-        </figure>
 
         <p className="pp-hero-founder">
           We’re building Passport because the next platform shift isn’t smarter agents — it’s <b>agents you can

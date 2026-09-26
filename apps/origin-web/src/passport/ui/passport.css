@@ -303,23 +303,6 @@
 .pp-hero-lede { font-size: 18px; color: var(--text-soft); margin: 20px auto 0; max-width: 680px; line-height: 1.6; }
 .pp-hero-lede b, .pp-hero-thesis b { color: var(--text); }
 
-/* Hero video — the agent-journey artifact, framed as a live app window with a warm ambient glow. */
-.pp-hero-stage { position: relative; margin: 34px auto 4px; max-width: 760px; }
-.pp-hero-glow { position: absolute; inset: -16% -10% -10%; z-index: 0; pointer-events: none; filter: blur(40px); opacity: 0.85;
-  background:
-    radial-gradient(58% 68% at 28% 22%, rgba(122,162,255,0.40), transparent 70%),
-    radial-gradient(54% 64% at 82% 72%, rgba(43,212,155,0.32), transparent 72%),
-    radial-gradient(52% 60% at 60% 112%, rgba(255,176,112,0.26), transparent 70%); }
-.pp-hero-screen { position: relative; z-index: 1; border-radius: 18px; overflow: hidden; background: #fff;
-  border: 1px solid var(--line-2); box-shadow: 0 34px 80px -30px rgba(20,30,60,0.42), 0 3px 10px rgba(20,30,60,0.07); }
-.pp-hero-chrome { display: flex; align-items: center; gap: 7px; padding: 11px 15px; background: #f4f5f7; border-bottom: 1px solid var(--line); }
-.pp-hero-light { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
-.pp-hero-light:nth-child(2) { background: #febc2e; }
-.pp-hero-light:nth-child(3) { background: #28c840; }
-.pp-hero-chrome em { margin-left: 9px; font-style: normal; font-size: 12px; font-weight: 600; color: #56604f; letter-spacing: 0.01em; }
-.pp-hero-video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #0b0d12; }
-.pp-hero-cap { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 9px; margin: 18px auto 0; font-size: 14.5px; color: var(--text-soft); }
-.pp-hero-cap b { color: var(--text); }
 .pp-hero-thesis { margin: 22px auto 0; max-width: 640px; font-size: 14.5px; color: var(--text-soft); background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; padding: 14px 18px; text-align: left; }
 
 .pp-request { max-width: 760px; margin: 0 auto 34px; }

@@ -38,13 +38,13 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="stylesheet" href="/home.css?v=39e5052a" />
+    <link rel="stylesheet" href="/home.css?v=015b01b2" />
 
     <style>
       .ops-wrap { display: grid; gap: 18px; margin-top: 24px; }
       .ops-controls { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
       .ops-range { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ink); }
-      .ops-range input { accent-color: var(--signal, #2a56e8); }
+      .ops-range input { accent-color: var(--signal); }
       .ops-targets { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; margin-left: auto; }
       .ops-verdict { display: flex; align-items: center; gap: 18px; padding: 16px 20px; border-radius: 14px; border: 1.5px solid currentColor; }
       .ops-verdict p { margin: 0; font-size: var(--fs-14); }
@@ -67,7 +67,7 @@
       .ops-timeline { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--surface, #fff); }
       .ops-wave { display: grid; grid-template-columns: 14px 66px 1fr; align-items: center; gap: 10px; width: 100%; text-align: left; background: none; border: none; border-radius: 8px; padding: 7px 8px; cursor: pointer; font: inherit; }
       .ops-wave:hover { background: var(--tint, #f4f6f9); }
-      .ops-wave.is-sel { background: color-mix(in srgb, var(--signal, #2a56e8) 10%, transparent); }
+      .ops-wave.is-sel { background: color-mix(in srgb, var(--signal) 10%, transparent); }
       .ops-wave__dot { width: 10px; height: 10px; border-radius: 50%; }
       .ops-wave__label { font-size: 13px; font-weight: 600; color: var(--ink); }
       .ops-wave__bar { grid-column: 3; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; position: relative; }

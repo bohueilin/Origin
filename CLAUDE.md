@@ -31,11 +31,12 @@ Front door is the [Makefile](Makefile). pnpm/turbo are a documented future upgra
 ## Hard rules
 - **Never commit `.env*` except `.env.example`.** Live keys (Snaplii real-money, InsForge admin, GMI,
   1Password, Nebius) live only in per-app `.env.local`.
-- **Origin is the canonical deploy source** for the live site (`apps/origin-web`), replacing the legacy
-  `physical-ai-demo-test`. The Cloudflare Pages **cutover** (repointing the Git source) is a human-owned
-  dashboard action — see [docs/CUTOVER.md](docs/CUTOVER.md). Until it's done, pushing this repo does not
-  deploy; after it's done, deploys stay **human-gated** (push builds+checks only; a human dispatches the
-  deploy). Never trigger a deploy without explicit authorization.
+- **Origin is the canonical deploy source** for the live site (`apps/origin-web`,
+  https://originphysicalai.com), replacing the legacy `physical-ai-demo-test`. The Cloudflare Pages
+  **cutover** happened on 2026-09-16 (runbook: [docs/CUTOVER.md](docs/CUTOVER.md)). Deploys are
+  **human-dispatched**: pushing builds and checks only; a human runs `workflow_dispatch` on
+  `.github/workflows/deploy-origin-web.yml` with the typed confirmation `DEPLOY` (see
+  [docs/DEPLOY.md](docs/DEPLOY.md)). Never trigger a deploy without explicit authorization.
 - **Keep deploy-critical files in `apps/origin-web` byte-for-byte** (hardcoded canonical URLs).
 - `SNAPLII_LIVE=0` by default (fail-closed money path); `EPISODE_SIGNING_SECRET` required for prod backend.
 

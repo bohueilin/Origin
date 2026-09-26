@@ -15,15 +15,22 @@ test('mobile navigation remains usable when JavaScript is unavailable', async ({
   try {
     await page.goto(`${baseURL}/`)
     const nav = page.getByRole('navigation', { name: 'Primary' })
-    await expect(nav.getByRole('link', { name: 'Labs', exact: true })).toBeVisible()
-    await nav.getByRole('link', { name: 'Labs', exact: true }).click()
-    await expect(page).toHaveURL(/\/labs$/)
+    // Labs left the primary nav (it stays in the footer), so exercise Trust instead.
+    await expect(nav.getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
+    await nav.getByRole('link', { name: 'Trust', exact: true }).click()
+    await expect(page).toHaveURL(/\/trust$/)
     await expect(page.locator('h1')).toBeVisible()
     await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   } finally {
     await context.close()
   }
+})
+
+test('Labs stays reachable from the home footer', async ({ page }) => {
+  await localOnly(page)
+  await page.goto('/')
+  await expect(page.locator('.site-footer a[href="/labs"]')).toBeVisible()
 })
 
 test('unavailable decorative video leaves its image and removes the unusable play control', async ({ page }) => {

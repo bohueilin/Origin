@@ -15,7 +15,7 @@
 .cin-hero .eyebrow { color: #3f4c3a; font-size: 11px; letter-spacing: .12em; }
 .cin-hero h1 { font-size: clamp(48px,5.7vw,82px); font-weight: 500; line-height: 1.04; letter-spacing: -.06em; max-width: 750px; }
 .cin-hero h1 span { color: #52664b; }
-.cin-hero .hero__lede { font-size: 18px; max-width: 440px; color: #3f4c3a; margin-top: 28px; }
+.cin-hero .hero__lede { font-size: 18px; max-width: 52ch; color: #3f4c3a; margin-top: 28px; }
 .cin-hero .hero__actions { flex-direction: column; align-items: flex-start; gap: 18px; margin-top: 30px; }
 .cin-hero .btn { min-height: 48px; }
 .cin-hero__bottom { position: absolute; bottom: 22px; left: 32px; right: 28px; display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #fff; font-size: 10px; }
@@ -25,6 +25,8 @@
 .cin-intro { display: flex; gap: 50px; justify-content: space-between; align-items: center; padding-top: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
 .cin-intro .hero__status { margin: 0; max-width: 800px; font-size: 13px; }
 .cin-intro > a { flex-shrink: 0; }
+#product .vband__fig { max-width: 850px; margin: 26px auto 0; }
+#product .vband__cap small { display: block; margin-top: 6px; font-size: var(--fs-12); }
 .cin-section-head { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: end; margin-bottom: 48px; }
 .cin-section-head .section__lede { margin: 0; max-width: 440px; }
 .cin-demo { background: var(--paper); }
@@ -62,10 +64,6 @@
 .cin-evidence-list h3 { font-size: 23px; font-weight: 500; letter-spacing: -.025em; margin: 10px 0; }
 .cin-evidence-list p { font-size: 14px; color: var(--steel); }
 .cin-arrow { position: absolute; right: 2px; top: 42%; font-size: 24px; color: var(--signal); }
-.cin-recording { margin-top: 32px; border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px; }
-.cin-recording summary { cursor: pointer; font-size: 14px; font-weight: 600; }
-.cin-recording summary span { float: right; font-size: 20px; }
-.cin-recording .vband__fig { max-width: 850px; margin-inline: auto; }
 .cin-offer { background: #e8ecdf; }
 .cin-offer .cta-row { align-items: center; gap: 22px; }
 .cin-review-card { background: #f8faf3; padding: 36px; border-radius: 24px; }
@@ -90,7 +88,6 @@
 .cin-contact h2, .cin-contact .section__lede { margin-inline: auto; }
 .cin-contact .section__lede { max-width: 530px; }
 .cin-contact .cta-row { justify-content: center; margin-top: 32px; }
-.origin-cinematic .mobilecta { display: none; }
 @media (max-width: 960px) {
   .cin-hero__scene { min-height: 610px; }
   .cin-hero__copy { padding: 72px 32px 100px; }

@@ -118,7 +118,7 @@ export function AuthPage() {
 
   async function onGoogle() {
     // Hard gate (not just the disabled attribute): no account creation while paused.
-    if (mode === 'signup' && !SIGNUPS_OPEN) { setError('Account creation is paused during the closed private pilot.'); return }
+    if (mode === 'signup' && !SIGNUPS_OPEN) { setError('Account creation is closed; this console is owner-only.'); return }
     setError(''); setBusy(true)
     // Persist the destination before we leave the origin ONLY when the callback comes back
     // here, since /auth is the page that reads it and forwards. When the callback returns
@@ -150,7 +150,7 @@ export function AuthPage() {
         return setStep('password')
       }
       // step === 'password'
-      if (!SIGNUPS_OPEN) return setError('Account creation is paused during the closed private pilot.')
+      if (!SIGNUPS_OPEN) return setError('Account creation is closed; this console is owner-only.')
       if (!pwValid) return setError('Please choose a password that meets all the requirements.')
       if (password !== confirm) return setError('Passwords don’t match.')
       setBusy(true)
@@ -172,7 +172,7 @@ export function AuthPage() {
   }
 
   const heading = step === 'verify' ? 'Verify your email'
-    : mode === 'signup' ? (step === 'password' ? 'Create a password' : 'Private pilot access')
+    : mode === 'signup' ? (step === 'password' ? 'Create a password' : 'Owner-only access')
     : 'Welcome back'
   const sub = step === 'verify' ? note
     : mode === 'signup' ? (step === 'password' ? 'Set a secure password for your account.' : 'A closer look at what an agent is allowed to do, and the evidence behind it.')
@@ -207,7 +207,7 @@ export function AuthPage() {
             ) : pausedNote ? (
               <div className="ap-paused" role="note" id="ap-paused-note">
                 <strong>Account creation is paused.</strong>
-                Access is invite-only while the prototype is being developed. Start with an Agent Evidence Review to discuss your workflow.
+                Owner-only prototype console. There are no customer accounts. To discuss your workflow, book an Agent Evidence Review.
               </div>
             ) : (
               <div className="ap-owner-note" role="note">Owner access only. Use the Origin owner account to continue.</div>

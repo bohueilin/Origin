@@ -229,10 +229,10 @@ test('reference-check versus runtime explainer is crawlable and source-linked', 
   }
 })
 
-test('auth page is invite-only private pilot with legal links', async ({ page }) => {
+test('auth page is owner-only with legal links', async ({ page }) => {
   await page.goto('/auth.html')
   await expect(page.locator('h1')).toHaveCount(1)
-  await expect(page.locator('body')).toContainText(/invite-only/i)
+  await expect(page.locator('body')).toContainText(/owner-only/i)
   await expect(page.locator('body')).toContainText('Book an Agent Evidence Review')
   expect((await page.request.get('/legal/terms-of-service.html')).status()).toBe(200)
   expect((await page.request.get('/legal/privacy-policy.html')).status()).toBe(200)

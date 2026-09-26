@@ -51,7 +51,7 @@
 
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
 
-    <link rel="stylesheet" href="/home.css?v=e7514f0a" />
+    <link rel="stylesheet" href="/home.css?v=127af4ff" />
     <link rel="stylesheet" href="/cinematic.css" />
 
     <!-- Structured data keeps the canonical product website and public source distinct.
@@ -108,7 +108,6 @@
           <a href="/#demo">Demo</a>
           <a href="/#evidence">Evidence</a>
           <a href="/trust">Trust</a>
-          <a href="/labs">Labs</a>
           <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
         </nav>
 
@@ -131,7 +130,7 @@
           <div class="cin-hero__copy">
             <p class="eyebrow">The evidence layer for high-consequence AI</p>
             <h1 id="hero-title">Move AI forward.<br> <span>With evidence.</span></h1>
-            <p class="hero__lede">Give the people reviewing your AI a clearer basis for the next decision. Bind the inputs. Challenge the policy. Share evidence they can check.</p>
+            <p class="hero__lede">Test an agent policy against fixed scenarios, graded by deterministic code rather than another model, and give your reviewer tamper-evident evidence they can re-check in their own browser.</p>
             <div class="cta-row hero__actions">
               <a class="btn btn--primary" href="/reference-check" data-analytics="hero_reference_check_click">Run the synthetic reference check <span aria-hidden="true">↗</span></a>
               <a class="cin-text-link" href="#demo" data-analytics="hero_demo_click">Step through the 5-stage demo <span aria-hidden="true">↓</span></a>
@@ -140,8 +139,23 @@
           <div class="cin-hero__bottom"><span>AI-generated illustration · fictional people and setting</span><button class="cin-motion" type="button" data-cinematic-toggle hidden aria-pressed="false">Play scene</button></div>
         </div>
         <div class="shell cin-intro">
-          <p class="hero__status"><b>Explore the working prototype.</b> Evaluate a selected policy in your browser using synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is untrusted by default.</p>
+          <p class="hero__status"><b>Explore the working prototype.</b> Not production SaaS or compliance certification. Evaluate a selected policy in your browser using synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is untrusted by default.</p>
           <a class="cin-text-link" href="/reference-check-vs-runtime">What works today <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="shell">
+          <figure class="vband__fig">
+            <div class="vband__wrap">
+              <video class="vband__v" poster="/video/shot01-tamper.jpg"
+                     width="1280" height="800" muted playsinline controls preload="none"
+                     aria-label="Screen recording: the /verify page verifies a synthetic demo attestation, the network is disabled, one field is tampered and the verdict goes VOID, then restores to VALID — all offline.">
+                <source src="/video/shot01-tamper.mp4" type="video/mp4" />
+              </video>
+              <span class="pill pill--rec vband__pill">Recorded &middot; one take</span>
+            </div>
+            <figcaption class="vband__cap"><b>Recorded on or before 2026-08-29 on <a href="/verify">/verify</a> as it was then, using a synthetic demo attestation.</b>
+              The network is cut mid-run, so every verdict is computed in the browser. VALID means the file is intact and signed by the key inside it &mdash; not signer identity, execution, or safety. Reference-check evidence verifies as UNTRUSTED because its signer is unpinned.
+              <small>Captions and a cursor dot were overlaid; the run itself is one uncut take. Re-record the raw take: <code>cd apps/origin-web &amp;&amp; node scripts/rec-shot01.mjs</code>.</small></figcaption>
+          </figure>
         </div>
       </section>
 
@@ -196,26 +210,13 @@
               <div class="cin-evidence-pending"><span class="cin-status cin-status--pending">Not earned yet</span><h3>A real customer's workflow.</h3><p>TR-A003 · external design-partner evidence has not been collected. No customer validation is claimed.</p></div>
             </div>
           </div>
-          <details class="cin-recording"><summary>Watch the recorded verifier: intact → tampered → restored <span aria-hidden="true">+</span></summary><figure class="vband__fig" style="margin-top: 26px">
-          <div class="vband__wrap">
-            <video class="vband__v" data-band poster="/video/shot01-tamper.jpg"
-                   width="1280" height="800" muted playsinline controls preload="none"
-                   aria-label="Screen recording: the live /verify page verifies an attestation, the network is disabled, one field is tampered and the verdict goes VOID, then restores to VALID — all offline.">
-              <source src="/video/shot01-tamper.mp4" type="video/mp4" />
-            </video>
-            <span class="pill pill--rec vband__pill">Recorded &middot; unedited</span>
-          </div>
-          <figcaption class="vband__cap"><b>One take on the live <a href="/verify">/verify</a> page.</b>
-            The network is disabled mid-run &mdash; the VOID and the closing VALID are computed
-            entirely in the browser. Re-film it yourself: <code>node scripts/rec-shot01.mjs</code>.</figcaption>
-        </figure></details>
           <div class="cin-footnote"><p>Artifact integrity does not establish execution, issuer trust, real-world safety or approval.</p><a class="cin-text-link" href="/verify">Verify an attestation <span aria-hidden="true">↗</span></a></div>
         </div>
       </section>
 
       <section class="section cin-offer" id="offer" data-investor-section aria-labelledby="offer-title">
         <div class="shell cin-split">
-          <div><p class="kicker">04 / Work with us</p><h2 id="offer-title">Start with one<br>decision that matters.</h2><p class="section__lede">We're looking for design partners with an agent workflow and a reviewer who needs better evidence. Begin with a founder-led Agent Evidence Review.</p><div class="cta-row"><button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="offer_cta_click">Book an Agent Evidence Review <span aria-hidden="true">↗</span></button><a class="cin-text-link" href="/brief">Read the one-page brief</a></div></div>
+          <div><p class="kicker">04 / Work with us</p><h2 id="offer-title">Start with one<br>decision that matters.</h2><p class="section__lede">We're looking for design partners running agents with production access. Bring one approval decision; we'll map the evidence your reviewer would need to decide. Founder-led, four steps, and a pilot only if there's a useful fit.</p><div class="cta-row"><button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="offer_cta_click" hidden>Book an Agent Evidence Review <span aria-hidden="true">↗</span></button><a class="cin-text-link" href="/brief">Read the one-page brief</a></div></div>
           <div class="cin-review-card"><p class="cin-status">A focused first conversation</p><h3>Bring the workflow.<br>And the approval question.</h3><ul><li><span>01</span> Map the action, tools and potential consequences.</li><li><span>02</span> Agree what the reviewer needs to see.</li><li><span>03</span> Identify the tests and evidence gaps.</li><li><span>04</span> Scope a pilot only if there is a useful fit.</li></ul><p class="cin-small">The public demo is a prototype, not production SaaS or compliance certification. Customer-specific execution and runtime enforcement require separately agreed work.</p></div>
         </div>
       </section>
@@ -227,9 +228,9 @@
         </div>
       </section>
 
-      <section class="cin-labs" aria-labelledby="labs-title"><div class="shell cin-labs__grid"><figure class="cin-image"><img src="/brand/lab.webp" width="1672" height="941" loading="lazy" alt="Illustrative researcher beside a mobile robot in a sunlit workspace" /><figcaption>AI-generated illustration · not an Origin facility or deployment</figcaption></figure><div class="cin-labs__copy"><p class="kicker">Origin Labs / Physical AI</p><h2 id="labs-title">The next decision<br>may move something.</h2><p class="section__lede">Explore the same questions in synthetic fleet operations, simulation and physical systems: what was tested, under which conditions, and what should happen next?</p><p class="cin-small">Simulation evidence is a step toward understanding a system. It is not real-world safety validation or robot certification.</p><a class="btn btn--primary" href="/labs">Explore the proving grounds <span aria-hidden="true">↗</span></a></div></div></section>
+      <section class="cin-labs" aria-labelledby="labs-title"><div class="shell cin-labs__grid"><figure class="cin-image"><img src="/brand/lab.webp" width="1672" height="941" loading="lazy" alt="Illustrative researcher beside a mobile robot in a sunlit workspace" /><figcaption>AI-generated illustration · not an Origin facility or deployment</figcaption></figure><div class="cin-labs__copy"><p class="kicker">Origin Labs / Physical AI</p><h2 id="labs-title">The next decision<br>may move something.</h2><p class="section__lede">Explore the same questions in synthetic fleet operations and simulated robot plans: what was tested, under which conditions, and what should happen next?</p><p class="cin-small">Simulation evidence is a step toward understanding a system. It is not real-world safety validation or robot certification.</p><a class="cin-text-link" href="/labs" data-analytics="labs_index_click">Explore the proving grounds <span aria-hidden="true">↗</span></a></div></div></section>
 
-      <section class="section cin-contact" id="contact" data-investor-section aria-labelledby="final-title"><div class="shell"><p class="kicker">Let's make the next step clear</p><h2 id="final-title">What would your reviewer<br>need to say yes?</h2><p class="section__lede">Bring us the question. Let's find out whether Origin can help make the evidence clearer.</p><div class="cta-row"><button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="final_primary_cta_click">Book an evidence review <span aria-hidden="true">↗</span></button><a class="btn btn--ghost" href="/reference-check">Try the reference check</a></div></div></section>
+      <section class="section cin-contact" id="contact" data-investor-section aria-labelledby="final-title"><div class="shell"><p class="kicker">Let's make the next step clear</p><h2 id="final-title">Bring us one approval decision.</h2><p class="section__lede">If your team can't ship an agent because no one can show what its policy allows, see how a synthetic reference check works — or book a founder-led evidence review.</p><div class="cta-row"><a class="btn btn--primary" href="/reference-check" data-analytics="final_check_agent_click">Run the reference check</a><button type="button" class="btn btn--ghost" data-open-lead data-intent="review" data-analytics="final_primary_cta_click" hidden>Book an evidence review <span aria-hidden="true">↗</span></button></div></div></section>
     </main>
 
     <!-- Gate freshness. Progressive enhancement: enhance.ts fills this from the
@@ -240,7 +241,7 @@
       <p class="gatesfresh" id="gates-freshness" hidden></p>
     </div>
 
-    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Independent verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Check an agent</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@gmail.com">Contact</a><a href="/auth" rel="nofollow">Sign in</a></span></div></footer>
+    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Offline re-verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Run a policy reference check</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@gmail.com">Contact</a><a href="/auth" rel="nofollow">Owner console</a></span></div></footer>
 
     <!-- ===================== LeadFormModal ===================== -->
     <dialog id="lead-modal" class="modal" aria-labelledby="lead-title">
@@ -283,7 +284,7 @@
           <button type="submit" class="btn btn--primary" id="lead-submit">Request review</button>
           <button type="button" class="btn btn--ghost" data-close-lead>Cancel</button>
         </div>
-        <p class="modal__note">Sent over TLS to our team. No spam.</p>
+        <p class="modal__note">Sent over TLS to Origin and stored with our database provider (see Privacy). No spam.</p>
 
         <div class="modal__success" id="lead-success" hidden>
           <p class="modal__success-mark" aria-hidden="true">✓</p>
@@ -294,12 +295,6 @@
         </div>
       </form>
     </dialog>
-
-    <!-- Sticky mobile CTA — long page; keep conversion in reach -->
-    <div class="mobilecta" aria-label="Quick actions">
-      <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="sticky_cta_refcheck">Run the reference check</a>
-      <button type="button" class="btn btn--ghost btn--sm" data-open-lead data-intent="review" data-analytics="sticky_cta_review">Book an evidence review</button>
-    </div>
 
     <script type="module" src="/src/home/enhance.ts"></script>
   </body>

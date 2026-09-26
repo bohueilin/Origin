@@ -143,6 +143,10 @@ a:hover { text-decoration: underline; }
   white-space: nowrap;
 }
 .btn:hover { text-decoration: none; }
+/* Book buttons ship `hidden` and enhance.ts reveals them once their handler is bound
+   (without JS they would do nothing). `.btn { display: inline-flex }` above overrides the
+   UA [hidden] rule, so restate it for them. */
+.btn[data-open-lead][hidden] { display: none; }
 /* Press feedback lives in the hover block below (so it out-ranks .btn:hover on source
    order) and again ungated for touch/keyboard, where the hover block never matches. */
 .btn--sm { padding: 9px 16px; font-size: var(--fs-14); }
@@ -864,31 +868,10 @@ a:hover { text-decoration: underline; }
   .sectionindex a:hover { color: var(--ink); text-decoration: none; }
 }
 
-/* sticky mobile CTA (long page) */
-.mobilecta { display: none; }
 @media (max-width: 700px) {
-  .mobilecta { display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 38; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: rgba(246,245,242,.94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
-  /* .btn sets white-space: nowrap, which is right on desktop but clips inside this
-     fixed bar at 320-360px — and body{overflow-x:clip} means it clips rather than
-     scrolls, so the label is silently truncated. Allow wrapping here only. */
-  /* The bar duplicates the hero's primary action; pinned to the first viewport it put
-     five CTAs on one 375px screen, two of them the same button. enhance.ts adds
-     .is-docked once the hero CTA scrolls away, so it only appears where it does not
-     compete. The tuck is scoped to html.reveal-ready — a class enhance.ts sets ONLY
-     when motion is allowed — so no-JS and reduced-motion readers keep the bar exactly
-     as it was, and the more specific rule below wins for them. */
-  .mobilecta { transform: translateY(110%); transition: transform .22s cubic-bezier(0.23, 1, 0.32, 1); }
-  .mobilecta.is-docked { transform: none; }
-  html:not(.reveal-ready) .mobilecta { transform: none; }
-  .mobilecta .btn { flex: 1; min-height: 44px; white-space: normal; line-height: 1.25; padding-inline: 10px; }
-  /* The bar is 10 + 44 (min-height) + 10 + env(safe-area-inset-bottom). On a
-     home-indicator iPhone that is ~98px, so a flat 76px left the last ~22px of
-     footer sitting UNDER the fixed bar. Reserve the inset too. */
-  body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
-  /* The long header CTA is redundant once the sticky bar + burger show, EXCEPT for
-     the compact primary CTA: the sticky bar exists only on the homepage and does not
-     link /reference-check, so hiding this left the primary action unreachable on
-     phones (audit finding M8). Keep it, compact, and let the label shrink. */
+  /* The long header CTA is redundant once the burger shows, EXCEPT for the compact
+     primary CTA: hiding it left the primary action unreachable on phones (audit finding
+     M8). Keep it, compact, and let the label shrink. */
   .site-header__cta .btn--primary:not(.site-header__cta-mobile) { display: none; }
   .site-header__cta-mobile { padding-inline: 12px; font-size: var(--fs-13); white-space: nowrap; }
 }
@@ -953,7 +936,7 @@ a:hover { text-decoration: underline; }
 /* Generated footage, never a recording of the product. Same family as pill--sim so the
    two read as one vocabulary of "this is not what it might look like". */
 .pill--ill { background: var(--paper-3); color: var(--steel); border-color: var(--line-2); }
-/* Real footage of the product, unedited. The counterpart to pill--ill: one vocabulary,
+/* Real footage of the product, one take. The counterpart to pill--ill: one vocabulary,
    two honest tiers — generated atmosphere vs a recording of the thing itself. */
 .pill--rec { background: #e7f3ec; color: var(--verify); border-color: #bfe0cf; }
 

@@ -36,10 +36,12 @@ test('home presents one implemented product and one primary path', async ({ page
   // when the hero was cut from seven text blocks to four; the boundary itself is
   // unchanged in substance and must stay visible in the hero, so keep pinning it.
   await expect(page.locator('.hero__status')).toContainText('Origin does not contact or execute your named agent. Browser evidence is untrusted by default.')
+  // The maturity boundary is back in the hero (DESIGN_PRINCIPLES.md, Honesty).
+  await expect(page.locator('.hero__status')).toContainText('Not production SaaS or compliance certification')
 
   await openPrimaryNav(page)
   const nav = page.getByRole('navigation', { name: 'Primary' })
-  for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Labs', 'Run reference check']) {
+  for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Run reference check']) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible()
   }
   await expect(nav.getByRole('link', { name: /Foundry|Proving ground|Sign in/i })).toHaveCount(0)
@@ -58,7 +60,7 @@ test('primary navigation is consistent across public product and Labs routes', a
     await page.goto(route)
     await openPrimaryNav(page)
     const nav = page.getByRole('navigation', { name: 'Primary' })
-    for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Labs', 'Run reference check']) {
+    for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Run reference check']) {
       await expect(nav.getByRole('link', { name: label, exact: true }), route).toBeVisible()
     }
     await expect(nav.getByRole('link', { name: /Foundry|Proving ground|Sign in/i }), route).toHaveCount(0)
@@ -215,4 +217,67 @@ test('trust scoreboard names a local run and its commit, not CI enforcement', as
   const board = page.locator('#gates-scoreboard')
   await expect(board).toContainText('local run of make gates-all at ' + GATES_SHA)
   await expect(board).not.toContainText('enforced in CI')
+})
+
+// One filled (primary) action per section. The sticky header pill is chrome, not a
+// section primary, so it is outside every [data-investor-section].
+test('each home section has at most one filled action, and the final ask is the reference check', async ({ page }) => {
+  await page.goto('/')
+  // Wait for enhance.ts to reveal the Book buttons, so the count sees the final page.
+  await expect(page.locator('#offer [data-open-lead]')).toBeVisible()
+  const sections = page.locator('[data-investor-section], .cin-labs')
+  const count = await sections.count()
+  expect(count).toBe(8)
+  for (let i = 0; i < count; i += 1) {
+    const section = sections.nth(i)
+    const id = (await section.getAttribute('id')) ?? 'cin-labs'
+    expect(await section.locator('.btn--primary:visible').count(), id).toBeLessThanOrEqual(1)
+  }
+  await expect(page.locator('.cin-labs .btn--primary')).toHaveCount(0)
+  await expect(page.locator('#contact .btn--primary')).toHaveAttribute('href', '/reference-check')
+})
+
+test('without JavaScript the hero boundaries show and no dead Book button does', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  try {
+    await page.goto(`${baseURL}/`)
+    await expect(page.locator('.hero__lede')).toBeVisible()
+    await expect(page.locator('.hero__status')).toContainText('Not production SaaS or compliance certification')
+    await expect(page.locator('.hero__status')).toContainText('Origin does not contact or execute your named agent.')
+    await expect(page.getByText('The public demo is a prototype, not production SaaS or compliance certification.')).toBeVisible()
+    // The Book buttons open a JS-only modal; without JS they must not be offered.
+    await expect(page.locator('[data-open-lead]:visible')).toHaveCount(0)
+  } finally {
+    await context.close()
+  }
+})
+
+test('the burger menu is visible at 375px on /, /trust and /brief', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  for (const route of ['/', '/trust', '/brief']) {
+    await page.goto(route)
+    await expect(page.locator('.site-header__burger'), route).toBeVisible()
+  }
+})
+
+// The one real artifact the site owns — a one-take recording of the offline verifier on a
+// synthetic sample — sits directly under the hero, plays only on click, and says what
+// VALID does and does not establish.
+test('the verifier recording sits under the hero, click-to-play, with its scope caption', async ({ page }) => {
+  const mp4: string[] = []
+  page.on('request', (r) => { if (r.url().includes('shot01-tamper.mp4')) mp4.push(r.url()) })
+  await page.goto('/')
+  await expect(page.locator('details.cin-recording')).toHaveCount(0)
+  const video = page.locator('#product video[poster="/video/shot01-tamper.jpg"]')
+  await video.scrollIntoViewIfNeeded()
+  await expect(video).toBeVisible()
+  await expect(video).not.toHaveAttribute('data-band')
+  const fig = page.locator('#product .vband__fig')
+  await expect(fig).toContainText('Recorded · one take')
+  await expect(fig).toContainText('synthetic demo attestation')
+  await expect(fig).toContainText('not signer identity')
+  // Fully in view, no click: nothing may start the download.
+  await page.waitForTimeout(1500)
+  expect(mp4).toEqual([])
 })

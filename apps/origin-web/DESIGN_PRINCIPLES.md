@@ -14,14 +14,15 @@ high-consequence agents — plus investors reading over their shoulder. Assume a
 
 ## Product framing
 - **Origin is the evidence layer for high-consequence AI agents.** A deterministic,
-  configuration-bound **reference check** issues a tamper-evident **Origin Attestation** that a
-  reviewer re-verifies offline. It is VALID until a bound field changes, then VOID.
+  configuration-bound **reference check** exports session-signed evidence that a reviewer
+  re-verifies offline. Public browser evidence is UNTRUSTED by default (its signer is unpinned); a
+  changed bound field returns VOID.
 - The funnel is: **describe the agent → run the reference check → get an attestation → re-verify it
   offline.** Not a site upload, not a license.
 - **Physical AI (robots, fleets, spatial) is the Labs arc** — proof that the same evidence contract
   generalizes. It is never the headline and never the current product.
 - Never write "certification" affirmatively, and never call an attestation a certificate. The
-  customer's gate decides; Origin issues evidence. `scripts/honesty-lint.mjs` enforces this.
+  customer's gate decides; Origin's checks produce evidence. `scripts/honesty-lint.mjs` enforces this.
 
 ## Anthropic frontend principles
 - **Restraint.** One idea per screen; cut the second headline. Collapse depth behind disclosure.
@@ -39,10 +40,13 @@ high-consequence agents — plus investors reading over their shoulder. Assume a
   **"projected"**. Never present a projection as measured. Never fabricate a metric.
 - Synthetic demo data is labeled synthetic, on the surface where it renders.
 - Results are **"reproducible under this verifier,"** never "safe" or "correct."
-- State boundaries plainly. The hero's maturity line (*"Prototype in private pilot: synthetic
-  sandbox evidence, not production SaaS, and not compliance certification"*) is **pinned by
-  `investor-ready.spec.ts` and must stay visible in the hero** — treat it typographically, never by
-  moving or softening it.
+- State boundaries plainly. The hero's maturity line (*"Explore the working prototype. Not
+  production SaaS or compliance certification. Evaluate a selected policy in your browser using
+  synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is
+  untrusted by default."*) is **pinned by `tests/e2e/investor-ready.spec.ts`** (the two
+  `.hero__status` assertions in the first test) and by the `index.html` launch contract in
+  `scripts/honesty-lint.mjs`, and **must stay visible in the hero** — treat it typographically,
+  never by moving or softening it.
 
 ## Type
 - **Inter** for everything readable. **Space Grotesk** (`--font-display`) for display only.

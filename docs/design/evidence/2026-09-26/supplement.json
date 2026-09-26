@@ -1,0 +1,29 @@
+[
+  {
+    "route": "/foundry",
+    "hover": {
+      "transform": "matrix(1, 0, 0, 1, 0, -1)",
+      "transition": "transform 0.08s, box-shadow 0.15s, background 0.15s",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(36, 70, 48)"
+    }
+  },
+  {
+    "route": "/soc",
+    "hover": {
+      "transform": "matrix(1, 0, 0, 1, 0, -1)",
+      "transition": "transform 0.08s, box-shadow 0.15s, background 0.15s",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(36, 70, 48)"
+    }
+  },
+  {
+    "route": "/proving-ground",
+    "hover": {
+      "transform": "none",
+      "transition": "color 0.12s, background-color 0.12s, border-color 0.12s, opacity 0.12s, box-shadow 0.12s, filter 0.12s",
+      "color": "rgb(39, 45, 38)",
+      "background": "rgba(0, 0, 0, 0)"
+    }
+  }
+]

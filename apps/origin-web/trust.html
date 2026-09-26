@@ -24,20 +24,20 @@
     <title>Trust &amp; controls, Origin, the evidence layer for AI agents</title>
     <meta
       name="description"
-      content="Origin trust center for security and procurement review: data collected, retention, access control, encryption, audit logs and the responsibility split."
+      content="Origin trust center for security and procurement review: data collected, retention, access control and the responsibility split."
     />
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://originphysicalai.com/trust" />
     <meta property="og:title" content="Trust &amp; controls, Origin, the evidence layer for AI agents" />
-    <meta property="og:description" content="Origin trust center for security and procurement review: data collected, retention, access control, encryption, audit logs and the responsibility split." />
+    <meta property="og:description" content="Origin trust center for security and procurement review: data collected, retention, access control and the responsibility split." />
     <meta property="og:image" content="https://originphysicalai.com/og/trust.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Trust &amp; controls, Origin, the evidence layer for AI agents" />
-    <meta name="twitter:description" content="Origin trust center for security and procurement review: data collected, retention, access control, encryption, audit logs and the responsibility split." />
+    <meta name="twitter:description" content="Origin trust center for security and procurement review: data collected, retention, access control and the responsibility split." />
     <meta name="twitter:image" content="https://originphysicalai.com/og/trust.jpg" />
     <link rel="canonical" href="https://originphysicalai.com/trust" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
@@ -47,7 +47,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <link rel="stylesheet" href="/home.css?v=127af4ff" />
+    <link rel="stylesheet" href="/home.css?v=ea9cb549" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -141,13 +141,13 @@
     <main id="main">
       <section class="editorial-hero" aria-labelledby="trust-title"><div class="shell">
         <div class="editorial-hero__grid"><div>
-          <p class="kicker">Trust &amp; controls / 01</p>
+          <p class="kicker">Trust &amp; controls</p>
           <h1 id="trust-title">Evidence you can inspect. Limits you can see.</h1>
           <p class="section__lede">A useful reference check starts with a clear boundary. Origin evaluates a bound configuration against deterministic synthetic tasks and gives reviewers an artifact they can recheck.</p>
           <p class="editorial-caption">Working prototype. Seeking design partners. Not production SaaS, compliance certification, or a guarantee of approval.</p>
           <div class="editorial-actions"><a class="btn btn--primary" href="/verify">Inspect an artifact</a><a class="btn btn--ghost" href="/reference-check-vs-runtime">Understand the boundary</a></div>
         </div><figure class="editorial-hero__media"><img src="/brand/review.webp" width="1024" height="1024" alt="" /><figcaption class="editorial-caption">Generated illustration of a review environment; not an Origin facility or customer deployment.</figcaption></figure></div>
-        <nav class="editorial-jumps" aria-label="On this page"><a href="#posture"><span>01</span>Current posture</a><a href="#gated"><span>02</span>Verification</a><a href="#data"><span>03</span>Data &amp; retention</a><a href="#controls"><span>04</span>Controls</a><a href="#packet"><span>05</span>Security review</a></nav>
+        <nav class="editorial-jumps" aria-label="On this page"><a href="#posture"><span>01</span>Current posture</a><a href="#gated"><span>02</span>Verification</a><a href="#data"><span>03</span>Data &amp; retention</a><a href="#controls"><span>04</span>Responsibility</a><a href="#packet"><span>05</span>Security review</a></nav>
       </div></section>
       <section class="editorial-section" id="posture"><div class="shell">
         <div class="editorial-heading"><p class="kicker">01 / Current posture</p><div><h2>What exists today. What still needs agreement.</h2><p>The public prototype demonstrates an evaluation and evidence workflow. A runtime gate and controlled tool-call proxy remain proposed pilot architecture, not deployed general enforcement.</p></div></div>
@@ -180,10 +180,21 @@
               + `<td>${detail}</td></tr>`
           }).join('')
           const when = (data.generated_at || '').slice(0, 10)
-          const commit = data.tracked_clean === true && /^[0-9a-f]{7,40}$/.test(data.commit || '') ? data.commit.slice(0, 7) : ''
+          const sha = /^[0-9a-f]{7,40}$/.test(data.commit || '') ? data.commit.slice(0, 7) : ''
+          // A release build stamps source/commit/run_url (deploy-origin-web.yml); anything else is a local run.
+          const release = data.source === 'release' && sha !== ''
+          const runUrl = release && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/actions\/runs\/\d+$/.test(data.run_url || '') ? data.run_url : ''
+          const runLink = runUrl ? ` · <a href="${runUrl}" style="text-decoration:underline">Actions run ↗</a>` : ''
+          const commit = data.tracked_clean === true ? sha : ''
           const ageDays = (Date.now() - Date.parse(data.generated_at)) / 86400000
           const stale = !Number.isFinite(ageDays) || ageDays > 14
-          const bannerLine = stale
+          const bannerLine = release
+            ? (stale
+                ? `<b style="color:var(--warn)">Gate results are from the ${when} release; not re-run since.</b> Release <code>${sha}</code>${runLink}`
+                : (data.all_green
+                    ? `<b style="color:var(--verify)">Gates passed at release <code>${sha}</code> on ${when}</b> · ${data.suites.length} suites${runLink}`
+                    : `<b style="color:#b3261e">Gates failing at release <code>${sha}</code> on ${when}</b> · ${data.suites.length} suites${runLink}`))
+            : stale
             ? `<b style="color:var(--warn)">Snapshot from ${when} — stale; regenerate with <code>make gates-all</code>.</b>`
             : (data.all_green
                 ? `${when} · <b style="color:var(--verify)">ALL GATES GREEN</b> · ${data.suites.length} suites — local run of <code>make gates-all</code>${commit ? ' at ' + commit : ''}. CI runs its own checks on pushes to main.`

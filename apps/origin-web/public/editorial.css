@@ -215,6 +215,7 @@
   .brief-page .brief__foot { margin-top: 18px; padding: 14px; }
   .brief-page .brief__foot p { font-size: 10px; }
   .brief-page .brief__print-only { display: block; font-size: 9px; margin-top: 14px; }
+  .brief-page .brief__screen-only { display: none; }
   .brief-page a { color: #000; }
   @page { size: A4; margin: 13mm; }
 }

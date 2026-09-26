@@ -603,12 +603,19 @@ if (chainRoot && window.crypto?.subtle) {
           suites?: { result: string }[]
           commit?: string
           tracked_clean?: boolean
+          source?: string
+          run_url?: string
         }
         const when = (data.generated_at ?? '').slice(0, 10)
-        // Name the commit only when the run was at a clean tracked tree, so the sha
-        // actually identifies the code that was tested.
-        const commit =
-          data.tracked_clean === true && /^[0-9a-f]{7,40}$/.test(data.commit ?? '') ? (data.commit ?? '').slice(0, 7) : ''
+        const sha = /^[0-9a-f]{7,40}$/.test(data.commit ?? '') ? (data.commit ?? '').slice(0, 7) : ''
+        // A release build (deploy-origin-web.yml) runs gates-all at the deployed commit
+        // and stamps source/commit/run_url. Anything else is a local run.
+        const release = data.source === 'release' && sha !== ''
+        const runUrl =
+          release && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/actions\/runs\/\d+$/.test(data.run_url ?? '') ? data.run_url : ''
+        // Name a local run's commit only when the tree was clean, so the sha actually
+        // identifies the code that was tested.
+        const commit = data.tracked_clean === true ? sha : ''
         const ageDays = (Date.now() - Date.parse(data.generated_at ?? '')) / 86_400_000
         if (!Number.isFinite(ageDays) || !when) return
         const suites = data.suites?.length ?? 0
@@ -616,16 +623,20 @@ if (chainRoot && window.crypto?.subtle) {
         const stale = ageDays > 14
 
         const status = stale
-          ? `<span class="gatesfresh__stale">snapshot from ${when} — stale</span>`
+          ? `<span class="gatesfresh__stale">${release ? `gate results are from the ${when} release; not re-run since` : `snapshot from ${when} — stale`}</span>`
           : data.all_green
             ? `<span class="gatesfresh__ok">${passing}/${suites} suites green</span>`
             : `<span class="gatesfresh__stale">${passing}/${suites} suites passing</span>`
 
-        el.innerHTML =
-          `<b>Local gate run ${when}${commit ? ` at <code>${commit}</code>` : ''}</b>` +
-          `<span>${status}</span>` +
-          `<span>re-run with <code>make gates-all</code> · CI runs its own checks on pushes to main</span>` +
-          `<a href="/trust">See the full scoreboard &rarr;</a>`
+        el.innerHTML = release
+          ? `<b>${data.all_green ? 'Gates passed' : 'Gate run'} at release <code>${sha}</code> on ${when}</b>` +
+            `<span>${status}</span>` +
+            (runUrl ? `<span><a href="${runUrl}">Actions run &#8599;</a></span>` : '') +
+            `<a href="/trust">See the full scoreboard &rarr;</a>`
+          : `<b>Local gate run ${when}${commit ? ` at <code>${commit}</code>` : ''}</b>` +
+            `<span>${status}</span>` +
+            `<span>re-run with <code>make gates-all</code> · CI runs its own checks on pushes to main</span>` +
+            `<a href="/trust">See the full scoreboard &rarr;</a>`
         el.hidden = false
       } catch {
         /* leave the strip hidden — never render an undated claim */

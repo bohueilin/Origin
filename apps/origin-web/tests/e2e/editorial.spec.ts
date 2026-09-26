@@ -47,3 +47,38 @@ test('brief print layout preserves its full narrative and evidence boundaries', 
     await page.pdf({ path: testInfo.outputPath('origin-brief.pdf'), preferCSSPageSize: true, printBackground: true })
   }
 })
+
+test('brief shows the founder and a contact on screen, and prints the contact once on one page', async ({ page }, testInfo) => {
+  for (const width of [1440, 375]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/brief')
+    await expect(page.locator('main'), `${width}px`).toContainText('Founder: Bo-Huei Lin')
+    await expect(page.locator('main a[href="mailto:bohueilin@gmail.com"]'), `${width}px`).toBeVisible()
+  }
+
+  await page.emulateMedia({ media: 'print' })
+  const printed = await page.locator('main').innerText()
+  expect(printed).toContain('Founder: Bo-Huei Lin')
+  expect(printed.split('bohueilin@gmail.com').length - 1).toBe(1)
+  if (testInfo.project.name === 'desktop-chromium') {
+    const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true })
+    const pages = pdf.toString('latin1').match(/\/Type\s*\/Page(?!s)/g) ?? []
+    expect(pages).toHaveLength(1)
+  }
+})
+
+test('trust jump labels match their section kickers and the meta claims no unshown controls', async ({ page }) => {
+  await page.goto('/trust')
+  await expect(page.locator('.editorial-hero .kicker')).toHaveText('Trust & controls')
+  const pairs = await page.locator('.editorial-jumps a').evaluateAll((links) => links.map((a) => {
+    const n = a.querySelector('span')?.textContent ?? ''
+    const label = (a.textContent ?? '').slice(n.length)
+    const kicker = document.querySelector(`${a.getAttribute('href')} .kicker`)?.textContent ?? ''
+    return [`${n} / ${label}`, kicker]
+  }))
+  expect(pairs).toHaveLength(5)
+  for (const [jump, kicker] of pairs) expect(kicker).toBe(jump)
+  for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+    await expect(page.locator(selector), selector).not.toHaveAttribute('content', /encryption|audit log/i)
+  }
+})

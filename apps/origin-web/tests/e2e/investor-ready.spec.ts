@@ -219,6 +219,59 @@ test('trust scoreboard names a local run and its commit, not CI enforcement', as
   await expect(board).not.toContainText('enforced in CI')
 })
 
+// A release build (deploy-origin-web.yml) runs gates-all at the deployed commit and
+// stamps source/commit/built_at/run_url. Both surfaces then name the release and link
+// the Actions run; after 14 days the amber note says the results are that release's.
+const RELEASE_SHA = 'def5678'
+const RUN_URL = 'https://github.com/bohueilin/Origin/actions/runs/123456789'
+function releaseFixture(ageDays: number, runUrl = RUN_URL) {
+  const at = new Date(Date.now() - ageDays * 86_400_000).toISOString().replace(/\.\d{3}Z$/, 'Z')
+  return { ...gatesFixture(true), generated_at: at, commit: RELEASE_SHA, source: 'release', built_at: at, run_url: runUrl }
+}
+
+test('home gates strip names the release commit and its Actions run when stamped at release', async ({ page }) => {
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: releaseFixture(0) }))
+  await page.goto('/')
+  const strip = page.locator('#gates-freshness')
+  await expect(strip).toContainText(`Gates passed at release ${RELEASE_SHA} on`)
+  await expect(strip).toContainText('2/2 suites green')
+  await expect(strip.getByRole('link', { name: /Actions run/ })).toHaveAttribute('href', RUN_URL)
+  await expect(strip).not.toContainText('Local gate run')
+
+  await page.unroute('**/trust/gates-summary.json')
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: releaseFixture(20) }))
+  await page.reload()
+  await expect(strip).toContainText(/gate results are from the \d{4}-\d{2}-\d{2} release; not re-run since/)
+  await expect(strip).not.toContainText('suites green')
+})
+
+test('trust scoreboard names the release commit and its Actions run when stamped at release', async ({ page }) => {
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: releaseFixture(0) }))
+  await page.goto('/trust')
+  const board = page.locator('#gates-scoreboard')
+  await expect(board).toContainText(`Gates passed at release ${RELEASE_SHA} on`)
+  await expect(board.getByRole('link', { name: /Actions run/ })).toHaveAttribute('href', RUN_URL)
+  await expect(board).not.toContainText('local run')
+
+  // Only a GitHub Actions run URL is ever linked.
+  await page.unroute('**/trust/gates-summary.json')
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: releaseFixture(20, 'javascript:alert(1)') }))
+  await page.reload()
+  await expect(board).toContainText(/Gate results are from the \d{4}-\d{2}-\d{2} release; not re-run since/)
+  await expect(board.getByRole('link', { name: /Actions run/ })).toHaveCount(0)
+})
+
+// PR #65 deleted the limits and the founder; they are restored inside #trust.
+test('the trust section states what Origin is not and who builds it', async ({ page }) => {
+  await page.goto('/')
+  const trust = page.locator('#trust')
+  await expect(trust.getByRole('heading', { name: 'What Origin is not.' })).toBeVisible()
+  await expect(trust.locator('.notgrid article')).toHaveCount(5)
+  await expect(trust.getByText('No design partner, no pilot, no paying user', { exact: false })).toBeVisible()
+  await expect(trust.getByRole('heading', { name: 'Who builds Origin.' })).toBeVisible()
+  await expect(trust.getByText('Bo-Huei Lin, founder.', { exact: true })).toBeVisible()
+})
+
 // One filled (primary) action per section. The sticky header pill is chrome, not a
 // section primary, so it is outside every [data-investor-section].
 test('each home section has at most one filled action, and the final ask is the reference check', async ({ page }) => {

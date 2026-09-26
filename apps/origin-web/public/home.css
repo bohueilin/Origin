@@ -1083,7 +1083,7 @@ a:hover { text-decoration: underline; }
 
 /* "What Origin is not" — the boundaries, given status instead of small grey type. */
 .notgrid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 26px; }
-.notgrid .card h3 { margin-bottom: 8px; }
+.notgrid .card h4 { margin: 0 0 8px; font-size: var(--fs-17); font-weight: 600; line-height: 1.3; color: var(--ink); }
 .notgrid .card p { font-size: var(--fs-15); line-height: 1.6; color: var(--ink-soft); }
 
 /* Delegation diagram — the interactive attenuation demo on /security. */
@@ -1195,7 +1195,8 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .honesty-line { font-size: var(--fs-13); color: var(--steel); margin-top: 12px; }
 /* Founder credibility now sits inside the Trust section (contract section 6:
    trust + limitations + founder), so it needs a sub-heading rather than its own band. */
-.trust__founder-h { margin: 30px 0 0; font: 700 19px/1.25 'Space Grotesk', sans-serif; color: var(--ink); }
+.trust__not-h, .trust__founder-h { margin: 30px 0 0; font: 600 var(--fs-19)/1.25 var(--font-sans); color: var(--ink); }
+.trust__founder-h + p { margin-top: 8px; color: var(--ink-soft); }
 
 /* Interactive 90-second demo (progressive enhancement: 8 panels readable with JS off) */
 .demo { margin-top: 30px; display: block; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; background: var(--paper-2); box-shadow: var(--sh-md); }

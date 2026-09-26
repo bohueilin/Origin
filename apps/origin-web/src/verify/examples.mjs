@@ -107,7 +107,6 @@ export async function makeExample(kind) {
           episode_id: 'ep_demo_verify_001',
           reward: 1,
           passed: true,
-          license_level: 'L2',
           verifier_version: DEMO_VERSIONS.verifier_version,
         },
         key,

@@ -1,5 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 
+const ENHANCED_ROUTES = ['/', '/trust', '/labs', '/brief', '/verify', '/over-grant', '/security', '/reference-check', '/simulation', '/operations', '/proving-ground']
+
 async function localOnly(page: Page) {
   await page.route('**/*', (route) => {
     const url = new URL(route.request().url())
@@ -7,6 +9,29 @@ async function localOnly(page: Page) {
     return route.continue()
   })
 }
+
+test('mobile header reserves its enhanced size while the nav module loads', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await localOnly(page)
+  let release!: () => void
+  const pending = new Promise<void>((resolve) => { release = resolve })
+  await page.route('**/src/home/enhance.ts*', async (route) => {
+    await pending
+    await route.continue()
+  })
+  try {
+    await page.goto('/', { waitUntil: 'commit' })
+    await expect(page.locator('.site-header')).toBeVisible()
+    const height = await page.locator('.site-header').evaluate(el => el.getBoundingClientRect().height)
+    expect(height).toBeLessThanOrEqual(88)
+  } finally {
+    release()
+  }
+  await page.waitForLoadState('load')
+  await expect(page.locator('html')).toHaveClass(/nav-bound/)
+  await page.getByRole('button', { name: 'Open menu' }).click()
+  await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
+})
 
 test('mobile navigation remains usable when JavaScript is unavailable', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
@@ -19,11 +44,27 @@ test('mobile navigation remains usable when JavaScript is unavailable', async ({
     await expect(nav.getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
     await nav.getByRole('link', { name: 'Trust', exact: true }).click()
     await expect(page).toHaveURL(/\/trust$/)
+    await page.waitForLoadState('load')
     await expect(page.locator('h1')).toBeVisible()
     await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    for (const route of [...ENHANCED_ROUTES, '/proof', '/reference-check-vs-runtime']) {
+      await page.goto(`${baseURL}${route}`)
+      await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
+    }
   } finally {
     await context.close()
+  }
+})
+
+test('mobile navigation recovers when the enhancement module is unavailable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await localOnly(page)
+  await page.route('**/src/home/enhance.ts*', route => route.fulfill({ status: 404, body: '' }))
+  for (const route of ENHANCED_ROUTES) {
+    await page.goto(route)
+    await expect(page.locator('html')).not.toHaveClass(/nav-ready/)
+    await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
   }
 })
 

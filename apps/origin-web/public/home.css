@@ -1277,3 +1277,9 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .site-footer__brand > .site-footer__boundary { font-size: var(--fs-14); color: var(--steel); letter-spacing: 0; margin-top: 18px; }
 .site-footer__nav { column-gap: 64px; }
 @media(max-width:680px) { .site-header__inner { height: 74px; gap: 12px; }.brand__name { font-size: 27px; }.brand__logo { width: 28px; height: 28px; }.site-header__cta { gap: 9px; }.site-header__cta-mobile { font-size: 11px; padding: 10px 13px; }.site-footer__nav { gap: 30px; } }
+
+/* Reserve the initial viewport while the interactive route modules mount. */
+#verify-root, #security-root, #sim-root, #pg-root, #ops-root, #overgrant-root, #refcheck-root {
+  min-height: 100vh;
+  display: flow-root; /* Keep mounted content margins inside the reserved space. */
+}

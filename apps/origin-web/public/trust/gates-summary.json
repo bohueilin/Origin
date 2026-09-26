@@ -1,10 +1,12 @@
 {
-  "generated_at": "2026-09-16T19:50:51Z",
+  "generated_at": "2026-09-26T07:27:16Z",
+  "commit": "42934dc",
+  "tracked_clean": true,
   "all_green": true,
   "suites": [
-    {"name": "ts:build (workspaces)", "result": "PASS", "detail": "✓ built in 82ms"},
-    {"name": "ts:build (chronos-ui)", "result": "PASS", "detail": "✓ built in 662ms"},
-    {"name": "ts:origin-web (+evidence+verifier-core globs)", "result": "PASS", "detail": "Tests  756 passed (756)"},
+    {"name": "ts:build (workspaces)", "result": "PASS", "detail": "✓ built in 66ms"},
+    {"name": "ts:build (chronos-ui)", "result": "PASS", "detail": "✓ built in 441ms"},
+    {"name": "ts:origin-web (+evidence+verifier-core globs)", "result": "PASS", "detail": "Tests  764 passed (764)"},
     {"name": "ts:janus", "result": "PASS", "detail": "Tests  191 passed (191)"},
     {"name": "ts:@origin/evidence", "result": "PASS", "detail": "Tests  41 passed (41)"},
     {"name": "ts:@origin/verifier-core", "result": "PASS", "detail": "Tests  46 passed (46)"},

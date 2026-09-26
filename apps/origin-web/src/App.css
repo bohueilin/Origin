@@ -6566,10 +6566,10 @@ select.field-input {
   display: block;
   width: 100%;
   height: 300px;
-  /* contain (not cover) so portrait/odd-ratio robots — humanoid, dog — are shown
-     in full, never cropped; the dark backdrop frames the letterboxing cleanly. */
+  /* contain (not cover) so every reference illustration is shown in full, never
+     cropped; the paper backdrop matches the drawings' own background. */
   object-fit: contain;
-  background: #0f172a;
+  background: #f8f7f4;
   animation: embodiment-fade 0.35s ease;
 }
 .embodiment-media-none {
@@ -6591,7 +6591,8 @@ select.field-input {
 }
 .embodiment-preview figcaption span {
   font-weight: 500;
-  font-size: 11px;
+  font-size: 12.5px;
+  line-height: 1.45;
   color: var(--muted);
 }
 @keyframes embodiment-fade {
@@ -6741,7 +6742,7 @@ select.field-input {
 .pg3d-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 .pg3d-legend .lg-box { background: #c79a5b; } .pg3d-legend .lg-rack { background: #e3741f; }
 .pg3d-legend .lg-haz { background: #e0563f; } .pg3d-legend .lg-hum { background: #d79b2e; }
-.pg3d-legend .pg3d-note { color: #8b857a; }
+.pg3d-legend .pg3d-note { color: var(--steel, #59664f); }
 .pg3d-fallback { padding: 28px; text-align: center; color: #8a5600; background: #f6efdd; border: 1px solid #e6d3a0; border-radius: 14px; }
 
 /* ═══════════════════════════════════════════════════════════════════════════

@@ -108,7 +108,7 @@ test('reference check communicates selection, verdict, and drift invalidation ac
 
   await page.getByRole('button', { name: 'Run the reference check' }).click()
   const result = page.getByRole('status')
-  await expect(result).toContainText('Synthetic battery readiness sample')
+  await expect(result).toContainText('synthetic decisions match the oracle')
   await expect(page.locator('body')).toContainText('Synthetic pilot battery')
 
   await page.getByRole('button', { name: /Change a tool/ }).click()

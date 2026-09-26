@@ -804,25 +804,14 @@ export function ReflectAlign({
               return (
                 <figure className="embodiment-preview">
                   {media ? (
-                    media.kind === 'video' ? (
-                      <video
-                        key={media.src}
-                        className="embodiment-media"
-                        src={media.src}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        aria-label={media.alt}
-                      />
-                    ) : (
-                      <img
-                        key={media.src}
-                        className="embodiment-media"
-                        src={media.src}
-                        alt={media.alt}
-                      />
-                    )
+                    <img
+                      key={media.src}
+                      className="embodiment-media"
+                      src={media.src}
+                      alt={media.alt}
+                      width={320}
+                      height={240}
+                    />
                   ) : (
                     <div className="embodiment-media embodiment-media-none" aria-hidden="true">
                       <span>No reference image</span>
@@ -830,7 +819,7 @@ export function ReflectAlign({
                   )}
                   <figcaption>
                     {getEmbodimentProfile(embodiment).label}
-                    <span>Illustrative — the embodiment sets the gym profile, not the score.</span>
+                    <span>Reference illustration of the type — generic, not a specific product. Choosing a type changes the gym’s battery and step budget (modelling assumptions, not measured specs), which can change the oracle’s labels; the picture itself changes nothing.</span>
                   </figcaption>
                 </figure>
               )

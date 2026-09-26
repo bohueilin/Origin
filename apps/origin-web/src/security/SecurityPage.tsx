@@ -445,7 +445,7 @@ function ReferenceCheckPanel() {
       info('baseline', 'the naive allow-all agent runs the same battery'),
       bad(
         `${r.catastrophic} catastrophic over-grants`,
-        `allowed forbidden/tainted/high-sensitivity actions the oracle refuses — the readiness level is capped at ${r.credential.rsl_level}. Over-caution is a miss; over-GRANTING is catastrophic.`,
+        `allowed forbidden/tainted/high-sensitivity actions the oracle refuses. Over-caution is a miss; over-GRANTING is catastrophic.`,
       ),
     ])
   }
@@ -494,7 +494,8 @@ function ReferenceCheckPanel() {
       {result ? (
         <div className="sec-badge-row">
           <span className="sec-rsl">
-            {result.credential.rsl_level} <small>Verified Readiness Level</small>
+            {result.harnessed.verdicts.filter((v) => v.passed).length} of {result.harnessed.verdicts.length}{' '}
+            <small>synthetic decisions match the oracle</small>
           </span>
           <span className="sec-note" style={{ marginTop: 0 }}>
             pass {Math.round(result.credential.pass_rate * 100)}% · cold {Math.round(result.credential.cold_pass_rate * 100)}% · lift +

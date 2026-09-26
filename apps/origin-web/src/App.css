@@ -7114,19 +7114,19 @@ select.field-input {
    proving-ground.html resolves the generic `.btn` above (0,1,0; later file)
    over home.css `.btn--primary` (0,1,0; earlier file): the primary CTA
    measured white-on-#edf1e7 = 1.15:1. Re-assert the home.css primary skin,
-   scoped to the shared header and the proving-ground mount. The #2149c9
-   hover hex mirrors home.css `.btn--primary:hover`. */
+   scoped to the shared header and the proving-ground mount. The hover uses
+   --signal-hover, as home.css `.btn--primary:hover` does. */
 .site-header .btn--primary,
 #pg-root .btn--primary {
-  background: var(--signal, #2a56e8);
+  background: var(--signal);
   border-color: transparent;
   color: #fff;
   box-shadow: var(--sh-sm);
 }
 .site-header .btn--primary:hover,
 #pg-root .btn--primary:hover {
-  background: #2149c9;
-  border-color: #2149c9;
+  background: var(--signal-hover);
+  border-color: var(--signal-hover);
   box-shadow: var(--sh-md);
 }
 

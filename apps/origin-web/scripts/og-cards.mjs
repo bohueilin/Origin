@@ -119,7 +119,7 @@ const CARDS = [
     eyebrow: 'ONE-PAGE BRIEF',
     h1: 'Origin, in a single page.',
     sub: 'The problem, the evidence-review offer, and the prototype you can inspect.',
-    status: 'Synthetic sandbox evidence · private-pilot prototype',
+    status: 'Synthetic sandbox evidence · working prototype',
     rows: [['Reference check', 'Try it', ''], ['Evidence', 'Inspect it', ''], ['First step', 'A review', '']],
   },
 ]

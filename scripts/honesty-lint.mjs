@@ -20,6 +20,7 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { visibleText, jsonLdText } from './lib/visible-text.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const WEB = join(ROOT, 'apps', 'origin-web')
@@ -87,6 +88,21 @@ const BANNED = [
   [/\bbrain that can['’]?t\b/i, 'absolute "a brain that can\'t X" claim'],
   [/\bprovably (means )?safer\b/i, '"provably safer" — the oracle proves reproducibility of a score, not safety'],
   [/\bcan never reward[-\s]?hack\b/i, 'absolute "can never reward-hack" (the verifier itself is the attack surface Cobra/Chronos harden)'],
+  // Found by the 2026-09-24 design review. Origin serves the verifier JS and owns the
+  // battery and oracle, and public browser evidence verifies as UNTRUSTED, so a reader
+  // does not verify "without trusting us"; the scope that is true is "without trusting
+  // our server" (packages/verifier-core/sigil.mjs).
+  [/\bwithout trusting us\b/i, '"without trusting us" — the verifier, battery and oracle are Origin\'s; say what is checked offline instead'],
+  // There are no design partners, pilots or customers today (index.html #evidence,
+  // llms.txt). Onboarding and procurement copy implies a customer pipeline that does not exist.
+  [/\bwe['’]re onboarding\b/i, '"we\'re onboarding" — there are no design partners or customers to onboard today'],
+  [/\bno procurement (required|needed)\b/i, '"no procurement required" — procurement is the customer\'s process, not Origin\'s to waive'],
+  // The gates strip reads a LOCAL `make gates-all` run; no CI job writes it.
+  [/\benforced in CI on every push\b/i, '"enforced in CI on every push" — the gates summary is a local run; CI runs its own checks'],
+  // The tool evaluates a selected policy; it never contacts or executes the named agent.
+  [/\bcheck an agent\b/i, '"check an agent" — the reference check evaluates a selected policy, not the agent'],
+  // /auth is owner-only (AuthProvider.tsx; insforge.toml disable_signup): nobody is invited.
+  [/\binvite[-\s]only\b/i, '"invite-only" — the console is owner-only; there are no invited customer accounts'],
 ]
 
 // 2. REQUIRED — a disclaimer that must survive on a given page. [file, regex, why].
@@ -98,13 +114,8 @@ const REQUIRED = [
   ['proof.html', /honest ladder/i, 'the /proof "honest ladder" framing'],
 ]
 
-// crude but effective: strip tags so we lint the visible prose, not attributes/scripts
-const visibleText = (html) =>
-  html
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&[a-z]+;/gi, ' ')
+// visibleText() (comments, scripts, styles and tags stripped) and jsonLdText() live in
+// scripts/lib/visible-text.mjs, unit-tested by scripts/visible-text.test.mjs.
 
 // og/twitter/description meta content + <title> — the text that spreads on a social share,
 // invisible to visibleText() (it strips tags). This is where overclaims used to hide.
@@ -192,11 +203,14 @@ for (const file of SERVED) {
   const raw = readFileSync(path, 'utf8')
   const text = visibleText(raw)
   const meta = metaAndTitleText(raw)
+  const ld = jsonLdText(raw)
   for (const [re, label] of BANNED) {
     const m = text.match(re)
     if (m) note(`${file}: BANNED overclaim — ${label} (matched "${m[0].trim()}")`)
     const mm = meta.match(re)
     if (mm) note(`${file} <meta/title>: BANNED overclaim — ${label} (matched "${mm[0].trim()}")`)
+    const ml = ld.match(re)
+    if (ml) note(`${file} <JSON-LD>: BANNED overclaim — ${label} (matched "${ml[0].trim()}")`)
   }
 }
 
@@ -269,7 +283,9 @@ for (const [file, phrase] of EXEMPT) {
 for (const [file, re, why] of REQUIRED) {
   const path = join(WEB, file)
   if (!existsSync(path)) { note(`${file}: MISSING page — cannot confirm ${why}`); continue }
-  if (!re.test(readFileSync(path, 'utf8'))) {
+  // Visible text, not the raw file: a disclaimer kept alive only in a comment,
+  // attribute or script is not on the page.
+  if (!re.test(visibleText(readFileSync(path, 'utf8')))) {
     note(`${file}: REQUIRED disclaimer removed — ${why}`)
   }
 }
@@ -370,6 +386,17 @@ const LAUNCH_CONTRACTS = [
       [/does not intentionally persist/i, 'the Origin handler non-persistence boundary'],
       [/provider terms and retention apply/i, 'the provider-retention boundary'],
       [/personal[\s\S]{0,80}confidential[\s\S]{0,80}regulated[\s\S]{0,80}customer data/i, 'the sensitive-data prohibition'],
+    ],
+  },
+  {
+    // The home page's boundaries: what the demo does not do, how its evidence verifies,
+    // its maturity, and what the recorded VALID does not establish.
+    file: 'apps/origin-web/index.html',
+    require: [
+      [/does not contact or execute/i, 'the no-contact / no-execution boundary'],
+      [/untrusted by default/i, 'the untrusted-by-default browser-evidence boundary'],
+      [/not (production|compliance)/i, 'the maturity line (not production SaaS or compliance certification)'],
+      [/not signer identity/i, 'the recording caption scope (VALID is not signer identity)'],
     ],
   },
   {

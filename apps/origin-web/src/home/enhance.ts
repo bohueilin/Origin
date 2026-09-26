@@ -278,8 +278,11 @@ function closeLead(): void {
   lastFocused?.focus()
 }
 
+// Book buttons ship `hidden`: without this module they would do nothing. Reveal each
+// one only once its click handler is bound.
 document.querySelectorAll<HTMLElement>('[data-open-lead]').forEach((btn) => {
   btn.addEventListener('click', (e) => { e.preventDefault(); openLead(btn) })
+  btn.hidden = false
 })
 document.querySelectorAll<HTMLElement>('[data-close-lead]').forEach((btn) => {
   btn.addEventListener('click', (e) => { e.preventDefault(); closeLead() })
@@ -575,30 +578,6 @@ if (chainRoot && window.crypto?.subtle) {
 }
 
 /**
- * Mobile quick-actions bar: hold it back until the hero's own CTA is off screen.
- *
- * The bar duplicates the hero's primary action. Pinned to the bottom of the first
- * viewport it put five call-to-actions on one 375px screen — two of them the same
- * blue "Run the reference check" button, six hundred pixels apart. The bar earns its
- * place further down the page, where the hero CTA is gone; it just must not compete
- * with the thing it is a copy of.
- *
- * Progressive enhancement, so the CSS keeps the bar VISIBLE by default and this only
- * ever hides it: with this module absent the bar behaves exactly as it did before.
- */
-{
-  const dock = document.querySelector<HTMLElement>('.mobilecta')
-  const heroCta = document.querySelector<HTMLElement>('[data-analytics="hero_reference_check_click"]')
-  if (dock && heroCta && 'IntersectionObserver' in window) {
-    const io = new IntersectionObserver(
-      ([entry]) => dock.classList.toggle('is-docked', !entry.isIntersecting),
-      { rootMargin: '-8px 0px 0px 0px' },
-    )
-    io.observe(heroCta)
-  }
-}
-
-/**
  * Gate freshness strip.
  *
  * The repo already generates public/trust/gates-summary.json on every `make gates-all`,
@@ -618,8 +597,25 @@ if (chainRoot && window.crypto?.subtle) {
       try {
         const res = await fetch('/trust/gates-summary.json', { cache: 'no-store' })
         if (!res.ok) return
-        const data = (await res.json()) as { generated_at?: string; all_green?: boolean; suites?: { result: string }[] }
+        const data = (await res.json()) as {
+          generated_at?: string
+          all_green?: boolean
+          suites?: { result: string }[]
+          commit?: string
+          tracked_clean?: boolean
+          source?: string
+          run_url?: string
+        }
         const when = (data.generated_at ?? '').slice(0, 10)
+        const sha = /^[0-9a-f]{7,40}$/.test(data.commit ?? '') ? (data.commit ?? '').slice(0, 7) : ''
+        // A release build (deploy-origin-web.yml) runs gates-all at the deployed commit
+        // and stamps source/commit/run_url. Anything else is a local run.
+        const release = data.source === 'release' && sha !== ''
+        const runUrl =
+          release && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/actions\/runs\/\d+$/.test(data.run_url ?? '') ? data.run_url : ''
+        // Name a local run's commit only when the tree was clean, so the sha actually
+        // identifies the code that was tested.
+        const commit = data.tracked_clean === true ? sha : ''
         const ageDays = (Date.now() - Date.parse(data.generated_at ?? '')) / 86_400_000
         if (!Number.isFinite(ageDays) || !when) return
         const suites = data.suites?.length ?? 0
@@ -627,16 +623,20 @@ if (chainRoot && window.crypto?.subtle) {
         const stale = ageDays > 14
 
         const status = stale
-          ? `<span class="gatesfresh__stale">snapshot from ${when} — stale</span>`
+          ? `<span class="gatesfresh__stale">${release ? `gate results are from the ${when} release; not re-run since` : `snapshot from ${when} — stale`}</span>`
           : data.all_green
-            ? `<span class="gatesfresh__ok">all ${suites} suites green</span>`
+            ? `<span class="gatesfresh__ok">${passing}/${suites} suites green</span>`
             : `<span class="gatesfresh__stale">${passing}/${suites} suites passing</span>`
 
-        el.innerHTML =
-          `<b>Verified ${when}</b>` +
-          `<span>${status}</span>` +
-          `<span>reproduced by <code>make gates-all</code>, enforced in CI on every push</span>` +
-          `<a href="/trust">See the full scoreboard &rarr;</a>`
+        el.innerHTML = release
+          ? `<b>${data.all_green ? 'Gates passed' : 'Gate run'} at release <code>${sha}</code> on ${when}</b>` +
+            `<span>${status}</span>` +
+            (runUrl ? `<span><a href="${runUrl}">Actions run &#8599;</a></span>` : '') +
+            `<a href="/trust">See the full scoreboard &rarr;</a>`
+          : `<b>Local gate run ${when}${commit ? ` at <code>${commit}</code>` : ''}</b>` +
+            `<span>${status}</span>` +
+            `<span>re-run with <code>make gates-all</code> · CI runs its own checks on pushes to main</span>` +
+            `<a href="/trust">See the full scoreboard &rarr;</a>`
         el.hidden = false
       } catch {
         /* leave the strip hidden — never render an undated claim */

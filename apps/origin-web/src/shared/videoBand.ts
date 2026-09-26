@@ -2,7 +2,7 @@
  * Video band — plays a short atmospheric clip once, when it is actually on screen.
  *
  * A band carries one of two tiers, and its pill says which in plain words: generated
- * atmosphere ("Illustration", pill--ill) or an unedited recording of the product itself
+ * atmosphere ("Illustration", pill--ill) or a one-take recording of the product itself
  * ("Recorded", pill--rec). On a site whose entire argument is that it does not dress one
  * kind of evidence up as another, an unlabelled clip beside real verdicts would be the
  * single most expensive thing we could ship — so the label is not optional.

@@ -30,6 +30,7 @@
   --signal:     #2b523b;   /* primary fill; white text ~5.3:1 */
   --signal-ink: #2b523b;   /* accent as text on paper ~7:1 */
   --signal-wash:#e7eedf;
+  --signal-hover:#203f2d;   /* primary fill on hover; white text ~11.6:1 */
 
   /* status (used sparingly) */
   --verify:     #0f7a57;
@@ -143,6 +144,10 @@ a:hover { text-decoration: underline; }
   white-space: nowrap;
 }
 .btn:hover { text-decoration: none; }
+/* Book buttons ship `hidden` and enhance.ts reveals them once their handler is bound
+   (without JS they would do nothing). `.btn { display: inline-flex }` above overrides the
+   UA [hidden] rule, so restate it for them. */
+.btn[data-open-lead][hidden] { display: none; }
 /* Press feedback lives in the hover block below (so it out-ranks .btn:hover on source
    order) and again ungated for touch/keyboard, where the hover block never matches. */
 .btn--sm { padding: 9px 16px; font-size: var(--fs-14); }
@@ -150,7 +155,7 @@ a:hover { text-decoration: underline; }
 .btn--primary {
   background: var(--signal); color: #fff; box-shadow: var(--sh-sm);
 }
-.btn--primary:hover { background: #203f2d; box-shadow: var(--sh-md); }
+.btn--primary:hover { background: var(--signal-hover); box-shadow: var(--sh-md); }
 .btn--ghost {
   background: var(--paper-2); color: var(--ink); border-color: var(--line-2);
 }
@@ -652,7 +657,7 @@ a:hover { text-decoration: underline; }
 .field__checks label:has(input:checked) { border-color: #bcccff; background: var(--signal-wash); color: var(--signal-ink); font-weight: 600; }
 .field__error { color: var(--danger); font-size: var(--fs-14); margin-top: 10px; font-weight: 600; }
 .modal__actions { margin-top: 22px; display: flex; gap: 10px; }
-.modal__note { margin-top: 14px; font-size: var(--fs-13); color: var(--steel); }
+.modal__note { margin-top: 14px; font-size: var(--fs-14); color: var(--steel); }
 .modal__success { text-align: center; padding: 20px 4px; }
 .modal__success-mark { width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 50%; background: #eaf6f0; color: var(--verify); border: 1px solid #bfe3d3; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; }
 .modal__success h3 { font-size: var(--fs-19); margin-bottom: 8px; }
@@ -864,31 +869,10 @@ a:hover { text-decoration: underline; }
   .sectionindex a:hover { color: var(--ink); text-decoration: none; }
 }
 
-/* sticky mobile CTA (long page) */
-.mobilecta { display: none; }
 @media (max-width: 700px) {
-  .mobilecta { display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 38; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: rgba(246,245,242,.94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
-  /* .btn sets white-space: nowrap, which is right on desktop but clips inside this
-     fixed bar at 320-360px — and body{overflow-x:clip} means it clips rather than
-     scrolls, so the label is silently truncated. Allow wrapping here only. */
-  /* The bar duplicates the hero's primary action; pinned to the first viewport it put
-     five CTAs on one 375px screen, two of them the same button. enhance.ts adds
-     .is-docked once the hero CTA scrolls away, so it only appears where it does not
-     compete. The tuck is scoped to html.reveal-ready — a class enhance.ts sets ONLY
-     when motion is allowed — so no-JS and reduced-motion readers keep the bar exactly
-     as it was, and the more specific rule below wins for them. */
-  .mobilecta { transform: translateY(110%); transition: transform .22s cubic-bezier(0.23, 1, 0.32, 1); }
-  .mobilecta.is-docked { transform: none; }
-  html:not(.reveal-ready) .mobilecta { transform: none; }
-  .mobilecta .btn { flex: 1; min-height: 44px; white-space: normal; line-height: 1.25; padding-inline: 10px; }
-  /* The bar is 10 + 44 (min-height) + 10 + env(safe-area-inset-bottom). On a
-     home-indicator iPhone that is ~98px, so a flat 76px left the last ~22px of
-     footer sitting UNDER the fixed bar. Reserve the inset too. */
-  body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
-  /* The long header CTA is redundant once the sticky bar + burger show, EXCEPT for
-     the compact primary CTA: the sticky bar exists only on the homepage and does not
-     link /reference-check, so hiding this left the primary action unreachable on
-     phones (audit finding M8). Keep it, compact, and let the label shrink. */
+  /* The long header CTA is redundant once the burger shows, EXCEPT for the compact
+     primary CTA: hiding it left the primary action unreachable on phones (audit finding
+     M8). Keep it, compact, and let the label shrink. */
   .site-header__cta .btn--primary:not(.site-header__cta-mobile) { display: none; }
   .site-header__cta-mobile { padding-inline: 12px; font-size: var(--fs-13); white-space: nowrap; }
 }
@@ -952,10 +936,10 @@ a:hover { text-decoration: underline; }
 .pill--sim { background: #fbf4e3; color: var(--warn); border-color: #ecd9ad; }
 /* Generated footage, never a recording of the product. Same family as pill--sim so the
    two read as one vocabulary of "this is not what it might look like". */
-.pill--ill { background: var(--paper-3); color: var(--steel); border-color: var(--line-2); }
-/* Real footage of the product, unedited. The counterpart to pill--ill: one vocabulary,
+.pill--ill { background: var(--paper-3); color: var(--steel); border-color: var(--line-2); font-size: var(--fs-12); }
+/* Real footage of the product, one take. The counterpart to pill--ill: one vocabulary,
    two honest tiers — generated atmosphere vs a recording of the thing itself. */
-.pill--rec { background: #e7f3ec; color: var(--verify); border-color: #bfe0cf; }
+.pill--rec { background: #e7f3ec; color: var(--verify); border-color: #bfe0cf; font-size: var(--fs-12); }
 
 .hero__wedge { margin-top: 20px; font-size: var(--fs-15); color: var(--ink-soft); max-width: 48ch; padding-left: 14px; border-left: 3px solid var(--signal); }
 
@@ -1084,7 +1068,7 @@ a:hover { text-decoration: underline; }
    already exists. Deliberately quiet: this is a footnote a skeptic checks, not a
    banner. Hidden until enhance.ts has real numbers to put in it. */
 .gatesfresh { margin: 0 0 26px; padding-top: 22px; border-top: 1px solid var(--line);
-  font-size: var(--fs-13); color: var(--steel); display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  font-size: var(--fs-14); font-variant-numeric: tabular-nums; color: var(--steel); display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
 .gatesfresh[hidden] { display: none; }
 .gatesfresh b { color: var(--ink-soft); font-weight: 600; }
 .gatesfresh .gatesfresh__ok { color: var(--verify); font-weight: 600; }
@@ -1099,8 +1083,8 @@ a:hover { text-decoration: underline; }
 .onpage-static li { margin-block: 3px; }
 
 /* "What Origin is not" — the boundaries, given status instead of small grey type. */
-.notgrid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 26px; }
-.notgrid .card h3 { margin-bottom: 8px; }
+.notgrid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top: 26px; }
+.notgrid .card h4 { margin: 0 0 8px; font-size: var(--fs-17); font-weight: 600; line-height: 1.3; color: var(--ink); }
 .notgrid .card p { font-size: var(--fs-15); line-height: 1.6; color: var(--ink-soft); }
 
 /* Delegation diagram — the interactive attenuation demo on /security. */
@@ -1141,7 +1125,7 @@ a:hover { text-decoration: underline; }
   background: rgba(255,255,255,.92); backdrop-filter: blur(6px);
 }
 .vband__cap {
-  margin-top: 10px; font-size: var(--fs-13); line-height: 1.55; color: var(--steel);
+  margin-top: 10px; font-size: var(--fs-14); line-height: 1.55; color: var(--steel);
   max-width: 62ch;
 }
 .vband__cap b { color: var(--ink-soft); font-weight: 600; }
@@ -1166,7 +1150,7 @@ a:hover { text-decoration: underline; }
 .deflist li { display: flex; gap: 11px; align-items: flex-start; font-size: var(--fs-15); color: var(--ink-soft); }
 .deflist b { color: var(--ink); font-weight: 600; }
 .deflist .dl-mark { flex: none; width: 20px; height: 20px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-12); font-weight: 800; background: var(--signal-wash); color: var(--signal-ink); margin-top: 1px; }
-.mono-note { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-13); line-height: 1.65; color: var(--steel); max-width: 78ch; }
+.mono-note { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-14); line-height: 1.65; color: var(--steel); max-width: 78ch; }
 .compare-row { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 26px; }
 .compare-line { display: grid; grid-template-columns: 190px 1fr; gap: 16px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper-2); align-items: baseline; }
 .compare-line--origin { border-color: #cfdcff; background: var(--signal-wash); }
@@ -1212,7 +1196,8 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .honesty-line { font-size: var(--fs-13); color: var(--steel); margin-top: 12px; }
 /* Founder credibility now sits inside the Trust section (contract section 6:
    trust + limitations + founder), so it needs a sub-heading rather than its own band. */
-.trust__founder-h { margin: 30px 0 0; font: 700 19px/1.25 'Space Grotesk', sans-serif; color: var(--ink); }
+.trust__not-h, .trust__founder-h { margin: 30px 0 0; font: 600 var(--fs-19)/1.25 var(--font-sans); color: var(--ink); }
+.trust__founder-h + p { margin-top: 8px; color: var(--ink-soft); }
 
 /* Interactive 90-second demo (progressive enhancement: 8 panels readable with JS off) */
 .demo { margin-top: 30px; display: block; border: 1px solid var(--line-2); border-radius: var(--radius); overflow: hidden; background: var(--paper-2); box-shadow: var(--sh-md); }
@@ -1262,7 +1247,7 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 @media (max-width: 560px) { .demo__readout .rd-state { margin-left: 0; } }
 .demo__bar { display: none; }
 .demo.is-enhanced .demo__bar { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--line); background: var(--paper-3); flex-wrap: wrap; }
-.demo__cap { font-size: var(--fs-13); color: var(--ink-soft); margin-left: 6px; }
+.demo__cap { font-size: var(--fs-14); color: var(--ink-soft); margin-left: 6px; }
 @media (max-width: 560px) { .demo__cap { width: 100%; margin: 8px 0 0; } .demo__screen { min-height: 240px; } }
 
 /* Mobile-compressed loop — Propose → Gate → Act/Block → Prove (replaces the 8-node diagram ≤680px) */
@@ -1322,6 +1307,6 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 /* Shared brand finish across the complete public site. */
 .site-footer { background: #edf1e7; }
 .site-footer__brand > p { font-size: 22px; line-height: 1.4; color: var(--ink); letter-spacing: -.025em; margin-top: 22px; }
-.site-footer__brand > .site-footer__boundary { font-size: 12px; color: var(--steel); letter-spacing: 0; margin-top: 18px; }
+.site-footer__brand > .site-footer__boundary { font-size: var(--fs-14); color: var(--steel); letter-spacing: 0; margin-top: 18px; }
 .site-footer__nav { column-gap: 64px; }
 @media(max-width:680px) { .site-header__inner { height: 74px; gap: 12px; }.brand__name { font-size: 27px; }.brand__logo { width: 28px; height: 28px; }.site-header__cta { gap: 9px; }.site-header__cta-mobile { font-size: 11px; padding: 10px 13px; }.site-footer__nav { gap: 30px; } }

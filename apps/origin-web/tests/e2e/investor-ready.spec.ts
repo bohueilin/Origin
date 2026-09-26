@@ -36,10 +36,12 @@ test('home presents one implemented product and one primary path', async ({ page
   // when the hero was cut from seven text blocks to four; the boundary itself is
   // unchanged in substance and must stay visible in the hero, so keep pinning it.
   await expect(page.locator('.hero__status')).toContainText('Origin does not contact or execute your named agent. Browser evidence is untrusted by default.')
+  // The maturity boundary is back in the hero (DESIGN_PRINCIPLES.md, Honesty).
+  await expect(page.locator('.hero__status')).toContainText('Not production SaaS or compliance certification')
 
   await openPrimaryNav(page)
   const nav = page.getByRole('navigation', { name: 'Primary' })
-  for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Labs', 'Run reference check']) {
+  for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Run reference check']) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible()
   }
   await expect(nav.getByRole('link', { name: /Foundry|Proving ground|Sign in/i })).toHaveCount(0)
@@ -58,7 +60,7 @@ test('primary navigation is consistent across public product and Labs routes', a
     await page.goto(route)
     await openPrimaryNav(page)
     const nav = page.getByRole('navigation', { name: 'Primary' })
-    for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Labs', 'Run reference check']) {
+    for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Run reference check']) {
       await expect(nav.getByRole('link', { name: label, exact: true }), route).toBeVisible()
     }
     await expect(nav.getByRole('link', { name: /Foundry|Proving ground|Sign in/i }), route).toHaveCount(0)
@@ -172,4 +174,163 @@ test('evidence console downloads the displayed simulated JSON locally', async ({
   expect(path).toBeTruthy()
   const artifact = JSON.parse(await readFile(path!, 'utf8'))
   expect(JSON.stringify(artifact)).toMatch(/simulated|sandbox/i)
+})
+
+// The gates strip (/) and scoreboard (/trust) render a LOCAL `make gates-all` run.
+// They must say so, name the commit only for a clean tracked tree, and never claim
+// that CI enforced the result. Served from a fixture so the date never goes stale.
+const GATES_SHA = 'abc1234'
+function gatesFixture(trackedClean: boolean) {
+  return {
+    generated_at: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'),
+    commit: GATES_SHA,
+    tracked_clean: trackedClean,
+    all_green: true,
+    suites: [
+      { name: 'ts:origin-web', result: 'PASS', detail: 'Tests  1 passed (1)' },
+      { name: 'honesty-lint', result: 'PASS', detail: 'honesty-lint: clean' },
+    ],
+  }
+}
+
+test('home gates strip names a local run and its commit, not CI enforcement', async ({ page }) => {
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: gatesFixture(true) }))
+  await page.goto('/')
+  const strip = page.locator('#gates-freshness')
+  await expect(strip).toContainText('Local gate run')
+  await expect(strip).toContainText(GATES_SHA)
+  await expect(strip).toContainText('2/2 suites green')
+  await expect(strip).not.toContainText('Verified')
+  await expect(strip).not.toContainText('enforced in CI')
+
+  // A run over a dirty tracked tree does not identify the tested code: no sha.
+  await page.unroute('**/trust/gates-summary.json')
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: gatesFixture(false) }))
+  await page.reload()
+  await expect(strip).toContainText('Local gate run')
+  await expect(strip).not.toContainText(GATES_SHA)
+})
+
+test('trust scoreboard names a local run and its commit, not CI enforcement', async ({ page }) => {
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: gatesFixture(true) }))
+  await page.goto('/trust')
+  const board = page.locator('#gates-scoreboard')
+  await expect(board).toContainText('local run of make gates-all at ' + GATES_SHA)
+  await expect(board).not.toContainText('enforced in CI')
+})
+
+// A release build (deploy-origin-web.yml) runs gates-all at the deployed commit and
+// stamps source/commit/built_at/run_url. Both surfaces then name the release and link
+// the Actions run; after 14 days the amber note says the results are that release's.
+const RELEASE_SHA = 'def5678'
+const RUN_URL = 'https://github.com/bohueilin/Origin/actions/runs/123456789'
+function releaseFixture(ageDays: number, runUrl = RUN_URL) {
+  const at = new Date(Date.now() - ageDays * 86_400_000).toISOString().replace(/\.\d{3}Z$/, 'Z')
+  return { ...gatesFixture(true), generated_at: at, commit: RELEASE_SHA, source: 'release', built_at: at, run_url: runUrl }
+}
+
+test('home gates strip names the release commit and its Actions run when stamped at release', async ({ page }) => {
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: releaseFixture(0) }))
+  await page.goto('/')
+  const strip = page.locator('#gates-freshness')
+  await expect(strip).toContainText(`Gates passed at release ${RELEASE_SHA} on`)
+  await expect(strip).toContainText('2/2 suites green')
+  await expect(strip.getByRole('link', { name: /Actions run/ })).toHaveAttribute('href', RUN_URL)
+  await expect(strip).not.toContainText('Local gate run')
+
+  await page.unroute('**/trust/gates-summary.json')
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: releaseFixture(20) }))
+  await page.reload()
+  await expect(strip).toContainText(/gate results are from the \d{4}-\d{2}-\d{2} release; not re-run since/)
+  await expect(strip).not.toContainText('suites green')
+})
+
+test('trust scoreboard names the release commit and its Actions run when stamped at release', async ({ page }) => {
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: releaseFixture(0) }))
+  await page.goto('/trust')
+  const board = page.locator('#gates-scoreboard')
+  await expect(board).toContainText(`Gates passed at release ${RELEASE_SHA} on`)
+  await expect(board.getByRole('link', { name: /Actions run/ })).toHaveAttribute('href', RUN_URL)
+  await expect(board).not.toContainText('local run')
+
+  // Only a GitHub Actions run URL is ever linked.
+  await page.unroute('**/trust/gates-summary.json')
+  await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: releaseFixture(20, 'javascript:alert(1)') }))
+  await page.reload()
+  await expect(board).toContainText(/Gate results are from the \d{4}-\d{2}-\d{2} release; not re-run since/)
+  await expect(board.getByRole('link', { name: /Actions run/ })).toHaveCount(0)
+})
+
+// PR #65 deleted the limits and the founder; they are restored inside #trust.
+test('the trust section states what Origin is not and who builds it', async ({ page }) => {
+  await page.goto('/')
+  const trust = page.locator('#trust')
+  await expect(trust.getByRole('heading', { name: 'What Origin is not.' })).toBeVisible()
+  await expect(trust.locator('.notgrid article')).toHaveCount(5)
+  await expect(trust.getByText('No design partner, no pilot, no paying user', { exact: false })).toBeVisible()
+  await expect(trust.getByRole('heading', { name: 'Who builds Origin.' })).toBeVisible()
+  await expect(trust.getByText('Bo-Huei Lin, founder.', { exact: true })).toBeVisible()
+})
+
+// One filled (primary) action per section. The sticky header pill is chrome, not a
+// section primary, so it is outside every [data-investor-section].
+test('each home section has at most one filled action, and the final ask is the reference check', async ({ page }) => {
+  await page.goto('/')
+  // Wait for enhance.ts to reveal the Book buttons, so the count sees the final page.
+  await expect(page.locator('#offer [data-open-lead]')).toBeVisible()
+  const sections = page.locator('[data-investor-section], .cin-labs')
+  const count = await sections.count()
+  expect(count).toBe(8)
+  for (let i = 0; i < count; i += 1) {
+    const section = sections.nth(i)
+    const id = (await section.getAttribute('id')) ?? 'cin-labs'
+    expect(await section.locator('.btn--primary:visible').count(), id).toBeLessThanOrEqual(1)
+  }
+  await expect(page.locator('.cin-labs .btn--primary')).toHaveCount(0)
+  await expect(page.locator('#contact .btn--primary')).toHaveAttribute('href', '/reference-check')
+})
+
+test('without JavaScript the hero boundaries show and no dead Book button does', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  try {
+    await page.goto(`${baseURL}/`)
+    await expect(page.locator('.hero__lede')).toBeVisible()
+    await expect(page.locator('.hero__status')).toContainText('Not production SaaS or compliance certification')
+    await expect(page.locator('.hero__status')).toContainText('Origin does not contact or execute your named agent.')
+    await expect(page.getByText('The public demo is a prototype, not production SaaS or compliance certification.')).toBeVisible()
+    // The Book buttons open a JS-only modal; without JS they must not be offered.
+    await expect(page.locator('[data-open-lead]:visible')).toHaveCount(0)
+  } finally {
+    await context.close()
+  }
+})
+
+test('the burger menu is visible at 375px on /, /trust and /brief', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  for (const route of ['/', '/trust', '/brief']) {
+    await page.goto(route)
+    await expect(page.locator('.site-header__burger'), route).toBeVisible()
+  }
+})
+
+// The one real artifact the site owns — a one-take recording of the offline verifier on a
+// synthetic sample — sits directly under the hero, plays only on click, and says what
+// VALID does and does not establish.
+test('the verifier recording sits under the hero, click-to-play, with its scope caption', async ({ page }) => {
+  const mp4: string[] = []
+  page.on('request', (r) => { if (r.url().includes('shot01-tamper.mp4')) mp4.push(r.url()) })
+  await page.goto('/')
+  await expect(page.locator('details.cin-recording')).toHaveCount(0)
+  const video = page.locator('#product video[poster="/video/shot01-tamper.jpg"]')
+  await video.scrollIntoViewIfNeeded()
+  await expect(video).toBeVisible()
+  await expect(video).not.toHaveAttribute('data-band')
+  const fig = page.locator('#product .vband__fig')
+  await expect(fig).toContainText('Recorded · one take')
+  await expect(fig).toContainText('synthetic demo attestation')
+  await expect(fig).toContainText('not signer identity')
+  // Fully in view, no click: nothing may start the download.
+  await page.waitForTimeout(1500)
+  expect(mp4).toEqual([])
 })

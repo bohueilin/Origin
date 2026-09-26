@@ -6,11 +6,6 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://originphysicalai.com/app</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://originphysicalai.com/proof</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -61,28 +56,8 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://originphysicalai.com/brief</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://originphysicalai.com/legal/privacy-policy.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://originphysicalai.com/legal/terms-of-service.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
     <loc>https://originphysicalai.com/reference-check-vs-runtime</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://originphysicalai.com/foundry</loc>
-    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset>

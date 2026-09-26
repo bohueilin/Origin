@@ -18,9 +18,11 @@
   honesty-lint (one green scoreboard → `public/trust/gates-summary.json`).
 
 ## Architecture
-- Frontend: React + TS + Vite. Marketing pages = `src/factorydad/`, `src/foundry/`; the
-  evidence surfaces = `src/security/`, `src/verify/`, `src/home/`. Page entries are the
-  `*.html` vite inputs, not a single-page router.
+- Frontend: React + TS + Vite. The homepage is static `index.html` (`public/home.css`,
+  `public/cinematic.css`) enhanced by `src/home/enhance.ts`; the evidence surfaces =
+  `src/reference-check/`, `src/verify/`, `src/security/`, `src/overgrant/`; Labs =
+  `src/foundry/`, `src/proving-ground/`, `src/simulation/`. Page entries are the `*.html` vite
+  inputs, not a single-page router.
 - Deterministic engine (client): `src/warehouse.ts` (`bfsOracle`, verifier), `src/siteEval.ts`.
 - Evidence spine: `@origin/evidence` + `@origin/verifier-core` (canonical JSON, isomorphic
   SHA-256, ScoreReceipts, ES256 Sigils, Merkle, Crucible). `/verify` re-checks offline.
@@ -38,12 +40,14 @@
 - Secrets stay server-side; `VITE_*` holds **public values only**. Never commit `.env*` except
   `.env.example`.
 
-## Deploy (Origin is canonical; human-owned cutover)
-This repo (`apps/origin-web`) is the **canonical deploy source** for the live site, replacing the legacy
-`physical-ai-demo-test`. The Cloudflare Pages **cutover** (repointing the Git source at `bohueilin/Origin`)
-is a human dashboard action — see [`../../docs/CUTOVER.md`](../../docs/CUTOVER.md). Verified Pages build:
-root `apps/origin-web`, `npm install && npm run build`, output `dist`. Pushing this repo does not deploy;
-after cutover, deploys stay human-gated. Never deploy without explicit authorization.
+## Deploy (Origin is canonical; human-dispatched)
+This repo (`apps/origin-web`) is the **canonical deploy source** for the live site,
+https://originphysicalai.com, replacing the legacy `physical-ai-demo-test`. The cutover happened on
+2026-09-16. The Cloudflare Pages project is a direct upload, not a Git-integration build: pushing to
+`main` runs the build-and-gate job of `.github/workflows/deploy-origin-web.yml` only. A deploy is a
+human `workflow_dispatch` of that workflow with the typed confirmation `DEPLOY`; it re-tests that
+commit and uploads the built `dist` with Wrangler (see [`../../docs/DEPLOY.md`](../../docs/DEPLOY.md)).
+Never deploy without explicit authorization.
 
 ## Pointers
 - Design language: [`DESIGN_PRINCIPLES.md`](DESIGN_PRINCIPLES.md).

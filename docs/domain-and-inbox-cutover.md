@@ -48,8 +48,14 @@ not re-verified as part of this source identity pass.
 
 ## Separate operational follow-ups
 
-- Verify any desired `www` → apex or legacy-host redirect in Cloudflare before changing it.
-- Verify the canonical-domain property and indexing in Search Console if needed.
+Done (verified 2026-09-16, after the production cutover):
+
+- `www` → apex: `www.originphysicalai.com` answers with a 301 to the canonical apex.
+- Search Console: the Domain property for `originphysicalai.com` is verified, and the submitted
+  `sitemap.xml` was read successfully.
+
+Still open:
+
 - Keep the current deliverable contact inbox until a replacement mailbox and MX are verified.
 
 These are operational changes, not prerequisites for a correct source build.

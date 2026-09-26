@@ -118,6 +118,40 @@ jobs:
         working-directory: apps/origin-web
         run: npm run --silent css:version
 
+      # Release-stamped scoreboard. The /trust scoreboard and the home strip read
+      # public/trust/gates-summary.json. Run every gates-all suite at this exact SHA
+      # (blocking: any failing gate fails this build, so nothing red can ship), then
+      # stamp the summary with the release commit, time and this run's URL before the
+      # build copies it into dist. Nothing is committed back; permissions stay read-only.
+      # setup-uv and the chronos-ui install follow ci.yml's steps; note this job runs
+      # Node 22 while ci.yml's chronos-ui job runs Node 20.
+      - name: Install uv (Python suites in gates-all)
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+        with:
+          enable-cache: true
+
+      - name: Install chronos-ui (own lockfile — intentionally not a workspace)
+        working-directory: apps/chronos-ui
+        run: npm ci
+
+      - name: Full gate run (gates-all — blocking)
+        # No colour: gates-all.sh also strips ANSI, but plain output keeps the log readable.
+        env:
+          NO_COLOR: '1'
+          FORCE_COLOR: '0'
+        run: bash scripts/gates-all.sh
+
+      - name: Stamp the scoreboard with this release
+        run: |
+          SUMMARY=apps/origin-web/public/trust/gates-summary.json
+          jq --arg commit "${GITHUB_SHA:0:7}" \
+             --arg built_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+             --arg run_url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+             '. + {source: "release", commit: $commit, built_at: $built_at, run_url: $run_url}' \
+             "$SUMMARY" > "$SUMMARY.tmp"
+          mv "$SUMMARY.tmp" "$SUMMARY"
+          cat "$SUMMARY"
+
       - name: Build origin-web
         # InsForge auth — PUBLIC values (the anon key is RLS-guarded and already ships in the
         # client bundle), so they're safe to inline here. Without them AUTH_ENABLED is false.

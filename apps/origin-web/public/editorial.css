@@ -7,7 +7,7 @@
 .editorial .editorial-hero__media { margin: 0; position: relative; }
 .editorial .editorial-hero__media img { display: block; width: 100%; height: clamp(430px, 36vw, 540px); object-fit: cover; border-radius: 5px 5px 72px 5px; }
 .editorial .editorial-hero__media img[src$="/review.webp"] { object-position: 70% center; }
-.editorial .editorial-caption { font-size: 11px; line-height: 1.5; color: var(--steel); margin-top: 12px; max-width: 62ch; }
+.editorial .editorial-caption { font-size: var(--fs-12, 12px); line-height: 1.5; color: var(--steel); margin-top: 12px; max-width: 62ch; }
 .editorial .editorial-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
 .editorial .editorial-jumps { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 34px; padding-block: 20px; border-block: 1px solid var(--line); font-size: 13px; }
 .editorial .editorial-jumps a { color: var(--ink); text-decoration: none; padding-block: 4px; }
@@ -215,6 +215,7 @@
   .brief-page .brief__foot { margin-top: 18px; padding: 14px; }
   .brief-page .brief__foot p { font-size: 10px; }
   .brief-page .brief__print-only { display: block; font-size: 9px; margin-top: 14px; }
+  .brief-page .brief__screen-only { display: none; }
   .brief-page a { color: #000; }
   @page { size: A4; margin: 13mm; }
 }

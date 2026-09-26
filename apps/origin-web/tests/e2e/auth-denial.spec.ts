@@ -132,7 +132,7 @@ test('/auth opens in sign-in mode after a denial, with Google actually usable', 
 
 test('/auth still opens in sign-up mode for an ordinary visitor', async ({ page }) => {
   await page.goto('/auth')
-  await expect(page.locator('.ap-title')).toHaveText(/private pilot access/i)
+  await expect(page.locator('.ap-title')).toHaveText(/owner-only access/i)
   await expect(page.locator('.ap-paused')).toBeVisible()
 })
 

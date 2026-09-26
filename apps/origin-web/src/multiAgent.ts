@@ -203,7 +203,7 @@ export function planMultiAgent(input: MultiAgentInput): MultiAgentPlan {
   // collision-free, and the UI must say so rather than overclaim.
   let usedFallback = false
 
-  // Independent verification (server/fleetVerify) caught two real collision
+  // The separate verifier (server/fleetVerify) caught two real collision
   // classes in plans this function certified fullyDeconflicted:
   //   1. A robot planned EARLY drove through the start cell of a robot planned
   //      LATER — which was still standing there. Unplanned robots' starts are
@@ -315,7 +315,7 @@ export function planMultiAgent(input: MultiAgentInput): MultiAgentPlan {
 
   // The flag re-derives itself: scan the PADDED timelines for vertex and swap
   // conflicts — and for cell legality (a robot standing on a wall or unsafe
-  // cell at ANY tick, including its start: independent verification caught
+  // cell at ANY tick, including its start: the separate verifier caught
   // plans certified clean whose robots were parked inside walls) — instead of
   // trusting reservation bookkeeping. The flag is a measurement, not a promise.
   let selfCheckClean = true

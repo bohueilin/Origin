@@ -1,7 +1,7 @@
 // Sign-ups must be closed at the SERVER, not just in the browser.
 //
-// The sign-in page tells every visitor "Account creation is paused during the closed
-// private pilot." Until now the only thing enforcing that sentence was `SIGNUPS_OPEN`,
+// The sign-in page tells every visitor "Account creation is closed; this console is
+// owner-only." Until now the only thing enforcing that sentence was `SIGNUPS_OPEN`,
 // a module constant in AuthPage.tsx. A constant in a bundle disables buttons; it does
 // not decide anything. AuthProvider.signUp() calls insforge.auth.signUp() directly, so
 // anyone who called that path — from devtools, curl, or a second client — got an

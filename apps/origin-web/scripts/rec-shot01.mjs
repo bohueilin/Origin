@@ -18,7 +18,7 @@ const p = await ctx.newPage()
 await p.addInitScript(CURSOR_INIT)
 const { settle, clickAt } = actions(p)
 
-await p.goto('https://origin-physical-ai.pages.dev/verify', { waitUntil: 'networkidle' })
+await p.goto('https://originphysicalai.com/verify', { waitUntil: 'networkidle' })
 await p.waitForTimeout(1500)
 
 const example = p.getByRole('button', { name: 'Origin Attestation', exact: true })

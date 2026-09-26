@@ -24,20 +24,20 @@
     <title>Trust &amp; controls, Origin, the evidence layer for AI agents</title>
     <meta
       name="description"
-      content="Origin trust center for security and procurement review: data collected, retention, access control, encryption, audit logs and the responsibility split."
+      content="Origin trust center for security and procurement review: data collected, retention, access control and the responsibility split."
     />
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://originphysicalai.com/trust" />
     <meta property="og:title" content="Trust &amp; controls, Origin, the evidence layer for AI agents" />
-    <meta property="og:description" content="Origin trust center for security and procurement review: data collected, retention, access control, encryption, audit logs and the responsibility split." />
+    <meta property="og:description" content="Origin trust center for security and procurement review: data collected, retention, access control and the responsibility split." />
     <meta property="og:image" content="https://originphysicalai.com/og/trust.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Trust &amp; controls, Origin, the evidence layer for AI agents" />
-    <meta name="twitter:description" content="Origin trust center for security and procurement review: data collected, retention, access control, encryption, audit logs and the responsibility split." />
+    <meta name="twitter:description" content="Origin trust center for security and procurement review: data collected, retention, access control and the responsibility split." />
     <meta name="twitter:image" content="https://originphysicalai.com/og/trust.jpg" />
     <link rel="canonical" href="https://originphysicalai.com/trust" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
@@ -47,7 +47,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <link rel="stylesheet" href="/home.css?v=e7514f0a" />
+    <link rel="stylesheet" href="/home.css?v=9e4ed233" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -126,7 +126,6 @@
           <a href="/#demo">Demo</a>
           <a href="/#evidence">Evidence</a>
           <a href="/trust" aria-current="page">Trust</a>
-          <a href="/labs">Labs</a>
           <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
         </nav>
 
@@ -142,13 +141,13 @@
     <main id="main">
       <section class="editorial-hero" aria-labelledby="trust-title"><div class="shell">
         <div class="editorial-hero__grid"><div>
-          <p class="kicker">Trust &amp; controls / 01</p>
+          <p class="kicker">Trust &amp; controls</p>
           <h1 id="trust-title">Evidence you can inspect. Limits you can see.</h1>
           <p class="section__lede">A useful reference check starts with a clear boundary. Origin evaluates a bound configuration against deterministic synthetic tasks and gives reviewers an artifact they can recheck.</p>
           <p class="editorial-caption">Working prototype. Seeking design partners. Not production SaaS, compliance certification, or a guarantee of approval.</p>
           <div class="editorial-actions"><a class="btn btn--primary" href="/verify">Inspect an artifact</a><a class="btn btn--ghost" href="/reference-check-vs-runtime">Understand the boundary</a></div>
         </div><figure class="editorial-hero__media"><img src="/brand/review.webp" width="1024" height="1024" alt="" /><figcaption class="editorial-caption">Generated illustration of a review environment; not an Origin facility or customer deployment.</figcaption></figure></div>
-        <nav class="editorial-jumps" aria-label="On this page"><a href="#posture"><span>01</span>Current posture</a><a href="#gated"><span>02</span>Verification</a><a href="#data"><span>03</span>Data &amp; retention</a><a href="#controls"><span>04</span>Controls</a><a href="#packet"><span>05</span>Security review</a></nav>
+        <nav class="editorial-jumps" aria-label="On this page"><a href="#posture"><span>01</span>Current posture</a><a href="#gated"><span>02</span>Verification</a><a href="#data"><span>03</span>Data &amp; retention</a><a href="#controls"><span>04</span>Responsibility</a><a href="#packet"><span>05</span>Security review</a></nav>
       </div></section>
       <section class="editorial-section" id="posture"><div class="shell">
         <div class="editorial-heading"><p class="kicker">01 / Current posture</p><div><h2>What exists today. What still needs agreement.</h2><p>The public prototype demonstrates an evaluation and evidence workflow. A runtime gate and controlled tool-call proxy remain proposed pilot architecture, not deployed general enforcement.</p></div></div>
@@ -161,7 +160,7 @@
       </div></section>
       <section class="editorial-section" id="gated" aria-labelledby="gated-title"><div class="shell">
         <div class="editorial-heading"><p class="kicker">02 / Verification</p><div><h2 id="gated-title">The checks have a record, too.</h2><p>The deterministic oracle is the sole label and reward authority. <code>make gates-all</code> runs the public repository's build, tests, evidence checks, and honesty checks. Inspect the <a href="https://github.com/bohueilin/Origin/blob/main/.github/workflows/ci.yml">CI definition</a> or reproduce the checks locally.</p></div></div>
-        <div id="gates-scoreboard" class="mono-note">Reproduce locally with <code>make gates-all</code>. The committed verification snapshot loads here.</div>
+        <div id="gates-scoreboard" class="mono-note">Reproduce locally with <code>make gates-all</code>. The gate snapshot shipped with this release loads here (needs JavaScript).</div>
         <p class="editorial-caption">A timestamped snapshot is evidence of that run, not a live assurance. Numbers in this scoreboard are reproducible under this verifier on the public repository. Private research metrics published elsewhere have separate provenance.</p>
       </div></section>
             <script type="module">
@@ -181,13 +180,25 @@
               + `<td>${detail}</td></tr>`
           }).join('')
           const when = (data.generated_at || '').slice(0, 10)
+          const sha = /^[0-9a-f]{7,40}$/.test(data.commit || '') ? data.commit.slice(0, 7) : ''
+          // A release build stamps source/commit/run_url (deploy-origin-web.yml); anything else is a local run.
+          const release = data.source === 'release' && sha !== ''
+          const runUrl = release && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/actions\/runs\/\d+$/.test(data.run_url || '') ? data.run_url : ''
+          const runLink = runUrl ? ` · <a href="${runUrl}" style="text-decoration:underline">Actions run ↗</a>` : ''
+          const commit = data.tracked_clean === true ? sha : ''
           const ageDays = (Date.now() - Date.parse(data.generated_at)) / 86400000
           const stale = !Number.isFinite(ageDays) || ageDays > 14
-          const bannerLine = stale
+          const bannerLine = release
+            ? (stale
+                ? `<b style="color:var(--warn)">Gate results are from the ${when} release; not re-run since.</b> Release <code>${sha}</code>${runLink}`
+                : (data.all_green
+                    ? `<b style="color:var(--verify)">Gates passed at release <code>${sha}</code> on ${when}</b> · ${data.suites.length} suites${runLink}`
+                    : `<b style="color:#b3261e">Gates failing at release <code>${sha}</code> on ${when}</b> · ${data.suites.length} suites${runLink}`))
+            : stale
             ? `<b style="color:var(--warn)">Snapshot from ${when} — stale; regenerate with <code>make gates-all</code>.</b>`
             : (data.all_green
-                ? `${when} · <b style="color:var(--verify)">ALL GATES GREEN</b> · ${data.suites.length} suites — reproduced by <code>make gates-all</code>, enforced in CI on every push.`
-                : `${when} · <b style="color:#b3261e">gates failing — see CI</b> · ${data.suites.length} suites — reproduced by <code>make gates-all</code>, enforced in CI on every push.`)
+                ? `${when} · <b style="color:var(--verify)">ALL GATES GREEN</b> · ${data.suites.length} suites — local run of <code>make gates-all</code>${commit ? ' at ' + commit : ''}. CI runs its own checks on pushes to main.`
+                : `${when} · <b style="color:#b3261e">gates failing in this local run</b> · ${data.suites.length} suites — local run of <code>make gates-all</code>${commit ? ' at ' + commit : ''}. CI runs its own checks on pushes to main.`)
           document.getElementById('gates-scoreboard').innerHTML =
             `<div style="margin-bottom:10px">${bannerLine}</div>`
             + `<div style="overflow-x:auto" tabindex="0" role="region" aria-label="Gate results table (scrollable)"><table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
@@ -200,7 +211,7 @@
         <div class="editorial-heading"><p class="kicker">03 / Data &amp; retention</p><div><h2 id="data-title">Different workflows. Different data boundaries.</h2><p>The public reference check, a contact request, and an authorized pilot are different activities. Their data handling should not be conflated.</p></div></div>
         <div class="editorial-table-wrap" tabindex="0" role="region" aria-label="Data handling table, horizontally scrollable"><table class="editorial-table"><thead><tr><th scope="col">Workflow</th><th scope="col">Data boundary</th><th scope="col">Retention posture</th></tr></thead><tbody>
           <tr><td>Synthetic reference check</td><td>Browser-local policy evaluation and downloadable demo artifacts. No production action is attempted.</td><td>Public evaluation does not require submitting customer traces or credentials.</td></tr>
-          <tr><td>Contact and pilot account</td><td>Information you choose to provide when requesting a review or using an invited account.</td><td>Contact deletion can be requested. Account and service handling are described in the <a href="/legal/privacy-policy.html">privacy policy</a>.</td></tr>
+          <tr><td>Contact request</td><td>Information you choose to provide when requesting a review. There are no customer accounts; the console is owner-only.</td><td>Contact deletion can be requested. Account and service handling are described in the <a href="/legal/privacy-policy.html">privacy policy</a>.</td></tr>
           <tr><td>Foundry image processing</td><td>The public site offers a local sample. An enabled local/backend demo requires affirmative consent before an image is sent to Cerebras.</td><td>The Origin handler does not intentionally persist the image; provider terms and retention apply. See the <a href="/legal/privacy-policy.html">processing disclosure</a>.</td></tr>
           <tr><td>Separately authorized pilot</td><td>Evidence, permissions, redaction, and data-use scope must be agreed before customer material is used.</td><td>Retention, deletion, and deployment-specific controls are not finalized; settle them in the pilot agreement and DPA.</td></tr>
         </tbody></table></div>
@@ -226,7 +237,7 @@
     </main>
 
     <!-- ===================== Footer ===================== -->
-    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Independent verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Check an agent</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@gmail.com">Contact</a><a href="/auth" rel="nofollow">Sign in</a></span></div></footer>
+    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Offline re-verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Run a policy reference check</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@gmail.com">Contact</a><a href="/auth" rel="nofollow">Owner console</a></span></div></footer>
 
     <script type="module" src="/src/home/enhance.ts"></script>
   </body>

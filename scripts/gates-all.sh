@@ -17,6 +17,12 @@ declare -a RESULTS=()   # PASS / FAIL
 declare -a DETAILS=()   # short count/summary
 FAILED=0
 
+# Record which code this run tested, captured BEFORE any suite runs. tracked_clean
+# ignores untracked files by design (local uncommitted notes must not flip it); the
+# public strips name the commit only when it is true.
+COMMIT="$(git rev-parse --short HEAD 2>/dev/null || true)"
+git diff --quiet HEAD 2>/dev/null && TRACKED_CLEAN=true || TRACKED_CLEAN=false
+
 run() {
   local name="$1"; shift
   local log; log="$(mktemp)"
@@ -31,6 +37,10 @@ run() {
   local d
   d="$(grep -hoE '[0-9]+ passed[^,]*(, [0-9]+ (failed|skipped)[^,]*)*|Tests +[0-9]+ passed[^)]*\)|[0-9]+ passed, [0-9]+ skipped|[0-9]+ passed' "$log" | tail -1)"
   [ -z "$d" ] && d="$(tail -1 "$log" | cut -c1-70)"
+  # CI terminals get coloured output (vite/picocolors colour when CI is set). Raw ESC
+  # bytes are not valid inside a JSON string, so strip ANSI sequences and any other
+  # control characters here, before the detail reaches the table or the summary.
+  d="$(printf '%s' "$d" | sed $'s/\033\\[[0-9;]*[A-Za-z]//g' | tr -d '\000-\037\177')"
   DETAILS+=("$d")
   # surface failing logs immediately so failures are never hidden
   # (bash 3.2 on macOS has no negative array index — use the computed last index)
@@ -82,6 +92,7 @@ SUMMARY="apps/origin-web/public/trust/gates-summary.json"
 mkdir -p "$(dirname "$SUMMARY")"
 {
   printf '{\n  "generated_at": "%s",\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '  "commit": "%s",\n  "tracked_clean": %s,\n' "$COMMIT" "$TRACKED_CLEAN"
   printf '  "all_green": %s,\n  "suites": [\n' "$([ "$FAILED" -eq 0 ] && echo true || echo false)"
   for i in "${!NAMES[@]}"; do
     sep=","; [ "$i" -eq $(( ${#NAMES[@]} - 1 )) ] && sep=""

@@ -1,9 +1,9 @@
-// Account access: a closed-pilot introduction and existing-account sign-in.
+// Account access: an owner-only introduction and existing-account sign-in.
 // Reuses the InsForge AuthProvider and its existing OAuth/session contracts.
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from './AuthProvider'
 
-// Account creation is paused while Origin is in private pilots. While this is
+// Account creation is closed; this console is owner-only. While this is
 // false, the create-account actions (Continue-with-Google in sign-up + the
 // Create-account button) are disabled; sign-in still works for existing owners.
 // Flip to true to open sign-ups.

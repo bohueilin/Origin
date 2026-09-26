@@ -734,34 +734,6 @@ a:hover { text-decoration: underline; }
 .walk__progress { flex: 1; height: 4px; border-radius: 999px; background: var(--line-dark); overflow: hidden; }
 .walk__progress-fill { display: block; height: 100%; width: 25%; background: linear-gradient(90deg, #2b523b, #5f86ff); transition: width .4s ease; }
 
-/* Vision film — click-to-play, poster-first, lazy (no bytes until play), no CLS */
-.visionfilm { margin: 34px 0 0; }
-.visionfilm__frame { position: relative; aspect-ratio: 16 / 9; width: 100%; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-dark); background: #000; }
-.visionfilm__video { width: 100%; height: 100%; object-fit: cover; display: block; }
-/* overlay is hidden by default so with JS off the native <video controls> are usable;
-   enhance.ts adds .is-enhanced to reveal the designed poster/play overlay */
-.visionfilm__play { display: none; }
-/* :not([hidden]) so JS setting btn.hidden actually hides the overlay — a bare
-   `display: flex` here overrides the [hidden] attribute, which left the poster
-   overlay covering the playing video ("the video doesn't play"). */
-.visionfilm.is-enhanced .visionfilm__play:not([hidden]) {
-  position: absolute; inset: 0; width: 100%; height: 100%; cursor: pointer; border: 0; color: #fff;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-  font-family: var(--font-sans);
-  background:
-    linear-gradient(rgba(20,22,26,.30), rgba(20,22,26,.55)),
-    url('/home-collaboration-poster.jpg') center/cover no-repeat, #202e25;
-}
-.visionfilm__play-icon {
-  width: 66px; height: 66px; border-radius: 50%; background: rgba(255,255,255,.16);
-  border: 1px solid rgba(255,255,255,.45); display: flex; align-items: center; justify-content: center;
-  font-size: 22px; padding-left: 4px; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-  transition: transform .15s ease, background .15s ease;
-}
-.visionfilm__play:focus-visible .visionfilm__play-icon { transform: scale(1.06); background: rgba(255,255,255,.26); }
-.visionfilm__play-label { font-weight: 600; font-size: var(--fs-14); letter-spacing: .01em; }
-.visionfilm__cap { margin-top: 10px; font-size: var(--fs-13); color: var(--on-dark-soft); }
-
 /* Pilot scorecard table */
 .scorecard-wrap { margin-top: 34px; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-2); box-shadow: var(--sh-sm); }
 .scorecard { width: 100%; border-collapse: collapse; font-size: var(--fs-14); min-width: 640px; }
@@ -807,7 +779,6 @@ a:hover { text-decoration: underline; }
   .btn:hover { transform: translateY(-1px); }
   .btn:active { transform: translateY(1px) scale(.985); }
   .chip:hover { border-color: var(--signal); background: var(--signal-wash); transform: translateY(-1px); }
-  .visionfilm__play:hover .visionfilm__play-icon { transform: scale(1.06); background: rgba(255,255,255,.26); }
   .routecard:hover { border-color: var(--signal); transform: translateY(-3px); box-shadow: var(--sh-md); }
 }
 /* Ungated twin: on touch and keyboard the hover block never matches, and .btn declares no
@@ -953,9 +924,6 @@ a:hover { text-decoration: underline; }
 .walk.is-enhanced .walk__mode-block.is-active { display: block; }
 .walk__mode-block:not(:last-of-type) { margin-bottom: 6px; }
 
-/* vision film — subordinate to the walkthrough */
-.visionfilm--sub { max-width: 620px; margin-left: auto; margin-right: auto; margin-top: 42px; }
-.visionfilm--sub .visionfilm__play-label { font-size: var(--fs-13); }
 
 /* proof artifact slot */
 .proofslot { margin-top: 30px; }
@@ -1059,7 +1027,6 @@ a:hover { text-decoration: underline; }
   *, *::before, *::after { animation-iteration-count: 1 !important; }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
   .btn:hover, .btn:active, .chip:hover, .routecard:hover { transform: none; }
-  .visionfilm__play:hover .visionfilm__play-icon { transform: none; }
   .demo.is-enhanced .demo__panel.is-on { animation: none; }
 }
 

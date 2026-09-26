@@ -51,7 +51,7 @@
 
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
 
-    <link rel="stylesheet" href="/home.css?v=9e4ed233" />
+    <link rel="stylesheet" href="/home.css?v=2eb6c8e7" />
     <link rel="stylesheet" href="/cinematic.css" />
 
     <!-- Structured data keeps the canonical product website and public source distinct.
@@ -142,21 +142,6 @@
           <p class="hero__status"><b>Explore the working prototype.</b> Not production SaaS or compliance certification. Evaluate a selected policy in your browser using synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is untrusted by default.</p>
           <a class="cin-text-link" href="/reference-check-vs-runtime">What works today <span aria-hidden="true">↗</span></a>
         </div>
-        <div class="shell">
-          <figure class="vband__fig">
-            <div class="vband__wrap">
-              <video class="vband__v" poster="/video/shot01-tamper.jpg"
-                     width="1280" height="800" muted playsinline controls preload="none"
-                     aria-label="Screen recording: the /verify page verifies a synthetic demo attestation, the network is disabled, one field is tampered and the verdict goes VOID, then restores to VALID — all offline.">
-                <source src="/video/shot01-tamper.mp4" type="video/mp4" />
-              </video>
-              <span class="pill pill--rec vband__pill">Recorded &middot; one take</span>
-            </div>
-            <figcaption class="vband__cap"><b>Recorded on or before 2026-08-29 on <a href="/verify">/verify</a> as it was then, using a synthetic demo attestation.</b>
-              The network is cut mid-run, so the VOID and the final VALID are computed with no network, in the browser. VALID means the file is intact and signed by the key inside it &mdash; not signer identity, execution, or safety. Reference-check evidence verifies as UNTRUSTED because its signer is unpinned.
-              <small>Captions and a cursor dot were overlaid; the run itself is one uncut take. Re-record the raw take: <code>cd apps/origin-web &amp;&amp; node scripts/rec-shot01.mjs</code>.</small></figcaption>
-          </figure>
-        </div>
       </section>
 
       <section class="section cin-demo" id="demo" data-investor-section aria-labelledby="demo-title">
@@ -210,7 +195,7 @@
               <div class="cin-evidence-pending"><span class="cin-status cin-status--pending">Not earned yet</span><h3>A real customer's workflow.</h3><p>TR-A003 · external design-partner evidence has not been collected. No customer validation is claimed.</p></div>
             </div>
           </div>
-          <div class="cin-footnote"><p>Artifact integrity does not establish execution, issuer trust, real-world safety or approval.</p><a class="cin-text-link" href="/verify">Verify an attestation <span aria-hidden="true">↗</span></a></div>
+          <div class="cin-footnote"><p>A VALID verdict means the file is intact and signed by the key inside it &mdash; not signer identity, execution, issuer trust, real-world safety or approval.</p><a class="cin-text-link" href="/verify">Verify an attestation <span aria-hidden="true">↗</span></a></div>
         </div>
       </section>
 

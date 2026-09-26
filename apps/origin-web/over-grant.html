@@ -47,7 +47,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <link rel="stylesheet" href="/home.css?v=9e4ed233" />
+    <link rel="stylesheet" href="/home.css?v=2eb6c8e7" />
 
     <style>
       /* Local helpers for the live demo panels, layered on the shared design system. */
@@ -118,22 +118,6 @@
           <p class="section__lede">Inspect standing permissions, exercised authority, and what a compromised identity could reach. Then widen a delegation edge and watch the result change.</p>
           <p class="product-hero__scope">Every fleet and event on this page is synthetic and seeded. These numbers describe the demonstration, not a customer deployment. Definitions and denominators accompany the published benchmark.</p>
           <div class="product-hero__links"><a href="https://github.com/bohueilin/Origin/blob/main/docs/OVER-GRANT-METRICS.md">Metric definitions ↗</a><a href="/trust/over-grant-bench.json">Published synthetic benchmark ↗</a><a href="#og-table-title">Explore the analyzer ↓</a></div>
-
-          <!-- Recorded footage: scripts/rec-shot02.mjs films the live /security analyzer.
-               Poster-first; plays once on scroll via src/shared/videoBand.ts. -->
-          <figure class="vband__fig" style="margin-top: 26px">
-            <div class="vband__wrap">
-              <video class="vband__v" data-band poster="/video/shot02-overgrant.jpg"
-                     width="1280" height="800" muted playsinline controls preload="none"
-                     aria-label="Screen recording: the over-grant analyzer runs in the browser — 9,690 synthetic identities, one delegation edge widened, 445 of 445 planted violations recovered.">
-                <source src="/video/shot02-overgrant.mp4" type="video/mp4" />
-              </video>
-              <span class="pill pill--rec vband__pill">Recorded &middot; one take</span>
-            </div>
-            <figcaption class="vband__cap"><b>One take on the live analyzer.</b> 9,690 synthetic
-              identities, 445/445 planted violations recovered, 0 false positives. Re-film it:
-              <code>node scripts/rec-shot02.mjs</code>.</figcaption>
-          </figure>
         </div>
       </section>
       <div id="overgrant-root">

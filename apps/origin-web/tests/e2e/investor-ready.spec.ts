@@ -314,23 +314,16 @@ test('the burger menu is visible at 375px on /, /trust and /brief', async ({ pag
   }
 })
 
-// The one real artifact the site owns — a one-take recording of the offline verifier on a
-// synthetic sample — sits directly under the hero, plays only on click, and says what
-// VALID does and does not establish.
-test('the verifier recording sits under the hero, click-to-play, with its scope caption', async ({ page }) => {
-  const mp4: string[] = []
-  page.on('request', (r) => { if (r.url().includes('shot01-tamper.mp4')) mp4.push(r.url()) })
+// The earlier one-take recordings were withdrawn on 2026-09-26: their footage showed a retired
+// UI, and their burned-in captions made claims the footage did not support. Until re-recorded
+// clips return, no retired recording (or the unlabelled generated Passport clip) may be linked,
+// and the homepage must still say what a VALID verdict does not establish.
+test('no retired recording is linked, and the VALID scope line survives', async ({ page }) => {
+  const retired = 'video[poster*="shot0"], source[src*="shot0"], video[poster*="agent-journey"], video[src*="agent-journey"]'
+  for (const route of ['/', '/over-grant', '/reference-check', '/passport']) {
+    await page.goto(route)
+    await expect(page.locator(retired), route).toHaveCount(0)
+  }
   await page.goto('/')
-  await expect(page.locator('details.cin-recording')).toHaveCount(0)
-  const video = page.locator('#product video[poster="/video/shot01-tamper.jpg"]')
-  await video.scrollIntoViewIfNeeded()
-  await expect(video).toBeVisible()
-  await expect(video).not.toHaveAttribute('data-band')
-  const fig = page.locator('#product .vband__fig')
-  await expect(fig).toContainText('Recorded · one take')
-  await expect(fig).toContainText('synthetic demo attestation')
-  await expect(fig).toContainText('not signer identity')
-  // Fully in view, no click: nothing may start the download.
-  await page.waitForTimeout(1500)
-  expect(mp4).toEqual([])
+  await expect(page.locator('.cin-footnote', { hasText: 'not signer identity' })).toHaveCount(1)
 })

@@ -2,7 +2,7 @@
  * Origin homepage — progressive enhancement only.
  *
  * The homepage is fully readable and usable as static HTML with this module
- * absent. Everything here is additive: header elevation, scroll reveal, the
+ * absent. Everything here is additive: header elevation, the
  * Observe→Plan→Act→Verify highlight, the lead-form modal, and analytics.
  * All motion is gated on `prefers-reduced-motion`.
  */
@@ -63,31 +63,6 @@ if (burger && siteNav) {
   // Mark the controls bound so the early header reservation survives load.
   // Without this marker the head script restores ordinary navigation links.
   document.documentElement.classList.add('nav-ready', 'nav-bound')
-}
-
-/* ---------- scroll reveal (motion-safe) ---------- */
-if (!reduceMotion && 'IntersectionObserver' in window) {
-  document.documentElement.classList.add('reveal-ready')
-  const targets = document.querySelectorAll<HTMLElement>(
-    '.card, .loop__step, .timeline__item, .compare__col, .teamcard, .io__col, .io__diagram, .checklist > li, .whynow__item, .routecard, .wedge__primary, .wedge__future',
-  )
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e, i) => {
-        if (!e.isIntersecting) return
-        const el = e.target as HTMLElement
-        // gentle stagger within a batch
-        el.style.transitionDelay = `${Math.min(i * 40, 200)}ms`
-        el.classList.add('is-in')
-        io.unobserve(el)
-      })
-    },
-    { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
-  )
-  targets.forEach((t) => {
-    t.setAttribute('data-reveal', '')
-    io.observe(t)
-  })
 }
 
 /* ---------- Observe → Plan → Act → Verify highlight ---------- */

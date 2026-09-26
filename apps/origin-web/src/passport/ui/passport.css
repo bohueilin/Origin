@@ -488,7 +488,7 @@
 .pp-mic:disabled { opacity: .5; cursor: not-allowed; }
 .pp-mic-on { background: linear-gradient(150deg, #e0483f, #c12a22); box-shadow: 0 8px 22px -6px rgba(224,72,63,0.55); animation: pp-mic-pulse 1.3s ease-in-out infinite; }
 .pp-mic-wave { display: inline-flex; align-items: center; gap: 3px; height: 22px; }
-.pp-mic-wave i { width: 3px; height: 8px; background: #fff; border-radius: 2px; animation: pp-mic-bar .9s ease-in-out infinite; }
+.pp-mic-wave i { width: 3px; height: 18px; transform-origin: center; background: #fff; border-radius: 2px; animation: pp-mic-bar .9s ease-in-out infinite; }
 .pp-mic-wave i:nth-child(2) { animation-delay: .15s; }
 .pp-mic-wave i:nth-child(3) { animation-delay: .3s; }
 .pp-mic-wave i:nth-child(4) { animation-delay: .45s; }
@@ -521,7 +521,7 @@
 .pp-sponsor-note { font-size: 12px; color: var(--text-soft); }
 
 @keyframes pp-mic-pulse { 0%,100% { box-shadow: 0 8px 22px -6px rgba(224,72,63,0.55); } 50% { box-shadow: 0 8px 22px -6px rgba(224,72,63,0.55), 0 0 0 6px rgba(224,72,63,0.14); } }
-@keyframes pp-mic-bar { 0%,100% { height: 7px; } 50% { height: 18px; } }
+@keyframes pp-mic-bar { 0%,100% { transform: scaleY(.389); } 50% { transform: scaleY(1); } }
 
 @media (max-width: 620px) {
   .pp-voice { flex-wrap: wrap; }
@@ -711,7 +711,16 @@ button.pp-ph-approve:disabled { cursor: default; opacity: 0.92; }
 
 /* focus visibility */
 .pp-app button:focus-visible, .pp-app input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { .pp-app *, .pp-app *::before, .pp-app *::after { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .pp-app *, .pp-app *::before, .pp-app *::after { animation: none !important; }
+  .pp-app :is(button, a, input, .pp-example-card, .pp-ava) {
+    transition-property: color, background-color, border-color, opacity, box-shadow, filter;
+    transition-duration: 120ms;
+  }
+  .pp-revoke:active:not(:disabled), .pp-btn:active:not(:disabled), .pp-arrow:active,
+  .pp-example-card:hover, .pp-mic:hover:not(:disabled), .pp-ava-active { transform: none; }
+  .pp-progress > span, .pp-report-summary::before { transition: none; }
+}
 
 /* read-only preview — subtle accent-tinted bar for anonymous / non-owner viewers (not an edge stripe) */
 .pp-readonly {

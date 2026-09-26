@@ -500,7 +500,7 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
       for (const dv of delivered) if (dTick >= dv.tick) doneDeliv += 1
       const runPct = ticks > 1 ? Math.min(1, tickF / (ticks - 1)) : 1
       if (progFillRef.current) {
-        progFillRef.current.style.width = `${(runPct * 100).toFixed(1)}%`
+        progFillRef.current.style.transform = `scaleX(${runPct})`
         progFillRef.current.classList.toggle('done', totalDeliv > 0 && doneDeliv >= totalDeliv)
       }
       if (progTxtRef.current) {

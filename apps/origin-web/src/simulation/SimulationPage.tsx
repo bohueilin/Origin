@@ -144,7 +144,7 @@ export function SimulationPage() {
         {view === '2d'
           ? <canvas ref={canvasRef} className="sim-canvas" />
           : <div ref={containerRef} className="sim-canvas sim-canvas--3d" />}
-        <div className="sim-progress"><span style={{ width: `${(frameIdx / Math.max(1, result.frames.length - 1)) * 100}%` }} /></div>
+        <div className="sim-progress"><span style={{ transform: `scaleX(${frameIdx / Math.max(1, result.frames.length - 1)})` }} /></div>
       </div>
 
       <div className="sim-panel">

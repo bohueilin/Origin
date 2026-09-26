@@ -2,11 +2,12 @@
 // SAME deployment (N robots, M items, the floor you drew) animates identically on
 // the Illustrate step and the readiness-gym page. Self-animating + deterministic.
 
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { DescriptiveSiteMap } from '../workflowDraft'
 import { siteFleets } from '../workflowDraft'
 import { planMultiAgent } from '../multiAgent'
 import { EMBODIMENT_CODE, type RobotEmbodiment } from '../environmentPlan'
+import { usePlaybackVisibility } from '../shared/usePlaybackVisibility'
 
 // One colour per FLEET. Robots, their items, and their drop inherit the fleet
 // colour, so the grouping — which robots serve which work — reads at a glance.
@@ -54,18 +55,28 @@ export function MultiRobotSim({
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     [],
   )
-  const [step, setStep] = useState(0)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const visible = usePlaybackVisibility(gridRef)
+  const stepMax = Math.max(plan.ticks - 1, 0)
+  const [step, setStep] = useState(() => reduced ? stepMax : 0)
+  const [playing, setPlaying] = useState(!reduced)
+  const advancing = playing && step < stepMax
   useEffect(() => {
-    if (reduced) return
-    const stepMax = Math.max(plan.ticks - 1, 0)
-    // Loop with a short pause at the end so the full round-trip is legible.
-    const timer = window.setInterval(() => {
-      setStep((s) => (s >= stepMax + 2 ? 0 : s + 1))
+    if (!advancing || !visible) return
+    const timer = window.setTimeout(() => {
+      setStep((s) => Math.min(s + 1, stepMax))
     }, 460)
-    return () => window.clearInterval(timer)
-  }, [plan, reduced])
+    return () => window.clearTimeout(timer)
+  }, [step, stepMax, advancing, visible])
 
-  const tick = reduced ? Math.max(plan.ticks - 1, 0) : Math.min(step, plan.ticks - 1)
+  const togglePlayback = () => {
+    if (step >= stepMax) {
+      setStep(0)
+      setPlaying(true)
+    } else setPlaying(value => !value)
+  }
+
+  const tick = Math.min(step, stepMax)
   const robotAt = (x: number, y: number) =>
     plan.robots.findIndex((rp) => {
       const p = rp.timeline[Math.min(tick, rp.timeline.length - 1)]
@@ -74,7 +85,10 @@ export function MultiRobotSim({
 
   return (
     <>
-      <div className="sim-grid" style={{ gridTemplateColumns: `repeat(${siteMap.width}, 1fr)` }}>
+      <button className="btn btn--ghost btn--sm" onClick={togglePlayback} aria-label={advancing ? 'Pause floor playback' : 'Play floor playback'}>
+        {advancing ? 'Pause playback' : 'Play playback'}
+      </button>
+      <div ref={gridRef} className="sim-grid" style={{ gridTemplateColumns: `repeat(${siteMap.width}, 1fr)` }}>
         {Array.from({ length: siteMap.width * siteMap.height }, (_, i) => {
           const x = i % siteMap.width
           const y = Math.floor(i / siteMap.width)

@@ -103,5 +103,8 @@ a { color: inherit; }
   .ap-alt { margin-top: 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ap-shell *, .ap-shell *::before, .ap-shell *::after { transition: none !important; animation: none !important; }
+  .ap-shell *, .ap-shell *::before, .ap-shell *::after { animation: none !important; }
+  .ap-submit { transition: background-color .15s, border-color .15s; }
+  .ap-submit:active:not(:disabled) { transform: none; }
+  .ap-pw-bar > span { transition: none; }
 }

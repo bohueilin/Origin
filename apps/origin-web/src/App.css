@@ -3181,9 +3181,9 @@ select.field-input {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    transition-duration: 0.001ms !important;
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
+    transition-property: color, background-color, border-color, opacity, box-shadow, filter !important;
+    transition-duration: 120ms !important;
+    animation: none !important;
   }
 }
 
@@ -6726,7 +6726,7 @@ select.field-input {
 .pg3d-canvas canvas { display: block; border-radius: 14px; }
 .pg3d-progress { display: flex; align-items: center; gap: 12px; padding: 9px 14px; background: #fff; border-top: 1px solid #eef1f4; }
 .pg3d-prog-track { position: relative; flex: 1; height: 7px; border-radius: 999px; background: #e7ecf2; overflow: hidden; }
-.pg3d-prog-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 999px; background: linear-gradient(90deg, #2b523b, #6aa0ff); transition: width .12s linear; }
+.pg3d-prog-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; border-radius: 999px; background: linear-gradient(90deg, #2b523b, #6aa0ff); transform: scaleX(0); transform-origin: left; transition: transform .12s linear; }
 .pg3d-prog-fill.done { background: linear-gradient(90deg, #0b6e52, #18a06f); }
 .pg3d-prog-txt { font: 600 11.5px/1 inherit; color: #5b6470; white-space: nowrap; min-width: 118px; text-align: right; }
 /* Transport row — sits below the canvas, directly above the progress bar. Play is the
@@ -7141,3 +7141,8 @@ select.field-input {
 .capture .capture-divider { padding-top: 40px; margin-top: 40px; }
 .capture .capture-divider-n { background: #2b523b; color: #fff; }
 @media(max-width:640px) { .capture .flow-shell { padding: 28px 20px 60px; }.capture .flow-sub { font-size: 15px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:active, .rl-step:hover, .si-legend div:hover, .floorlib-card:hover,
+  .floorlib-hero:hover .floorlib-hero-q, .pg3d-btn:active { transform: none !important; }
+}

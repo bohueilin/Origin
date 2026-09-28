@@ -18,9 +18,11 @@
 //
 // Degrades gracefully in every direction: with nothing configured it returns
 // stored:false + delivered:false and the client falls back to composing a mailto:,
-// so demand is never silently dropped. A database outage never fails the visitor's
-// form. Same file-based-routing dir as the InsForge Deno functions, but this is the
+// so demand is never silently dropped. Admission fails closed on a database outage;
+// the browser retains its email-composition fallback. Same file-based-routing dir as the InsForge Deno functions, but this is the
 // only Pages-routable handler (scoped by public/_routes.json to /api/*).
+
+import { admitLead } from '../../server/leadAdmission.ts'
 
 interface LeadEnv {
   LEAD_WEBHOOK_URL?: string
@@ -122,6 +124,13 @@ export const onRequestPost = async (ctx: { request: Request; env: LeadEnv }): Pr
   const name = field('name').trim()
   const email = field('email').trim()
   if (!name || !EMAIL_RE.test(email)) return json({ ok: false, error: 'invalid' }, 422)
+
+  const admission = await admitLead(request, env)
+  if (!admission.allowed) {
+    const response = json({ ok: false, error: admission.status === 429 ? 'rate_limited' : 'admission_unavailable' }, admission.status)
+    response.headers.set('retry-after', String(admission.retryAfter))
+    return response
+  }
 
   const intent = (field('intent') || 'demo').slice(0, 40)
   const clip = (k: string, n: number) => field(k).slice(0, n)

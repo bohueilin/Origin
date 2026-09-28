@@ -266,6 +266,16 @@ document.querySelectorAll<HTMLElement>('[data-close-lead]').forEach((btn) => {
 dialog?.addEventListener('click', (e) => {
   if (e.target === dialog) closeLead()
 })
+// Keep Tab cycling within the modal, including browsers that move focus into
+// browser chrome at the last control. Native Escape still closes the dialog.
+dialog?.addEventListener('keydown', (event) => {
+  if (event.key !== 'Tab') return
+  const items = [...dialog.querySelectorAll<HTMLElement>('button, input, textarea, select, a[href], [tabindex]')]
+    .filter(el => el.tabIndex >= 0 && !el.matches(':disabled') && el.checkVisibility({ visibilityProperty: true }))
+  const first = items[0], last = items[items.length - 1]
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus() }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus() }
+})
 // return focus after native close (Escape)
 dialog?.addEventListener('close', () => lastFocused?.focus())
 
@@ -326,6 +336,8 @@ form?.addEventListener('submit', async (e) => {
   // fallback only fires when BOTH failed. Keying off `delivered` alone used to push
   // a visitor into their mail client even when the request was already queued.
   let received = false
+  let rateLimited = false
+  const submitLabel = submitEl?.textContent ?? 'Request review'
   if (submitEl) { submitEl.disabled = true; submitEl.setAttribute('aria-busy', 'true'); submitEl.textContent = 'Sending…' }
   try {
     const res = await fetch('/api/lead', {
@@ -338,12 +350,17 @@ form?.addEventListener('submit', async (e) => {
         page_path: val('page_path'), opened_at: val('opened_at'), company_website: '',
       }),
     })
+    rateLimited = res.status === 429
     if (res.ok) {
       const j = (await res.json().catch(() => ({}))) as { stored?: boolean; delivered?: boolean }
       received = !!j.stored || !!j.delivered
     }
   } catch { received = false }
-  if (submitEl) { submitEl.disabled = false; submitEl.removeAttribute('aria-busy') }
+  if (submitEl) { submitEl.disabled = false; submitEl.removeAttribute('aria-busy'); submitEl.textContent = submitLabel }
+  if (rateLimited) {
+    if (errorEl) { errorEl.textContent = 'Too many requests from this connection. Please wait up to 10 minutes and try again.'; errorEl.hidden = false }
+    return
+  }
 
   showSuccess(received)
   if (received) {

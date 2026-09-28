@@ -271,7 +271,7 @@ export interface CompactRun {
 
 export type HistoryScope = 'global_recent' | 'run'
 
-/** Compact server evidence status from GET /api/evidence/status. */
+/** Compact evidence status for private server integrations; the public Pages stub is retired. */
 export interface EvidenceStatus {
   runId: string | null
   serverEpisodeCount: number

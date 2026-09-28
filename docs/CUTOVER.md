@@ -59,9 +59,9 @@ Before authorizing the protected Environment:
 - Keep `PARSE_DISABLED=1` until external parsing has been deliberately approved.
   Enabling it additionally requires `PARSE_EXTERNAL_ENABLED=1`, provider
   configuration, service authentication, and affirmative upload consent.
-- Install and verify a Cloudflare WAF or equivalent distributed abuse/rate rule
-  for public `/api/lead`. The in-code 16 KiB body limit and validation are
-  admission controls, not distributed abuse protection.
+- Apply and verify the shared database admission migration for `/api/lead` before
+  deploying its handler (see [DEPLOY.md](DEPLOY.md)). Keep optional edge WAF controls
+  for volumetric abuse; the database limit is scoped to submissions, not DDoS.
 - Record the current production deployment identifier and rollback owner.
 
 ## Pre-deploy evidence

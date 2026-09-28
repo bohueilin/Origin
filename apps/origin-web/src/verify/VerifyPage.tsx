@@ -20,6 +20,7 @@ import { KIND_LABELS, parseArtifact, detectArtifact, verifyArtifact, tamperArtif
 import type { ReportLine, ReportTone, VerifyReport } from './detect.mjs'
 import { makeExample } from './examples.mjs'
 import type { ExampleKind } from './examples.mjs'
+import { checkStamp, useCheckVisibility } from '../shared/checkFeedback'
 
 const EXAMPLES: Array<{ kind: ExampleKind; label: string }> = [
   { kind: 'reference', label: 'Synthetic sandbox reference check' },
@@ -155,9 +156,16 @@ export function VerifyPage() {
   const [selectedExample, setSelectedExample] = useState<ExampleKind | null>(null)
   const pristineRef = useRef<string | null>(null)
   const inputRevision = useRef(0)
+  const verdictRef = useRef<HTMLDivElement>(null)
+  const [checked, setChecked] = useState<ReturnType<typeof checkStamp> | null>(null)
+  const [feedback, setFeedback] = useState(0)
+  // A tall result can exhaust its sticky container; correct visibility then too.
+  useCheckVisibility(feedback, verdictRef, false)
 
   const invalidateReport = () => {
     inputRevision.current += 1
+    setChecked(null)
+    setFeedback(0)
     setReport(null)
     setError(null)
     setNotes([])
@@ -165,6 +173,8 @@ export function VerifyPage() {
 
   const reset = (nextText: string, nextNotes: string[]) => {
     inputRevision.current += 1
+    setChecked(null)
+    setFeedback(0)
     setText(nextText)
     setNotes(nextNotes)
     setReport(null)
@@ -172,6 +182,7 @@ export function VerifyPage() {
   }
 
   const loadExample = async (kind: ExampleKind) => {
+    invalidateReport()
     const revision = inputRevision.current
     setBusy(true)
     try {
@@ -189,7 +200,10 @@ export function VerifyPage() {
         : 'generated from synthetic checked-in inputs'
       reset(pristine, [`Loaded a synthetic sandbox ${KIND_LABELS[detected]}, ${provenance} — labeled synthetic in its fields.`])
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      if (revision === inputRevision.current) {
+        setError(e instanceof Error ? e.message : String(e))
+        setFeedback(count => count + 1)
+      }
     } finally {
       setBusy(false)
     }
@@ -199,6 +213,8 @@ export function VerifyPage() {
     if (on) {
       const parsed = parseArtifact(text)
       if (!parsed.ok) {
+        setChecked(null)
+        setReport(null)
         setError(`cannot tamper: ${parsed.error} — load an example or paste an artifact first`)
         return
       }
@@ -216,6 +232,8 @@ export function VerifyPage() {
   }
 
   const runVerify = async () => {
+    setChecked(null)
+    const startedAt = performance.now()
     const revision = inputRevision.current
     setBusy(true)
     try {
@@ -228,13 +246,17 @@ export function VerifyPage() {
       setError(null)
       const pin = thumbprint.trim()
       const nextReport = await verifyArtifact(parsed.value, pin ? { expectedThumbprint: pin } : {})
-      if (revision === inputRevision.current) setReport(nextReport)
+      if (revision === inputRevision.current) {
+        setReport(nextReport)
+        setChecked(checkStamp(startedAt))
+      }
     } catch (e) {
       if (revision === inputRevision.current) {
         setReport(null)
         setError(e instanceof Error ? e.message : String(e))
       }
     } finally {
+      if (revision === inputRevision.current) setFeedback(count => count + 1)
       setBusy(false)
     }
   }
@@ -311,7 +333,7 @@ export function VerifyPage() {
               </label>
             </div>
           </div>
-          <div className="vfy-result" aria-live="polite" aria-label="Verification result">
+          <div className="vfy-result">
             <span className="workspace-eyebrow">The verification record</span>
             {!report && !error ? (
               <div className="workspace-empty">
@@ -320,15 +342,24 @@ export function VerifyPage() {
               </div>
             ) : null}
             {notes.map((n, i) => <p className="vfy-note" key={i}>{n}</p>)}
-            {error ? (
-              <div className="vfy-verdict vfy-verdict--bad" role="status"><b>NOT VERIFIABLE</b><span>{error}</span></div>
-            ) : null}
-            {report && verdictTone ? (
+            <div ref={verdictRef} className="check-feedback">
+              <div role="status" aria-live="polite" aria-label="Verification result">
+                {error ? (
+                  <div className="vfy-verdict vfy-verdict--bad">
+                    <b>NOT VERIFIABLE</b><span>{error}</span>
+                  </div>
+                ) : null}
+                {report && verdictTone ? (
+                  <div className={`vfy-verdict vfy-verdict--${verdictTone}`}>
+                    <b>{report.verdict}</b>
+                    <span>{KIND_LABELS[report.kind]}{report.code != null ? ` · code ${report.code}` : ''}</span>
+                  </div>
+                ) : null}
+              </div>
+              {checked && <p className="vfy-checked">Checked {checked.time} · {checked.elapsedMs} ms</p>}
+            </div>
+            {report ? (
               <>
-                <div className={`vfy-verdict vfy-verdict--${verdictTone}`} role="status">
-                  <b>{report.verdict}</b>
-                  <span>{KIND_LABELS[report.kind]}{report.code != null ? ` · code ${report.code}` : ''}</span>
-                </div>
                 <p className="section__lede" style={{ marginTop: 16 }}>{report.headline}</p>
                 <Log lines={report.lines} />
                 <p className="vfy-note"><b>What this establishes:</b> {report.scope}</p>

@@ -18,6 +18,7 @@ import { generateSigningKey, keyThumbprint } from '@origin/verifier-core/sigil'
 import { signActionRunEvidence } from '@origin/verifier-core/action-run-evidence'
 import { computeLicenseFromVerdicts, type LicenseVerdict } from '../license'
 import { buildSyntheticReferenceCheckEvidence } from './evidence'
+import { checkStamp, useCheckVisibility } from '../shared/checkFeedback'
 import {
   PRESETS, policyForSpec, type PolicySpec, type Decision, type Classification,
   SUPPORT_PRESETS, supportPolicyForSpec, type SupportPolicySpec,
@@ -46,9 +47,13 @@ export function ReferenceCheckPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const inputRevision = useRef(0)
+  const verdictRef = useRef<HTMLDivElement>(null)
+  const [checked, setChecked] = useState<ReturnType<typeof checkStamp> | null>(null)
+  useCheckVisibility(checked, verdictRef)
 
   const invalidateResult = () => {
     inputRevision.current += 1
+    setChecked(null)
     setResult(null)
     setError(null)
   }
@@ -78,6 +83,7 @@ export function ReferenceCheckPage() {
   }
 
   const run = async () => {
+    const startedAt = performance.now()
     const revision = inputRevision.current
     setBusy(true); setError(null)
     try {
@@ -131,6 +137,7 @@ export function ReferenceCheckPage() {
         lift: r.credential.lift as number, catastrophic: r.catastrophic, configDigest: r.credential.config_digest as string,
         rows, credential: r.credential, reVerifyCode: rv.code, evidence, sigilThumbprint: thumb, driftCode: null,
       })
+      setChecked(checkStamp(startedAt))
     } catch (e) {
       if (revision === inputRevision.current) setError(e instanceof Error ? e.message : String(e))
     } finally {
@@ -247,10 +254,13 @@ export function ReferenceCheckPage() {
         <div className="rc-card rc-output">
           <p className="rc-step">03 · Evaluation result</p>
           <h2>Every decision, open to inspection.</h2>
+          <div ref={verdictRef} className="check-feedback">
           <div className={`rc-verdict ${verdictClass}`} role="status" aria-live="polite">
             <b>{result.rows.filter((r) => r.passed).length} of {result.rows.length}</b>
             <span>synthetic decisions match the oracle</span>
             <span className="rc-verdict__meta">unbounded baseline {Math.round(result.coldPassRate * 100)}% · lift +{Math.round(result.lift * 100)}% · config {short(result.configDigest)} · tier label {result.level} on this synthetic battery only — it grants no autonomy or deployment permission</span>
+          </div>
+          {checked && <p className="rc-checked">Checked {checked.time} · {checked.elapsedMs} ms</p>}
           </div>
           {result.catastrophic > 0 ? (
             <p className="rc-hint rc-hint--warn"><b>{result.catastrophic} catastrophic over-grant{result.catastrophic > 1 ? 's' : ''}</b> — your policy allowed an action the oracle refuses (PII / destructive / fraud-flagged / approval-gated). A single catastrophic over-grant caps the level: the right to act can’t be averaged back.</p>

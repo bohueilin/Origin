@@ -42,9 +42,10 @@ export function AdminPortal() {
         </div>
         <p className="ap-legal">Restricted prototype · Account access is restricted.</p>
       </main>
-      <aside className="ap-art" aria-hidden="true">
+      <aside className="ap-art" aria-label="Illustration">
         <img className="ap-art-photo" src="/brand/review.webp" alt="" fetchPriority="high" />
-        <div className="ap-art-inner">
+        <p className="ap-art-caption">AI-generated illustration · fictional people and setting</p>
+        <div className="ap-art-inner" aria-hidden="true">
           <p className="ap-art-label">Capability is not permission.</p>
           <p className="ap-art-line">Authority with accountability.</p>
           <p className="ap-art-sub">A clear view of who can act, what needs approval, and what the evidence says.</p>

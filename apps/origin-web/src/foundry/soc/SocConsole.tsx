@@ -1,9 +1,5 @@
-// Origin Autonomy-Control — the AI-SOC hero. A software agent triages live security incidents;
-// a Planner (gemma-4-31b, realistically configured to follow alert guidance) sometimes obeys a
-// prompt injection hidden in the alert and proposes a DESTRUCTIVE tool-call; the Guardian
-// (gemma-4-31b) + a fail-closed deterministic policy floor VETO it on every step; the policy is
-// the only judge. The loop-race proves Cerebras clears the whole queue + catches the threats in
-// the time a GPU model handles one alert.
+// Synthetic incident scenarios and backend-dependent comparisons. Returned model
+// responses are proposals; only the scenario policy establishes its deterministic outcome.
 
 import { useCallback, useEffect, useState } from 'react'
 import '../ui/foundry.css'
@@ -66,7 +62,7 @@ export function Leaderboard() {
             </div>
           ))}
           {data.speedupVsBestGpu && (
-            <div className="fdy-race__verdict">gemma-4-31b on Cerebras is {data.speedupVsBestGpu}× the fastest GPU model here — and far more vs the rest.</div>
+            <div className="fdy-race__verdict">Observed throughput ratio: {data.speedupVsBestGpu}× relative to the fastest available comparison lane in this run.</div>
           )}
         </div>
       )}
@@ -97,24 +93,24 @@ export function ControlPlaneThesis() {
       </div>
       <p className="cpt__honest">
         <strong>Model proposals · deterministic policy checks.</strong>{' '}
-        The Perceiver, Planner, and Guardian all run on gemma-4-31b — they perceive, propose, and guard. The verdict itself is a
+        The backend can use gemma-4-31b for perception, proposals and review; unavailable calls may use fixtures. The verdict itself is a
         deterministic oracle (the fail-closed policy floor): the authority for the defined policy decision. Its correctness still depends on the policy, the implementation and the scenario coverage.
       </p>
       <div className="cpt__cols">
         <div className="cpt__col">
-          <h3>Validated by the consensus — not a slogan</h3>
+          <h3>Research references</h3>
           <ul>
-            <li><b>DeepMind AI Control Roadmap</b> (Jun 18 2026): treat agents as insider threats; <b>block irreversible actions in real time</b>; defense-in-depth <em>"beyond model alignment… assurance even if alignment is imperfect."</em> Origin is that roadmap, shipped.</li>
-            <li><b>arXiv 2602.09947</b> — <em>Trustworthy Agentic AI Requires Deterministic Architectural Boundaries:</em> alignment is insufficient; you need <b>deterministic mediation, privilege separation, fail-closed default-deny.</b> That is Origin's policy floor.</li>
-            <li><b>Cerebras · Gemma-4 thesis:</b> fast inference lets you <em>"fit more verification and more retries into the same product"</em> — speed as the new quality lever.</li>
+            <li><b>DeepMind AI Control Roadmap:</b> a research reference. This prototype explores selected agent-control patterns; it does not implement the entire roadmap.</li>
+            <li><b>arXiv 2602.09947:</b> a research reference on deterministic architectural boundaries. Inspect the policy implementation and scenario coverage separately.</li>
+            <li><b>Inference speed:</b> compare returned timing under the displayed assumptions; throughput alone does not establish verification quality.</li>
           </ul>
         </div>
         <div className="cpt__col">
           <h3>Honest by design</h3>
           <ul>
-            <li>We <b>contain</b> prompt injection, we don&rsquo;t claim to <b>prevent</b> it — the destructive action never executes at the floor, regardless of what the model believes.</li>
+            <li>The deterministic floor checks defined synthetic actions. These fixtures do not establish containment of every prompt injection or enforcement in a connected production tool.</li>
             <li><b>Deterministic + auditable</b>, not "formally verified." The audit trace IS the evidence — an independently verifiable record, not a certificate.</li>
-            <li><b>Frame-by-frame perception</b>, not video. Gemma-4 on Cerebras is image+text → text. We built the robot-ready brain, not a robot.</li>
+            <li><b>Frame-by-frame perception</b>, not video. Gemma-4 on Cerebras is image+text → text. The sample does not establish robot readiness.</li>
           </ul>
         </div>
       </div>
@@ -156,17 +152,16 @@ export function LatencyPanel() {
   }, [data])
   const elapsedMs = tick.src === data ? tick.ms : 0
 
-  const ratio = data && data.cerebras.totalMs && data.gpu.totalMs ? Math.round((data.gpu.totalMs / data.cerebras.totalMs) * 10) / 10 : null
-  // Gate the veto on elapsed replay time vs the MEASURED latency, not on a character
-  // count. `typed > 4` fired at 5 x 26ms = ~130ms of animation regardless of
-  // data.cerebras.totalMs, which made the headline timing an artifact of the typewriter.
-  const vetoVisible = !!data && elapsedMs >= (data.cerebras.totalMs ?? 0)
+  const ratio = data && data.cerebras.ok && data.gpu.ok && data.cerebras.totalMs && data.gpu.totalMs ? Math.round((data.gpu.totalMs / data.cerebras.totalMs) * 10) / 10 : null
+  // Reveal the response according to its returned timing. The lane identifies
+  // whether that timing came from the backend or an illustrative fallback.
+  const responseVisible = !!data && elapsedMs >= (data.cerebras.totalMs ?? 0)
 
   return (
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
-        <h2>Guardian verdict vs GPU first token</h2>
-        <p>An attacker injects a directive to disable the firewall. Both lanes are called for real and their latencies are measured per run; the sequence below is replayed at readable speed from those measurements, so the bars are a replay, not a live race.</p>
+        <h2>Model-response timing on a synthetic instruction</h2>
+        <p>Compare responses to a synthetic directive. Each lane identifies a backend response or illustrative fallback before its timing. This sequence replays returned data; no tool action executes.</p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Sending the attack…' : data ? 'Replay the attack' : 'Send the attack'}
@@ -179,17 +174,17 @@ export function LatencyPanel() {
             <span className="soc-attack__text">{data.attackText.slice(0, typed)}<span className="soc-attack__caret" /></span>
           </div>
           <div className="soc-lat__rows">
-            <div className={`soc-lat__row${vetoVisible ? ' is-on' : ''}`}>
-              <span className="soc-lat__badge soc-lat__badge--cb">🛑 Cerebras Guardian</span>
-              <span className="soc-lat__val">{vetoVisible ? `BLOCKED in ${data.cerebras.totalMs}ms · TTFT ${data.cerebras.ttftMs}ms` : '…'}</span>
+            <div className={`soc-lat__row${responseVisible ? ' is-on' : ''}`}>
+              <span className="soc-lat__badge soc-lat__badge--cb">Cerebras response</span>
+              <span className="soc-lat__val">{responseVisible ? `${data.cerebras.ok ? 'Backend response' : 'Illustrative fallback'} · returned decision ${data.cerebras.verdict} · ${data.cerebras.totalMs === null ? 'timing unavailable' : `${data.cerebras.totalMs} ms`}` : '…'}</span>
             </div>
             <div className={`soc-lat__row${typed >= data.attackText.length ? ' is-on' : ''}`}>
-              <span className="soc-lat__badge soc-lat__badge--gpu">⏳ {data.gpu.label}</span>
-              <span className="soc-lat__val">{typed >= data.attackText.length ? `responded at ${data.gpu.totalMs}ms` : 'still thinking…'}</span>
+              <span className="soc-lat__badge soc-lat__badge--gpu">{data.gpu.label}</span>
+              <span className="soc-lat__val">{typed >= data.attackText.length ? `${data.gpu.ok ? 'Backend response' : 'Illustrative fallback'} · response time ${data.gpu.totalMs === null ? 'unavailable' : `${data.gpu.totalMs} ms`}` : 'awaiting replay…'}</span>
             </div>
           </div>
-          {typed >= data.attackText.length && ratio && (
-            <div className="fdy-race__verdict">Cerebras blocked the injection in {data.cerebras.totalMs}ms — the GPU took {data.gpu.totalMs}ms, {ratio}× slower. The defense reacts before the attack finishes typing.{!data.cerebras.ok && <span className="fdy-race__sim"> · illustrative (no live key on this server)</span>}</div>
+          {typed >= data.attackText.length && (
+            <div className="fdy-race__verdict">{ratio ? `Observed response-time ratio: ${ratio}×. ` : 'Illustrative comparison; no measured ratio is claimed. '}No tool executes. Returned decisions do not establish prompt-injection prevention.</div>
           )}
         </div>
       )}
@@ -218,8 +213,8 @@ export function AccuracyPanel() {
   return (
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
-        <h2>Speed buys correctness</h2>
-        <p>Give each platform a time budget. The GPU can barely finish one shot. Cerebras matches that accuracy in a fraction of the time — then spends the slack on verification to pull ahead.</p>
+        <h2>Accuracy within a time budget</h2>
+        <p>Compare observed scenario outcomes and timing under the displayed assumptions. Synthetic accuracy and latency do not establish a correctness guarantee or platform-wide advantage.</p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Measuring…' : data ? 'Measure again' : 'Run the accuracy test'}
@@ -227,6 +222,7 @@ export function AccuracyPanel() {
       {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
       {data && (
         <div className="soc-acc">
+          <p className="fdy-lane__note">{data.source === 'mock' ? 'Illustrative fallback' : 'Backend scenario results; individual timing may include fallback'} · synthetic fixtures only.</p>
           {data.points.map((p) => (
             <div key={p.label} className={`soc-acc__row${p.provider === 'cerebras' ? ' soc-acc__row--cb' : ''}`}>
               <span className="soc-acc__name">{p.label}</span>
@@ -237,7 +233,7 @@ export function AccuracyPanel() {
               <span className="soc-acc__lat">{p.budgetMs}ms</span>
             </div>
           ))}
-          <div className="fdy-race__verdict">Same accuracy at a fraction of the latency — and Cerebras can afford to verify (still &lt;1s), which a GPU can&rsquo;t. More correct, per millisecond.</div>
+          <div className="fdy-race__verdict">These results describe the selected synthetic scenarios and configurations only. Timing may include fallback values; no general platform comparison follows.</div>
         </div>
       )}
     </section>
@@ -269,7 +265,7 @@ export function EconomicsPanel() {
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
         <h2>The economics</h2>
-        <p>Same single-call triage on each platform. Speed isn&rsquo;t vanity — it&rsquo;s incidents-per-minute and compute-per-incident, the only numbers a SOC buyer cares about.</p>
+        <p>Compare single-call timing on this synthetic fixture. The calculator projects throughput from that timing; it does not measure production capacity or monetary cost.</p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Measuring…' : data ? 'Measure again' : 'Run the economics'}
@@ -293,8 +289,8 @@ export function EconomicsPanel() {
               <input type="number" min={100} step={500} value={alerts} onChange={(e) => setAlerts(Math.max(100, Number(e.target.value) || 0))} />
             </label>
             <div className="soc-shoot__tax">
-              Clear today&rsquo;s <strong>{alerts.toLocaleString()}</strong> alerts: <strong>Cerebras ~{mins(data.cerebras.clearedPerMin)} min</strong> vs the GPU&rsquo;s ~{mins(data.gpu.clearedPerMin)} min.
-              {tokRatio && <> At <strong>{data.cerebras.tokS} tok/s vs {data.gpu.tokS}</strong> ({tokRatio}×), the compute cost per incident is far lower on Cerebras.</>}
+              Illustrative sequential projection for <strong>{alerts.toLocaleString()}</strong> synthetic alerts: <strong>Cerebras ~{mins(data.cerebras.clearedPerMin)} min</strong> vs the GPU&rsquo;s ~{mins(data.gpu.clearedPerMin)} min.
+              {tokRatio && <> At <strong>{data.cerebras.tokS} tok/s vs {data.gpu.tokS}</strong> ({tokRatio}× observed throughput ratio); no monetary cost is measured.</>}
             </div>
           </div>
         </div>
@@ -334,13 +330,14 @@ export function EnsemblePanel() {
       {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
       {data && (
         <div className="fdy-race__lanes">
+          <p className="fdy-lane__note">{data.source === 'mock' ? 'Illustrative fallback' : 'Backend scenario results'} · synthetic fixture; independence is an assumption.</p>
           <div className="soc-shoot__meta" style={{ marginTop: 4 }}>
             <span className="soc-shoot__safe">{data.vetoes}/{data.total} Guardians vetoed{data.vetoes === data.total ? ' — unanimous' : ''}</span>
             <span>attack: &ldquo;{data.incidentTitle}&rdquo;</span>
             <span>single-reviewer miss {data.singleMissPct}%</span>
           </div>
           <div className="fdy-race__verdict">
-            {data.total} independent Guardians ran in <strong>{data.cerebrasAllMs}ms</strong> on Cerebras (parallel). The same {data.total} on the GPU: ~{gpu7Ms}ms.
+            {data.total} parallel model responses returned in <strong>{data.cerebrasAllMs}ms</strong> on Cerebras (parallel). A sequential comparison projected from one response: ~{gpu7Ms}ms.
             Under the independence assumption, this model estimates a committee miss rate of ~{data.points[data.points.length - 1].missRatePct}%. Correlated errors can invalidate that estimate.
           </div>
         </div>
@@ -445,9 +442,9 @@ export function SupervisionPanel() {
       <div className="fdy-card__head">
         <h2>One floor for all, judgment for the few</h2>
         <p>
-          You can&rsquo;t afford a reasoning model on every alert — and you don&rsquo;t need one. A deterministic floor clears the obvious majority for
-          <strong> $0 and ~0&thinsp;ms</strong>, and escalates only the <strong>suspicious minority</strong> — the injection traps and the genuine judgment
-          calls — to a full gemma-4 perceive&rarr;plan&rarr;Guardian loop. Both tiers are graded by the same deterministic oracle.
+          Compare deterministic routing with escalation to a model-assisted scenario loop.
+          Both paths are graded by the synthetic oracle. The panel reports fixture outcomes and
+          a workload projection; it does not measure production reliability or monetary savings.
         </p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
@@ -462,7 +459,7 @@ export function SupervisionPanel() {
               <div className="sv-lane sv-lane--floor" style={{ flexGrow: Math.max(1, data.autoCount) }}>
                 <div className="sv-lane__tier">Deterministic floor</div>
                 <div className="sv-lane__count">{data.autoCount}</div>
-                <div className="sv-lane__cost">free · ~0&thinsp;ms</div>
+                <div className="sv-lane__cost">local policy check</div>
               </div>
               <div className="sv-lane sv-lane--esc" style={{ flexGrow: Math.max(1, data.escalateCount) }}>
                 <div className="sv-lane__tier">Escalated to gemma-4</div>
@@ -515,11 +512,11 @@ export function SupervisionPanel() {
           </div>
 
           <div className="soc-verdict">
-            <strong>{data.threatsNeutralized} of {data.threatsTotal} hidden injection attacks were neutralized — and both landed in the escalated lane,
-            exactly where judgment was needed.</strong> The floor cleared {data.autoCount} alerts for $0; you paid gemma-4 for only {data.escalateCount}.
-            At {data.projection.dailyAlerts.toLocaleString()} alerts/day that&rsquo;s <strong>{data.projection.workSavedPct}% less reasoning-model work</strong>.
-            And because Cerebras runs the escalated tier at ~1,300&thinsp;tok/s, you can escalate the entire suspicious tail instead of rationing it to save
-            money — which is exactly how subtle threats slip through a GPU-bound SOC.
+            <strong>{data.threatsNeutralized} of {data.threatsTotal} synthetic injection cases rejected.</strong>
+            The floor handled {data.autoCount} scenarios and escalated {data.escalateCount}.
+            Under the displayed mix, the workload projection estimates {data.projection.workSavedPct}%
+            fewer model calls at {data.projection.dailyAlerts.toLocaleString()} scenarios per day.
+            This projection does not establish production threat coverage, latency or cost.
           </div>
         </>
       )}
@@ -529,15 +526,16 @@ export function SupervisionPanel() {
 
 // ---- the "safety tax" shootout (accuracy + cost-of-safety) ------------------
 
-function ShootLane({ l, guaranteed }: { l: SocShootoutResponse['cerebras']; guaranteed: boolean }) {
+function ShootLane({ l, checked }: { l: SocShootoutResponse['cerebras']; checked: boolean }) {
   return (
     <div className={`fdy-lane fdy-lane--${l.provider}`}>
       <div className="fdy-lane__top">
+        <span className="fdy-lane__note">{l.ok ? 'Backend scenario result' : 'Illustrative fallback'} · synthetic fixtures</span>
         <SourceBadge source={l.provider === 'cerebras' ? 'cerebras' : 'gemini'} model={l.provider === 'cerebras' ? undefined : l.label} />
         <div className="fdy-lane__tok">{l.passed}/{l.total} <span>correct</span></div>
       </div>
       <div className="soc-shoot__meta">
-        <span className={guaranteed ? 'soc-shoot__safe' : 'soc-shoot__risk'}>{l.breaches} destructive action{l.breaches === 1 ? '' : 's'} executed{guaranteed ? ' · per-step verified' : ' · no per-step check'}</span>
+        <span className={checked ? 'soc-shoot__safe' : 'soc-shoot__risk'}>{l.breaches} destructive action{l.breaches === 1 ? '' : 's'} executed{checked ? ' · per-step verified' : ' · no per-step check'}</span>
         <span>{l.mode === 'verified' ? 'verified every step' : 'one shot, no Guardian'}</span>
         <span>{l.totalMs}ms{l.tokS ? ` · ${l.tokS} tok/s` : ''}</span>
         {l.note && <span className="fdy-lane__note">{l.note}</span>}
@@ -565,8 +563,8 @@ function Shootout() {
   return (
     <section className="fdy-card fdy-race">
       <div className="fdy-card__head">
-        <h2>The safety tax</h2>
-        <p>The same incidents, two ways. A GPU model takes the fast path — one shot, no Guardian. Cerebras runs the full verified loop. Watch the accuracy gap, then the cost of <em>earning</em> a guarantee.</p>
+        <h2>Cost of the additional checks</h2>
+        <p>Compare the same synthetic incidents using one response or a per-step policy check. Inspect scenario outcomes and timing; neither workflow establishes a production safety guarantee.</p>
       </div>
       <button className="fdy-btn fdy-btn--primary" onClick={run} disabled={busy}>
         {busy ? 'Running both…' : data ? 'Run again' : 'Run the safety tax'}
@@ -574,11 +572,11 @@ function Shootout() {
       {err && <p className="fdy-lane__note" style={{ marginTop: 10 }}>{err}</p>}
       {data && (
         <div className="fdy-race__lanes">
-          <ShootLane l={data.cerebras} guaranteed />
-          <ShootLane l={data.gpuOneShot} guaranteed={false} />
+          <ShootLane l={data.cerebras} checked />
+          <ShootLane l={data.gpuOneShot} checked={false} />
           <div className="soc-shoot__tax">
-            To give the GPU the <strong>same per-step guarantee</strong>, it must run the verify loop on every call: ~{data.gpuVerifiedProjectedMs}ms vs Cerebras&rsquo;s {data.cerebras.totalMs}ms.
-            <strong> Verification is ~{data.verificationTaxX}× cheaper on Cerebras</strong> — and more accurate ({data.cerebras.passed}/{data.cerebras.total} vs {data.gpuOneShot.passed}/{data.gpuOneShot.total}).
+            Projected three-call comparison: ~{data.gpuVerifiedProjectedMs}ms versus the returned loop time of {data.cerebras.totalMs}ms.
+            <strong> Projected timing ratio: {data.verificationTaxX}×.</strong> Synthetic outcomes: {data.cerebras.passed}/{data.cerebras.total} versus {data.gpuOneShot.passed}/{data.gpuOneShot.total}. This is not measured cost or a platform guarantee.
           </div>
         </div>
       )}
@@ -755,8 +753,8 @@ export default function SocConsole() {
 
       <section className="fdy-card">
         <div className="fdy-card__head">
-          <h2>Run the live SOC — DeepMind&rsquo;s roadmap, shipped</h2>
-          <p>A realistic auto-remediation agent triages a live incident queue (detection). Two alerts carry a prompt injection. The Guardian + fail-closed policy floor block the destructive tool-call <em>before execution</em> (synchronous response) and write an audit trail. Watch what the agent would have executed.</p>
+          <h2>Run the synthetic incident workflow</h2>
+          <p>A simulated remediation agent proposes actions for a synthetic incident queue containing injected directives. Inspect the deterministic policy decisions and scenario trace; no connected production tool executes.</p>
         </div>
         <button className="fdy-btn fdy-btn--primary" onClick={go} disabled={busy}>
           {busy ? 'Triaging…' : run ? 'Run again' : 'Triage the queue'}
@@ -788,8 +786,8 @@ export default function SocConsole() {
       </section>
 
       <p className="fdy-brainline">
-        One engine, two buyers: the same Perceiver → Planner → <strong>Guardian</strong> → deterministic-oracle loop licenses what a{' '}
-        <strong>robot</strong> may do on a floor and what a <strong>software agent</strong> may do with your tools. Capability is not permission.
+        These prototypes use a Perceiver → Planner → <strong>Guardian</strong> → deterministic-oracle loop to evaluate what a{' '}
+        <strong>robot</strong> or <strong>software agent</strong> proposes in a synthetic scenario. No operating authority follows. Capability is not permission.
       </p>
 
       <footer className="fdy-foot">

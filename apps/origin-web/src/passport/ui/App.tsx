@@ -303,7 +303,7 @@ function ReadOnlyBanner({ deniedEmail }: { deniedEmail: string | null }) {
         {deniedEmail ? (
           <>Read-only preview — <b>{deniedEmail}</b> isn’t the Origin owner account, so the run controls stay off.</>
         ) : (
-          <>Read-only preview — sign in as the Origin owner to run Passport live.</>
+          <>Read-only preview — owner sign-in enables the local demo.</>
         )}
       </span>
       <a className="pp-readonly-link" href="/auth?next=/passport">

@@ -108,3 +108,5 @@ a { color: inherit; }
   .ap-submit:active:not(:disabled) { transform: none; }
   .ap-pw-bar > span { transition: none; }
 }
+
+.ap-art-caption { position: absolute; z-index: 2; top: 16px; left: 16px; right: 16px; margin: 0; padding: 10px 14px; border-radius: 6px; background: #f8f7f4; color: #4e5b48; font-size: .75rem; line-height: 1.5; }

@@ -2,12 +2,12 @@
 
 ## Result
 
-The approved cinematic direction is implemented in the actual website source, across all 21 application entry points, four additional visual pages, and `llms.txt`. This is an uncommitted local redesign, not a deployment.
+The approved cinematic direction is implemented in the actual website source, across all 21 application entry points, four additional visual pages, and `llms.txt`. Shipped in PR #65 (`48a1df8`) on 2026-09-19. The preview and worktree details below are historical.
 
 - Preview: http://localhost:5283/ (the previous `127.0.0.1:5320` preview now forwards here).
 - Worktree: `codex/site-cinematic-redesign`, based on `867dda4`.
 - Source: `apps/origin-web`.
-- Primary checkout, live site, backend contracts and evidence engines are unchanged.
+- At review time, the primary checkout and live site were unchanged; PR #65 subsequently shipped the redesign. Backend contracts and evidence engines were outside that design change.
 
 ## Route coverage
 

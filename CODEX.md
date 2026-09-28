@@ -11,7 +11,8 @@
 
 ## Active commands
 ```bash
-make install && make gates                         # TS monorepo build+test
+make install
+make gates-all                                    # all 14 suites + evidence + honesty
 cd apps/origin-web && npm run build && npm run lint && npm run verify:evidence && npm test
 cd apps/origin-web && npm run env:verify            # a reproducible ScoreReceipt (exit 0)
 ```
@@ -27,4 +28,9 @@ cd apps/origin-web && npm run env:verify            # a reproducible ScoreReceip
 - **Never commit `.env*`** except `.env.example`. Rotate any key that was ever local to the old `0620` folder.
 
 ## Claim boundaries to preserve in all docs/copy
-Bounded Robot-Readiness Gym evidence, not certification · deterministic oracle authority · tamper-evident = alteration is *detectable* (not "impossible") · synthetic ≠ real · counterfactual ≠ customer-owned · fixture ≠ real customer data · readiness blocked by default · training authorization required · external APIs blocked.
+Reproducible under this verifier, never safe or correct · deterministic oracle authority · tamper-evident = alteration is *detectable* (not "impossible") · synthetic ≠ real · counterfactual ≠ customer-owned · fixture ≠ real customer data · readiness blocked by default · training authorization required · external APIs blocked.
+
+## Canonical release
+The live site is https://originphysicalai.com, built from `apps/origin-web`. The Cloudflare Pages cutover completed on 2026-09-16. Pushing to `main` runs builds and checks; it does not deploy. With explicit owner authorization, dispatch `.github/workflows/deploy-origin-web.yml` on `main` with confirmation `DEPLOY`. The workflow re-tests and stamps the release before upload. See [the deploy runbook](docs/DEPLOY.md).
+
+Run `make gates-all` from a clean tracked tree when a new local scoreboard is requested. Before handing back a website task, run the honesty lint, `node --test scripts/visible-text.test.mjs`, the app's `npm run gates` and full `npx playwright test`, then inspect `git status --short`. Stage explicit paths only; never include private founder files or recording masters. Follow the precise byte-preservation list in `AGENTS.md`.

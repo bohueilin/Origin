@@ -183,6 +183,7 @@ test('3D playback pauses rendering off screen and hidden, finishes once, and rep
 
 for (const field of ['Domain', 'Robot embodiment']) {
   test(`changing ${field} starts a fresh 3D preview after completion`, async ({ page }) => {
+    test.setTimeout(60_000) // Two complete previews also run with software WebGL in CI.
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.clock.install()
     const siteMap = { width: 5, height: 5, start: { x: 0, y: 0 }, item: { x: 1, y: 0 }, drop: { x: 0, y: 0 }, robots: [{ x: 0, y: 0 }], obstacles: [], hazards: [], humanOnly: [] }

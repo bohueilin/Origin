@@ -90,7 +90,7 @@ test('unavailable decorative video leaves its image and removes the unusable pla
   if (await control.isVisible()) await control.click()
   await expect(control).toBeHidden()
   await expect(film).toHaveAttribute('poster', '/brand/review-2026-09-28.webp')
-  await expect(page.getByRole('link', { name: 'Run the synthetic reference check', exact: true })).toBeVisible()
+  await expect(page.locator('.hero__actions').getByRole('link', { name: 'Run the reference check', exact: true })).toBeVisible()
 })
 
 test('a failed first hero source leaves a playable fallback and its control', async ({ page }) => {

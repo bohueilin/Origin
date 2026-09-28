@@ -541,8 +541,8 @@ export function CaptureConsole({
           <div>
             <h2 className="capture-divider-title">Start from a template</h2>
             <p className="capture-divider-sub">
-              Pick a ready-made factory floor — it pre-fills the whole brief, and you customize it in
-              the next steps. Click any card to preview the layout.
+              Choose a synthetic scenario to pre-fill the brief, then customize it. Each card pairs
+              a fictional illustration with a separate schematic template.
             </p>
           </div>
         </div>

@@ -1326,3 +1326,15 @@ html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root,
 .diagram-scroll:focus-visible{outline:2px solid var(--signal);outline-offset:4px}
 .diagram-scroll .diagram-desktop{min-width:1120px}
 @media(max-width:699px){.evidence-diagram .diagram-desktop{display:none}.evidence-diagram .diagram-mobile{display:block}}
+
+/* Evidence captions retain their own verdict semantics and remain readable without JS. */
+.evidence-contract {
+  padding: 14px 18px;
+  border-left: 3px solid var(--signal, #2b523b);
+  background: var(--paper-2, #eef0e6);
+  color: var(--ink-soft, #4e5b48);
+  max-width: 76ch;
+  overflow-wrap: anywhere;
+}
+.evidence-contract b { color: var(--ink, #272d26); }
+.cin-demo .demo__panel .demo__question { font-size: var(--fs-14); font-weight: 600; color: var(--signal, #2b523b); margin: 0 0 14px; }

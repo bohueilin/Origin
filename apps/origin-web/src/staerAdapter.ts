@@ -1,4 +1,4 @@
-// Adapt a Staer warehouse floor (from the cached catalog) into Origin capture
+// Adapt a catalog warehouse floor (from the cached catalog) into Origin capture
 // fields, so picking a reference floor flows into the SAME readiness funnel as a
 // described/uploaded site. Descriptive-only: this pre-fills the human-reviewed
 // form; the deterministic oracle still judges downstream.
@@ -50,27 +50,16 @@ export function layoutChips(entry: FloorCatalogEntry): string[] {
   return chips
 }
 
-// 15 real Staer warehouse scene photos live in public/factoryceo/floorplans/.
-// Each staer-scene*.jpg is a 640×360 composite = a 2×2 grid of 320×180 views.
-// We crop quadrants via CSS background-position (no separate assets needed).
-const STAER_SCENES = 15
-const pad2 = (n: number) => String(n).padStart(2, '0')
-
-export interface SceneView {
-  label: string
-  /** CSS background-position for a 200%×200% background (the 4 quadrants). */
-  pos: string
-}
-export const SCENE_VIEWS: SceneView[] = [
-  { label: 'Real photo', pos: '0% 0%' },
-  { label: 'Depth', pos: '100% 0%' },
-  { label: 'Segmentation', pos: '0% 100%' },
-  { label: 'Instances', pos: '100% 100%' },
+// Original AI-generated illustrations. These are fictional context images, not
+// photographs of the selected floor, sensor outputs, or verifier inputs.
+const FLOOR_ILLUSTRATIONS = [
+  '/factoryceo/floorplans/synthetic-aisle-2026-09-28.webp',
+  '/factoryceo/floorplans/synthetic-crossdock-2026-09-28.webp',
+  '/factoryceo/floorplans/synthetic-pickpack-2026-09-28.webp',
 ]
 
-/** A distinct real-warehouse hero photo per floor (by index). */
 export function floorHeroImage(index: number): string {
-  return `/factoryceo/floorplans/staer-scene${pad2((index % STAER_SCENES) + 1)}.jpg`
+  return FLOOR_ILLUSTRATIONS[index % FLOOR_ILLUSTRATIONS.length]
 }
 
 /** The schematic CAD layout plan for a floor (the customizable template), if any. */
@@ -78,7 +67,7 @@ export function floorPlanImage(entry: FloorCatalogEntry): string | undefined {
   return entry.floorplan?.file
 }
 
-/** Pre-fill the capture form from a chosen Staer floor. */
+/** Pre-fill the capture form from a chosen catalog floor. */
 export function floorToCaptureFields(entry: FloorCatalogEntry): CaptureFields {
   const scenario = entry.scenario?.trim()
   const noGo = (entry.layout as Record<string, unknown> | undefined)?.no_go_zones

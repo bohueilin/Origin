@@ -13,7 +13,7 @@
 import { test, expect } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 
-const HERO = 'Move AI forward. With evidence.'
+const HERO = 'Test the policy. Inspect the evidence.'
 
 // The approved design keeps the existing mobile burger, so on the mobile project
 // the primary nav is collapsed until it is opened. Open it before asserting on
@@ -31,7 +31,7 @@ test('home presents one implemented product and one primary path', async ({ page
 
   await expect(page.locator('h1')).toHaveCount(1)
   await expect(page.locator('h1')).toHaveText(HERO)
-  await expect(page.getByText('The evidence layer for high-consequence AI', { exact: true })).toBeVisible()
+  await expect(page.getByText('Evidence for agent decisions', { exact: true })).toBeVisible()
   // The hero's maturity boundary and buyer line were merged into one .hero__status line
   // when the hero was cut from seven text blocks to four; the boundary itself is
   // unchanged in substance and must stay visible in the hero, so keep pinning it.
@@ -46,7 +46,7 @@ test('home presents one implemented product and one primary path', async ({ page
   }
   await expect(nav.getByRole('link', { name: /Foundry|Sign in/i })).toHaveCount(0)
 
-  await expect(page.getByRole('link', { name: 'Run the synthetic reference check', exact: true })).toHaveAttribute('href', '/reference-check')
+  await expect(page.locator('.hero__actions').getByRole('link', { name: 'Run the reference check', exact: true })).toHaveAttribute('href', '/reference-check')
   await expect(page.getByRole('link', { name: 'Step through the 5-stage demo', exact: true })).toHaveAttribute('href', '#demo')
   // Count AND order. The count-only version passed while the sections sat in the
   // wrong sequence (audit finding M7) — the spec fixes the order, so pin it.
@@ -117,7 +117,7 @@ test('home has no horizontal overflow and keeps the primary action reachable', a
   await page.goto('/')
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
   expect(overflow).toBeLessThanOrEqual(1)
-  await expect(page.getByRole('link', { name: 'Run the synthetic reference check' })).toBeVisible()
+  await expect(page.locator('.hero__actions').getByRole('link', { name: 'Run the reference check', exact: true })).toBeVisible()
 })
 
 test('demo tabs support keyboard navigation', async ({ page }) => {
@@ -276,7 +276,7 @@ test('the trust section states what Origin is not and who builds it', async ({ p
 
 // One filled (primary) action per section. The sticky header pill is chrome, not a
 // section primary, so it is outside every [data-investor-section].
-test('each home section has at most one filled action, and the final ask is the reference check', async ({ page }) => {
+test('each home section has at most one filled action, and the final ask is an evidence review', async ({ page }) => {
   await page.goto('/')
   // Wait for enhance.ts to reveal the Book buttons, so the count sees the final page.
   await expect(page.locator('#offer [data-open-lead]')).toBeVisible()
@@ -289,7 +289,8 @@ test('each home section has at most one filled action, and the final ask is the 
     expect(await section.locator('.btn--primary:visible').count(), id).toBeLessThanOrEqual(1)
   }
   await expect(page.locator('.cin-labs .btn--primary')).toHaveCount(0)
-  await expect(page.locator('#contact .btn--primary')).toHaveAttribute('href', '/reference-check')
+  await expect(page.locator('#contact button.btn--primary')).toHaveAttribute('data-intent', 'review')
+  await expect(page.locator('#contact button.btn--primary')).toContainText('Book an Agent Evidence Review')
 })
 
 test('without JavaScript the hero boundaries show and no dead Book button does', async ({ browser, baseURL }) => {

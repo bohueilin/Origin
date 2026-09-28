@@ -103,7 +103,7 @@ export function AccountSettings() {
       <a className="cset-skip" href="#account-main">Skip to account content</a>
       <header className="cset-topbar">
         <a className="cset-brand" href="/" aria-label="Origin home">
-          <img src="/brand/origin-mark.svg" alt="" />origin <span>Console</span>
+          <img src="/brand/origin-mark-2026-09-28.svg" alt="" />origin <span>Console</span>
         </a>
         <div className="cset-top-actions">
           <span className="cset-private">Restricted prototype</span>

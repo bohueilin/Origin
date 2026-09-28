@@ -20,3 +20,14 @@ The dated 1200px `trace`/`lab` variants, 800px `proving-floor` variant and 1280p
 The WebP images are optimized encodings of the approved generated originals. None of these brand assets is product evidence.
 
 Three synthetic product recordings made on 2026-09-28 at release `57d5ccf` live under `/video/` with dated names. They replace the withdrawn recordings and the generated `05-second-reader` clip. Every recording is click-to-play, carries a persistent disclosure, and has a figure description that states its scope. The attestation recording appears on both `/` and `/verify`; the other takes show the in-page over-grant analyzer and the selected-policy reference check. Raw masters stay outside Git. See [the recording method](../../scripts/RECORDINGS.md), caption specifications and run manifests under `scripts/` for facts, hashes and reproducibility.
+
+## Origin mark · 2026-09-28
+
+The new code-native symbol is an open geometric O, a central origin point, and a separate trace node. It suggests a record with an explicit boundary; it is not a certification seal. The primary mark is forest green (`#2b523b`) on paper (`#f8f7f4`). An inverse paper version is supplied for dark surfaces. Leave at least one central-dot diameter of clear space; use the symbol at 24px or larger in navigation, and the dedicated favicon for browser tabs.
+
+- `origin-mark-2026-09-28.svg`: primary scalable symbol.
+- `origin-mark-inverse-2026-09-28.svg`: symbol for dark surfaces.
+- `origin-wordmark-2026-09-28.svg`: symbol with the Origin wordmark.
+- Dated favicon, Apple touch icon and raster-logo files in the public root use the same symbol. `brand-icons.mjs` rebuilds both canonical and dated icons.
+
+The homepage review illustration and motion files are unchanged. Social-preview images remain unchanged; the mark update does not rewrite dated recording or evidence artifacts.

@@ -189,7 +189,7 @@ export function AuthPage() {
     <div className="ap-shell">
       <main className="ap-form-col">
         <a className="ap-brand" href="/" aria-label="Origin home">
-          <img className="ap-logo" src="/brand/origin-mark.svg" alt="" aria-hidden="true" />
+          <img className="ap-logo" src="/brand/origin-mark-2026-09-28.svg" alt="" aria-hidden="true" />
           <span>origin</span>
         </a>
 

@@ -12,7 +12,7 @@ export function AdminPortal() {
     <div className="ap-shell">
       <main className="ap-form-col">
         <a className="ap-brand" href="/" aria-label="Origin home">
-          <img className="ap-logo" src="/brand/origin-mark.svg" alt="" />
+          <img className="ap-logo" src="/brand/origin-mark-2026-09-28.svg" alt="" />
           <span>origin</span>
         </a>
         <div className="ap-form-wrap">

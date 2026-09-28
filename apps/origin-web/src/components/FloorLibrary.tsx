@@ -1,5 +1,5 @@
-// Reference-floor gallery for the Capture step. Large, legible cards: a real Staer
-// warehouse photo as the hero (click → enlarge with the layout plan), the floor's
+// Reference-floor gallery for the Capture step. An original AI-generated
+// illustration (click → enlarge with the separate layout plan), the floor's
 // details, and an explicit "Use this floor" action that pre-fills the brief.
 // Offline-safe (cached catalog); the deterministic oracle still judges later.
 
@@ -67,11 +67,12 @@ export function FloorLibrary({
                   className="floorlib-hero-q"
                   style={{ backgroundImage: `url(${hero})` }}
                   role="img"
-                  aria-label={`${name} — warehouse floor`}
+                  aria-label={`${name} — AI-generated warehouse illustration`}
                 />
                 <span className="floorlib-enlarge" aria-hidden="true">⤢ Click to enlarge</span>
               </button>
               <div className="floorlib-body">
+                <p className="floorlib-provenance">AI-generated illustration · fictional warehouse. Not a photograph, floor-plan reconstruction, or evaluation result.</p>
                 <div className="floorlib-top">
                   <span className="floorlib-label">{name}</span>
                   {f.verified && <span className="floorlib-verified" title="Pre-verified by the oracle">✓ verified</span>}

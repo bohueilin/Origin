@@ -6465,7 +6465,7 @@ select.field-input {
 .de-note { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 2px 0 0; }
 @media (max-width: 820px) { .de-body { grid-template-columns: 1fr; } }
 
-/* ---------- Reference floor library (Staer) in Capture ---------- */
+/* ---------- Reference floor library (synthetic illustrations) in Capture ---------- */
 .floorlib { margin: 22px 0 6px; }
 .floorlib-head { display: flex; flex-direction: column; gap: 3px; margin-bottom: 16px; }
 .floorlib-kicker { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
@@ -6481,18 +6481,19 @@ select.field-input {
 .floorlib-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .floorlib-card.sel { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(65,95,53,0.2), var(--shadow-md); }
 
-/* Hero: real warehouse photo, click to enlarge. */
+/* Hero: synthetic warehouse illustration, click to enlarge. */
 .floorlib-hero {
   position: relative; display: block; width: 100%; height: 300px; padding: 0; border: none;
   cursor: zoom-in; background: var(--code-bg); border-bottom: 1px solid var(--con-line); overflow: hidden;
 }
-/* Crop the 2×2 composite to the clean RGB photo (top-left quadrant) for the card. */
-.floorlib-hero-q { position: absolute; inset: 0; background-size: 200% 200%; background-position: 0% 0%; background-repeat: no-repeat; transition: transform .25s; }
+/* Show one complete original illustration, with a visible provenance caption. */
+.floorlib-hero-q { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat; transition: transform .25s; }
 .floorlib-hero:hover .floorlib-hero-q { transform: scale(1.04); }
 .floorlib-enlarge {
   position: absolute; right: 12px; bottom: 12px; font-size: 12.5px; font-weight: 600; color: #fff;
   background: rgba(15, 23, 42, 0.66); border-radius: 999px; padding: 5px 12px; pointer-events: none;
 }
+.floorlib-provenance { margin: 0; padding-left: 10px; border-left: 2px solid var(--accent); font-size: 12px; line-height: 1.6; color: var(--text-soft); }
 .floorlib-body { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px 20px; }
 .floorlib-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .floorlib-label { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--text); line-height: 1.2; }
@@ -6512,7 +6513,7 @@ select.field-input {
 .floorlib-empty { font-size: 14px; color: var(--muted); padding: 12px 0; }
 @media (max-width: 700px) { .floorlib-grid { grid-template-columns: 1fr; } .floorlib-hero { height: 220px; } }
 
-/* floor-plan viewer modal (real photo + layout plan) */
+/* floor-plan viewer modal (illustration + separate layout plan) */
 .fpv-backdrop {
   position: fixed; inset: 0; z-index: 60; background: rgba(15, 23, 42, 0.66);
   display: flex; align-items: center; justify-content: center; padding: 24px;
@@ -6533,26 +6534,9 @@ select.field-input {
 .fpv-body-2 { grid-template-columns: 1.3fr 1fr; }
 .fpv-fig { margin: 0; display: flex; flex-direction: column; gap: 10px; }
 .fpv-img { width: 100%; max-height: calc(92vh - 150px); object-fit: contain; display: block; background: var(--code-bg); border-radius: 12px; border: 1px solid var(--con-line); }
-/* left: navigable real-scene quadrant viewer */
-.fpv-scene-wrap { position: relative; }
-.fpv-scene { width: 100%; aspect-ratio: 16 / 9; background-size: 200% 200%; background-repeat: no-repeat; background-color: var(--code-bg); border-radius: 12px; border: 1px solid var(--con-line); }
-.fpv-nav {
-  position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px;
-  border-radius: 50%; border: none; cursor: pointer; color: #fff; background: rgba(15,23,42,0.62);
-  font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center;
-}
-.fpv-nav:hover { background: rgba(15,23,42,0.85); }
-.fpv-nav-prev { left: 10px; }
-.fpv-nav-next { right: 10px; }
 .fpv-cap { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; color: var(--text-soft); }
 .fpv-cap-label { font-weight: 600; color: var(--text); font-size: 14px; }
 .fpv-cap-meta { font-size: 12px; color: var(--muted); }
-.fpv-dots { display: inline-flex; gap: 0; }
-.fpv-dot {
-  width: 9px; height: 9px; padding: 10px; box-sizing: content-box; background-clip: content-box;
-  border-radius: 50%; border: none; background-color: var(--con-line); cursor: pointer;
-}
-.fpv-dot.on { background-color: var(--accent); }
 @media (max-width: 760px) { .fpv-body-2 { grid-template-columns: 1fr; } }
 
 /* ---------- #3 spacing before robot embodiment ---------- */

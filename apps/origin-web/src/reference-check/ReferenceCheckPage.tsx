@@ -195,7 +195,7 @@ export function ReferenceCheckPage() {
       {/* 1 · agent */}
       <div className="rc-card rc-config">
         <p className="rc-step">01 · Declared configuration</p>
-        <h2>Name the inputs.</h2>
+        <h2>What inputs are you declaring?</h2>
         <p className="rc-hint">Use the defaults or enter configuration identifiers. These values bind the evidence to this declaration; they do not connect a live agent.</p>
         <div className="rc-fields">
           <label className="rc-field"><span>Model</span><input value={agent.model} onChange={(e) => setAgent({ ...agent, model: e.target.value })} /></label>
@@ -208,7 +208,7 @@ export function ReferenceCheckPage() {
       {/* 2 · policy */}
       <div className="rc-card rc-policy">
         <p className="rc-step">02 · Selected policy</p>
-        <h2>Set the boundaries.</h2>
+        <h2>Which decisions should the policy allow?</h2>
         <p className="rc-hint">
           Compare a preset or tune the controls. The fixed battery tests {taskCount} proposed {scenario === 'support' ? 'support actions' : 'access decisions'} against the same deterministic oracle.
         </p>
@@ -254,7 +254,7 @@ export function ReferenceCheckPage() {
       {result ? (
         <div className="rc-card rc-output">
           <p className="rc-step">03 · Evaluation result</p>
-          <h2>Every decision, open to inspection.</h2>
+          <h2>Where did the policy match the oracle?</h2>
           <div ref={verdictRef} className="check-feedback">
           <div className={`rc-verdict ${verdictClass}`} role="status" aria-live="polite">
             <b>{result.rows.filter((r) => r.passed).length} of {result.rows.length}</b>
@@ -293,6 +293,7 @@ export function ReferenceCheckPage() {
 
           {/* 4 · evidence + drift */}
           <p className="rc-step" style={{ marginTop: 26 }}>04 · Keep the evidence</p>
+          <p className="rc-hint">Can another reviewer detect a change? Download the signed record, re-verify it, then change a bound field.</p>
           <div className="rc-actions">
             <button className="btn btn--primary btn--sm" onClick={() => download(result.evidence, 'reference-check.policy-evaluation.json')}>Download signed policy-evaluation evidence</button>
             <a className="btn btn--ghost btn--sm" href="/verify">Re-verify it on /verify →</a>

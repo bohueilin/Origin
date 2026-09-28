@@ -31,9 +31,9 @@
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
 
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="/favicon-2026-09-28.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-2026-09-28.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
@@ -52,7 +52,7 @@
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=07989082" />
+    <link rel="stylesheet" href="/home.css?v=ed86bef1" />
     <link rel="stylesheet" href="/cinematic.css?v=f991e79b" />
 
     <!-- Structured data keeps the canonical product website and public source distinct.
@@ -66,7 +66,7 @@
           "@id": "https://originphysicalai.com/#org",
           "name": "Origin",
           "url": "https://originphysicalai.com/",
-          "logo": "https://originphysicalai.com/brand/origin-mark.svg",
+          "logo": "https://originphysicalai.com/brand/origin-mark-2026-09-28.svg",
           "sameAs": ["https://github.com/bohueilin/Origin"],
           "email": "bohueilin@originphysicalai.com",
           "founder": { "@type": "Person", "name": "Bo-Huei Lin" },
@@ -100,7 +100,7 @@
     <header class="site-header">
       <div class="shell site-header__inner">
         <a class="brand" href="#main" aria-label="Origin — home">
-          <img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" />
+          <img class="brand__logo" src="/brand/origin-mark-2026-09-28.svg" width="36" height="36" alt="" />
           <span class="brand__name">Origin</span>
         </a>
 
@@ -132,18 +132,18 @@
           </video>
           <div class="cin-hero__shade"></div>
           <div class="cin-hero__copy">
-            <p class="eyebrow">The evidence layer for high-consequence AI</p>
-            <h1 id="hero-title">Move AI forward.<br> <span>With evidence.</span></h1>
-            <p class="hero__lede">Test an agent policy against fixed scenarios, graded by deterministic code rather than another model, and give your reviewer tamper-evident evidence they can re-check in their own browser.</p>
+            <p class="eyebrow">Evidence for agent decisions</p>
+            <h1 id="hero-title">Test the policy.<br> <span>Inspect the evidence.</span></h1>
+            <p class="hero__lede">Run a selected agent policy against fixed synthetic scenarios. Deterministic code grades each decision. Your reviewer gets tamper-evident evidence they can re-check in their own browser.</p>
             <div class="cta-row hero__actions">
-              <a class="btn btn--primary" href="/reference-check" data-analytics="hero_reference_check_click">Run the synthetic reference check <span aria-hidden="true">↗</span></a>
+              <a class="btn btn--primary" href="/reference-check" data-analytics="hero_reference_check_click">Run the reference check <span aria-hidden="true">↗</span></a>
               <a class="cin-text-link" href="#demo" data-analytics="hero_demo_click">Step through the 5-stage demo <span aria-hidden="true">↓</span></a>
             </div>
           </div>
           <div class="cin-hero__bottom"><span>AI-generated illustration · fictional people and setting</span><button class="cin-motion" type="button" data-cinematic-toggle hidden aria-pressed="false">Play scene</button></div>
         </div>
         <div class="shell cin-intro">
-          <p class="hero__status"><b>Explore the working prototype.</b> Not production SaaS or compliance certification. Evaluate a selected policy in your browser using synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is untrusted by default.</p>
+          <p class="hero__status"><b>Synthetic demo · runs in your browser.</b> Not production SaaS or compliance certification. Evaluate a selected policy in your browser using synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is untrusted by default.</p>
           <a class="cin-text-link" href="/reference-check-vs-runtime">What works today <span aria-hidden="true">↗</span></a>
         </div>
         <nav class="shell lab-index" aria-label="Explore the working prototypes">
@@ -176,7 +176,7 @@
               </video>
             </div>
             <span class="pill pill--rec vband__pill">Recorded &middot; one take &middot; synthetic data</span>
-            <figcaption class="vband__cap"><b>Recorded 2026-09-28 on originphysicalai.com (57d5ccf), using synthetic demo data.</b> The tab generates and signs a demo attestation, then verifies VALID (code 0) while online. After the network is disabled, changing one field gives VOID (code 1); restoring it gives VALID (code 0), still offline. VALID means intact and signed by the embedded key — not signer identity, execution, issuer trust, safety or approval. Reproducible under this verifier, never a safety or correctness claim.
+            <figcaption class="vband__cap evidence-contract"><b>Recorded 2026-09-28 on originphysicalai.com (57d5ccf), using synthetic demo data.</b> The tab generates and signs a demo attestation, then verifies VALID (code 0) while online. After the network is disabled, changing one field gives VOID (code 1); restoring it gives VALID (code 0), still offline. VALID means intact and signed by the embedded key — not signer identity, execution, issuer trust, safety or approval. Reproducible under this verifier, never a safety or correctness claim.
               <small>Captions and a cursor dot are overlaid; the run is one continuous take. <a href="https://github.com/bohueilin/Origin/blob/main/apps/origin-web/scripts/RECORDINGS.md">Recording method and provenance</a>.</small></figcaption>
           </figure>
         </div>
@@ -194,11 +194,11 @@
               <button type="button" class="demo__dot" data-demo-step="5" role="tab" id="demo-tab-5" aria-controls="demo-panel-5" aria-selected="false" tabindex="-1"><span>5</span>Reverify</button>
             </div>
             <div class="demo__screen">
-              <div class="demo__panel is-on" data-demo-panel="1" role="tabpanel" tabindex="0" id="demo-panel-1" aria-labelledby="demo-tab-1"><h3><span class="demo__tag demo__tag--n">Bind</span> Declared inputs are bound</h3><p>Declared model, tool set, selected policy, and scenario battery are pinned into a single <b>input digest</b>. This binds the local policy evaluation; it does not prove that the named agent was inspected or run.</p><p class="demo__readout demo__readout--plan"><b>input</b> · declared model + tools + policy + battery <span class="rd-state">DIGEST BOUND</span></p></div>
-              <div class="demo__panel" data-demo-panel="2" role="tabpanel" tabindex="0" id="demo-panel-2" aria-labelledby="demo-tab-2" hidden><h3><span class="demo__tag demo__tag--plan">Challenge</span> A deterministic battery runs</h3><p>The same scenarios every time: actions that must be <b>allowed</b>, actions that must be <b>denied</b>, and actions that must <b>escalate</b> to a named human.</p><p class="demo__readout demo__readout--plan"><b>battery</b> · allow · deny · escalate <span class="rd-state">DETERMINISTIC</span></p></div>
-              <div class="demo__panel" data-demo-panel="3" role="tabpanel" tabindex="0" id="demo-panel-3" aria-labelledby="demo-tab-3" hidden><h3><span class="demo__tag demo__tag--held">Grade</span> The oracle grades it</h3><p>False accepts, false rejects, and catastrophic failures produce scored outcomes under the fixed oracle. A catastrophic over-grant caps the result at <b>L0</b> no matter how well everything else scored.</p><p class="demo__readout demo__readout--held"><b>oracle</b> · FAR · FRR · catastrophic cap <span class="rd-state">EVALUATION RESULT</span></p></div>
-              <div class="demo__panel" data-demo-panel="4" role="tabpanel" tabindex="0" id="demo-panel-4" aria-labelledby="demo-tab-4" hidden><h3><span class="demo__tag demo__tag--ok">Attest</span> Browser demo evidence is issued</h3><p>The browser signs a synthetic Action/Run envelope over the local policy evaluation. It records <b>not attempted</b>: no named agent was contacted or executed, and no provider effect was confirmed.</p><p class="demo__readout demo__readout--ok"><b>envelope</b> · bound to declared input · synthetic <span class="rd-state">SIGNED</span></p></div>
-              <div class="demo__panel" data-demo-panel="5" role="tabpanel" tabindex="0" id="demo-panel-5" aria-labelledby="demo-tab-5" hidden><h3><span class="demo__tag demo__tag--ok">Reverify</span> Offline UNTRUSTED, until tampered</h3><p>A reviewer re-verifies browser evidence offline and gets <b>UNTRUSTED</b>: its session signer is unpinned and it does not represent execution. Change one bound field and the verifier returns <b>VOID</b>.</p><p class="demo__readout demo__readout--held"><b>verify</b> · intact browser evidence <span class="rd-state">UNTRUSTED</span></p><p class="demo__readout demo__readout--block"><b>verify</b> · one bound field changed <span class="rd-state">VOID</span></p><div class="cta-row" style="margin-top:16px"><a class="btn btn--ghost btn--sm" href="/reference-check" data-analytics="demo_reference_check_link">Run the reference check</a><a class="btn btn--ghost btn--sm" href="/verify" data-analytics="demo_verify_link">Verify evidence</a></div></div>
+              <div class="demo__panel is-on" data-demo-panel="1" role="tabpanel" tabindex="0" id="demo-panel-1" aria-labelledby="demo-tab-1"><p class="demo__question">What inputs were declared?</p><h3><span class="demo__tag demo__tag--n">Bind</span> Declared inputs are bound</h3><p>Declared model, tool set, selected policy, and scenario battery are pinned into a single <b>input digest</b>. This binds the local policy evaluation; it does not prove that the named agent was inspected or run.</p><p class="demo__readout demo__readout--plan"><b>input</b> · declared model + tools + policy + battery <span class="rd-state">DIGEST BOUND</span></p></div>
+              <div class="demo__panel" data-demo-panel="2" role="tabpanel" tabindex="0" id="demo-panel-2" aria-labelledby="demo-tab-2" hidden><p class="demo__question">Which decisions were tested?</p><h3><span class="demo__tag demo__tag--plan">Challenge</span> A deterministic battery runs</h3><p>The same scenarios every time: actions that must be <b>allowed</b>, actions that must be <b>denied</b>, and actions that must <b>escalate</b> to a named human.</p><p class="demo__readout demo__readout--plan"><b>battery</b> · allow · deny · escalate <span class="rd-state">DETERMINISTIC</span></p></div>
+              <div class="demo__panel" data-demo-panel="3" role="tabpanel" tabindex="0" id="demo-panel-3" aria-labelledby="demo-tab-3" hidden><p class="demo__question">Where did the policy disagree with the oracle?</p><h3><span class="demo__tag demo__tag--held">Grade</span> The oracle grades it</h3><p>False accepts, false rejects, and catastrophic failures produce scored outcomes under the fixed oracle. A catastrophic over-grant caps the result at <b>L0</b> no matter how well everything else scored.</p><p class="demo__readout demo__readout--held"><b>oracle</b> · FAR · FRR · catastrophic cap <span class="rd-state">EVALUATION RESULT</span></p></div>
+              <div class="demo__panel" data-demo-panel="4" role="tabpanel" tabindex="0" id="demo-panel-4" aria-labelledby="demo-tab-4" hidden><p class="demo__question">What does the artifact actually attest?</p><h3><span class="demo__tag demo__tag--ok">Attest</span> Browser demo evidence is issued</h3><p>The browser signs a synthetic Action/Run envelope over the local policy evaluation. It records <b>not attempted</b>: no named agent was contacted or executed, and no provider effect was confirmed.</p><p class="demo__readout demo__readout--ok"><b>envelope</b> · bound to declared input · synthetic <span class="rd-state">SIGNED</span></p></div>
+              <div class="demo__panel" data-demo-panel="5" role="tabpanel" tabindex="0" id="demo-panel-5" aria-labelledby="demo-tab-5" hidden><p class="demo__question">Can a reviewer detect a change?</p><h3><span class="demo__tag demo__tag--ok">Reverify</span> Offline UNTRUSTED, until tampered</h3><p>A reviewer re-verifies browser evidence offline and gets <b>UNTRUSTED</b>: its session signer is unpinned and it does not represent execution. Change one bound field and the verifier returns <b>VOID</b>.</p><p class="demo__readout demo__readout--held"><b>verify</b> · intact browser evidence <span class="rd-state">UNTRUSTED</span></p><p class="demo__readout demo__readout--block"><b>verify</b> · one bound field changed <span class="rd-state">VOID</span></p><div class="cta-row" style="margin-top:16px"><a class="btn btn--ghost btn--sm" href="/reference-check" data-analytics="demo_reference_check_link">Run the reference check</a><a class="btn btn--ghost btn--sm" href="/verify" data-analytics="demo_verify_link">Verify evidence</a></div></div>
             </div>
             <div class="demo__bar">
               <button type="button" class="btn btn--ghost btn--sm" data-demo-play aria-pressed="false">&#9654; Play</button>
@@ -260,9 +260,9 @@
         </div>
       </section>
 
-      <section class="cin-labs" aria-labelledby="labs-title"><div class="shell cin-labs__grid"><figure class="cin-image"><img src="/brand/lab-1200-2026-09-28.webp" srcset="/brand/lab-1200-2026-09-28.webp 1200w, /brand/lab.webp 1672w" sizes="(max-width: 700px) 100vw, 48vw" width="1672" height="941" loading="lazy" decoding="async" alt="Illustrative researcher beside a mobile robot in a sunlit workspace" /><figcaption>AI-generated illustration · not an Origin facility or deployment</figcaption></figure><div class="cin-labs__copy"><p class="kicker">Origin Labs / Physical AI</p><h2 id="labs-title">The next decision<br>may move something.</h2><p class="section__lede">Explore the same questions in synthetic fleet operations and simulated robot plans: what was tested, under which conditions, and what should happen next?</p><p class="cin-small">Simulation evidence is a step toward understanding a system. It is not real-world safety validation or robot certification.</p><a class="cin-text-link" href="/labs" data-analytics="labs_index_click">Explore the proving grounds <span aria-hidden="true">↗</span></a></div></div></section>
+      <section class="cin-labs" aria-labelledby="labs-title"><div class="shell cin-labs__grid"><figure class="cin-image"><img src="/brand/lab-1200-2026-09-28.webp" srcset="/brand/lab-1200-2026-09-28.webp 1200w, /brand/lab.webp 1672w" sizes="(max-width: 700px) 100vw, 48vw" width="1672" height="941" loading="lazy" decoding="async" alt="Illustrative researcher beside a mobile robot in a sunlit workspace" /><figcaption>AI-generated illustration · not an Origin facility or deployment</figcaption></figure><div class="cin-labs__copy"><p class="kicker">Origin Labs / Bounded simulations</p><h2 id="labs-title">The next decision<br>may move something.</h2><p class="section__lede">The agent reference check is the product prototype. Labs explores the same evidence questions through synthetic fleet operations and simulated robot plans: what was tested, under which conditions, and what should happen next?</p><p class="cin-small">Simulation evidence is a step toward understanding a system. It is not real-world safety validation or robot certification.</p><a class="cin-text-link" href="/labs" data-analytics="labs_index_click">Explore Origin Labs <span aria-hidden="true">↗</span></a></div></div></section>
 
-      <section class="section cin-contact" id="contact" data-investor-section aria-labelledby="final-title"><div class="shell"><p class="kicker">Let's make the next step clear</p><h2 id="final-title">Bring us one approval decision.</h2><p class="section__lede">If your team can't ship an agent because no one can show what its policy allows, see how a synthetic reference check works — or book a founder-led evidence review.</p><div class="cta-row"><a class="btn btn--primary" href="/reference-check" data-analytics="final_check_agent_click">Run the reference check</a><button type="button" class="btn btn--ghost" data-open-lead data-intent="review" data-analytics="final_primary_cta_click" hidden>Book an evidence review <span aria-hidden="true">↗</span></button></div></div></section>
+      <section class="section cin-contact" id="contact" data-investor-section aria-labelledby="final-title"><div class="shell"><p class="kicker">Let's make the next step clear</p><h2 id="final-title">Bring us one approval decision.</h2><p class="section__lede">If your team can't ship an agent because no one can show what its policy allows, see how a synthetic reference check works — or book a founder-led evidence review.</p><div class="cta-row"><button type="button" class="btn btn--primary" data-open-lead data-intent="review" data-analytics="final_primary_cta_click" hidden>Book an Agent Evidence Review <span aria-hidden="true">↗</span></button><noscript><a class="btn btn--primary" href="mailto:bohueilin@originphysicalai.com">Book an Agent Evidence Review</a></noscript><a class="cin-text-link" href="/reference-check" data-analytics="final_check_agent_click">Run the reference check <span aria-hidden="true">↗</span></a></div></div></section>
     <!-- Gate freshness. Progressive enhancement: enhance.ts fills this from the
          committed public/trust/gates-summary.json, reusing the same 14-day staleness
          rule /trust uses. Absent JS or absent summary, the strip stays hidden rather
@@ -273,7 +273,7 @@
 
     </main>
 
-    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Offline re-verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Run a policy reference check</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@originphysicalai.com">Contact</a><a href="/auth" rel="nofollow">Owner console</a></span></div></footer>
+    <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark-2026-09-28.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Offline re-verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Run a policy reference check</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@originphysicalai.com">Contact</a><a href="/auth" rel="nofollow">Owner console</a></span></div></footer>
 
     <!-- ===================== LeadFormModal ===================== -->
     <dialog id="lead-modal" class="modal" aria-labelledby="lead-title">

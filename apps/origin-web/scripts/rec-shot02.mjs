@@ -1,47 +1,37 @@
-// Tier A recorder — Shot 02, "the over-grant sweep", filmed on the LIVE /security page.
-//
-// The analyzer runs in the viewer's browser over a seeded synthetic fleet: 9,690
-// identities, 63.1% over-grant surface, 445/445 planted violations caught. The panel
-// says SYNTHETIC on-screen, so the footage carries its own label. Tier A discipline:
-// one take, nothing cut or re-timed.
-import { chromium } from 'playwright'
-import { CURSOR_INIT, actions, beatClock } from './recLib.mjs'
-
-const b = await chromium.launch()
-const ctx = await b.newContext({
-  viewport: { width: 1600, height: 1000 },
-  recordVideo: { dir: '/tmp/rec', size: { width: 1600, height: 1000 } },
-})
-const p = await ctx.newPage()
-await p.addInitScript(CURSOR_INIT)
-const { settle, clickAt } = actions(p)
-const clock = beatClock()
-
-await p.goto('https://origin-physical-ai.pages.dev/security', { waitUntil: 'networkidle' })
-await p.waitForTimeout(1400)
-
-const analyze = p.getByRole('button', { name: 'Analyze the fleet' })
-const widen = p.getByRole('button', { name: 'Widen one delegation edge' })
-const score = p.getByRole('button', { name: 'Score against planted ground truth' })
-
-clock.mark('analyze')
-await clickAt(analyze)
-await p.waitForTimeout(900)
-await settle(p.locator('text=/over-grant surface/i').first())
-await p.waitForTimeout(2600) // let the numbers land and HOLD — settled metrics read as measured
-
-clock.mark('widen')
-await clickAt(widen)
-await p.waitForTimeout(2400)
-
-clock.mark('score')
-await clickAt(score)
-await p.waitForTimeout(600)
-await settle(p.locator('text=/catch|caught|planted/i').first())
-await p.waitForTimeout(3000)
-
-clock.mark('end')
-const body = await p.locator('body').innerText()
-console.log('surface on page:', /over-grant surface/i.test(body), '| ground truth text:', /planted/i.test(body))
-clock.dump()
-await ctx.close(); await b.close()
+// Film the in-page analyzer on /over-grant; published benchmark counts are separate.
+import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+import { openRecording, fleetFacts, rootFacts, scoreFacts } from './recLib.mjs'
+const r = await openRecording('shot02', '/over-grant')
+const { page, probe, mark, clickAt, settle, finish, release } = r
+try {
+  const analyze = await probe('analyze', page.getByRole('button', { name: 'Analyze the fleet', exact: true }))
+  const widen = await probe('widen', page.getByRole('button', { name: 'Widen one delegation edge', exact: true }))
+  const score = await probe('score', page.getByRole('button', { name: 'Score against planted ground truth', exact: true }))
+  // Root count is a configuration fact from the exact released source, not the
+  // separate 2,000-root published benchmark. Screen-derived results follow below.
+  const sourcePath = 'apps/origin-web/src/security/SecurityPage.tsx'
+  const source = execFileSync('git', ['show', `${release.commit}:${sourcePath}`], { cwd: fileURLToPath(new URL('../../..', import.meta.url)), encoding: 'utf8' })
+  const roots = Number(source.match(/const OG_ROOTS = (\d+)/)?.[1])
+  if (!Number.isInteger(roots) || roots <= 0) throw new Error('Released root configuration not found')
+  await settle(analyze); mark('intro'); await page.waitForTimeout(3500)
+  await clickAt(analyze)
+  const surface = await probe('surface', page.locator('.sec-rsl'))
+  await settle(surface)
+  const fleet = await page.locator('#fleet-analysis').innerText()
+  const fleetResult = fleetFacts(fleet, await surface.innerText())
+  mark('analyze'); await page.waitForTimeout(4500)
+  await clickAt(widen)
+  const root = await probe('root', page.getByText(/^blast radius at the ROOT/))
+  await settle(root)
+  const rootText = await root.innerText(), rootResult = rootFacts(rootText)
+  mark('widen'); await page.waitForTimeout(4500)
+  await clickAt(score)
+  const caught = await probe('caught', page.getByText(/^caught \d+\/\d+/))
+  await settle(caught)
+  const scoreText = await page.locator('#fleet-analysis').innerText()
+  const scoreResult = scoreFacts(await caught.innerText(), scoreText)
+  mark('score'); await page.waitForTimeout(5500)
+  await finish({ ...fleetResult, roots, ...rootResult, ...scoreResult }, { fleet, root: rootText, score: scoreText },
+    { configuration_sources: { roots: `${release.commit}:${sourcePath}#OG_ROOTS` } })
+} finally { await r.browser.close() }

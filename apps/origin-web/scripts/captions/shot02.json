@@ -1,0 +1,26 @@
+{
+  "tag": "One take · synthetic demo data · recorded {date} on {host} ({commit}) · captions and cursor dot overlaid",
+  "poster_beat": "score",
+  "captions": [
+    {
+      "from": "painted",
+      "to": "analyze",
+      "text": "/over-grant analyzer · synthetic fleet, seed {seed}, {roots} roots"
+    },
+    {
+      "from": "analyze",
+      "to": "widen",
+      "text": "{identities} synthetic identities · {surface}% of granted scopes never exercised in the window"
+    },
+    {
+      "from": "widen",
+      "to": "score",
+      "text": "One delegation edge widened: the root reaches {before}% → {after}% of the sensitive resources"
+    },
+    {
+      "from": "score",
+      "to": "end",
+      "text": "Fresh seeded corpus, {planted} planted widened edges: {caught}/{planted} caught · {fp} false positives (synthetic ground truth)"
+    }
+  ]
+}

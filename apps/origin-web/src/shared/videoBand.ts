@@ -1,5 +1,6 @@
 /**
- * Video band — plays a short atmospheric clip once, when it is actually on screen.
+ * Optional decorative band — plays once when it is actually on screen.
+ * Product recordings deliberately omit data-band and remain click-to-play.
  *
  * A band carries one of two tiers, and its pill says which in plain words: generated
  * atmosphere ("Illustration", pill--ill) or a one-take recording of the product itself

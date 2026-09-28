@@ -1,0 +1,222 @@
+{
+  "shot": "shot01",
+  "date": "2026-09-28",
+  "date_timezone": "UTC",
+  "recorded_at": "2026-09-28T07:03:41.050Z",
+  "host": "originphysicalai.com",
+  "commit": "57d5ccf",
+  "release": {
+    "generated_at": "2026-09-28T07:01:35Z",
+    "commit": "57d5ccf",
+    "tracked_clean": true,
+    "all_green": true,
+    "suites": [
+      {
+        "name": "ts:build (workspaces)",
+        "result": "PASS",
+        "detail": "\u2713 built in 152ms"
+      },
+      {
+        "name": "ts:build (chronos-ui)",
+        "result": "PASS",
+        "detail": "\u2713 built in 907ms"
+      },
+      {
+        "name": "ts:origin-web (+evidence+verifier-core globs)",
+        "result": "PASS",
+        "detail": "Tests  797 passed (797)"
+      },
+      {
+        "name": "ts:janus",
+        "result": "PASS",
+        "detail": "Tests  191 passed (191)"
+      },
+      {
+        "name": "ts:@origin/evidence",
+        "result": "PASS",
+        "detail": "Tests  41 passed (41)"
+      },
+      {
+        "name": "ts:@origin/verifier-core",
+        "result": "PASS",
+        "detail": "Tests  46 passed (46)"
+      },
+      {
+        "name": "ev:verify:evidence",
+        "result": "PASS",
+        "detail": "ALL CHECKS PASSED"
+      },
+      {
+        "name": "ev:proof:verify",
+        "result": "PASS",
+        "detail": "ALL CHECKS PASSED \u2014 TR-A002 hash chain verified (12 events, digest c"
+      },
+      {
+        "name": "ev:env:verify",
+        "result": "PASS",
+        "detail": "VERIFIED \u2014 the score is reproducible under verifier 1.0.0 (reward 1,"
+      },
+      {
+        "name": "ev:reward:diff",
+        "result": "PASS",
+        "detail": "OK \u2014 every exploit is driven to 0 and every gold is preserved (rewar"
+      },
+      {
+        "name": "ev:/verify selftest",
+        "result": "PASS",
+        "detail": "ALL PASS \u2014 /verify detect+verify logic reproduces under Node"
+      },
+      {
+        "name": "honesty-lint",
+        "result": "PASS",
+        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 174 Rea"
+      },
+      {
+        "name": "py:cobra",
+        "result": "PASS",
+        "detail": "181 passed"
+      },
+      {
+        "name": "py:chronos",
+        "result": "PASS",
+        "detail": "411 passed, 5 skipped"
+      }
+    ],
+    "source": "release",
+    "built_at": "2026-09-28T07:01:35Z",
+    "run_url": "https://github.com/bohueilin/Origin/actions/runs/36388418172"
+  },
+  "beats": [
+    {
+      "name": "painted",
+      "t": 1.099
+    },
+    {
+      "name": "load",
+      "t": 3.093
+    },
+    {
+      "name": "verify",
+      "t": 9.633
+    },
+    {
+      "name": "offline",
+      "t": 13.139
+    },
+    {
+      "name": "tamper-verify",
+      "t": 22.545
+    },
+    {
+      "name": "restore",
+      "t": 31.929
+    },
+    {
+      "name": "end",
+      "t": 36.432
+    }
+  ],
+  "facts": {
+    "valid_code": 0,
+    "tamper_code": 1,
+    "restored_code": 0
+  },
+  "observed": {
+    "valid": "VALID\nSigil \u2014 portable signed receipt \u00b7 code 0",
+    "tampered": "VOID\nSigil \u2014 portable signed receipt \u00b7 code 1",
+    "restored": "VALID\nSigil \u2014 portable signed receipt \u00b7 code 0"
+  },
+  "blocked_requests": [
+    "GET https://www.googletagmanager.com/gtag/js"
+  ],
+  "raw_file": "page@8b5ea2cb6d86a1a7171c947936563355.webm",
+  "raw_sha256": "bbeb5dadc133fcc809ac37156c1816409d5076e1ac29f0daa629a929285b821a",
+  "font": "Carlito-Regular.ttf",
+  "font_sha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
+  "network_off_from": "offline",
+  "render": {
+    "output": "shot01-2026-09-28.mp4",
+    "sha256": "c79d2b9b7c0c6a043be20979cb5a581bfc3102e7ed3c4bea78da7837b4883d24",
+    "poster": "shot01-2026-09-28.webp",
+    "poster_sha256": "9b6a09e3c30175d4fe068714085230506cb9876dbe1f808498b19df06389fc7e",
+    "size": [
+      1280,
+      720
+    ],
+    "caption_px": 44,
+    "tag_px": 30,
+    "tag_xy": [
+      24,
+      24
+    ],
+    "lead_trimmed_s": 0,
+    "captions": [
+      {
+        "from_s": 0,
+        "to_s": 36.432,
+        "text": "One take \u00b7 synthetic demo data \u00b7 recorded 2026-09-28 on originphysicalai.com (57d5ccf) \u00b7 captions and cursor dot overlaid",
+        "box": [
+          24,
+          24,
+          1160,
+          124
+        ]
+      },
+      {
+        "from_s": 1.099,
+        "to_s": 9.633,
+        "text": "/verify loads a synthetic demo attestation, signed in this tab",
+        "box": [
+          85,
+          622,
+          1195,
+          696
+        ]
+      },
+      {
+        "from_s": 9.633,
+        "to_s": 13.139,
+        "text": "VALID (code 0): intact and signed by its embedded key \u2014 not signer identity",
+        "box": [
+          74,
+          568,
+          1205,
+          696
+        ]
+      },
+      {
+        "from_s": 13.139,
+        "to_s": 22.545,
+        "text": "Network off from here \u2014 the next two verdicts are computed in this tab with no network",
+        "box": [
+          48,
+          568,
+          1232,
+          696
+        ]
+      },
+      {
+        "from_s": 22.545,
+        "to_s": 31.929,
+        "text": "One field changed without re-signing: VOID (code 1)",
+        "box": [
+          156,
+          622,
+          1124,
+          696
+        ]
+      },
+      {
+        "from_s": 31.929,
+        "to_s": 36.432,
+        "text": "Field restored: VALID (code 0), still offline",
+        "box": [
+          251,
+          622,
+          1029,
+          696
+        ]
+      }
+    ]
+  }
+}

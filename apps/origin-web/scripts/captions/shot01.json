@@ -1,0 +1,31 @@
+{
+  "tag": "One take · synthetic demo data · recorded {date} on {host} ({commit}) · captions and cursor dot overlaid",
+  "poster_beat": "verify",
+  "captions": [
+    {
+      "from": "painted",
+      "to": "verify",
+      "text": "/verify loads a synthetic demo attestation, signed in this tab"
+    },
+    {
+      "from": "verify",
+      "to": "offline",
+      "text": "VALID (code {valid_code}): intact and signed by its embedded key — not signer identity"
+    },
+    {
+      "from": "offline",
+      "to": "tamper-verify",
+      "text": "Network off from here — the next two verdicts are computed in this tab with no network"
+    },
+    {
+      "from": "tamper-verify",
+      "to": "restore",
+      "text": "One field changed without re-signing: VOID (code {tamper_code})"
+    },
+    {
+      "from": "restore",
+      "to": "end",
+      "text": "Field restored: VALID (code {restored_code}), still offline"
+    }
+  ]
+}

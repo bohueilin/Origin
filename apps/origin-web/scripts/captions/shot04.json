@@ -1,0 +1,36 @@
+{
+  "tag": "One take · synthetic demo data · recorded {date} on {host} ({commit}) · captions and cursor dot overlaid",
+  "poster_beat": "reverify",
+  "captions": [
+    {
+      "from": "painted",
+      "to": "run",
+      "text": "/reference-check · a selected policy vs a synthetic battery; no agent contacted"
+    },
+    {
+      "from": "run",
+      "to": "download",
+      "text": "{n} synthetic policy decisions scored by the deterministic oracle"
+    },
+    {
+      "from": "download",
+      "to": "drift",
+      "text": "Signed policy-evaluation evidence downloaded (browser-session key)"
+    },
+    {
+      "from": "drift",
+      "to": "paste",
+      "text": "One tool added ({tool}): the legacy config-bound credential VOIDs (code {code}); the downloaded evidence is unchanged"
+    },
+    {
+      "from": "paste",
+      "to": "reverify",
+      "text": "Downloaded policy-evaluation evidence pasted into /verify"
+    },
+    {
+      "from": "reverify",
+      "to": "end",
+      "text": "Pasted into /verify: UNTRUSTED — intact, but the session signer is unpinned"
+    }
+  ]
+}

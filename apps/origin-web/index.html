@@ -52,7 +52,7 @@
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2c02ec1f" />
+    <link rel="stylesheet" href="/home.css?v=2c3d7ec2" />
     <link rel="stylesheet" href="/cinematic.css" />
 
     <!-- Structured data keeps the canonical product website and public source distinct.
@@ -142,6 +142,20 @@
         <div class="shell cin-intro">
           <p class="hero__status"><b>Explore the working prototype.</b> Not production SaaS or compliance certification. Evaluate a selected policy in your browser using synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is untrusted by default.</p>
           <a class="cin-text-link" href="/reference-check-vs-runtime">What works today <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="shell">
+          <figure class="vband__fig">
+            <div class="vband__wrap">
+              <video class="vband__v" poster="/video/shot01-2026-09-28.webp"
+                     width="1280" height="720" muted playsinline controls preload="none"
+                     aria-label="Screen recording: a synthetic demo attestation verifies VALID online, then VOID after tampering and VALID after restoration with the network disabled.">
+                <source src="/video/shot01-2026-09-28.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <span class="pill pill--rec vband__pill">Recorded &middot; one take &middot; synthetic data</span>
+            <figcaption class="vband__cap"><b>Recorded 2026-09-28 on originphysicalai.com (57d5ccf), using synthetic demo data.</b> The tab generates and signs a demo attestation, then verifies VALID (code 0) while online. After the network is disabled, changing one field gives VOID (code 1); restoring it gives VALID (code 0), still offline. VALID means intact and signed by the embedded key — not signer identity, execution, issuer trust, safety or approval. Reproducible under this verifier, never a safety or correctness claim.
+              <small>Captions and a cursor dot are overlaid; the run is one continuous take. <a href="https://github.com/bohueilin/Origin/blob/main/apps/origin-web/scripts/RECORDINGS.md">Recording method and provenance</a>.</small></figcaption>
+          </figure>
         </div>
       </section>
 

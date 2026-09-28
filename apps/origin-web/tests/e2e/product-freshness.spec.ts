@@ -84,7 +84,7 @@ test('clip waits for an explicit run and distinguishes measured from illustrativ
   await page.goto('/clip')
   await page.waitForTimeout(350)
   expect(requests).toBe(0)
-  await expect(page.getByRole('link', { name: /Back to Labs/ })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Clip navigation' }).getByRole('link', { name: /Back to Labs/ })).toBeVisible()
   await expect(page.locator('.clip')).toContainText(/external.*provider/i)
   await page.getByRole('button', { name: 'Run latency comparison', exact: true }).click()
   await expect.poll(() => requests).toBe(1)

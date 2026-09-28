@@ -194,6 +194,9 @@ for (const field of ['Domain', 'Robot embodiment']) {
     const canvas = page.locator('.pg3d-canvas')
     const controls = page.locator('.pg3d-controls')
     await canvas.scrollIntoViewIfNeeded()
+    // IntersectionObserver delivery and React's visibility commit run outside
+    // the virtual frame burst. Observe a real first draw before advancing it.
+    await expect(page.locator('.pg3d-prog-txt')).not.toHaveText('starting…')
     await page.clock.runFor(8000)
     await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
     const select = page.getByRole('combobox', { name: field, exact: true })
@@ -202,6 +205,7 @@ for (const field of ['Domain', 'Robot embodiment']) {
     await select.selectOption(next)
     await canvas.scrollIntoViewIfNeeded()
     await expect(controls.getByRole('button', { name: 'Pause', exact: true })).toBeVisible()
+    await expect(page.locator('.pg3d-prog-txt')).not.toHaveText(/^✓ all/)
     await page.clock.runFor(8000)
     await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
   })

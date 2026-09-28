@@ -95,7 +95,7 @@ test('an anonymous visitor still gets the plain read-only banner', async ({ page
   await page.goto('/passport')
   const banner = page.locator('.pp-readonly')
   await expect(banner).toBeVisible()
-  await expect(banner).toContainText(/sign in as the Origin owner/i)
+  await expect(banner).toContainText(/owner sign-in enables the local demo/i)
   await expect(page.locator('.pp-readonly .pp-readonly-link')).toHaveText(/^\s*sign in/i)
 })
 

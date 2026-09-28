@@ -205,7 +205,7 @@ export function Home({ onRun, canRun = true }: { onRun: (s: ScenarioSpec) => voi
               <div key={u.id} className="pp-usecase">
                 <div className="pp-usecase-head">
                   <b>{u.title}</b>
-                  <span className={`pp-usecase-badge pp-usecase-${u.status}`}>{u.status === 'live' ? 'in a live scenario' : 'card'}</span>
+                  <span className={`pp-usecase-badge pp-usecase-${u.status}`}>{u.status === 'live' ? 'Demo scenario' : 'card'}</span>
                 </div>
                 <p className="pp-usecase-prompt">“{u.prompt}”</p>
                 <div className="pp-usecase-safety">🛡 {u.safety_angle}</div>

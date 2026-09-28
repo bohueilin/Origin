@@ -23,7 +23,7 @@ if (film && toggle) {
   film.addEventListener('error', unavailable)
   // With a <source> child, a failed download dispatches on that child and
   // does not bubble to the video element.
-  film.querySelectorAll('source').forEach((source) => source.addEventListener('error', unavailable))
+  film.querySelector('source:last-of-type')?.addEventListener('error', unavailable)
   film.addEventListener('play', update)
   film.addEventListener('pause', update)
   film.addEventListener('ended', update)
@@ -34,5 +34,5 @@ if (film && toggle) {
   media.addEventListener('change', () => { if (media.matches) film.pause() })
   document.addEventListener('visibilitychange', () => { if (document.hidden) film.pause() })
   if (film.error) unavailable()
-  else if (!media.matches) play()
+  else if (!media.matches && !(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) play()
 }

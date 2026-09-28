@@ -201,6 +201,8 @@
         .site-nav a { min-height: 44px; display: inline-flex; align-items: center; }
         .site-header__burger, .site-header__cta, .site-header__cta-mobile { display: none; }
       }
+      .ec__note, .proofstrip__val, .p__b p { font-size: var(--fs-14); line-height: 1.65; max-inline-size: 75ch; }
+      .proofstrip__pill, .proofstrip__cap { font-size: var(--fs-12); line-height: 1.5; }
     </style>
   </head>
   <body>
@@ -338,7 +340,7 @@
                   <li><span class="hold">!</span> Approval rule · above-cap refunds require a human</li>
                 </ul>
                 <p class="verdict">Verdict · require-approval</p>
-                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Deterministic. One of allow / cap / require-approval / deny / pause.</p>
+                <p style="margin-top:8px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Deterministic. One of allow / cap / require-approval / deny / pause.</p>
               </div>
             </section>
 
@@ -373,7 +375,7 @@
                   <span class="sim-state">Hold was not selected</span>
                   <span class="sim-state">Deny was not selected</span>
                 </div>
-                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Approved for this one action, at 09:41:26. Who, when, and scope are recorded.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Approved for this one action, at 09:41:26. Who, when, and scope are recorded.</p>
               </div>
             </section>
 
@@ -386,7 +388,7 @@
                   <li class="m--ok"><time>09:41:27</time> Executed via proxy · within scope</li>
                   <li class="m--block"><time>09:42:10</time> Over-ceiling refund · blocked</li>
                 </ul>
-                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Sandbox / test side effects only. No live money moves; any real-money path is a human-created link + signed webhook.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Sandbox / test side effects only. No live money moves; any real-money path is a human-created link + signed webhook.</p>
               </div>
             </section>
 
@@ -399,7 +401,7 @@
                   <li>proxy execution · block</li>
                   <li>sealed digest</li>
                 </ul>
-                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
+                <p style="margin-top:8px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
               </div>
             </section>
 
@@ -491,7 +493,7 @@
                   <li><span class="hold">!</span> Target · production service — human required</li>
                 </ul>
                 <p class="verdict">Verdict · require-approval</p>
-                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Deterministic. One of allow / cap / require-approval / deny / pause.</p>
+                <p style="margin-top:8px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Deterministic. One of allow / cap / require-approval / deny / pause.</p>
               </div>
             </section>
 
@@ -526,7 +528,7 @@
                   <span class="sim-state">Hold was not selected</span>
                   <span class="sim-state">Deny was not selected</span>
                 </div>
-                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Approved for this one restart, at 14:07:12. Who, when, and scope are recorded.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Approved for this one restart, at 14:07:12. Who, when, and scope are recorded.</p>
               </div>
             </section>
 
@@ -539,7 +541,7 @@
                   <li class="m--ok"><time>14:07:13</time> Restart executed via proxy · within scope</li>
                   <li class="m--block"><time>14:08:55</time> Disable-auth escalation · blocked</li>
                 </ul>
-                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Sandbox / test side effects only. No production system is touched; the restart runs against a sandbox stand-in.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Sandbox / test side effects only. No production system is touched; the restart runs against a sandbox stand-in.</p>
               </div>
             </section>
 
@@ -552,7 +554,7 @@
                   <li>proxy execution · block</li>
                   <li>sealed digest</li>
                 </ul>
-                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
+                <p style="margin-top:8px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
               </div>
             </section>
 
@@ -640,7 +642,7 @@
                   <li><span class="hold">!</span> Approval path · none — bulk PII export needs a data-protection owner who has not granted it</li>
                 </ul>
                 <p class="verdict" style="color:var(--danger);background:#fbecea;border-color:#edc6c2">Verdict · deny</p>
-                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Deterministic. No approver can widen this — there is no approval path for bulk PII export.</p>
+                <p style="margin-top:8px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Deterministic. No approver can widen this — there is no approval path for bulk PII export.</p>
               </div>
             </section>
 
@@ -675,7 +677,7 @@
                   <span class="sim-state">Hold was not selected</span>
                   <span class="sim-state">Deny was not selected</span>
                 </div>
-                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Single-record export approved at 11:22:40. The bulk export has <b>no approval path</b> to offer.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Single-record export approved at 11:22:40. The bulk export has <b>no approval path</b> to offer.</p>
               </div>
             </section>
 
@@ -688,7 +690,7 @@
                   <li class="m--ok"><time>11:22:41</time> 1 record exported via proxy · within scope</li>
                   <li class="m--block"><time>11:24:03</time> Bulk PII export · blocked</li>
                 </ul>
-                <p style="margin-top:10px;font-size:12px;color:var(--steel)">Sandbox / test side effects only. No customer data leaves the boundary; exports run against sandbox fixtures.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Sandbox / test side effects only. No customer data leaves the boundary; exports run against sandbox fixtures.</p>
               </div>
             </section>
 
@@ -701,7 +703,7 @@
                   <li>proxy execution · block</li>
                   <li>sealed digest</li>
                 </ul>
-                <p style="margin-top:8px;font-size:12px;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
+                <p style="margin-top:8px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Append-only, tamper-evident, replayable.</p>
               </div>
             </section>
 

@@ -78,3 +78,19 @@ html, body { margin: 0; background: #111c16; }
   .clip__lane { transition: border-color .12s, background-color .12s; }
   .clip__bar-fill { transition: none; }
 }
+
+/* Explanations and scope stay readable at every viewport. */
+.clip__consent p,
+.clip__footer,
+.clip__live {
+  font-size: var(--fs-14, 0.875rem);
+  line-height: 1.65;
+  max-inline-size: 75ch;
+}
+
+/* Provenance labels stay readable at every viewport. */
+.clip__attack-tag,
+.clip__provenance {
+  font-size: var(--fs-12, 0.75rem);
+  line-height: 1.5;
+}

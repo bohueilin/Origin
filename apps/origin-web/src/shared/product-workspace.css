@@ -222,3 +222,12 @@
   /* The explanatory path fades without moving; counters and verdicts stay instant. */
   .product-workspace .deleg__inheritance { animation: delegationPathIn 200ms cubic-bezier(.23,1,.32,1) both !important; }
 }
+
+/* Explanations and scope stay readable at every viewport. */
+.pg-wrap.product-workspace .pg-episode__meta,
+.pg-wrap.product-workspace .pg-verdict__perm,
+.pg-wrap.product-workspace .pg-verdict__scope {
+  font-size: var(--fs-14, 0.875rem);
+  line-height: 1.65;
+  max-inline-size: 75ch;
+}

@@ -110,3 +110,17 @@ a { color: inherit; }
 }
 
 .ap-art-caption { position: absolute; z-index: 2; top: 16px; left: 16px; right: 16px; margin: 0; padding: 10px 14px; border-radius: 6px; background: #f8f7f4; color: #4e5b48; font-size: .75rem; line-height: 1.5; }
+
+/* Explanations and scope stay readable at every viewport. */
+.ap-pilot-note,
+.ap-paused,
+.ap-owner-note,
+.ap-denied,
+.ap-legal,
+.ap-alt,
+.ap-error,
+.ap-note {
+  font-size: var(--fs-14, 0.875rem);
+  line-height: 1.65;
+  max-inline-size: 75ch;
+}

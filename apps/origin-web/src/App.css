@@ -7150,3 +7150,45 @@ select.field-input {
   .btn:active, .rl-step:hover, .si-legend div:hover, .floorlib-card:hover,
   .floorlib-hero:hover .floorlib-hero-q, .pg3d-btn:active { transform: none !important; }
 }
+
+/* Explanations and scope stay readable at every viewport. */
+.voice-hint,
+.voice-note,
+.field-hint,
+.empty-upload,
+.site-gym-empty,
+.tips-primary,
+.trust-note,
+.plan-fleet,
+.triad-meaning,
+.embodiment-preview figcaption span,
+.pipeline-chip p,
+.artifact-card p,
+.task-card p,
+.pipeline-chip small,
+.artifact-card small,
+.task-card small {
+  font-size: var(--fs-14, 0.875rem);
+  line-height: 1.65;
+  max-inline-size: 75ch;
+}
+
+/* Provenance labels stay readable at every viewport. */
+.site-fleet-tag,
+.sim-fleet-tag,
+.input-ledger span,
+.next-action span,
+.pipeline-chip > span,
+.artifact-card > span,
+.task-card > span {
+  font-size: var(--fs-12, 0.75rem);
+  line-height: 1.5;
+}
+
+/* Short UI labels stay readable at every viewport. */
+.panel-kicker,
+.smp-fleet-active,
+.smp-rtype-chip b {
+  font-size: var(--fs-11, 0.6875rem);
+  line-height: 1.5;
+}

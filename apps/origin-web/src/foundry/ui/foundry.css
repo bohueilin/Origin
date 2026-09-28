@@ -312,3 +312,28 @@ body {
   .fdy-step { animation: none; }
   .fdy-lane__fill { transition: none; }
 }
+
+/* Explanations and scope stay readable at every viewport. */
+.fdy-passport-gym__caption,
+.fdy-passport-gym__proof,
+.fdy-rsi-card__note,
+.fdy-upload-error,
+.fdy-apierror,
+.fdy-train__caption,
+.fdy-brainline,
+.fdy-step__body,
+.fdy-counter,
+.fdy-lane__preview,
+.fdy-passport-gym__row em {
+  font-size: var(--fs-14, 0.875rem);
+  line-height: 1.65;
+  max-inline-size: 75ch;
+}
+
+/* Provenance labels stay readable at every viewport. */
+.fdy-chip,
+.fdy-gate-receipt,
+.fdy-badge {
+  font-size: var(--fs-12, 0.75rem);
+  line-height: 1.5;
+}

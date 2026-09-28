@@ -808,3 +808,28 @@ button.pp-ph-approve:disabled { cursor: default; opacity: 0.92; }
 .pp-sn-row-v { margin: 0; font-size: 14px; font-weight: 600; color: var(--text); text-align: right; }
 .pp-sn-row-v.mono { font-family: var(--mono); font-size: 13px; font-weight: 500; }
 .pp-sn-receipt-msg { margin: 13px 0 0; font-size: 13px; color: var(--text-soft); line-height: 1.5; }
+
+/* Explanations and scope stay readable at every viewport. */
+.pp-usecase-prompt,
+.pp-usecase-safety,
+.pp-readonly-tx,
+.pp-voice-readonly,
+.pp-voice-cursor,
+.pp-foot-mid {
+  font-size: var(--fs-14, 0.875rem);
+  line-height: 1.65;
+  max-inline-size: 75ch;
+}
+
+/* Provenance labels stay readable at every viewport. */
+.pp-usecase-badge,
+.pp-sim {
+  font-size: var(--fs-12, 0.75rem);
+  line-height: 1.5;
+}
+
+/* Short UI labels stay readable at every viewport. */
+.pp-sponsor-role {
+  font-size: var(--fs-11, 0.6875rem);
+  line-height: 1.5;
+}

@@ -225,9 +225,11 @@ a:hover { text-decoration: underline; }
 .brand__logo { border-radius: 6px; display: block; }
 .brand__name { font-family: var(--font-display); font-weight: 400; font-size: 30px; letter-spacing: -0.06em; text-transform: lowercase; }
 .brand__sub { color: var(--steel); font-weight: 500; font-size: var(--fs-13); }
-.site-nav { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.site-nav { display: flex; align-items: center; gap: clamp(14px, 2vw, 28px); margin-left: auto; }
 .site-nav a { color: var(--ink-soft); font-weight: 500; font-size: var(--fs-15); }
 .site-nav a:hover { color: var(--ink); text-decoration: none; }
+.site-nav a:not(.btn) { white-space: nowrap; }
+.site-nav a[aria-current="page"]:not(.btn) { color: var(--signal-ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 7px; }
 /* The primary CTA now lives INSIDE the nav, so the plain `.site-nav a` colour
    would win over `.btn--primary` and paint dark-grey text on the blue pill
    (axe measured 1.43:1). Restore the button's own foreground. */

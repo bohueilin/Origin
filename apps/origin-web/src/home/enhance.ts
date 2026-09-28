@@ -205,7 +205,7 @@ let lastFocused: HTMLElement | null = null
 // Founder inbox, deliverable today. Swap to the company address once the custom
 // domain lands — never ship an address whose domain has no MX. The primary lead
 // path is the /api/lead Pages Function; this is only the mailto fallback.
-const CONTACT_EMAIL = 'bohueilin@gmail.com'
+const CONTACT_EMAIL = 'bohueilin@originphysicalai.com'
 
 const INTENT_COPY: Record<string, { title: string; sub: string; cta: string }> = {
   review: { title: 'Book an Agent Evidence Review', sub: 'Tell us about the agent that’s stuck in review. We follow up to learn — not to pitch.', cta: 'Request review' },

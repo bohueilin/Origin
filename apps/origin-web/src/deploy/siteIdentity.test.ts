@@ -56,7 +56,7 @@ describe('canonical website identity at build time', () => {
     vi.stubEnv('CONTACT_EMAIL', 'review@example.test')
     const outputDirectory = mkdtempSync(join(tmpdir(), 'origin-identity-'))
     temporaryDirectories.push(outputDirectory)
-    const fixture = 'https://originphysicalai.com/verify bohueilin@gmail.com'
+    const fixture = 'https://originphysicalai.com/verify bohueilin@originphysicalai.com'
     const immutableFiles: Record<string, string> = {
       'proof/tr-a002.json': readFileSync(resolve(__dirname, '../../public/proof/tr-a002.json'), 'utf8'),
       'proof/issuer.json': JSON.stringify({ issuer: fixture, legacy: 'https://origin-physical-ai.pages.dev' }),

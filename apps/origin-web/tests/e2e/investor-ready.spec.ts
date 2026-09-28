@@ -41,10 +41,10 @@ test('home presents one implemented product and one primary path', async ({ page
 
   await openPrimaryNav(page)
   const nav = page.getByRole('navigation', { name: 'Primary' })
-  for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Run reference check']) {
+  for (const label of ['Product', 'Demo', 'Proving Ground', 'Evidence', 'Trust', 'Run reference check']) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible()
   }
-  await expect(nav.getByRole('link', { name: /Foundry|Proving ground|Sign in/i })).toHaveCount(0)
+  await expect(nav.getByRole('link', { name: /Foundry|Sign in/i })).toHaveCount(0)
 
   await expect(page.getByRole('link', { name: 'Run the synthetic reference check', exact: true })).toHaveAttribute('href', '/reference-check')
   await expect(page.getByRole('link', { name: 'Step through the 5-stage demo', exact: true })).toHaveAttribute('href', '#demo')
@@ -56,14 +56,16 @@ test('home presents one implemented product and one primary path', async ({ page
 })
 
 test('primary navigation is consistent across public product and Labs routes', async ({ page }) => {
-  for (const route of ['/', '/reference-check', '/verify', '/trust', '/security', '/labs', '/simulation', '/operations', '/proving-ground']) {
+  for (const route of ['/', '/reference-check', '/verify', '/trust', '/security', '/labs', '/simulation', '/operations', '/proving-ground', '/over-grant', '/brief', '/proof', '/reference-check-vs-runtime', '/app']) {
     await page.goto(route)
     await openPrimaryNav(page)
     const nav = page.getByRole('navigation', { name: 'Primary' })
-    for (const label of ['Product', 'Demo', 'Evidence', 'Trust', 'Run reference check']) {
+    for (const label of ['Product', 'Demo', 'Proving Ground', 'Evidence', 'Trust', 'Run reference check']) {
       await expect(nav.getByRole('link', { name: label, exact: true }), route).toBeVisible()
     }
-    await expect(nav.getByRole('link', { name: /Foundry|Proving ground|Sign in/i }), route).toHaveCount(0)
+    await expect(nav.getByRole('link', { name: /Foundry|Sign in/i }), route).toHaveCount(0)
+    await expect(nav.getByRole('link', { name: 'Proving Ground', exact: true })).toHaveAttribute('href', '/proving-ground')
+    if (route === '/proving-ground') await expect(nav.getByRole('link', { name: 'Proving Ground', exact: true })).toHaveAttribute('aria-current', 'page')
   }
 })
 

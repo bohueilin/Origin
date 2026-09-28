@@ -13,7 +13,7 @@ therefore emits the correct identity without a deployment-only environment varia
 `siteUrlRewrite()` in `apps/origin-web/vite.config.ts` supports an explicit `SITE_URL` (or
 `PUBLIC_SITE_URL`) override for an alternate website origin. The deployment workflow can retain
 `SITE_URL: https://originphysicalai.com`; this matches the source default. `CONTACT_EMAIL` can
-separately override the public contact address. Without either override, the plugin is a no-op.
+separately override the public contact address, `bohueilin@originphysicalai.com`. Without either override, the plugin is a no-op.
 
 The plugin rewrites entry-page HTML and only these copied public assets in Vite's configured
 output directory:
@@ -54,8 +54,9 @@ Done (verified 2026-09-16, after the production cutover):
 - Search Console: the Domain property for `originphysicalai.com` is verified, and the submitted
   `sitemap.xml` was read successfully.
 
-Still open:
+Updated 2026-09-28:
 
-- Keep the current deliverable contact inbox until a replacement mailbox and MX are verified.
+- The owner selected `bohueilin@originphysicalai.com` as the public business contact. Website and support links use it; the owner authentication identity is unchanged.
+- No delivery test was sent as part of the source update; configuring and testing the inbox is separate from publishing the address.
 
 These are operational changes, not prerequisites for a correct source build.

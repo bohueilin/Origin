@@ -314,13 +314,10 @@ test('the burger menu is visible at 375px on /, /trust and /brief', async ({ pag
   }
 })
 
-// The earlier one-take recordings were withdrawn on 2026-09-26: their footage showed a retired
-// UI, and their burned-in captions made claims the footage did not support. Until re-recorded
-// clips return, no retired recording (or the unlabelled generated Passport clip) may be linked,
-// and the homepage must still say what a VALID verdict does not establish.
+// Retired clips remain withdrawn; dated recordings carry their own provenance.
 test('no retired recording is linked, and the VALID scope line survives', async ({ page }) => {
-  const retired = 'video[poster*="shot0"], source[src*="shot0"], video[poster*="agent-journey"], video[src*="agent-journey"]'
-  for (const route of ['/', '/over-grant', '/reference-check', '/passport']) {
+  const retired = 'video[poster="/video/shot01-tamper.jpg"], source[src="/video/shot01-tamper.mp4"], source[src="/video/shot02-overgrant.mp4"], source[src="/video/shot04-tour.mp4"], source[src*="05-second-reader"], video[poster*="agent-journey"], video[src*="agent-journey"]'
+  for (const route of ['/', '/verify', '/over-grant', '/reference-check', '/passport']) {
     await page.goto(route)
     await expect(page.locator(retired), route).toHaveCount(0)
   }

@@ -1,45 +1,30 @@
-// Tier A recorder — Shot 01, "the tamper", filmed on the LIVE /verify page.
-//
-// Re-derivable footage: run `node scripts/rec-shot01.mjs` and the webm lands in
-// /tmp/rec. Real ES256 signing and verification in the page; the context goes
-// OFFLINE mid-run, so the VOID and the closing VALID are provably computed with
-// no network. The injected dot is presentation only — Playwright videos carry no
-// OS pointer — and every movement it shows is a movement that really happened.
-// Tier A discipline: nothing inside the run is cut or re-timed.
-import { chromium } from 'playwright'
-import { CURSOR_INIT, actions } from './recLib.mjs'
-
-const b = await chromium.launch()
-const ctx = await b.newContext({
-  viewport: { width: 1600, height: 1000 },
-  recordVideo: { dir: '/tmp/rec', size: { width: 1600, height: 1000 } },
-})
-const p = await ctx.newPage()
-await p.addInitScript(CURSOR_INIT)
-const { settle, clickAt } = actions(p)
-
-await p.goto('https://originphysicalai.com/verify', { waitUntil: 'networkidle' })
-await p.waitForTimeout(1500)
-
-const example = p.getByRole('button', { name: 'Origin Attestation', exact: true })
-const verify = p.getByRole('button', { name: /^Verify$/ }).first()
-const tamper = p.locator('label').filter({ hasText: 'Tamper one field' })
-
-await clickAt(example); await p.waitForTimeout(1200)
-await clickAt(verify)
-await settle(p.locator('body')); await p.waitForTimeout(300)
-await settle(p.locator('text=/reproducible under this verifier|VALID/i').first()); await p.waitForTimeout(1600)
-
-await ctx.setOffline(true) // everything after this point is computed with no network
-
-await clickAt(tamper); await p.waitForTimeout(1100)
-await clickAt(verify); await p.waitForTimeout(600)
-await settle(p.locator('text=/VOID/').first()); await p.waitForTimeout(2000)
-
-await clickAt(tamper); await p.waitForTimeout(1100)
-await clickAt(verify); await p.waitForTimeout(600)
-await settle(p.locator('text=/VALID/').first()); await p.waitForTimeout(2400)
-
-const body = await p.locator('body').innerText()
-console.log('final page has VALID:', /VALID/.test(body))
-await ctx.close(); await b.close()
+// One continuous live /verify take; only the blank lead may be trimmed.
+import { openRecording, requireVerdict } from './recLib.mjs'
+const r = await openRecording('shot01', '/verify')
+const { page, context, probe, mark, clickAt, settle, finish } = r
+try {
+  const example = await probe('example', page.getByRole('button', { name: 'Origin Attestation', exact: true }))
+  const verify = await probe('verify', page.getByRole('button', { name: 'Verify', exact: true }))
+  const tamper = await probe('tamper', page.locator('label.vfy-toggle'))
+  await clickAt(example)
+  await page.waitForFunction(() => document.querySelector('#vfy-artifact')?.value.includes('payload_digest'))
+  if (/license_level|rsl_level/.test(await page.locator('#vfy-artifact').inputValue())) throw new Error('Demo contains a readiness field')
+  mark('load'); await page.waitForTimeout(3500)
+  const read = async expected => {
+    await clickAt(verify)
+    const verdict = await probe('verdict', page.locator('.vfy-verdict'))
+    await verdict.locator('b').filter({ hasText: new RegExp(`^${expected}$`) }).waitFor()
+    await settle(verdict)
+    return verdict.innerText()
+  }
+  const valid = await read('VALID'); requireVerdict(valid, 'VALID', 0)
+  mark('verify'); await page.waitForTimeout(3500)
+  await context.setOffline(true); mark('offline'); await page.waitForTimeout(4500)
+  await clickAt(tamper)
+  const tampered = await read('VOID'); requireVerdict(tampered, 'VOID', 1)
+  mark('tamper-verify'); await page.waitForTimeout(4500)
+  await clickAt(tamper)
+  const restored = await read('VALID'); requireVerdict(restored, 'VALID', 0)
+  mark('restore'); await page.waitForTimeout(4500)
+  await finish({ valid_code: 0, tamper_code: 1, restored_code: 0 }, { valid, tampered, restored }, { network_off_from: 'offline' })
+} finally { await r.browser.close() }

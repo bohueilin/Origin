@@ -112,7 +112,7 @@ const INTEGRITY_LABELS = [
   'does not contact or execute your named agent',
 ]
 const PROSE = ['.hero__status', '.cin-demo .demo__panel p', '.cin-footnote p', '.cin-small',
-  '.gatesfresh', '.demo__cap', '.modal__note', '.site-footer__boundary']
+  '.gatesfresh', '.demo__cap', '.modal__note', '.site-footer__boundary', '.vband__cap']
 
 test('home type floor: integrity labels at least 12px, prose at least 14px, no text below 11px', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'viewports are set explicitly')
@@ -132,10 +132,13 @@ test('home type floor: integrity labels at least 12px, prose at least 14px, no t
       return {
         tooSmall: texts.filter((t) => t.visible && t.size < 11).map((t) => `${t.size}px ${t.text.slice(0, 40)}`),
         labels: labels.map((label) => texts.filter((t) => t.text.includes(label)).map((t) => ({ label, size: t.size, visible: t.visible }))),
+        pill: [...document.querySelectorAll('.vband__pill')].map(px),
         prose: prose.map((sel) => ({ sel, sizes: [...document.querySelectorAll(sel)].map(px) })),
       }
     }, { labels: INTEGRITY_LABELS, prose: PROSE })
     expect(sizes.tooSmall, `${width}px`).toEqual([])
+    expect(sizes.pill.length).toBeGreaterThan(0)
+    for (const size of sizes.pill) expect(size).toBeGreaterThanOrEqual(12)
     for (const found of sizes.labels) {
       expect(found.length, `${width}px ${JSON.stringify(found)}`).toBeGreaterThan(0)
       for (const hit of found) {

@@ -1,0 +1,240 @@
+{
+  "shot": "shot04",
+  "date": "2026-09-28",
+  "date_timezone": "UTC",
+  "recorded_at": "2026-09-28T07:06:30.835Z",
+  "host": "originphysicalai.com",
+  "commit": "57d5ccf",
+  "release": {
+    "generated_at": "2026-09-28T07:01:35Z",
+    "commit": "57d5ccf",
+    "tracked_clean": true,
+    "all_green": true,
+    "suites": [
+      {
+        "name": "ts:build (workspaces)",
+        "result": "PASS",
+        "detail": "\u2713 built in 152ms"
+      },
+      {
+        "name": "ts:build (chronos-ui)",
+        "result": "PASS",
+        "detail": "\u2713 built in 907ms"
+      },
+      {
+        "name": "ts:origin-web (+evidence+verifier-core globs)",
+        "result": "PASS",
+        "detail": "Tests  797 passed (797)"
+      },
+      {
+        "name": "ts:janus",
+        "result": "PASS",
+        "detail": "Tests  191 passed (191)"
+      },
+      {
+        "name": "ts:@origin/evidence",
+        "result": "PASS",
+        "detail": "Tests  41 passed (41)"
+      },
+      {
+        "name": "ts:@origin/verifier-core",
+        "result": "PASS",
+        "detail": "Tests  46 passed (46)"
+      },
+      {
+        "name": "ev:verify:evidence",
+        "result": "PASS",
+        "detail": "ALL CHECKS PASSED"
+      },
+      {
+        "name": "ev:proof:verify",
+        "result": "PASS",
+        "detail": "ALL CHECKS PASSED \u2014 TR-A002 hash chain verified (12 events, digest c"
+      },
+      {
+        "name": "ev:env:verify",
+        "result": "PASS",
+        "detail": "VERIFIED \u2014 the score is reproducible under verifier 1.0.0 (reward 1,"
+      },
+      {
+        "name": "ev:reward:diff",
+        "result": "PASS",
+        "detail": "OK \u2014 every exploit is driven to 0 and every gold is preserved (rewar"
+      },
+      {
+        "name": "ev:/verify selftest",
+        "result": "PASS",
+        "detail": "ALL PASS \u2014 /verify detect+verify logic reproduces under Node"
+      },
+      {
+        "name": "honesty-lint",
+        "result": "PASS",
+        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 174 Rea"
+      },
+      {
+        "name": "py:cobra",
+        "result": "PASS",
+        "detail": "181 passed"
+      },
+      {
+        "name": "py:chronos",
+        "result": "PASS",
+        "detail": "411 passed, 5 skipped"
+      }
+    ],
+    "source": "release",
+    "built_at": "2026-09-28T07:01:35Z",
+    "run_url": "https://github.com/bohueilin/Origin/actions/runs/36388418172"
+  },
+  "beats": [
+    {
+      "name": "painted",
+      "t": 0.714
+    },
+    {
+      "name": "intro",
+      "t": 1.857
+    },
+    {
+      "name": "run",
+      "t": 8.383
+    },
+    {
+      "name": "download",
+      "t": 14.768
+    },
+    {
+      "name": "drift",
+      "t": 21.266
+    },
+    {
+      "name": "paste",
+      "t": 30.66
+    },
+    {
+      "name": "reverify",
+      "t": 36.164
+    },
+    {
+      "name": "end",
+      "t": 41.667
+    }
+  ],
+  "facts": {
+    "matched": 12,
+    "n": 12,
+    "tool": "payments.transfer",
+    "code": 4
+  },
+  "observed": {
+    "verdict": "12 of 12\nsynthetic decisions match the oracle\nunbounded baseline 33% \u00b7 lift +67% \u00b7 config e1d1928329\u2026 \u00b7 tier label L4 on this synthetic battery only \u2014 it grants no autonomy or deployment permission",
+    "drift": "VOID (code 4) \u2014 config drift. This demonstration re-checks the legacy credential with an added tool (payments.transfer). The changed configuration no longer matches. The downloaded policy-evaluation envelope still records the original inputs; it grants no execution authority.",
+    "reverify": "UNTRUSTED\nAction/Run Evidence \u2014 signed policy-evaluation envelope"
+  },
+  "blocked_requests": [
+    "GET https://www.googletagmanager.com/gtag/js"
+  ],
+  "raw_file": "page@a9a900ac5e02bd4054f9588fe1738498.webm",
+  "raw_sha256": "a1bd24d1f099e15abdc8c41f3dcd8e48a80db2780d815d34b1050d2926d45800",
+  "font": "Carlito-Regular.ttf",
+  "font_sha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
+  "download": "reference-check.policy-evaluation.json",
+  "download_sha256": "40fcac64914e02d6be8192686bcf0bf0468a8daf54bab56b59e7d678fea223af",
+  "clipboard_matches_download": true,
+  "render": {
+    "output": "shot04-2026-09-28.mp4",
+    "sha256": "5adc2c3b99aa31438e61471caa52b0cf6c4c4e6884e76cd5998125b5232ec5ab",
+    "poster": "shot04-2026-09-28.webp",
+    "poster_sha256": "ad2d8d253e3a88f73e2f5ba14551234a4d853f7087627c20dab9114cc6da5cd4",
+    "size": [
+      1280,
+      720
+    ],
+    "caption_px": 44,
+    "tag_px": 30,
+    "tag_xy": [
+      24,
+      24
+    ],
+    "lead_trimmed_s": 0,
+    "captions": [
+      {
+        "from_s": 0,
+        "to_s": 41.667,
+        "text": "One take \u00b7 synthetic demo data \u00b7 recorded 2026-09-28 on originphysicalai.com (57d5ccf) \u00b7 captions and cursor dot overlaid",
+        "box": [
+          24,
+          24,
+          1160,
+          124
+        ]
+      },
+      {
+        "from_s": 0.714,
+        "to_s": 8.383,
+        "text": "/reference-check \u00b7 a selected policy vs a synthetic battery; no agent contacted",
+        "box": [
+          73,
+          568,
+          1207,
+          696
+        ]
+      },
+      {
+        "from_s": 8.383,
+        "to_s": 14.768,
+        "text": "12 synthetic policy decisions scored by the deterministic oracle",
+        "box": [
+          57,
+          622,
+          1222,
+          696
+        ]
+      },
+      {
+        "from_s": 14.768,
+        "to_s": 21.266,
+        "text": "Signed policy-evaluation evidence downloaded (browser-session key)",
+        "box": [
+          45,
+          568,
+          1234,
+          696
+        ]
+      },
+      {
+        "from_s": 21.266,
+        "to_s": 30.66,
+        "text": "One tool added (payments.transfer): the legacy config-bound credential VOIDs (code 4); the downloaded evidence is unchanged",
+        "box": [
+          28,
+          568,
+          1252,
+          696
+        ]
+      },
+      {
+        "from_s": 30.66,
+        "to_s": 36.164,
+        "text": "Downloaded policy-evaluation evidence pasted into /verify",
+        "box": [
+          94,
+          622,
+          1186,
+          696
+        ]
+      },
+      {
+        "from_s": 36.164,
+        "to_s": 41.667,
+        "text": "Pasted into /verify: UNTRUSTED \u2014 intact, but the session signer is unpinned",
+        "box": [
+          31,
+          568,
+          1249,
+          696
+        ]
+      }
+    ]
+  }
+}

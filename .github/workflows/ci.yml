@@ -254,7 +254,10 @@ jobs:
         with:
           node-version: 20
       - name: Test media copy checks
-        run: node --test scripts/media-copy.test.mjs
+        run: node --test scripts/media-copy.test.mjs apps/origin-web/scripts/recording-contract.test.mjs
+
+      - name: Recorded-media provenance
+        run: node apps/origin-web/scripts/verify-recordings.mjs
       - name: Lint served pages for unscoped overclaims + required disclaimers
         run: node scripts/honesty-lint.mjs
 

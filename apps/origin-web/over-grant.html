@@ -48,7 +48,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2c02ec1f" />
+    <link rel="stylesheet" href="/home.css?v=2c3d7ec2" />
 
     <style>
       /* Local helpers for the live demo panels, layered on the shared design system. */
@@ -121,6 +121,20 @@
           <div class="product-hero__links"><a href="https://github.com/bohueilin/Origin/blob/main/docs/OVER-GRANT-METRICS.md">Metric definitions ↗</a><a href="/trust/over-grant-bench.json">Published synthetic benchmark ↗</a><a href="#og-table-title">Explore the analyzer ↓</a></div>
         </div>
       </section>
+      <section class="section vband" aria-label="Recorded synthetic authority analysis"><div class="shell">
+          <figure class="vband__fig">
+            <div class="vband__wrap">
+              <video class="vband__v" poster="/video/shot02-2026-09-28.webp"
+                     width="1280" height="720" muted playsinline controls preload="none"
+                     aria-label="Screen recording: 2074 synthetic identities, 63.2 percent unused granted scopes, root reach 55.6 to 66.7 percent; a separate planted corpus recovers 90 of 90 edges with 0 false positives.">
+                <source src="/video/shot02-2026-09-28.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <span class="pill pill--rec vband__pill">Recorded &middot; one take &middot; synthetic data</span>
+            <figcaption class="vband__cap"><b>Recorded 2026-09-28 on originphysicalai.com (57d5ccf), using synthetic demo data.</b> The in-page analyzer uses seed 20260818, 400 roots and 2,074 synthetic identities. 63.2% of granted scopes were never exercised in the window. Widening one delegation edge changes the root’s sensitive-resource reach from 55.6% to 66.7%. A fresh seeded corpus has 90 planted widened edges: 90/90 caught, 0 false positives against synthetic ground truth. The separate <a href='/trust/over-grant-bench.json'>published benchmark</a> uses 2,000 roots.
+              <small>Captions and a cursor dot are overlaid; the run is one continuous take. <a href="https://github.com/bohueilin/Origin/blob/main/apps/origin-web/scripts/RECORDINGS.md">Recording method and provenance</a>.</small></figcaption>
+          </figure>
+      </div></section>
       <div id="overgrant-root">
           <div class="skel" aria-hidden="true">
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>

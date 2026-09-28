@@ -70,7 +70,7 @@ run "ev:reward:diff"             bash -c 'cd apps/origin-web && npm run --silent
 run "ev:/verify selftest"        bash -c 'node apps/origin-web/src/verify/selftest.mjs'
 
 # ---- honesty gate (marketing prose overclaim tripwire) ----
-run "honesty-lint"               bash -c 'node --test scripts/media-copy.test.mjs && node scripts/honesty-lint.mjs'
+run "honesty-lint"               bash -c 'node --test scripts/media-copy.test.mjs apps/origin-web/scripts/recording-contract.test.mjs && node apps/origin-web/scripts/verify-recordings.mjs && node scripts/honesty-lint.mjs'
 
 # ---- Python moat (real exit codes — the oracle must never be wrong) ----
 run "py:cobra"                   bash -c 'cd services/cobra && uv run pytest -q'

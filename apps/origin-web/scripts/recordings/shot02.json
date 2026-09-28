@@ -1,0 +1,215 @@
+{
+  "shot": "shot02",
+  "date": "2026-09-28",
+  "date_timezone": "UTC",
+  "recorded_at": "2026-09-28T07:04:54.633Z",
+  "host": "originphysicalai.com",
+  "commit": "57d5ccf",
+  "release": {
+    "generated_at": "2026-09-28T07:01:35Z",
+    "commit": "57d5ccf",
+    "tracked_clean": true,
+    "all_green": true,
+    "suites": [
+      {
+        "name": "ts:build (workspaces)",
+        "result": "PASS",
+        "detail": "\u2713 built in 152ms"
+      },
+      {
+        "name": "ts:build (chronos-ui)",
+        "result": "PASS",
+        "detail": "\u2713 built in 907ms"
+      },
+      {
+        "name": "ts:origin-web (+evidence+verifier-core globs)",
+        "result": "PASS",
+        "detail": "Tests  797 passed (797)"
+      },
+      {
+        "name": "ts:janus",
+        "result": "PASS",
+        "detail": "Tests  191 passed (191)"
+      },
+      {
+        "name": "ts:@origin/evidence",
+        "result": "PASS",
+        "detail": "Tests  41 passed (41)"
+      },
+      {
+        "name": "ts:@origin/verifier-core",
+        "result": "PASS",
+        "detail": "Tests  46 passed (46)"
+      },
+      {
+        "name": "ev:verify:evidence",
+        "result": "PASS",
+        "detail": "ALL CHECKS PASSED"
+      },
+      {
+        "name": "ev:proof:verify",
+        "result": "PASS",
+        "detail": "ALL CHECKS PASSED \u2014 TR-A002 hash chain verified (12 events, digest c"
+      },
+      {
+        "name": "ev:env:verify",
+        "result": "PASS",
+        "detail": "VERIFIED \u2014 the score is reproducible under verifier 1.0.0 (reward 1,"
+      },
+      {
+        "name": "ev:reward:diff",
+        "result": "PASS",
+        "detail": "OK \u2014 every exploit is driven to 0 and every gold is preserved (rewar"
+      },
+      {
+        "name": "ev:/verify selftest",
+        "result": "PASS",
+        "detail": "ALL PASS \u2014 /verify detect+verify logic reproduces under Node"
+      },
+      {
+        "name": "honesty-lint",
+        "result": "PASS",
+        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 174 Rea"
+      },
+      {
+        "name": "py:cobra",
+        "result": "PASS",
+        "detail": "181 passed"
+      },
+      {
+        "name": "py:chronos",
+        "result": "PASS",
+        "detail": "411 passed, 5 skipped"
+      }
+    ],
+    "source": "release",
+    "built_at": "2026-09-28T07:01:35Z",
+    "run_url": "https://github.com/bohueilin/Origin/actions/runs/36388418172"
+  },
+  "beats": [
+    {
+      "name": "painted",
+      "t": 0.878
+    },
+    {
+      "name": "intro",
+      "t": 2.031
+    },
+    {
+      "name": "analyze",
+      "t": 8.582
+    },
+    {
+      "name": "widen",
+      "t": 16.119
+    },
+    {
+      "name": "score",
+      "t": 23.713
+    },
+    {
+      "name": "end",
+      "t": 29.217
+    }
+  ],
+  "facts": {
+    "identities": 2074,
+    "seed": 20260818,
+    "surface": "63.2",
+    "roots": 400,
+    "before": "55.6",
+    "after": "66.7",
+    "caught": 90,
+    "planted": 90,
+    "fp": 0
+  },
+  "observed": {
+    "fleet": "06 \u00b7 AUTHORITY ANALYSIS\n\nInspect the authority that goes unused.\n\nCompare granted and exercised authority across a seeded synthetic fleet. Inspect five metrics with stated denominators, widen one delegation edge, or measure detection against planted ground truth.\n\nAnalyze the fleet\nWiden one delegation edge\nScore against planted ground truth\n63.2%\nOVER-GRANT SURFACE\ngranted authority never exercised in the window \u00b7 synthetic fleet, seed 20260818\nNOTE\nfleet \u2014 2074 SYNTHETIC agent identities \u00b7 1674 delegation edges \u00b7 11903 tool-call events \u00b7 seed 20260818\nBLOCKED\nGUR 0.368 \u2014 3194 of 8675 granted scopes were ever exercised \u2014 an over-grant surface of 63.2%. A denied call is not use, and the fleet number is \u03a3used \u00f7 \u03a3granted, never the mean of per-identity ratios.\nNOTE\nBRI mean 18.5% \u2014 p95 55.6%, max 88.9% of the 9 sensitive resources reachable from a single identity\nPASS\nAMV 0 \u2014 no delegation edge widened authority across 1674 edges \u2014 a structural zero, earned over real edges\nPASS\neffective authority is a no-op \u2014 every child narrows, so an ancestor reaches exactly its own grant and nothing more\nNOTE\nTRP 96/344 \u2014 tainted identities holding both a sensitive read and an egress capability \u2014 260 source\u2192sink pairs. Structural exposure, not a detected exfiltration.\nNOTE\nSAH 0.13 \u2014 median age-of-last-use \u00f7 TTL over the 3194 scopes actually in use; median usage span \u00f7 TTL 0.22 \u2014 the just-in-time conversion signal\n\nThe corpus is SYNTHETIC and seeded \u2014 these numbers measure the analyzer, not any real deployment, and no claim is made about any customer's authorization data. The published artifact re-derives byte-for-byte from its seed; definitions, denominators, and limits are in docs/OVER-GRANT-METRICS.md.\n\nThe published artifact \u2192",
+    "root": "blast radius at the ROOT 55.6% \u2192 66.7%",
+    "score": "06 \u00b7 AUTHORITY ANALYSIS\n\nInspect the authority that goes unused.\n\nCompare granted and exercised authority across a seeded synthetic fleet. Inspect five metrics with stated denominators, widen one delegation edge, or measure detection against planted ground truth.\n\nAnalyze the fleet\nWiden one delegation edge\nScore against planted ground truth\n63.2%\nOVER-GRANT SURFACE\ngranted authority never exercised in the window \u00b7 synthetic fleet, seed 20260818\nNOTE\nfleet \u2014 2074 SYNTHETIC agent identities \u00b7 1674 delegation edges \u00b7 11903 tool-call events \u00b7 seed 20260818\nBLOCKED\nGUR 0.368 \u2014 3194 of 8675 granted scopes were ever exercised \u2014 an over-grant surface of 63.2%. A denied call is not use, and the fleet number is \u03a3used \u00f7 \u03a3granted, never the mean of per-identity ratios.\nNOTE\nBRI mean 18.5% \u2014 p95 55.6%, max 88.9% of the 9 sensitive resources reachable from a single identity\nPASS\nAMV 0 \u2014 no delegation edge widened authority across 1674 edges \u2014 a structural zero, earned over real edges\nPASS\neffective authority is a no-op \u2014 every child narrows, so an ancestor reaches exactly its own grant and nothing more\nNOTE\nTRP 96/344 \u2014 tainted identities holding both a sensitive read and an egress capability \u2014 260 source\u2192sink pairs. Structural exposure, not a detected exfiltration.\nNOTE\nSAH 0.13 \u2014 median age-of-last-use \u00f7 TTL over the 3194 scopes actually in use; median usage span \u00f7 TTL 0.22 \u2014 the just-in-time conversion signal\nNOTE\nwiden one edge \u2014 granted agent-000.0.0 the scope payroll:read \u2014 one scope its parent never held, 2 hops below agent-000\nPASS\nAMV 0 \u2192 1 \u2014 the analyzer names the edge and the scope that widened it, out of 1674 edges\nBLOCKED\nblast radius at the ROOT 55.6% \u2192 66.7% \u2014 agent-000 never held payroll:read, and its own grant is unchanged \u2014 the authority arrived from a descendant. This is why attenuation is the precondition for the other metrics, not a hygiene checkbox.\nNOTE\nground truth \u2014 a fresh corpus with 90 deliberately widened edges and 5360 scopes granted-but-never-used, both known in advance\nPASS\ncaught 90/90 \u2014 every planted violation recovered, zero false positives \u2014 a metric you cannot score against ground truth is a dashboard, not a verifier\nPASS\ndormant scopes exact \u2014 5360 measured = 5360 planted \u2014 the GUR denominator lands on the nose\n\nThe corpus is SYNTHETIC and seeded \u2014 these numbers measure the analyzer, not any real deployment, and no claim is made about any customer's authorization data. The published artifact re-derives byte-for-byte from its seed; definitions, denominators, and limits are in docs/OVER-GRANT-METRICS.md.\n\nThe published artifact \u2192"
+  },
+  "blocked_requests": [
+    "GET https://www.googletagmanager.com/gtag/js"
+  ],
+  "raw_file": "page@97f1e84edc94b556639a34c20382bd42.webm",
+  "raw_sha256": "80372e0169dc39f78508118af2e691691bef2aff31dbf161e92c9c6b266d8113",
+  "font": "Carlito-Regular.ttf",
+  "font_sha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
+  "configuration_sources": {
+    "roots": "57d5ccf:apps/origin-web/src/security/SecurityPage.tsx#OG_ROOTS"
+  },
+  "render": {
+    "output": "shot02-2026-09-28.mp4",
+    "sha256": "5d63dbde0b1d586f01ccb264ff87a695b30a42a65ac5bb8e2cf87ecd1cf6fae1",
+    "poster": "shot02-2026-09-28.webp",
+    "poster_sha256": "baaaac4a311e3b3a4fb120896cee6aa6e73d28b882a62b3bd9433dceb4941c44",
+    "size": [
+      1280,
+      720
+    ],
+    "caption_px": 44,
+    "tag_px": 30,
+    "tag_xy": [
+      24,
+      24
+    ],
+    "lead_trimmed_s": 0,
+    "captions": [
+      {
+        "from_s": 0,
+        "to_s": 29.217,
+        "text": "One take \u00b7 synthetic demo data \u00b7 recorded 2026-09-28 on originphysicalai.com (57d5ccf) \u00b7 captions and cursor dot overlaid",
+        "box": [
+          24,
+          24,
+          1160,
+          124
+        ]
+      },
+      {
+        "from_s": 0.878,
+        "to_s": 8.582,
+        "text": "/over-grant analyzer \u00b7 synthetic fleet, seed 20260818, 400 roots",
+        "box": [
+          54,
+          622,
+          1226,
+          696
+        ]
+      },
+      {
+        "from_s": 8.582,
+        "to_s": 16.119,
+        "text": "2074 synthetic identities \u00b7 63.2% of granted scopes never exercised in the window",
+        "box": [
+          111,
+          568,
+          1168,
+          696
+        ]
+      },
+      {
+        "from_s": 16.119,
+        "to_s": 23.713,
+        "text": "One delegation edge widened: the root reaches 55.6% \u2192 66.7% of the sensitive resources",
+        "box": [
+          27,
+          568,
+          1252,
+          696
+        ]
+      },
+      {
+        "from_s": 23.713,
+        "to_s": 29.217,
+        "text": "Fresh seeded corpus, 90 planted widened edges: 90/90 caught \u00b7 0 false positives (synthetic ground truth)",
+        "box": [
+          35,
+          568,
+          1244,
+          696
+        ]
+      }
+    ]
+  }
+}

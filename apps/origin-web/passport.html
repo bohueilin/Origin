@@ -50,12 +50,12 @@
       }
       .skip-link:focus { transform: none; text-decoration: none; }
       @media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }
-      .pp-static-intro { max-width: 62ch; margin: 24px auto; padding: 0 24px; color: #4e5b48; font-family: 'Avenir Next',Avenir,system-ui,sans-serif; }
     </style>
+    <link rel="stylesheet" href="/lab-shell.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <main id="main"><p class="pp-static-intro">Passport is a local demo of scoped, revocable grants for delegated agent actions — static fixtures, no real accounts, tools, or money.</p><noscript><p class="pp-static-intro">The interactive demo needs JavaScript.</p></noscript><div id="passport-root"></div></main>
+    <main id="main"><section class="lab-fallback pp-static-intro" aria-label="Interactive demo fallback"><h1>Passport delegated access</h1><p>Passport is a local demo of scoped, revocable grants for delegated agent actions — static fixtures, no real accounts, tools, or money. The interactive demo needs JavaScript.</p><a href="/labs">Back to Labs</a></section><div id="passport-root"></div></main>
     <script type="module" src="/src/passport/main.tsx"></script>
   </body>
 </html>

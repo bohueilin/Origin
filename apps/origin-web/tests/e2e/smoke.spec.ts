@@ -338,7 +338,7 @@ test('/foundry and /passport carry their scope as text without JavaScript', asyn
     expect(foundry).toContain('not robot training')
     // getByText skips <noscript>, so read the rendered text instead.
     expect(foundry).toContain('The interactive floor needs JavaScript.')
-    await expect(page.locator('main noscript p')).toBeVisible()
+    await expect(page.locator('.lab-fallback')).toBeVisible()
 
     await page.goto(`${baseURL}/passport`)
     const passport = await page.locator('main').innerText()
@@ -353,11 +353,13 @@ test('/foundry and /passport carry their scope as text without JavaScript', asyn
 test('with JavaScript, /foundry and /passport keep the scope line and drop the no-JS notice', async ({ page }) => {
   await blockFoundryNetwork(page)
   await page.goto('/foundry')
-  await expect(page.locator('.lab-static-intro').first()).toContainText('not robot training')
+  await expect(page.locator('.fdy-hero__sub').first()).toContainText('not robot training')
+  await expect(page.locator('.lab-static-intro')).toBeHidden()
   await expect(page.locator('#root')).not.toBeEmpty()
   expect(await page.locator('main').innerText()).not.toContain('needs JavaScript')
   await page.goto('/passport')
-  await expect(page.locator('.pp-static-intro').first()).toBeVisible()
+  await expect(page.locator('.pp-static-intro')).toBeHidden()
+  await expect(page.locator('.pp-hero-pill')).toContainText('Local demo')
   await expect(page.locator('#passport-root')).not.toBeEmpty()
   expect(await page.locator('main').innerText()).not.toContain('needs JavaScript')
 })

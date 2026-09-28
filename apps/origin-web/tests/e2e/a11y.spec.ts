@@ -50,7 +50,7 @@ for (const [name, path] of PAGES) {
     const bad = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')
     const summary = bad.map((v) => `${v.id} (${v.impact}) x${v.nodes.length} — ${v.help}\n${v.nodes.map(n => `${n.target.join(', ')}: ${n.failureSummary}`).join('\n')}`).join('\n')
     expect(summary, summary || 'no serious/critical violations').toBe('')
-    await expect(page.locator('h1')).toHaveCount(1)
+    await expect(page.locator('h1:visible')).toHaveCount(1)
     const size = await page.evaluate(() => ({width: innerWidth, scroll: document.documentElement.scrollWidth}))
     expect(size.scroll, `${path}: horizontal overflow`).toBeLessThanOrEqual(size.width + 1)
   })

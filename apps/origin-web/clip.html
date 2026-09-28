@@ -46,10 +46,11 @@
       .skip-link:focus { transform: none; text-decoration: none; }
       @media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }
     </style>
+    <link rel="stylesheet" href="/lab-shell.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <main id="main"><div id="root"></div></main>
+    <main id="main"><section class="lab-fallback lab-static-intro" aria-label="Interactive demo fallback"><h1>Latency comparison</h1><p>This synthetic comparison needs JavaScript. No request has been sent.</p><a href="/labs">Back to Labs</a></section><div id="root"></div></main>
     <script type="module" src="/src/foundry/clip/main.tsx"></script>
   </body>
 </html>

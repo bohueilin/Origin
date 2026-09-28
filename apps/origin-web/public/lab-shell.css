@@ -10,3 +10,10 @@
 .lab-masthead a:focus-visible, .lab-footer a:focus-visible { outline: 3px solid #2b523b; outline-offset: 5px; }
 .lab-static-intro { max-width: 62ch; margin: 24px auto; padding: 0 24px; color: #4e5b48; font-family: 'Avenir Next',Avenir,system-ui,sans-serif; }
 @media(max-width:680px) { .lab-masthead { padding: 18px 20px; flex-wrap: wrap; gap: 8px 16px; }.lab-location { margin-left: auto; }.lab-masthead nav { width: 100%; padding-top: 12px; }.lab-footer { flex-wrap: wrap; gap: 12px 22px; } }
+
+/* The fallback survives disabled or failed scripts; rendered app children replace it. */
+.lab-fallback { box-sizing: border-box; max-width: 75ch; padding: 32px 24px; margin: 0 auto; color: #4e5b48; font: 400 .875rem/1.65 'Avenir Next',Avenir,system-ui,sans-serif; }
+.lab-fallback h1 { color: #272d26; font-size: 2rem; line-height: 1.2; }
+.lab-fallback a { display: inline-flex; align-items: center; min-height: 44px; color: #2b523b; font-weight: 600; }
+.lab-fallback a:focus-visible { outline: 3px solid #2b523b; outline-offset: 4px; }
+main:has(:is(#root, #capture-root, #passport-root) > *) .lab-fallback { display: none; }

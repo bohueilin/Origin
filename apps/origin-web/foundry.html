@@ -52,6 +52,15 @@
       @media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }
     </style>
   <link rel="stylesheet" href="/lab-shell.css" />
+    <script>
+      // Reserve the app while modules load, but leave failed scripts a compact fallback.
+      document.documentElement.classList.add('lab-ready');
+      window.addEventListener('error', event => {
+        if (event.target instanceof HTMLScriptElement && event.target.type === 'module') {
+          document.documentElement.classList.remove('lab-ready');
+        }
+      }, true);
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>

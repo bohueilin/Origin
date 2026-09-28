@@ -86,6 +86,7 @@ export function ReferenceCheckPage() {
     const startedAt = performance.now()
     const revision = inputRevision.current
     setBusy(true); setError(null)
+    setChecked(null); setResult(null)
     try {
       let rows: RowResult[]
       let r: { credential: CrucibleCredential; catastrophic: number }

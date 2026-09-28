@@ -300,9 +300,9 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     return { plan: p as MultiAgentPlan, robotFleet: rFleet, fleetEmbs: fEmbs }
   }, [siteMap])
 
-  const [playbackPlan, setPlaybackPlan] = useState(plan)
-  if (playbackPlan !== plan) {
-    setPlaybackPlan(plan)
+  const [playbackScene, setPlaybackScene] = useState({ plan, emb, domain })
+  if (playbackScene.plan !== plan || playbackScene.emb !== emb || playbackScene.domain !== domain) {
+    setPlaybackScene({ plan, emb, domain })
     setPlaying(true)
     setComplete(false)
   }
@@ -566,7 +566,7 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     visibleRef.current = visible
     playingRef.current = playing
     wakeRef.current()
-  }, [visible, playing, plan])
+  }, [visible, playing, plan, emb, domain])
 
   const togglePlay = () => {
     const next = complete || !playing

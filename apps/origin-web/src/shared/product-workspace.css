@@ -207,5 +207,11 @@
   .pg-wrap.product-workspace .pg-rung { padding: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .product-workspace *, .product-workspace *::before, .product-workspace *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+  .product-workspace *, .product-workspace *::before, .product-workspace *::after { scroll-behavior: auto !important; animation: none !important; }
+  .product-workspace :is(button, a, input, select, textarea, summary) {
+    transition-property: color, background-color, border-color, opacity, box-shadow !important;
+    transition-duration: 120ms !important;
+  }
+  .product-workspace :is(.btn:hover, .btn:active, .pg3d-btn:active) { transform: none !important; }
+  .product-workspace .pg3d-prog-fill { transition: none; }
 }

@@ -10,6 +10,7 @@ import { buildWarehouseScene, simulate } from './warehouseSim'
 import { Warehouse2DRenderer } from './render2d'
 import { signSigil, generateSigningKey, keyThumbprint } from '@origin/verifier-core/sigil'
 import { canonical, sha256 } from '@origin/evidence/env-evidence'
+import { usePlaybackVisibility } from '../shared/usePlaybackVisibility'
 
 const FPS = 7
 
@@ -39,6 +40,13 @@ export function OperationsPage() {
   }, [wave.seed, robots])
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const visible = usePlaybackVisibility(canvasRef)
+  const [playing, setPlaying] = useState(() => !prefersReducedMotion())
+  const [playbackScene, setPlaybackScene] = useState(scene)
+  if (playbackScene !== scene) {
+    setPlaybackScene(scene)
+    setPlaying(!prefersReducedMotion())
+  }
   const r2d = useRef<Warehouse2DRenderer | null>(null)
   const frame = useRef(0)
   const raf = useRef(0)
@@ -46,34 +54,43 @@ export function OperationsPage() {
   const lastTs = useRef(0)
 
   useEffect(() => {
+    frame.current = prefersReducedMotion() ? result.frames.length - 1 : 0
+    acc.current = 0
+    lastTs.current = 0
     if (canvasRef.current) {
       r2d.current = new Warehouse2DRenderer(canvasRef.current)
-      r2d.current.render(scene, result, 0)
+      r2d.current.render(scene, result, frame.current)
     }
-    frame.current = 0
     return () => { r2d.current = null }
   }, [scene, result])
 
   useEffect(() => {
-    if (prefersReducedMotion()) {
-      frame.current = result.frames.length - 1
-      r2d.current?.render(scene, result, frame.current)
-      return
-    }
+    if (!playing || !visible) return
+    lastTs.current = 0
     const step = (ts: number) => {
-      raf.current = requestAnimationFrame(step)
       if (!lastTs.current) lastTs.current = ts
       acc.current += ts - lastTs.current
       lastTs.current = ts
       while (acc.current >= 1000 / FPS) {
         acc.current -= 1000 / FPS
-        frame.current = frame.current < result.frames.length - 1 ? frame.current + 1 : 0
+        frame.current = Math.min(frame.current + 1, result.frames.length - 1)
       }
       r2d.current?.render(scene, result, frame.current)
+      if (frame.current < result.frames.length - 1) raf.current = requestAnimationFrame(step)
+      else setPlaying(false)
     }
     raf.current = requestAnimationFrame(step)
     return () => cancelAnimationFrame(raf.current)
-  }, [scene, result])
+  }, [scene, result, playing, visible])
+
+  const togglePlayback = () => {
+    if (frame.current >= result.frames.length - 1) {
+      frame.current = 0
+      acc.current = 0
+      r2d.current?.render(scene, result, 0)
+    }
+    setPlaying(value => !value)
+  }
 
   const runNewShift = () => { setSeed((s) => (s * 1664525 + 1013904223) >>> 0); setSelected(0); setSigil(null) }
   const changeRobots = (n: number) => { setRobots(n); setSelected(0); setSigil(null) }
@@ -138,6 +155,9 @@ export function OperationsPage() {
           ))}
         </div>
         <div className="ops-stage">
+          <button className="btn btn--ghost btn--sm" onClick={togglePlayback}>
+            {playing ? 'Pause playback' : 'Play'}
+          </button>
           <canvas ref={canvasRef} className="ops-canvas" />
           <p className="ops-caption">Wave {wave.wave} · {wave.verdict} · {Math.round(wave.metrics.fleet_utilization * 100)}% utilization · 0 collisions</p>
         </div>

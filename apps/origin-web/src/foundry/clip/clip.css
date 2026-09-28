@@ -74,5 +74,7 @@ html, body { margin: 0; background: #111c16; }
 }
 @media (prefers-reduced-motion: reduce) {
   .clip__caret { animation: none; }
-  .clip *, .clip *::before, .clip *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+  .clip *, .clip *::before, .clip *::after { animation: none !important; scroll-behavior: auto !important; }
+  .clip__lane { transition: border-color .12s, background-color .12s; }
+  .clip__bar-fill { transition: none; }
 }

@@ -309,6 +309,8 @@ body {
   .fdy-stat { min-width: 0; flex: 1 1 40%; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .fdy-btn { transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, opacity 120ms ease; }
+  .fdy-btn:hover:not(:disabled) { transform: none; }
   .fdy-step { animation: none; }
   .fdy-lane__fill { transition: none; }
 }

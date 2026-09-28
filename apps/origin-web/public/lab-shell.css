@@ -1,5 +1,8 @@
+/* Keep the static shell geometry independent of deferred app styles. */
+body { margin: 0; }
+html.lab-ready #main { min-height: 100vh; display: flow-root; }
 /* Isolated chrome for experimental consoles; no generic control selectors. */
-.lab-masthead { display: flex; align-items: center; gap: 24px; padding: 22px max(24px,calc((100vw - 1144px)/2)); background: #f8f7f4; border-bottom: 1px solid #dce3d4; color: #272d26; font-family: 'Avenir Next',Avenir,system-ui,sans-serif; }
+.lab-masthead { line-height: 1.5; display: flex; align-items: center; gap: 24px; padding: 22px max(24px,calc((100vw - 1144px)/2)); background: #f8f7f4; border-bottom: 1px solid #dce3d4; color: #272d26; font-family: 'Avenir Next',Avenir,system-ui,sans-serif; }
 .lab-brand { display: inline-flex; align-items: center; gap: 10px; color: #272d26; text-decoration: none; font-size: 29px; letter-spacing: -.05em; }
 .lab-brand img { flex-shrink: 0; }
 .lab-location { font-size: 12px; color: #64705d; }

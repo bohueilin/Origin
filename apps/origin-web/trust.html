@@ -48,7 +48,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2c3d7ec2" />
+    <link rel="stylesheet" href="/home.css?v=0042fe54" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -141,22 +141,18 @@
 
     <main id="main">
       <section class="editorial-hero" aria-labelledby="trust-title"><div class="shell">
-        <div class="editorial-hero__grid"><div>
+        <div class="editorial-hero__grid diagram-hero"><div>
           <p class="kicker">Trust &amp; controls</p>
           <h1 id="trust-title">Evidence you can inspect. Limits you can see.</h1>
           <p class="section__lede">A useful reference check starts with a clear boundary. Origin evaluates a bound configuration against deterministic synthetic tasks and gives reviewers an artifact they can recheck.</p>
           <p class="editorial-caption">Working prototype. Seeking design partners. Not production SaaS, compliance certification, or a guarantee of approval.</p>
           <div class="editorial-actions"><a class="btn btn--primary" href="/verify">Inspect an artifact</a><a class="btn btn--ghost" href="/reference-check-vs-runtime">Understand the boundary</a></div>
-        </div><figure class="editorial-hero__media"><img src="/brand/review-2026-09-28.webp" width="1672" height="941" alt="" fetchpriority="high" /><figcaption class="editorial-caption">Generated illustration of a review environment; not an Origin facility or customer deployment.</figcaption></figure></div>
+        </div></div><!-- ORIGIN:POSTURE -->
         <nav class="editorial-jumps" aria-label="On this page"><a href="#posture"><span>01</span>Current posture</a><a href="#gated"><span>02</span>Verification</a><a href="#data"><span>03</span>Data &amp; retention</a><a href="#controls"><span>04</span>Responsibility</a><a href="#packet"><span>05</span>Security review</a></nav>
       </div></section>
       <section class="editorial-section" id="posture"><div class="shell">
         <div class="editorial-heading"><p class="kicker">01 / Current posture</p><div><h2>What exists today. What still needs agreement.</h2><p>The public prototype demonstrates an evaluation and evidence workflow. A runtime gate and controlled tool-call proxy remain proposed pilot architecture, not deployed general enforcement.</p></div></div>
-        <div class="editorial-cards">
-          <article class="editorial-card"><span class="status status--now"><span class="status__txt">Available now</span></span><h3>Browser-local evaluation</h3><p>Run synthetic support or IAM tasks through deterministic policy logic. Bind the configuration, inspect the verdict, and download the evidence.</p></article>
-          <article class="editorial-card"><span class="status status--now"><span class="status__txt">Available now</span></span><h3>Explicit artifact provenance</h3><p>The public reference-check artifact is browser-session-signed and unpinned. Execution was not attempted. A valid signature does not establish trusted Origin issuance.</p></article>
-          <article class="editorial-card"><span class="status status--pilot"><span class="status__txt">Proposed architecture</span></span><h3>Controlled execution</h3><p>Permission checks, a controlled proxy, named approvals, and runtime enforcement are a proposed integration path. They are not evidence of a customer deployment.</p></article>
-        </div>
+        <div class="editorial-cards"><!-- ORIGIN:POSTURE_CARDS --></div>
         <aside class="editorial-note"><p><b>Integrity is a specific claim.</b> “Tamper-evident” means an alteration can be detected by the relevant digest, signature, binding, or chain check. It does not establish safety, production readiness, or reviewer acceptance.</p></aside>
       </div></section>
       <section class="editorial-section" id="gated" aria-labelledby="gated-title"><div class="shell">

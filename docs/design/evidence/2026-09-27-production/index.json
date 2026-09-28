@@ -1,0 +1,74 @@
+{
+  "source": "6c9f932",
+  "date": "2026-09-28T05:02:09.918Z",
+  "browser": "149.0.7827.55",
+  "build": "production",
+  "note": "Local build diagnostics, cold browser contexts; 4 seconds after load, no isMobile; external requests blocked; initial anonymous states; reduced motion switched after load. Review manual findings before treating candidates as defects.",
+  "summary": [
+    {
+      "route": "/foundry",
+      "width": 375,
+      "status": 200,
+      "screenshot": "foundry-375.jpg",
+      "cls": 0.13669950738916256,
+      "bytes": 94586,
+      "overflow": 0,
+      "violations": [
+        {
+          "id": "target-size",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "route": "/foundry",
+      "width": 1440,
+      "status": 200,
+      "screenshot": "foundry-1440.jpg",
+      "cls": 0.09,
+      "bytes": 94586,
+      "overflow": 0,
+      "violations": []
+    },
+    {
+      "route": "/soc",
+      "width": 375,
+      "status": 200,
+      "screenshot": "soc-375.jpg",
+      "cls": 0,
+      "bytes": 81684,
+      "overflow": 0,
+      "violations": []
+    },
+    {
+      "route": "/soc",
+      "width": 1440,
+      "status": 200,
+      "screenshot": "soc-1440.jpg",
+      "cls": 0.09,
+      "bytes": 81684,
+      "overflow": 0,
+      "violations": []
+    },
+    {
+      "route": "/capture",
+      "width": 1440,
+      "status": 200,
+      "screenshot": "capture-1440.jpg",
+      "cls": 0.09,
+      "bytes": 1177489,
+      "overflow": 0,
+      "violations": []
+    },
+    {
+      "route": "/capture",
+      "width": 375,
+      "status": 200,
+      "screenshot": "capture-375.jpg",
+      "cls": 0.13669950738916256,
+      "bytes": 1177489,
+      "overflow": 0,
+      "violations": []
+    }
+  ]
+}

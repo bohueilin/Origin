@@ -1,0 +1,54 @@
+name: Site evaluation artifacts
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/site-evaluation.yml'
+      - 'apps/origin-web/scripts/site-eval.mjs'
+      - 'docs/design/2026-09-26-site-evaluation.md'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: site-evaluation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build an anonymous local production preview
+        env:
+          VITE_DISABLE_OPTIONAL_BACKEND_FETCHES: '1'
+          VITE_INSFORGE_URL: https://82fs5fqk.us-west.insforge.app
+          VITE_INSFORGE_ANON_KEY: anon_public_test_fixture_only
+        run: npm run build -w @origin/origin-web
+      - name: Capture every route and supplemental measurement
+        env:
+          BASE_URL: http://127.0.0.1:5294
+          BUILD_KIND: production
+          OUT_DIR: ${{ runner.temp }}/site-evaluation
+          SOURCE_LABEL: ${{ github.sha }}
+        run: |
+          npm run preview -w @origin/origin-web -- --host 127.0.0.1 --port 5294 --strictPort > /tmp/site-preview.log 2>&1 &
+          PREVIEW_PID=$!
+          trap 'kill "$PREVIEW_PID"' EXIT
+          for attempt in {1..30}; do
+            if curl --silent --fail "$BASE_URL" > /dev/null; then break; fi
+            sleep 1
+          done
+          node apps/origin-web/scripts/site-eval.mjs
+      - name: Upload screenshots and full diagnostics outside Git
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: site-evaluation-${{ github.sha }}
+          path: ${{ runner.temp }}/site-evaluation
+          if-no-files-found: error
+          retention-days: 30

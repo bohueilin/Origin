@@ -1,0 +1,3194 @@
+{
+  "route": "/soc",
+  "width": 375,
+  "status": 200,
+  "screenshot": "soc-375.jpg",
+  "metrics": {
+    "shifts": [],
+    "lcp": {
+      "time": 68,
+      "size": 80707,
+      "element": "<p class=\"fdy-hero__sub\">Experimental security scenarios for delegated tools, hostile inputs and policy decisions. Inspect deterministic allow, deny and escalate rules alongside model-assisted proposals. Panels identify measured results, illustrative baselines and backend-dependent runs. These demonstrations do not establish production enforcement or prompt-injection prevention.</p>",
+      "url": ""
+    },
+    "navigation": [
+      {
+        "transfer": 1980,
+        "encoded": 1680,
+        "decoded": 4315
+      }
+    ],
+    "resources": [
+      {
+        "path": "/lab-shell.css",
+        "transfer": 950,
+        "encoded": 650,
+        "decoded": 1522,
+        "kind": "link"
+      },
+      {
+        "path": "/assets/soc-Cr8Zq1cN.js",
+        "transfer": 9266,
+        "encoded": 8966,
+        "decoded": 34092,
+        "kind": "script"
+      },
+      {
+        "path": "/assets/rolldown-runtime-CNC7AqOf.js",
+        "transfer": 1179,
+        "encoded": 879,
+        "decoded": 879,
+        "kind": "other"
+      },
+      {
+        "path": "/assets/modulepreload-polyfill-Dezn_h7o.js",
+        "transfer": 998,
+        "encoded": 698,
+        "decoded": 698,
+        "kind": "other"
+      },
+      {
+        "path": "/assets/soc-B6pFc_u5.css",
+        "transfer": 2962,
+        "encoded": 2662,
+        "decoded": 11520,
+        "kind": "link"
+      },
+      {
+        "path": "/assets/socClient-DZ9FykTb.js",
+        "transfer": 1153,
+        "encoded": 853,
+        "decoded": 853,
+        "kind": "other"
+      },
+      {
+        "path": "/assets/jsx-runtime-BqcZOtKZ.js",
+        "transfer": 59256,
+        "encoded": 58956,
+        "decoded": 189637,
+        "kind": "other"
+      },
+      {
+        "path": "/assets/foundry-DX93WZax.css",
+        "transfer": 3371,
+        "encoded": 3071,
+        "decoded": 11646,
+        "kind": "link"
+      },
+      {
+        "path": "/brand/origin-mark.svg",
+        "transfer": 569,
+        "encoded": 269,
+        "decoded": 269,
+        "kind": "img"
+      }
+    ],
+    "cls": 0,
+    "firstLoadTransferBytes": 81684
+  },
+  "failures": [],
+  "dom": {
+    "title": "Origin Autonomy-Control — the autonomy firewall for AI agents",
+    "text": "Skip to main content\norigin\nLabs / Autonomy Control\nAll experiments ↗\nTrust center\nORIGIN LABS · AUTONOMY CONTROL\nExplore the action boundary.\nMake each decision open to inspection.\n\nExperimental security scenarios for delegated tools, hostile inputs and policy decisions. Inspect deterministic allow, deny and escalate rules alongside model-assisted proposals. Panels identify measured results, illustrative baselines and backend-dependent runs. These demonstrations do not establish production enforcement or prompt-injection prevention.\n\nTHE CONTROL PLANE FOR AUTONOMY\nCapability is not permission.\n\nA model proposes an action. A deterministic policy evaluates the defined synthetic action boundary. These demonstrations explore whether the declared policy rejects the fixture; they do not prove that every dangerous action is covered, or that a production system enforces the same boundary.\n\nperceive\n→\npropose\n→\nRATIFY\n→\nblock / execute\n→\naudit\n\nModel proposals · deterministic policy checks. The Perceiver, Planner, and Guardian all run on gemma-4-31b — they perceive, propose, and guard. The verdict itself is a deterministic oracle (the fail-closed policy floor): the authority for the defined policy decision. Its correctness still depends on the policy, the implementation and the scenario coverage.\n\nValidated by the consensus — not a slogan\nDeepMind AI Control Roadmap (Jun 18 2026): treat agents as insider threats; block irreversible actions in real time; defense-in-depth \"beyond model alignment… assurance even if alignment is imperfect.\" Origin is that roadmap, shipped.\narXiv 2602.09947 — Trustworthy Agentic AI Requires Deterministic Architectural Boundaries: alignment is insufficient; you need deterministic mediation, privilege separation, fail-closed default-deny. That is Origin's policy floor.\nCerebras · Gemma-4 thesis: fast inference lets you \"fit more verification and more retries into the same product\" — speed as the new quality lever.\nHonest by design\nWe contain prompt injection, we don’t claim to prevent it — the destructive action never executes at the floor, regardless of what the model believes.\nDeterministic + auditable, not \"formally verified.\" The audit trace IS the evidence — an independently verifiable record, not a certificate.\nFrame-by-frame perception, not video. Gemma-4 on Cerebras is image+text → text. We built the robot-ready brain, not a robot.\nRaw speed: one prompt, every model\n\nCompare response throughput across configured providers for one synthetic prompt. Read each lane’s availability and timing provenance; throughput does not establish verification quality or cost.\n\nRun the leaderboard\nThe loop-race\n\nSame incident queue. In the wall-clock the GPU baseline spends triaging ONE alert, how many can Cerebras fully triage and verify? Inspect the timing and baseline assumptions before drawing a throughput conclusion.\n\nRun the loop-race\nThe safety tax\n\nThe same incidents, two ways. A GPU model takes the fast path — one shot, no Guardian. Cerebras runs the full verified loop. Watch the accuracy gap, then the cost of earning a guarantee.\n\nRun the safety tax\nGuardian verdict vs GPU first token\n\nAn attacker injects a directive to disable the firewall. Both lanes are called for real and their latencies are measured per run; the sequence below is replayed at readable speed from those measurements, so the bars are a replay, not a live race.\n\nSend the attack\nSpeed buys correctness\n\nGive each platform a time budget. The GPU can barely finish one shot. Cerebras matches that accuracy in a fraction of the time — then spends the slack on verification to pull ahead.\n\nRun the accuracy test\nThe economics\n\nSame single-call triage on each platform. Speed isn’t vanity — it’s incidents-per-minute and compute-per-incident, the only numbers a SOC buyer cares about.\n\nRun the economics\nExplore a committee of reviewers\n\nCompare parallel model responses to a synthetic incident. The miss-rate curve below is a model under its stated assumptions; it is not measured production reliability.\n\nRun N Guardians\nWho is allowed, before what is allowed\n\nDeepMind’s multi-agent frontier: identity, attenuated delegation, oversight. Passport is a deterministic authority gate in front of the Guardian. An agent can’t act beyond its grant — and a hijacked agent can’t manufacture authority it never held.\n\ngemma-4 narrates each verdict in plain English — it does not decide it. The deterministic oracle already ruled; the model only puts the reason into words.\n\nRun the authority scenarios\nOne floor for all, judgment for the few\n\nYou can’t afford a reasoning model on every alert — and you don’t need one. A deterministic floor clears the obvious majority for $0 and ~0 ms, and escalates only the suspicious minority — the injection traps and the genuine judgment calls — to a full gemma-4 perceive→plan→Guardian loop. Both tiers are graded by the same deterministic oracle.\n\nSupervise the alert queue\nRun the live SOC — DeepMind’s roadmap, shipped\n\nA realistic auto-remediation agent triages a live incident queue (detection). Two alerts carry a prompt injection. The Guardian + fail-closed policy floor block the destructive tool-call before execution (synchronous response) and write an audit trail. Watch what the agent would have executed.\n\nTriage the queue\n\nOne engine, two buyers: the same Perceiver → Planner → Guardian → deterministic-oracle loop licenses what a robot may do on a floor and what a software agent may do with your tools. Capability is not permission.\n\nOrigin Physical AI · the policy is the only judge\nSee the physical-AI demo →   Open the console →\nOrigin Labs · experimental surfaces\nEvidence & provenance\nPrivacy",
+    "robots": "noindex, nofollow",
+    "viewport": {
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 6230
+    },
+    "overflow": [],
+    "headings": [
+      {
+        "level": 1,
+        "text": "Explore the action boundary. Make each decision open to inspection."
+      },
+      {
+        "level": 2,
+        "text": "Capability is not permission."
+      },
+      {
+        "level": 3,
+        "text": "Validated by the consensus — not a slogan"
+      },
+      {
+        "level": 3,
+        "text": "Honest by design"
+      },
+      {
+        "level": 2,
+        "text": "Raw speed: one prompt, every model"
+      },
+      {
+        "level": 2,
+        "text": "The loop-race"
+      },
+      {
+        "level": 2,
+        "text": "The safety tax"
+      },
+      {
+        "level": 2,
+        "text": "Guardian verdict vs GPU first token"
+      },
+      {
+        "level": 2,
+        "text": "Speed buys correctness"
+      },
+      {
+        "level": 2,
+        "text": "The economics"
+      },
+      {
+        "level": 2,
+        "text": "Explore a committee of reviewers"
+      },
+      {
+        "level": 2,
+        "text": "Who is allowed, before what is allowed"
+      },
+      {
+        "level": 2,
+        "text": "One floor for all, judgment for the few"
+      },
+      {
+        "level": 2,
+        "text": "Run the live SOC — DeepMind’s roadmap, shipped"
+      }
+    ],
+    "landmarks": [
+      {
+        "selector": "header.lab-masthead",
+        "label": null,
+        "text": "origin Labs / Autonomy Control All experiments ↗ Trust center"
+      },
+      {
+        "selector": "nav",
+        "label": "Lab navigation",
+        "text": "All experiments ↗ Trust center"
+      },
+      {
+        "selector": "#main",
+        "label": null,
+        "text": "ORIGIN LABS · AUTONOMY CONTROL Explore the action boundary. Make each decision open to inspection. Experimental security scenarios for delegated tools, hostile inputs and policy de"
+      },
+      {
+        "selector": "header.fdy-hero",
+        "label": null,
+        "text": "ORIGIN LABS · AUTONOMY CONTROL Explore the action boundary. Make each decision open to inspection. Experimental security scenarios for delegated tools, hostile inputs and policy de"
+      },
+      {
+        "selector": "footer.fdy-foot",
+        "label": null,
+        "text": "Origin Physical AI · the policy is the only judge See the physical-AI demo → Open the console →"
+      },
+      {
+        "selector": "footer.lab-footer",
+        "label": null,
+        "text": "Origin Labs · experimental surfaces Evidence & provenance Privacy"
+      }
+    ],
+    "links": [
+      {
+        "text": "Skip to main content",
+        "href": "#main"
+      },
+      {
+        "text": "origin",
+        "href": "/"
+      },
+      {
+        "text": "All experiments ↗",
+        "href": "/labs"
+      },
+      {
+        "text": "Trust center",
+        "href": "/trust"
+      },
+      {
+        "text": "See the physical-AI demo →",
+        "href": "/foundry"
+      },
+      {
+        "text": "Open the console →",
+        "href": "/app"
+      },
+      {
+        "text": "Evidence & provenance",
+        "href": "/proof"
+      },
+      {
+        "text": "Privacy",
+        "href": "/legal/privacy-policy.html"
+      }
+    ],
+    "images": [
+      {
+        "src": "/brand/origin-mark.svg",
+        "alt": "",
+        "caption": "",
+        "loading": "auto",
+        "priority": "auto",
+        "x": 20,
+        "y": 22,
+        "width": 32,
+        "height": 32
+      }
+    ],
+    "typography": [
+      {
+        "selector": "a.skip-link",
+        "tag": "a",
+        "text": "Skip to main content",
+        "size": 16,
+        "lineHeight": "normal",
+        "weight": "400",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(22, 24, 29)",
+        "font": "Times",
+        "width": 164.875,
+        "ch": 20.6
+      },
+      {
+        "selector": "span",
+        "tag": "span",
+        "text": "origin",
+        "size": 29,
+        "lineHeight": "normal",
+        "weight": "400",
+        "color": "rgb(39, 45, 38)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 69.140625,
+        "ch": 4.1
+      },
+      {
+        "selector": "span.lab-location",
+        "tag": "span",
+        "text": "Labs / Autonomy Control",
+        "size": 12,
+        "lineHeight": "normal",
+        "weight": "400",
+        "color": "rgb(100, 112, 93)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 137.0625,
+        "ch": 19.7
+      },
+      {
+        "selector": "a",
+        "tag": "a",
+        "text": "All experiments ↗",
+        "size": 13,
+        "lineHeight": "normal",
+        "weight": "600",
+        "color": "rgb(43, 82, 59)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 107.8125,
+        "ch": 13.6
+      },
+      {
+        "selector": "span",
+        "tag": "span",
+        "text": "↗",
+        "size": 13,
+        "lineHeight": "normal",
+        "weight": "600",
+        "color": "rgb(43, 82, 59)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 10.15625,
+        "ch": 1.3
+      },
+      {
+        "selector": "a",
+        "tag": "a",
+        "text": "Trust center",
+        "size": 13,
+        "lineHeight": "normal",
+        "weight": "600",
+        "color": "rgb(43, 82, 59)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 69.953125,
+        "ch": 8.8
+      },
+      {
+        "selector": "div.fdy-hero__eyebrow",
+        "tag": "div",
+        "text": "ORIGIN LABS · AUTONOMY CONTROL",
+        "size": 12,
+        "lineHeight": "15.6px",
+        "weight": "600",
+        "color": "rgb(36, 70, 48)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 319,
+        "ch": 43.6
+      },
+      {
+        "selector": "h1",
+        "tag": "h1",
+        "text": "Explore the action boundary. Make each decision open to inspection.",
+        "size": 34,
+        "lineHeight": "35.7px",
+        "weight": "500",
+        "color": "rgb(39, 45, 38)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 319,
+        "ch": 15.8
+      },
+      {
+        "selector": "span.fdy-hero__mark",
+        "tag": "span",
+        "text": "open to inspection",
+        "size": 34,
+        "lineHeight": "35.7px",
+        "weight": "500",
+        "color": "rgb(39, 45, 38)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 284.296875,
+        "ch": 14.1
+      },
+      {
+        "selector": "p.fdy-hero__sub",
+        "tag": "p",
+        "text": "Experimental security scenarios for delegated tools, hostile inputs and policy decisions. Inspect deterministic allow, deny and escalate rules alongside model-assisted proposals. P",
+        "size": 17,
+        "lineHeight": "25.5px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 319,
+        "ch": 32.4
+      },
+      {
+        "selector": "div.cpt__eyebrow",
+        "tag": "div",
+        "text": "THE CONTROL PLANE FOR AUTONOMY",
+        "size": 12.5,
+        "lineHeight": "12.5px",
+        "weight": "600",
+        "color": "rgb(179, 210, 162)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 269,
+        "ch": 35.3
+      },
+      {
+        "selector": "h2.cpt__slogan",
+        "tag": "h2",
+        "text": "Capability is not permission.",
+        "size": 28,
+        "lineHeight": "29.4px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 269,
+        "ch": 14.9
+      },
+      {
+        "selector": "p.cpt__lede",
+        "tag": "p",
+        "text": "A model proposes an action. A deterministic policy evaluates the defined synthetic action boundary. These demonstrations explore whether the declared policy rejects the fixture; th",
+        "size": 16,
+        "lineHeight": "24.8px",
+        "weight": "400",
+        "color": "rgb(207, 200, 185)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 269,
+        "ch": 29
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "deterministic policy",
+        "size": 16,
+        "lineHeight": "24.8px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 153.546875,
+        "ch": 14.9
+      },
+      {
+        "selector": "span.cpt__node",
+        "tag": "span",
+        "text": "perceive →",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(207, 200, 185)",
+        "background": "rgb(42, 59, 47)",
+        "font": "ui-monospace, monospace",
+        "width": 106.953125,
+        "ch": 13.2
+      },
+      {
+        "selector": "i.cpt__arrow",
+        "tag": "i",
+        "text": "→",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(107, 101, 85)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "ui-monospace, monospace",
+        "width": 8.140625,
+        "ch": 1
+      },
+      {
+        "selector": "span.cpt__node",
+        "tag": "span",
+        "text": "propose →",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(207, 200, 185)",
+        "background": "rgb(42, 59, 47)",
+        "font": "ui-monospace, monospace",
+        "width": 98.859375,
+        "ch": 12.2
+      },
+      {
+        "selector": "i.cpt__arrow",
+        "tag": "i",
+        "text": "→",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(107, 101, 85)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "ui-monospace, monospace",
+        "width": 8.140625,
+        "ch": 1
+      },
+      {
+        "selector": "span.cpt__node.cpt__node--key",
+        "tag": "span",
+        "text": "RATIFY →",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(179, 210, 162)",
+        "background": "rgba(52, 224, 161, 0.16)",
+        "font": "ui-monospace, monospace",
+        "width": 90.75,
+        "ch": 11.2
+      },
+      {
+        "selector": "i.cpt__arrow",
+        "tag": "i",
+        "text": "→",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(107, 101, 85)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "ui-monospace, monospace",
+        "width": 8.140625,
+        "ch": 1
+      },
+      {
+        "selector": "span.cpt__node",
+        "tag": "span",
+        "text": "block / execute →",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(207, 200, 185)",
+        "background": "rgb(42, 59, 47)",
+        "font": "ui-monospace, monospace",
+        "width": 163.671875,
+        "ch": 20.2
+      },
+      {
+        "selector": "i.cpt__arrow",
+        "tag": "i",
+        "text": "→",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(107, 101, 85)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "ui-monospace, monospace",
+        "width": 8.140625,
+        "ch": 1
+      },
+      {
+        "selector": "span.cpt__node",
+        "tag": "span",
+        "text": "audit",
+        "size": 13.5,
+        "lineHeight": "13.5px",
+        "weight": "600",
+        "color": "rgb(207, 200, 185)",
+        "background": "rgb(42, 59, 47)",
+        "font": "ui-monospace, monospace",
+        "width": 66.515625,
+        "ch": 8.2
+      },
+      {
+        "selector": "p.cpt__honest",
+        "tag": "p",
+        "text": "Model proposals · deterministic policy checks. The Perceiver, Planner, and Guardian all run on gemma-4-31b — they perceive, propose, and guard. The verdict itself is a deterministi",
+        "size": 13.5,
+        "lineHeight": "20.925px",
+        "weight": "400",
+        "color": "rgb(207, 200, 185)",
+        "background": "rgba(52, 224, 161, 0.08)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 269,
+        "ch": 34.4
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "Model proposals · deterministic policy checks.",
+        "size": 13.5,
+        "lineHeight": "20.925px",
+        "weight": "700",
+        "color": "rgb(179, 210, 162)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 207.171875,
+        "ch": 23.8
+      },
+      {
+        "selector": "h3",
+        "tag": "h3",
+        "text": "Validated by the consensus — not a slogan",
+        "size": 14,
+        "lineHeight": "16.8px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 269,
+        "ch": 29.7
+      },
+      {
+        "selector": "li",
+        "tag": "li",
+        "text": "DeepMind AI Control Roadmap (Jun 18 2026): treat agents as insider threats; block irreversible actions in real time; defense-in-depth \"beyond model alignment… assurance even if ali",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 251,
+        "ch": 32.1
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "DeepMind AI Control Roadmap",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 205.109375,
+        "ch": 23.5
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "block irreversible actions in real time",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 241.28125,
+        "ch": 27.7
+      },
+      {
+        "selector": "em",
+        "tag": "em",
+        "text": "\"beyond model alignment… assurance even if alignment is imperfect.\"",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 247.953125,
+        "ch": 31.7
+      },
+      {
+        "selector": "li",
+        "tag": "li",
+        "text": "arXiv 2602.09947 — Trustworthy Agentic AI Requires Deterministic Architectural Boundaries: alignment is insufficient; you need deterministic mediation, privilege separation, fail-c",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 251,
+        "ch": 32.1
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "arXiv 2602.09947",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 120.046875,
+        "ch": 13.8
+      },
+      {
+        "selector": "em",
+        "tag": "em",
+        "text": "Trustworthy Agentic AI Requires Deterministic Architectural Boundaries:",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 204.640625,
+        "ch": 26.1
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "deterministic mediation, privilege separation, fail-closed default-deny.",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 237.453125,
+        "ch": 27.2
+      },
+      {
+        "selector": "li",
+        "tag": "li",
+        "text": "Cerebras · Gemma-4 thesis: fast inference lets you \"fit more verification and more retries into the same product\" — speed as the new quality lever.",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 251,
+        "ch": 32.1
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "Cerebras · Gemma-4 thesis:",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 179.40625,
+        "ch": 20.6
+      },
+      {
+        "selector": "em",
+        "tag": "em",
+        "text": "\"fit more verification and more retries into the same product\"",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 242.8125,
+        "ch": 31
+      },
+      {
+        "selector": "h3",
+        "tag": "h3",
+        "text": "Honest by design",
+        "size": 14,
+        "lineHeight": "16.8px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 269,
+        "ch": 29.7
+      },
+      {
+        "selector": "li",
+        "tag": "li",
+        "text": "We contain prompt injection, we don’t claim to prevent it — the destructive action never executes at the floor, regardless of what the model believes.",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 251,
+        "ch": 32.1
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "contain",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 48.625,
+        "ch": 5.6
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "prevent",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 51.0625,
+        "ch": 5.9
+      },
+      {
+        "selector": "li",
+        "tag": "li",
+        "text": "Deterministic + auditable, not \"formally verified.\" The audit trace IS the evidence — an independently verifiable record, not a certificate.",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 251,
+        "ch": 32.1
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "Deterministic + auditable",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 166.0625,
+        "ch": 19
+      },
+      {
+        "selector": "li",
+        "tag": "li",
+        "text": "Frame-by-frame perception, not video. Gemma-4 on Cerebras is image+text → text. We built the robot-ready brain, not a robot.",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 251,
+        "ch": 32.1
+      },
+      {
+        "selector": "b",
+        "tag": "b",
+        "text": "Frame-by-frame perception",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(240, 243, 233)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 179.03125,
+        "ch": 20.5
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "Raw speed: one prompt, every model",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "Compare response throughput across configured providers for one synthetic prompt. Read each lane’s availability and timing provenance; throughput does not establish verification qu",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Run the leaderboard",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 171.171875,
+        "ch": 20
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "The loop-race",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "Same incident queue. In the wall-clock the GPU baseline spends triaging ONE alert, how many can Cerebras fully triage and verify? Inspect the timing and baseline assumptions before",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "em",
+        "tag": "em",
+        "text": "and verify",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 66.046875,
+        "ch": 7.6
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Run the loop-race",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 152.5625,
+        "ch": 17.9
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "The safety tax",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "The same incidents, two ways. A GPU model takes the fast path — one shot, no Guardian. Cerebras runs the full verified loop. Watch the accuracy gap, then the cost of earning a guar",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "em",
+        "tag": "em",
+        "text": "earning",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 52.109375,
+        "ch": 6
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Run the safety tax",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 152.828125,
+        "ch": 17.9
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "Guardian verdict vs GPU first token",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "An attacker injects a directive to disable the firewall. Both lanes are called for real and their latencies are measured per run; the sequence below is replayed at readable speed f",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Send the attack",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 138.078125,
+        "ch": 16.2
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "Speed buys correctness",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "Give each platform a time budget. The GPU can barely finish one shot. Cerebras matches that accuracy in a fraction of the time — then spends the slack on verification to pull ahead",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Run the accuracy test",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 174.328125,
+        "ch": 20.4
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "The economics",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "Same single-call triage on each platform. Speed isn’t vanity — it’s incidents-per-minute and compute-per-incident, the only numbers a SOC buyer cares about.",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Run the economics",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 160.265625,
+        "ch": 18.8
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "Explore a committee of reviewers",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "Compare parallel model responses to a synthetic incident. The miss-rate curve below is a model under its stated assumptions; it is not measured production reliability.",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(184, 176, 160)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Run N Guardians",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 147.0625,
+        "ch": 17.2
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "Who is allowed, before what is allowed",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(39, 45, 38)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "DeepMind’s multi-agent frontier: identity, attenuated delegation, oversight. Passport is a deterministic authority gate in front of the Guardian. An agent can’t act beyond its gran",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "attenuated delegation",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "700",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 162.1875,
+        "ch": 16.7
+      },
+      {
+        "selector": "em",
+        "tag": "em",
+        "text": "in front of",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 68.6875,
+        "ch": 7.9
+      },
+      {
+        "selector": "p.pp-narrate-note",
+        "tag": "p",
+        "text": "gemma-4 narrates each verdict in plain English — it does not decide it. The deterministic oracle already ruled; the model only puts the reason into words.",
+        "size": 12.5,
+        "lineHeight": "18.75px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 34.9
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "narrates",
+        "size": 12.5,
+        "lineHeight": "18.75px",
+        "weight": "700",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 49.4375,
+        "ch": 6.1
+      },
+      {
+        "selector": "em",
+        "tag": "em",
+        "text": "not",
+        "size": 12.5,
+        "lineHeight": "18.75px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 18.5,
+        "ch": 2.6
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Run the authority scenarios",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 213.0625,
+        "ch": 24.9
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "One floor for all, judgment for the few",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(39, 45, 38)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "You can’t afford a reasoning model on every alert — and you don’t need one. A deterministic floor clears the obvious majority for $0 and ~0 ms, and escalates only the suspicious mi",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "$0 and ~0 ms",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "700",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 101.859375,
+        "ch": 10.5
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "suspicious minority",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "700",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 230.15625,
+        "ch": 23.8
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Supervise the alert queue",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 203.234375,
+        "ch": 23.8
+      },
+      {
+        "selector": "h2",
+        "tag": "h2",
+        "text": "Run the live SOC — DeepMind’s roadmap, shipped",
+        "size": 22,
+        "lineHeight": "26.4px",
+        "weight": "700",
+        "color": "rgb(39, 45, 38)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 253,
+        "ch": 17.8
+      },
+      {
+        "selector": "p",
+        "tag": "p",
+        "text": "A realistic auto-remediation agent triages a live incident queue (detection). Two alerts carry a prompt injection. The Guardian + fail-closed policy floor block the destructive too",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 253,
+        "ch": 29.1
+      },
+      {
+        "selector": "em",
+        "tag": "em",
+        "text": "before execution",
+        "size": 15,
+        "lineHeight": "22.5px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 114.59375,
+        "ch": 13.2
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "tag": "button",
+        "text": "Triage the queue",
+        "size": 14,
+        "lineHeight": "14px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(43, 82, 59)",
+        "font": "\"Avenir Next\", Avenir, sans-serif",
+        "width": 147.3125,
+        "ch": 17.2
+      },
+      {
+        "selector": "p.fdy-brainline",
+        "tag": "p",
+        "text": "One engine, two buyers: the same Perceiver → Planner → Guardian → deterministic-oracle loop licenses what a robot may do on a floor and what a software agent may do with your tools",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgb(237, 241, 231)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 319,
+        "ch": 40.7
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "Guardian",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 60.265625,
+        "ch": 6.9
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "robot",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 36.09375,
+        "ch": 4.1
+      },
+      {
+        "selector": "strong",
+        "tag": "strong",
+        "text": "software agent",
+        "size": 13.5,
+        "lineHeight": "20.25px",
+        "weight": "700",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 98.359375,
+        "ch": 11.3
+      },
+      {
+        "selector": "span",
+        "tag": "span",
+        "text": "Origin Physical AI · the policy is the only judge",
+        "size": 13,
+        "lineHeight": "19.5px",
+        "weight": "400",
+        "color": "rgb(101, 112, 94)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 272.8125,
+        "ch": 36.2
+      },
+      {
+        "selector": "a",
+        "tag": "a",
+        "text": "See the physical-AI demo →",
+        "size": 13,
+        "lineHeight": "19.5px",
+        "weight": "600",
+        "color": "rgb(36, 70, 48)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 167.828125,
+        "ch": 21.2
+      },
+      {
+        "selector": "a",
+        "tag": "a",
+        "text": "Open the console →",
+        "size": 13,
+        "lineHeight": "19.5px",
+        "weight": "600",
+        "color": "rgb(36, 70, 48)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 122.03125,
+        "ch": 15.4
+      },
+      {
+        "selector": "span",
+        "tag": "span",
+        "text": "Origin Labs · experimental surfaces",
+        "size": 12,
+        "lineHeight": "18px",
+        "weight": "400",
+        "color": "rgb(78, 91, 72)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 192.53125,
+        "ch": 27.7
+      },
+      {
+        "selector": "a",
+        "tag": "a",
+        "text": "Evidence & provenance",
+        "size": 13,
+        "lineHeight": "19.5px",
+        "weight": "600",
+        "color": "rgb(43, 82, 59)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 142.015625,
+        "ch": 17.9
+      },
+      {
+        "selector": "a",
+        "tag": "a",
+        "text": "Privacy",
+        "size": 13,
+        "lineHeight": "19.5px",
+        "weight": "600",
+        "color": "rgb(43, 82, 59)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "\"Avenir Next\", Avenir, system-ui, sans-serif",
+        "width": 42.390625,
+        "ch": 5.3
+      }
+    ],
+    "contrast": [
+      {
+        "selector": "a.skip-link",
+        "text": "Skip to main content",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          22,
+          24,
+          29
+        ],
+        "ratio": 17.759,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span",
+        "text": "origin",
+        "color": "rgb(39, 45, 38)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 13.159,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span.lab-location",
+        "text": "Labs / Autonomy Control",
+        "color": "rgb(100, 112, 93)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 4.879,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "a",
+        "text": "All experiments ↗",
+        "color": "rgb(43, 82, 59)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 8.261,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span",
+        "text": "↗",
+        "color": "rgb(43, 82, 59)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 8.261,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "a",
+        "text": "Trust center",
+        "color": "rgb(43, 82, 59)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 8.261,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "div.fdy-hero__eyebrow",
+        "text": "ORIGIN LABS · AUTONOMY CONTROL",
+        "color": "rgb(36, 70, 48)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 9.832,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h1",
+        "text": "Explore the action boundary. Make each decision open to inspection.",
+        "color": "rgb(39, 45, 38)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 13.159,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span.fdy-hero__mark",
+        "text": "open to inspection",
+        "color": "rgb(39, 45, 38)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": null,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": true
+      },
+      {
+        "selector": "p.fdy-hero__sub",
+        "text": "Experimental security scenarios for delegated tools, hostile inputs and policy decisions. Inspect deterministic allow, deny and escalate rules alongside model-assisted proposals. P",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 6.727,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "div.cpt__eyebrow",
+        "text": "THE CONTROL PLANE FOR AUTONOMY",
+        "color": "rgb(179, 210, 162)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 8.735,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2.cpt__slogan",
+        "text": "Capability is not permission.",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p.cpt__lede",
+        "text": "A model proposes an action. A deterministic policy evaluates the defined synthetic action boundary. These demonstrations explore whether the declared policy rejects the fixture; th",
+        "color": "rgb(207, 200, 185)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 8.706,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "deterministic policy",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span.cpt__node",
+        "text": "perceive →",
+        "color": "rgb(207, 200, 185)",
+        "background": [
+          42,
+          59,
+          47
+        ],
+        "ratio": 7.147,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "i.cpt__arrow",
+        "text": "→",
+        "color": "rgb(107, 101, 85)",
+        "background": [
+          42,
+          59,
+          47
+        ],
+        "ratio": 2.05,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span.cpt__node",
+        "text": "propose →",
+        "color": "rgb(207, 200, 185)",
+        "background": [
+          42,
+          59,
+          47
+        ],
+        "ratio": 7.147,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "i.cpt__arrow",
+        "text": "→",
+        "color": "rgb(107, 101, 85)",
+        "background": [
+          42,
+          59,
+          47
+        ],
+        "ratio": 2.05,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span.cpt__node.cpt__node--key",
+        "text": "RATIFY →",
+        "color": "rgb(179, 210, 162)",
+        "background": [
+          32,
+          74,
+          55
+        ],
+        "ratio": 6.067,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "i.cpt__arrow",
+        "text": "→",
+        "color": "rgb(107, 101, 85)",
+        "background": [
+          32,
+          74,
+          55
+        ],
+        "ratio": 1.734,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span.cpt__node",
+        "text": "block / execute →",
+        "color": "rgb(207, 200, 185)",
+        "background": [
+          42,
+          59,
+          47
+        ],
+        "ratio": 7.147,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "i.cpt__arrow",
+        "text": "→",
+        "color": "rgb(107, 101, 85)",
+        "background": [
+          42,
+          59,
+          47
+        ],
+        "ratio": 2.05,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span.cpt__node",
+        "text": "audit",
+        "color": "rgb(207, 200, 185)",
+        "background": [
+          42,
+          59,
+          47
+        ],
+        "ratio": 7.147,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p.cpt__honest",
+        "text": "Model proposals · deterministic policy checks. The Perceiver, Planner, and Guardian all run on gemma-4-31b — they perceive, propose, and guard. The verdict itself is a deterministi",
+        "color": "rgb(207, 200, 185)",
+        "background": [
+          30,
+          59,
+          45
+        ],
+        "ratio": 7.313,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "Model proposals · deterministic policy checks.",
+        "color": "rgb(179, 210, 162)",
+        "background": [
+          30,
+          59,
+          45
+        ],
+        "ratio": 7.337,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h3",
+        "text": "Validated by the consensus — not a slogan",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "li",
+        "text": "DeepMind AI Control Roadmap (Jun 18 2026): treat agents as insider threats; block irreversible actions in real time; defense-in-depth \"beyond model alignment… assurance even if ali",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "DeepMind AI Control Roadmap",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "block irreversible actions in real time",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "em",
+        "text": "\"beyond model alignment… assurance even if alignment is imperfect.\"",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "li",
+        "text": "arXiv 2602.09947 — Trustworthy Agentic AI Requires Deterministic Architectural Boundaries: alignment is insufficient; you need deterministic mediation, privilege separation, fail-c",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "arXiv 2602.09947",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "em",
+        "text": "Trustworthy Agentic AI Requires Deterministic Architectural Boundaries:",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "deterministic mediation, privilege separation, fail-closed default-deny.",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "li",
+        "text": "Cerebras · Gemma-4 thesis: fast inference lets you \"fit more verification and more retries into the same product\" — speed as the new quality lever.",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "Cerebras · Gemma-4 thesis:",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "em",
+        "text": "\"fit more verification and more retries into the same product\"",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h3",
+        "text": "Honest by design",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "li",
+        "text": "We contain prompt injection, we don’t claim to prevent it — the destructive action never executes at the floor, regardless of what the model believes.",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "contain",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "prevent",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "li",
+        "text": "Deterministic + auditable, not \"formally verified.\" The audit trace IS the evidence — an independently verifiable record, not a certificate.",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "Deterministic + auditable",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "li",
+        "text": "Frame-by-frame perception, not video. Gemma-4 on Cerebras is image+text → text. We built the robot-ready brain, not a robot.",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "b",
+        "text": "Frame-by-frame perception",
+        "color": "rgb(240, 243, 233)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 12.907,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "Raw speed: one prompt, every model",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "Compare response throughput across configured providers for one synthetic prompt. Read each lane’s availability and timing provenance; throughput does not establish verification qu",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the leaderboard",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "The loop-race",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "Same incident queue. In the wall-clock the GPU baseline spends triaging ONE alert, how many can Cerebras fully triage and verify? Inspect the timing and baseline assumptions before",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "em",
+        "text": "and verify",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the loop-race",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "The safety tax",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "The same incidents, two ways. A GPU model takes the fast path — one shot, no Guardian. Cerebras runs the full verified loop. Watch the accuracy gap, then the cost of earning a guar",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "em",
+        "text": "earning",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the safety tax",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "Guardian verdict vs GPU first token",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "An attacker injects a directive to disable the firewall. Both lanes are called for real and their latencies are measured per run; the sequence below is replayed at readable speed f",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Send the attack",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "Speed buys correctness",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "Give each platform a time budget. The GPU can barely finish one shot. Cerebras matches that accuracy in a fraction of the time — then spends the slack on verification to pull ahead",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the accuracy test",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "The economics",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "Same single-call triage on each platform. Speed isn’t vanity — it’s incidents-per-minute and compute-per-incident, the only numbers a SOC buyer cares about.",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the economics",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "Explore a committee of reviewers",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 14.493,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "Compare parallel model responses to a synthetic incident. The miss-rate curve below is a model under its stated assumptions; it is not measured production reliability.",
+        "color": "rgb(184, 176, 160)",
+        "background": [
+          28,
+          45,
+          35
+        ],
+        "ratio": 6.733,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run N Guardians",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "Who is allowed, before what is allowed",
+        "color": "rgb(39, 45, 38)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 14.098,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "DeepMind’s multi-agent frontier: identity, attenuated delegation, oversight. Passport is a deterministic authority gate in front of the Guardian. An agent can’t act beyond its gran",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "attenuated delegation",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "em",
+        "text": "in front of",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p.pp-narrate-note",
+        "text": "gemma-4 narrates each verdict in plain English — it does not decide it. The deterministic oracle already ruled; the model only puts the reason into words.",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "narrates",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "em",
+        "text": "not",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the authority scenarios",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "One floor for all, judgment for the few",
+        "color": "rgb(39, 45, 38)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 14.098,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "You can’t afford a reasoning model on every alert — and you don’t need one. A deterministic floor clears the obvious majority for $0 and ~0 ms, and escalates only the suspicious mi",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "$0 and ~0 ms",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "suspicious minority",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Supervise the alert queue",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "h2",
+        "text": "Run the live SOC — DeepMind’s roadmap, shipped",
+        "color": "rgb(39, 45, 38)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 14.098,
+        "minimum": 3,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p",
+        "text": "A realistic auto-remediation agent triages a live incident queue (detection). Two alerts carry a prompt injection. The Guardian + fail-closed policy floor block the destructive too",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "em",
+        "text": "before execution",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          255,
+          255,
+          255
+        ],
+        "ratio": 7.207,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Triage the queue",
+        "color": "rgb(255, 255, 255)",
+        "background": [
+          43,
+          82,
+          59
+        ],
+        "ratio": 8.85,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "p.fdy-brainline",
+        "text": "One engine, two buyers: the same Perceiver → Planner → Guardian → deterministic-oracle loop licenses what a robot may do on a floor and what a software agent may do with your tools",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          237,
+          241,
+          231
+        ],
+        "ratio": 6.293,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "Guardian",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          237,
+          241,
+          231
+        ],
+        "ratio": 6.293,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "robot",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          237,
+          241,
+          231
+        ],
+        "ratio": 6.293,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "strong",
+        "text": "software agent",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          237,
+          241,
+          231
+        ],
+        "ratio": 6.293,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span",
+        "text": "Origin Physical AI · the policy is the only judge",
+        "color": "rgb(101, 112, 94)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 4.861,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "a",
+        "text": "See the physical-AI demo →",
+        "color": "rgb(36, 70, 48)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 9.832,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "a",
+        "text": "Open the console →",
+        "color": "rgb(36, 70, 48)",
+        "background": [
+          248,
+          247,
+          244
+        ],
+        "ratio": 9.832,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "span",
+        "text": "Origin Labs · experimental surfaces",
+        "color": "rgb(78, 91, 72)",
+        "background": [
+          237,
+          241,
+          231
+        ],
+        "ratio": 6.293,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "a",
+        "text": "Evidence & provenance",
+        "color": "rgb(43, 82, 59)",
+        "background": [
+          237,
+          241,
+          231
+        ],
+        "ratio": 7.728,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      },
+      {
+        "selector": "a",
+        "text": "Privacy",
+        "color": "rgb(43, 82, 59)",
+        "background": [
+          237,
+          241,
+          231
+        ],
+        "ratio": 7.728,
+        "minimum": 4.5,
+        "disabled": false,
+        "unresolved": false
+      }
+    ],
+    "targets": [
+      {
+        "selector": "a.skip-link",
+        "text": "Skip to main content",
+        "href": "#main",
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 12,
+        "y": -50,
+        "width": 164.875,
+        "height": 38
+      },
+      {
+        "selector": "a.lab-brand",
+        "text": "origin",
+        "href": "/",
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 20,
+        "y": 18,
+        "width": 111.140625,
+        "height": 40
+      },
+      {
+        "selector": "a",
+        "text": "All experiments ↗",
+        "href": "/labs",
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 20,
+        "y": 78,
+        "width": 107.8125,
+        "height": 18
+      },
+      {
+        "selector": "a",
+        "text": "Trust center",
+        "href": "/trust",
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 151.8125,
+        "y": 78,
+        "width": 69.953125,
+        "height": 18
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the leaderboard",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 2427.1875,
+        "width": 171.171875,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the loop-race",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 2765.078125,
+        "width": 152.5625,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the safety tax",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 3080.46875,
+        "width": 152.828125,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Send the attack",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 3444.75,
+        "width": 138.078125,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the accuracy test",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 3760.140625,
+        "width": 174.328125,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the economics",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 4053.03125,
+        "width": 160.265625,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run N Guardians",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 4372.3125,
+        "width": 147.0625,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Run the authority scenarios",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 4827.59375,
+        "width": 213.0625,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Supervise the alert queue",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 5281.875,
+        "width": 203.234375,
+        "height": 38
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "text": "Triage the queue",
+        "href": null,
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 61,
+        "y": 5717.546875,
+        "width": 147.3125,
+        "height": 38
+      },
+      {
+        "selector": "a",
+        "text": "See the physical-AI demo →",
+        "href": "/foundry",
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 28,
+        "y": 6020.296875,
+        "width": 167.828125,
+        "height": 18
+      },
+      {
+        "selector": "a",
+        "text": "Open the console →",
+        "href": "/app",
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 205.578125,
+        "y": 6020.296875,
+        "width": 122.03125,
+        "height": 18
+      },
+      {
+        "selector": "a",
+        "text": "Evidence & provenance",
+        "href": "/proof",
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 84.296875,
+        "y": 6180.796875,
+        "width": 142.015625,
+        "height": 19.5
+      },
+      {
+        "selector": "a",
+        "text": "Privacy",
+        "href": "/legal/privacy-policy.html",
+        "disabled": false,
+        "inlineExceptionCandidate": false,
+        "x": 248.3125,
+        "y": 6180.796875,
+        "width": 42.390625,
+        "height": 19.5
+      }
+    ],
+    "motion": [
+      {
+        "selector": "a.skip-link",
+        "animation": "none",
+        "duration": "0s",
+        "easing": "ease",
+        "iterations": "1",
+        "transition": "transform",
+        "transitionDuration": "0.15s",
+        "transitionEasing": "ease"
+      },
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "animation": "none",
+        "duration": "0s",
+        "easing": "ease",
+        "iterations": "1",
+        "transition": "transform, box-shadow, background",
+        "transitionDuration": "0.08s, 0.15s, 0.15s",
+        "transitionEasing": "ease, ease, ease"
+      }
+    ],
+    "cssRules": [],
+    "typeTokens": [],
+    "videos": []
+  },
+  "axe": {
+    "violations": [],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "nodes": [
+          {
+            "target": [
+              ".fdy-hero__mark"
+            ],
+            "html": "<span class=\"fdy-hero__mark\">open to inspection</span>",
+            "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient",
+            "checks": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "contrastRatio": 0,
+                  "fontSize": "25.5pt (34px)",
+                  "fontWeight": "normal",
+                  "messageKey": "bgGradient",
+                  "expectedContrastRatio": "3:1"
+                },
+                "message": "Element's background color could not be determined due to a background gradient"
+              }
+            ]
+          },
+          {
+            "target": [
+              ".cpt__node:nth-child(1) > i"
+            ],
+            "html": "<i class=\"cpt__arrow\">→</i>",
+            "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+            "checks": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "messageKey": "nonBmp"
+                },
+                "message": "Element content contains only non-text characters"
+              }
+            ]
+          },
+          {
+            "target": [
+              ".cpt__node:nth-child(2) > i"
+            ],
+            "html": "<i class=\"cpt__arrow\">→</i>",
+            "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+            "checks": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "messageKey": "nonBmp"
+                },
+                "message": "Element content contains only non-text characters"
+              }
+            ]
+          },
+          {
+            "target": [
+              ".cpt__node--key > i"
+            ],
+            "html": "<i class=\"cpt__arrow\">→</i>",
+            "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+            "checks": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "messageKey": "nonBmp"
+                },
+                "message": "Element content contains only non-text characters"
+              }
+            ]
+          },
+          {
+            "target": [
+              ".cpt__node:nth-child(4) > i"
+            ],
+            "html": "<i class=\"cpt__arrow\">→</i>",
+            "summary": "Fix any of the following:\n  Element content contains only non-text characters",
+            "checks": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "messageKey": "nonBmp"
+                },
+                "message": "Element content contains only non-text characters"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "focus": [
+    {
+      "element": "<a class=\"skip-link\" href=\"#main\">Skip to main content</a>",
+      "visible": true,
+      "outline": "rgb(0, 95, 204) auto 1px",
+      "boxShadow": "none"
+    },
+    {
+      "element": "<a class=\"lab-brand\" href=\"/\" aria-label=\"Origin — home\"><img src=\"/brand/origin-mark.svg\" width=\"32\" height=\"32\" alt=\"\"><span>origin</span></a>",
+      "visible": true,
+      "outline": "rgb(43, 82, 59) solid 3px",
+      "boxShadow": "none"
+    },
+    {
+      "element": "<a href=\"/labs\">All experiments <span aria-hidden=\"true\">↗</span></a>",
+      "visible": true,
+      "outline": "rgb(43, 82, 59) solid 3px",
+      "boxShadow": "none"
+    },
+    {
+      "element": "<a href=\"/trust\">Trust center</a>",
+      "visible": true,
+      "outline": "rgb(43, 82, 59) solid 3px",
+      "boxShadow": "none"
+    },
+    {
+      "element": "<button class=\"fdy-btn fdy-btn--primary\">Run the leaderboard</button>",
+      "visible": true,
+      "outline": "rgb(0, 95, 204) auto 1px",
+      "boxShadow": "none"
+    },
+    {
+      "element": "<button class=\"fdy-btn fdy-btn--primary\">Run the loop-race</button>",
+      "visible": true,
+      "outline": "rgb(0, 95, 204) auto 1px",
+      "boxShadow": "none"
+    },
+    {
+      "element": "<button class=\"fdy-btn fdy-btn--primary\">Run the safety tax</button>",
+      "visible": true,
+      "outline": "rgb(0, 95, 204) auto 1px",
+      "boxShadow": "none"
+    },
+    {
+      "element": "<button class=\"fdy-btn fdy-btn--primary\">Send the attack</button>",
+      "visible": true,
+      "outline": "rgb(0, 95, 204) auto 1px",
+      "boxShadow": "none"
+    }
+  ],
+  "reducedMotion": {
+    "motion": [
+      {
+        "selector": "button.fdy-btn.fdy-btn--primary",
+        "animation": "none",
+        "duration": "0s",
+        "easing": "ease",
+        "iterations": "1",
+        "transition": "transform, box-shadow, background",
+        "transitionDuration": "0.08s, 0.15s, 0.15s",
+        "transitionEasing": "ease, ease, ease"
+      }
+    ],
+    "videos": []
+  }
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "route": "/legal/privacy-policy.html",
+    "focus": {
+      "color": "rgb(43, 82, 59)",
+      "background": "rgb(39, 45, 38)",
+      "rect": {
+        "x": 12,
+        "y": 12,
+        "width": 181.828125,
+        "height": 48
+      },
+      "focus": true
+    }
+  },
+  {
+    "route": "/legal/terms-of-service.html",
+    "focus": {
+      "color": "rgb(43, 82, 59)",
+      "background": "rgb(39, 45, 38)",
+      "rect": {
+        "x": 12,
+        "y": 12,
+        "width": 181.828125,
+        "height": 48
+      },
+      "focus": true
+    }
+  }
+]

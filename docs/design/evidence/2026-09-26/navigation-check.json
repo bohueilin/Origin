@@ -1,0 +1,167 @@
+{
+  "pages": 25,
+  "localDestinations": 32,
+  "issues": [],
+  "statuses": [
+    {
+      "route": "/",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/trust",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/reference-check",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/reference-check-vs-runtime",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/verify",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/proof",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/brief",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/labs",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/security",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/proving-ground",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/llms.txt",
+      "status": 200,
+      "type": "text/plain"
+    },
+    {
+      "route": "/legal/privacy-policy.html",
+      "status": 200,
+      "type": "text/html;charset=utf-8"
+    },
+    {
+      "route": "/legal/terms-of-service.html",
+      "status": 200,
+      "type": "text/html;charset=utf-8"
+    },
+    {
+      "route": "/auth",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/app",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/proof/tr-a002.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "route": "/proof/tr-a002-summary.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "route": "/over-grant",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/trust/over-grant-bench.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "route": "/passport",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/simulation",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/foundry",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/operations",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/rsi/rsi_dashboard.html",
+      "status": 200,
+      "type": "text/html;charset=utf-8"
+    },
+    {
+      "route": "/trust/perceiver-gridrefs-ab-2026-08-01.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "route": "/trust/perceiver-gridrefs-ab-2026-08-01-provenance.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "route": "/trust/perceiver-baseline-2026-08-01.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "route": "/trust/floor-gate-bench.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "route": "/trust/fleet-verify-bench.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "route": "/soc",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/clip",
+      "status": 200,
+      "type": "text/html"
+    },
+    {
+      "route": "/capture",
+      "status": 200,
+      "type": "text/html"
+    }
+  ]
+}

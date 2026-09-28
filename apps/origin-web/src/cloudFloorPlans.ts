@@ -27,21 +27,23 @@ export async function cloudListFloorPlans(): Promise<SavedFloorPlan[]> {
 export async function cloudSaveFloorPlan(name: string, snapshot: FloorPlanSnapshot): Promise<SavedFloorPlan | null> {
   if (!insforge) return null
   const trimmed = name.trim() || 'Untitled floor'
-  // overwrite a same-named plan for this user
-  const { data: existing } = await insforge.database.from(TABLE).select('id').eq('kind', 'template').eq('name', trimmed)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  for (const row of (existing as any[]) ?? []) await insforge.database.from(TABLE).delete().eq('id', row.id)
-  const { data, error } = await insforge.database
-    .from(TABLE)
-    .insert([{ name: trimmed, kind: 'template', snapshot }])
-    .select()
+  // Update an existing row in place. A rejected replacement must never delete
+  // the only stored copy; new names are inserted before rename removes the old ID.
+  const { data: existing, error: lookupError } = await insforge.database.from(TABLE).select('id').eq('kind', 'template').eq('name', trimmed)
+  if (lookupError) return null
+  const previous = (existing as { id: string }[] | null)?.[0]
+  const row = { name: trimmed, kind: 'template', snapshot }
+  const { data, error } = previous
+    ? await insforge.database.from(TABLE).update(row).eq('id', previous.id).select()
+    : await insforge.database.from(TABLE).insert([row]).select()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (error || !(data as any[])?.length) return null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return rowToPlan((data as any[])[0])
 }
 
-export async function cloudDeleteFloorPlan(id: string): Promise<void> {
-  if (!insforge) return
-  await insforge.database.from(TABLE).delete().eq('id', id)
+export async function cloudDeleteFloorPlan(id: string): Promise<boolean> {
+  if (!insforge) return false
+  const { error } = await insforge.database.from(TABLE).delete().eq('id', id)
+  return !error
 }

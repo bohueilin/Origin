@@ -254,11 +254,13 @@ export function ReferenceCheckPage() {
         <div className="rc-card rc-output">
           <p className="rc-step">03 · Evaluation result</p>
           <h2>Every decision, open to inspection.</h2>
-          <div ref={verdictRef} className={`rc-verdict ${verdictClass}`} role="status" aria-live="polite">
+          <div ref={verdictRef} className="check-feedback">
+          <div className={`rc-verdict ${verdictClass}`} role="status" aria-live="polite">
             <b>{result.rows.filter((r) => r.passed).length} of {result.rows.length}</b>
             <span>synthetic decisions match the oracle</span>
             <span className="rc-verdict__meta">unbounded baseline {Math.round(result.coldPassRate * 100)}% · lift +{Math.round(result.lift * 100)}% · config {short(result.configDigest)} · tier label {result.level} on this synthetic battery only — it grants no autonomy or deployment permission</span>
-            {checked && <p className="rc-checked">Checked {checked.time} · {checked.elapsedMs} ms</p>}
+          </div>
+          {checked && <p className="rc-checked">Checked {checked.time} · {checked.elapsedMs} ms</p>}
           </div>
           {result.catastrophic > 0 ? (
             <p className="rc-hint rc-hint--warn"><b>{result.catastrophic} catastrophic over-grant{result.catastrophic > 1 ? 's' : ''}</b> — your policy allowed an action the oracle refuses (PII / destructive / fraud-flagged / approval-gated). A single catastrophic over-grant caps the level: the right to act can’t be averaged back.</p>

@@ -1,13 +1,15 @@
 import { useEffect, type RefObject } from 'react'
 
 export function checkStamp(startedAt: number) {
+  const now = new Date()
+  const time = [now.getHours(), now.getMinutes(), now.getSeconds()].map(value => String(value).padStart(2, '0')).join(':')
   return {
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3, hour12: false }),
-    elapsedMs: Number((performance.now() - startedAt).toFixed(1)),
+    time,
+    elapsedMs: Math.max(0, Math.round(performance.now() - startedAt)),
   }
 }
 
-export function useCheckVisibility(check: ReturnType<typeof checkStamp> | null, verdict: RefObject<HTMLElement | null>, mobileOnly = true) {
+export function useCheckVisibility(check: object | number | null, verdict: RefObject<HTMLElement | null>, mobileOnly = true) {
   useEffect(() => {
     if (!check || (mobileOnly && window.innerWidth >= 961)) return
     const frame = requestAnimationFrame(() => {

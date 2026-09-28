@@ -217,8 +217,8 @@
 }
 
 /* A check changes the record immediately; the verdict itself stays still. */
-.product-workspace :is(.vfy-verdict, .rc-verdict) { scroll-margin-top: 96px; scroll-margin-bottom: 16px; }
-.vfy-checked, .rc-checked { flex-basis: 100%; margin: 0; font-size: var(--fs-12); color: var(--steel); font-variant-numeric: tabular-nums; }
+.product-workspace :is(.check-feedback, .vfy-verdict, .rc-verdict) { scroll-margin-top: 96px; scroll-margin-bottom: 16px; }
+.vfy-checked, .rc-checked { flex-basis: 100%; margin: 8px 0 0; font-size: var(--fs-12); color: var(--steel); font-variant-numeric: tabular-nums; }
 @media (min-width: 961px) {
   .product-workspace .vfy-result { position: sticky; top: 103px; }
 }

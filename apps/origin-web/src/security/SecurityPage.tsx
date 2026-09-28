@@ -588,11 +588,13 @@ export function DelegationPanel() {
         })}
         {TREE.filter(n => widened.has(n.id)).map(leaf => {
           let node: typeof TREE[number] = leaf
-          let path = `M ${node.x} ${node.y}`
+          const segments: string[] = []
           while (node.parent) {
-            node = at(node.parent)
-            path += ` L ${node.x} ${node.y}`
+            const parent = at(node.parent)
+            segments.push(`M ${node.x} ${node.y - 18} L ${parent.x} ${parent.y + 18}`)
+            node = parent
           }
+          const path = segments.join(' ')
           return <path key={`inherit-${leaf.id}`} className="deleg__inheritance" d={path} fill="none" stroke="var(--warn)" strokeWidth="2" strokeDasharray="4 3" />
         })}
         {widened.size > 0 && <circle className="deleg__inheritance" cx={at('root').x} cy={at('root').y} r="24" fill="none" stroke="var(--warn)" strokeWidth="2" />}

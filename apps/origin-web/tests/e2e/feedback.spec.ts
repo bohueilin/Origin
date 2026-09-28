@@ -14,24 +14,34 @@ async function expectUnobscured(verdict: Locator) {
     const header = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? 0
     return rect.top >= header && rect.bottom <= innerHeight
   })).toBe(true)
-  expect(await verdict.evaluate(el => el.getAnimations().length)).toBe(0)
+  expect(await verdict.evaluate(el => {
+    const names: string[] = []
+    for (let node: Element | null = el; node; node = node.parentElement) {
+      if (getComputedStyle(node).animationName !== 'none') names.push(getComputedStyle(node).animationName)
+    }
+    return names
+  })).toEqual([])
 }
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 375, height: 812 }]) {
   test(`verification keeps a tamper verdict visible and refreshes its stamp at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport)
-    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.clock.install()
     await page.goto('/verify')
     await page.getByRole('button', { name: 'Origin Attestation', exact: true }).click()
     await page.getByRole('checkbox', { name: /Tamper one field/ }).check()
+    await page.getByRole('button', { name: 'Verify', exact: true }).evaluate(el => { window.scrollTo({ top: scrollY + el.getBoundingClientRect().bottom - innerHeight + 4, behavior: 'instant' }) })
     await page.getByRole('button', { name: 'Verify', exact: true }).click()
     const verdict = page.locator('.vfy-verdict')
     await expect(verdict).toContainText('VOID')
     await expectUnobscured(verdict)
     const stamp = page.locator('.vfy-checked')
-    await expect(stamp).toContainText(/Checked .* · [\d.]+ ms/)
+    await expect(stamp).toContainText(/^Checked \d{2}:\d{2}:\d{2} · \d+ ms$/)
     await expect(stamp).toBeInViewport()
+    expect(await stamp.evaluate(el => el.closest('[aria-live], [role="status"]'))).toBeNull()
     const before = await stamp.textContent()
+    await page.clock.runFor(1100)
     await page.getByRole('button', { name: 'Verify', exact: true }).click()
     await expect(stamp).not.toHaveText(before!)
     await expectUnobscured(verdict)
@@ -53,10 +63,14 @@ test('widening a diagram leaf draws its actual parent chain and root ring', asyn
   const tree = page.locator('#delegation svg')
   await page.getByRole('button', { name: 'Widen payroll-bot', exact: true }).click()
   const path = tree.locator('path[stroke-dasharray="4 3"]')
-  await expect(path).toHaveAttribute('d', 'M 96 254 L 168 150 L 300 46')
+  await expect(path).toHaveAttribute('d', 'M 96 236 L 168 168 M 168 132 L 300 64')
   await expect(tree.locator('circle[r="24"]')).toHaveCount(1)
   await expect(path).toHaveCSS('opacity', '1')
-  expect(await path.evaluate(el => el.getAnimations().some(a => (a.effect as KeyframeEffect).getKeyframes().some(frame => frame.transform !== undefined)))).toBe(false)
+  const fade = await path.evaluate(el => el.getAnimations().map(a => ({ duration: a.effect?.getTiming().duration, frames: (a.effect as KeyframeEffect).getKeyframes() })))
+  expect(fade).toHaveLength(1)
+  expect(fade[0].duration).toBe(200)
+  expect(fade[0].frames.map(f => f.opacity)).toEqual(['0', '1'])
+  expect(fade[0].frames.some(f => f.transform !== undefined)).toBe(false)
   await page.getByRole('button', { name: 'Narrow payroll-bot', exact: true }).click()
   await expect(path).toHaveCount(0)
   await expect(tree.locator('circle[r="24"]')).toHaveCount(0)
@@ -82,4 +96,21 @@ test('lead modal has a finite entrance and closes instantly in both motion modes
     })
     expect(afterClose).toBe(0)
   }
+})
+
+
+test('parse and example-generation errors clear the previous check stamp', async ({ page }) => {
+  await page.goto('/verify')
+  await page.getByRole('button', { name: 'Origin Attestation', exact: true }).click()
+  await page.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(page.locator('.vfy-checked')).toBeVisible()
+  await page.evaluate(() => { SubtleCrypto.prototype.generateKey = async () => { throw new Error('Example generation failed') } })
+  await page.getByRole('button', { name: 'Origin Attestation', exact: true }).click()
+  await expect(page.locator('.vfy-checked')).toHaveCount(0)
+  await expect(page.locator('.vfy-verdict')).toHaveCount(1)
+  await expect(page.locator('.vfy-verdict')).toContainText('NOT VERIFIABLE')
+  await page.getByLabel('Artifact JSON', { exact: true }).fill('{broken')
+  await page.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(page.locator('.vfy-verdict')).toContainText('NOT VERIFIABLE')
+  await expect(page.locator('.vfy-checked')).toHaveCount(0)
 })

@@ -114,3 +114,21 @@ test('parse and example-generation errors clear the previous check stamp', async
   await expect(page.locator('.vfy-verdict')).toContainText('NOT VERIFIABLE')
   await expect(page.locator('.vfy-checked')).toHaveCount(0)
 })
+
+for (const method of ['generateKey', 'sign'] as const) {
+  test(`a failed reference-check rerun clears its previous result (${method})`, async ({ page }) => {
+    await page.goto('/reference-check')
+    const run = page.getByRole('button', { name: 'Run the reference check', exact: true })
+    await run.click()
+    await expect(page.locator('.rc-verdict')).toBeVisible()
+    await expect(page.locator('.rc-checked')).toBeVisible()
+    await page.evaluate(method => {
+      Object.defineProperty(SubtleCrypto.prototype, method, { configurable: true, value: async () => { throw new Error('Session signing unavailable') } })
+    }, method)
+    await run.click()
+    await expect(page.locator('.rc-error')).toContainText('Session signing unavailable')
+    await expect(page.locator('.rc-checked')).toHaveCount(0)
+    await expect(page.locator('.rc-verdict')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Download signed/ })).toHaveCount(0)
+  })
+}

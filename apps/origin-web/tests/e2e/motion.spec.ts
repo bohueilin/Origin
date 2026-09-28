@@ -166,6 +166,8 @@ test('3D playback pauses rendering off screen and hidden, finishes once, and rep
   await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, value: false }); document.dispatchEvent(new Event('visibilitychange')) })
   await page.clock.runFor(8000)
   await expect(page.locator('.pg3d-controls').getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
+  // Completion commits the stopped state, whose effect schedules one final draw.
+  await page.clock.runFor(100)
   const complete = await draws()
   await page.clock.runFor(8000)
   expect(await draws()).toBe(complete)
@@ -178,6 +180,32 @@ test('3D playback pauses rendering off screen and hidden, finishes once, and rep
   await page.clock.runFor(1000)
   expect(await draws()).toBe(paused)
 })
+
+for (const field of ['Domain', 'Robot embodiment']) {
+  test(`changing ${field} starts a fresh 3D preview after completion`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.clock.install()
+    const siteMap = { width: 5, height: 5, start: { x: 0, y: 0 }, item: { x: 1, y: 0 }, drop: { x: 0, y: 0 }, robots: [{ x: 0, y: 0 }], obstacles: [], hazards: [], humanOnly: [] }
+    await page.route('**/src/proving-ground/starterFloor.ts*', async route => {
+      const response = await route.fetch()
+      await route.fulfill({ response, body: (await response.text()).replace('siteMap: starterSiteMap(),', `siteMap: ${JSON.stringify(siteMap)},`) })
+    })
+    await page.goto('/proving-ground')
+    const canvas = page.locator('.pg3d-canvas')
+    const controls = page.locator('.pg3d-controls')
+    await canvas.scrollIntoViewIfNeeded()
+    await page.clock.runFor(8000)
+    await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
+    const select = page.getByRole('combobox', { name: field, exact: true })
+    await expect(select).toBeVisible()
+    const next = await select.locator('option').evaluateAll(options => (options.find(option => !(option as HTMLOptionElement).selected) as HTMLOptionElement).value)
+    await select.selectOption(next)
+    await canvas.scrollIntoViewIfNeeded()
+    await expect(controls.getByRole('button', { name: 'Pause', exact: true })).toBeVisible()
+    await page.clock.runFor(8000)
+    await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
+  })
+}
 
 test('2D floor playback holds its final state until replay', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })

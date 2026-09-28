@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@hugeicons/core-free-icons": "^4.2.1",
+    "@hugeicons/core-free-icons": "^4.2.2",
     "@hugeicons/react": "^1.1.7",
     "@xyflow/react": "^12.3.5",
     "clsx": "^2.1.1",

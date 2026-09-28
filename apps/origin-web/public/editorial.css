@@ -133,6 +133,7 @@
 .legal-page p, .legal-page li { color: var(--ink-soft); font-size: 15px; }
 .legal-page li { margin-block: 8px; }
 .legal-page a { color: var(--signal-ink); text-underline-offset: 3px; }
+.legal-page .skip-link { color: var(--on-dark); }
 .legal-page .callout { padding: 22px; border-left: 2px solid var(--signal); background: var(--paper-3); margin: 24px 0; }
 .legal-page footer { max-width: 1060px; margin-inline: auto; padding: 28px 24px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 24px; font-size: 12px; color: var(--steel); }
 .notfound-page .nf { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }

@@ -60,9 +60,9 @@ if (burger && siteNav) {
     const t = e.target as Node
     if (!siteNav.contains(t) && !burger.contains(t)) setNav(false)
   })
-  // Collapse mobile navigation only after its controls are ready. Static HTML
-  // keeps ordinary links visible if scripting is disabled or the module fails.
-  document.documentElement.classList.add('nav-ready')
+  // Mark the controls bound so the early header reservation survives load.
+  // Without this marker the head script restores ordinary navigation links.
+  document.documentElement.classList.add('nav-ready', 'nav-bound')
 }
 
 /* ---------- scroll reveal (motion-safe) ---------- */

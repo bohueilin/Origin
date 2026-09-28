@@ -98,7 +98,8 @@ const resolveModule = (spec, fromFile) => {
 
 const collectReactCopy = () => {
   const seen = new Set()
-  const queue = []
+  // Build-rendered SVG/card copy must enter the same transitive scan as runtime copy.
+  const queue = [join(WEB, 'scripts/evidence-diagrams.ts')]
   for (const page of SERVED) {
     const path = join(WEB, page)
     if (!existsSync(path)) continue

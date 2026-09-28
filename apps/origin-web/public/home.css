@@ -1292,3 +1292,21 @@ html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root,
 @media (max-width: 375px) {
   main .btn { white-space: normal; max-width: 100%; min-width: 0; min-height: 44px; line-height: 1.4; text-align: center; }
 }
+
+/* Static diagrams are computed from the trace and the shared product posture. */
+.editorial-hero__grid.diagram-hero{grid-template-columns:1fr}
+.evidence-diagram{margin:32px 0 0;font-family:var(--font-sans);color:var(--ink)}
+.evidence-diagram svg{display:block;width:100%;height:auto;background:var(--paper);font-family:var(--font-sans);fill:var(--ink)}
+.evidence-diagram .diagram-mobile{display:none}
+.evidence-diagram .diagram-node{fill:var(--paper);stroke:var(--line);stroke-width:1.5}
+.evidence-diagram .diagram-chain{fill:none;stroke:var(--signal);stroke-width:1.5}
+.evidence-diagram .diagram-line{fill:none;stroke:var(--line);stroke-width:1.5}
+.evidence-diagram .diagram-lane{fill:var(--steel)}
+.evidence-diagram .diagram-danger{fill:var(--danger)}
+.evidence-diagram .diagram-hash{font-family:monospace}
+.evidence-diagram figcaption{font-size:var(--fs-body-sm);line-height:1.6;max-width:75ch;margin-top:16px}
+.evidence-diagram figcaption code{overflow-wrap:anywhere}
+.diagram-scroll{max-width:100%;overflow-x:auto}
+.diagram-scroll:focus-visible{outline:2px solid var(--signal);outline-offset:4px}
+.diagram-scroll .diagram-desktop{min-width:1120px}
+@media(max-width:699px){.evidence-diagram .diagram-desktop{display:none}.evidence-diagram .diagram-mobile{display:block}}

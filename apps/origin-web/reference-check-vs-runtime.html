@@ -29,7 +29,7 @@
       }
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="stylesheet" href="/home.css?v=2c3d7ec2" />
+    <link rel="stylesheet" href="/home.css?v=0042fe54" />
     <style>
       .mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:24px; }
       .mode-card { border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--surface,#fff); }
@@ -75,12 +75,12 @@
       </div>
     </header>
     <main id="main">
-      <section class="editorial-hero"><div class="shell"><div class="editorial-hero__grid"><div>
+      <section class="editorial-hero"><div class="shell"><div class="editorial-hero__grid diagram-hero"><div>
         <p class="kicker">Technical explainer · source-backed</p>
         <h1>Reference check vs runtime enforcement</h1>
         <p class="section__lede"><b>Origin is the evidence layer for AI agents:</b> a working prototype for agent-platform, security, trust, and infrastructure teams, currently seeking design partners. It tests proposed actions with deterministic verifiers, separates capability from permission, and produces evidence that can be independently rechecked.</p>
         <p class="mono-note">The model proposes. The environment verifies. The gate decides. The trace proves. Capability is not permission.</p>
-        </div><figure class="editorial-hero__media"><img src="/brand/review-2026-09-28.webp" width="1672" height="941" alt="" fetchpriority="high" /><figcaption class="editorial-caption">Generated illustration of a review environment; not a customer deployment.</figcaption></figure></div>
+        </div></div><!-- ORIGIN:POSTURE -->
         <nav class="editorial-jumps" aria-label="On this page"><a href="#reference-check"><span>01</span>Implemented today</a><a href="#runtime-enforcement"><span>02</span>Proposed architecture</a><a href="#boundaries"><span>03</span>Trust boundaries</a><a href="#provenance"><span>04</span>Evidence provenance</a></nav>
         <div class="mode-grid">
           <article class="mode-card" id="reference-check"><span class="status">Implemented today</span><h2>Synthetic pre-access reference check</h2><p>The checked-in browser flow runs synthetic support and IAM task batteries against deterministic policy logic before production access. It produces synthetic, session-signed, unpinned evidence; execution is not attempted. Changing a bound tool or configuration makes verification fail. A valid demo signature does not establish trusted Origin issuance.</p><p><a href="/reference-check">Run the synthetic reference check →</a></p></article>

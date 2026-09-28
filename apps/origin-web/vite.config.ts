@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs'
 import { resolve, join } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import { evidenceDiagrams } from './scripts/evidence-diagrams.ts'
 
 // Public identity defaults to the canonical product website in source. Optional
 // build overrides affect only website pages and discovery files; copied evidence,
@@ -94,7 +95,7 @@ export default defineConfig(() => {
     process.env.VITE_BACKEND_ORIGIN || process.env.BACKEND_ORIGIN || 'http://localhost:8787'
 
   return {
-    plugins: [react(), devCleanUrls(), siteUrlRewrite()],
+    plugins: [react(), devCleanUrls(), evidenceDiagrams(), siteUrlRewrite()],
     build: {
       // Entries: marketing home (index.html), evidence console (app.html), capture preview (capture.html), auth (auth.html), admin portal (admin.html).
       rollupOptions: {

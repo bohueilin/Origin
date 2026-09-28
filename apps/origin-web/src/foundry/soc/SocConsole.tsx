@@ -91,7 +91,7 @@ export function ControlPlaneThesis() {
         {loop.map((s, i) => (
           <span key={s} className={`cpt__node${s === 'RATIFY' ? ' cpt__node--key' : ''}`}>
             {s}
-            {i < loop.length - 1 && <i className="cpt__arrow">→</i>}
+            {i < loop.length - 1 && <i className="cpt__arrow" aria-hidden="true">→</i>}
           </span>
         ))}
       </div>

@@ -39,7 +39,7 @@
 .cpt__loop { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 22px; }
 .cpt__node { font: 600 13.5px/1 ui-monospace, monospace; padding: 8px 12px; border-radius: 8px; background: #2a3b2f; border: 1px solid var(--ink-line, #475943); color: #cfc8b9; display: inline-flex; align-items: center; }
 .cpt__node--key { background: rgba(52, 224, 161, 0.16); border-color: rgba(52, 224, 161, 0.45); color: var(--fast); }
-.cpt__arrow { margin: 0 -4px 0 12px; color: #6b6555; }
+.cpt__arrow { margin: 0 -4px 0 12px; color: #c0cbbc; }
 .cpt__honest {
   max-width: 760px; margin: -8px 0 22px; padding: 12px 14px; border-radius: 10px;
   background: rgba(52, 224, 161, 0.08); border: 1px solid rgba(52, 224, 161, 0.28);

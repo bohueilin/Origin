@@ -1,8 +1,8 @@
 // The /operations surface — a VERIFIED fleet-operations console. Clean-room from the Worksite
 // fleet-metrics concept (see docs/PRIOR_ART.md): utilization, peak-simultaneous, collision
 // events "like a real ops dashboard" — but here they are a DETERMINISTIC, signed SLA. Run a
-// multi-wave shift; the oracle scores every wave; the fleet earns an RSL readiness credential
-// only if it clears the targets with zero collisions, and that credential re-verifies on /verify.
+// multi-wave shift; the oracle scores every wave against synthetic targets. Signed
+// evidence records those outcomes and re-verifies on /verify without granting operating authority.
 // No learned/VLA result is claimed — the metrics are computed from the verified run.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { runShift, verifyOperations, DEFAULT_TARGETS } from './opsMetrics'
@@ -127,8 +127,11 @@ export function OperationsPage() {
 
       {/* The SLA verdict */}
       <div className={`ops-verdict ${cls}`}>
-        <div className="ops-verdict__badge"><b>{cred.rsl_level}</b><span>{cred.passed ? 'SLA MET' : 'SLA NOT MET'}</span></div>
-        <p>{cred.reason}</p>
+        <div>
+          <p className="ops-verdict__title"><b>{cred.passed ? 'Synthetic shift targets met' : 'Synthetic shift targets not met'}</b></p>
+          <p>Tier {cred.rsl_level} on this seeded simulated shift only; no deployment permission.</p>
+        </div>
+        <p>{t.orders_fulfilled}/{t.orders_total} orders fulfilled · {Math.round(t.avg_utilization * 100)}% utilization · {t.collision_events} collision events.</p>
       </div>
 
       {/* Metric tiles */}
@@ -166,19 +169,20 @@ export function OperationsPage() {
       {/* Evidence */}
       <div className="ops-evidence">
         {!sigil
-          ? <button className="btn btn--primary btn--sm" onClick={signShift}>Sign this shift → fleet readiness credential</button>
+          ? <button className="btn btn--primary btn--sm" onClick={signShift}>Sign synthetic shift evidence</button>
           : <>
-              <button className="btn btn--ghost btn--sm" onClick={download}>Download the credential</button>
+              <button className="btn btn--ghost btn--sm" onClick={download}>Download signed shift evidence</button>
               <a className="btn btn--ghost btn--sm" href="/verify">Re-verify it on /verify →</a>
-              <span className="ops-thumb">signed · {cred.rsl_level} · key {sigil.thumb.slice(0, 10)}…</span>
+              <span className="ops-thumb">signed · synthetic tier {cred.rsl_level} · key {sigil.thumb.slice(0, 10)}…</span>
             </>}
       </div>
       <p className="ops-note">
-        Every metric is computed <b>deterministically</b> from the oracle-verified run — the fleet
-        earns an <b>RSL readiness credential</b> only if it clears the targets with <b>zero collisions</b>,
-        and a catastrophic wave (a refused order) hard-caps the level. This is <b>reproducible under this
-        verifier</b>, never "safe"; we claim <b>no learned-coordinator result</b> — the metrics score a
-        verified plan, not a trained model. Synthetic layouts; seeded + replayable.
+        Every metric is computed <b>deterministically</b> from this synthetic shift. The fixed
+        verifier compares utilization, fulfilment, collisions and refused waves with the displayed
+        targets. Signing records these outcomes; it grants no operating authority. This is
+        <b> reproducible under this verifier</b>, never "safe". We claim <b>no learned-coordinator
+        result</b>; the metrics score a verified plan, not a trained model. Synthetic layouts;
+        seeded and replayable.
       </p>
     </div>
   )

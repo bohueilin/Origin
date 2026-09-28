@@ -2,8 +2,8 @@
 // from the original console components: paint a floor + a MIXED fleet
 // (ReflectAlign) → watch the SAME floor in 2D (MultiRobotSim) and 3D
 // (ProvingGround3D) → the deterministic oracle scores one episode per robot
-// type → the fleet earns a Verified Readiness Level (L0–L4) sealed as a signed
-// credential that re-verifies on /verify. Placements are DESCRIPTIVE — they
+// type → terminal outcomes are sealed as synthetic signed evidence that
+// re-verifies on /verify. Placements are DESCRIPTIVE — they
 // drive the animation, never the verdict (the oracle scores geometry + policy).
 import { useMemo, useRef, useState } from 'react'
 import '../shared/product-workspace.css'
@@ -12,7 +12,6 @@ import { MultiRobotSim } from '../components/MultiRobotSim'
 import { ProvingGround3D } from '../components/ProvingGround3D'
 import { starterUnderstanding } from './starterFloor'
 import { fleetReadiness } from './fleetReadiness'
-import { LICENSE_LEVELS, levelRank } from '../license'
 import { EMBODIMENT_CODE } from '../environmentPlan'
 import type { FloorPlanSnapshot } from '../floorPlanStore'
 import type { FrozenWorkflow } from '../workflowDraft'
@@ -23,7 +22,6 @@ function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 }
 
-const LEVEL_ORDER = ['L0', 'L1', 'L2', 'L3', 'L4'] as const
 const VERDICT_DOT: Record<string, string> = { finish: '#0f9d6e', escalate: '#b97400', refuse: '#e5484d' }
 
 export function ProvingGroundPage() {
@@ -54,6 +52,7 @@ export function ProvingGroundPage() {
     () => fleetReadiness(siteMap, embodiment),
     [siteMap, embodiment],
   )
+  const finished = episodes.filter(e => e.evaluation.verdict === 'finish').length
   const level = readiness.level
   const inputDigest = sha256(canonical(digestInput))
   // A signature is displayed only beside the exact evaluated input it seals,
@@ -122,7 +121,7 @@ export function ProvingGroundPage() {
         </p>
       </div>
 
-      {/* 3 · The oracle's verdicts + the earned Verified Readiness Level */}
+      {/* 3 · Terminal outcomes under the fixed synthetic verifier */}
       <div className="pg-results" ref={resultsRef}>
         <div><p className="pg-h">03 · The oracle record</p><h2>One episode per robot type.</h2></div>
         <div className="pg-episodes">
@@ -152,46 +151,25 @@ export function ProvingGroundPage() {
           </p>
         )}
 
-        <div className="pg-ladder" aria-label="Verified Readiness Level ladder">
-          {LEVEL_ORDER.map((id) => {
-            const l = LICENSE_LEVELS[id]
-            const on = id === level.id
-            const earned = levelRank(id) <= levelRank(level.id)
-            return (
-              <div key={id} className={`pg-rung${on ? ' is-on' : ''}${earned ? ' is-earned' : ''}`} style={on ? { borderColor: l.color } : undefined}>
-                <b>{id}</b>
-                <span>{l.name}</span>
-              </div>
-            )
-          })}
-        </div>
-
-        <div className="pg-verdict" style={{ borderColor: level.color }}>
-          <div className="pg-verdict__badge" style={{ background: level.color }}>
-            <b>{level.id}</b>
-            <span>{level.name}</span>
-          </div>
+        <div className="pg-verdict">
           <div>
             <p className="pg-verdict__line">
-              <b>Verified Readiness Level {level.id} — {level.name}.</b>{' '}
-              {readiness.catastrophicCount > 0
-                ? `${readiness.catastrophicCount} catastrophic episode(s) hard-cap the level — the right to act cannot be averaged back.`
-                : `Pass rate ${Math.round(readiness.passRate * 100)}% and average reward ${readiness.avgReward.toFixed(2)} across ${readiness.episodes} embodiment episode(s), zero catastrophic.`}
+              <b>{finished} of {episodes.length} synthetic robot-type evaluations finish under the fixed oracle.</b>
             </p>
-            <p className="pg-verdict__perm">An illustrative readiness level for this synthetic floor and fixed verifier. It grants no deployment permission.</p>
-            <p className="pg-verdict__scope">A level means "reproducible under this verifier" on this exact floor — never "safe." Simulation evidence is not real-world validation or robot certification.</p>
+            <p className="pg-verdict__perm">Synthetic tier {level.id} under this fixed verifier; no deployment permission.</p>
+            <p className="pg-verdict__scope">The outcomes describe this exact synthetic floor. Simulation evidence is not real-world validation or robot certification.</p>
           </div>
         </div>
 
         <div className="pg-evidence">
           {!sigil
             ? <button className="btn btn--primary btn--sm" onClick={signCredential} disabled={signing || (!frozen && !snapshot)} aria-busy={signing}>
-                {signing ? 'Signing this floor…' : 'Sign this floor → fleet readiness credential'}
+                {signing ? 'Signing this floor…' : 'Sign synthetic floor evidence'}
               </button>
             : <>
-                <button className="btn btn--ghost btn--sm" onClick={download}>Download the credential</button>
+                <button className="btn btn--ghost btn--sm" onClick={download}>Download signed floor evidence</button>
                 <a className="btn btn--ghost btn--sm" href="/verify">Re-verify it on /verify →</a>
-                <span className="pg-thumb">signed · {level.id} · key {sigil.thumb.slice(0, 10)}…</span>
+                <span className="pg-thumb">signed · synthetic tier {level.id} · key {sigil.thumb.slice(0, 10)}…</span>
               </>}
         </div>
         {signError && <p className="rc-error" role="alert">Could not sign this floor: {signError}</p>}
@@ -199,7 +177,7 @@ export function ProvingGroundPage() {
         {sigil && (
           <p className="pg-note">
             Signed with an <b>in-session key</b> (thumbprint above) for offline integrity — a{' '}
-            <b>demo credential</b>, not an Origin-issued attestation. A trusted production issuer and runtime enforcement are proposed architecture; this page does not provide them.
+            <b>synthetic demo artifact</b>, not an Origin-issued attestation. A trusted production issuer and runtime enforcement are proposed architecture; this page does not provide them.
           </p>
         )}
       </div>

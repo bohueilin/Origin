@@ -2,11 +2,11 @@ import { expect, test } from '@playwright/test'
 
 test('site-to-gym sample package renders review, export, and claim boundaries', async ({ page }) => {
   await page.goto('/app.html?start=capture')
-  await page.getByRole('button', { name: 'Run customer-owned readiness demo' }).click()
+  await page.getByRole('button', { name: 'Run synthetic site evaluation' }).click()
   await expect(page.getByText('Video-to-verification MVP', { exact: true })).toBeVisible()
   await expect(page.getByText('Human review gate', { exact: true })).toBeVisible()
   await expect(page.getByText('Portable evidence bundle', { exact: true })).toBeVisible()
-  await expect(page.getByText('Customer-owned readiness demo', { exact: true })).toBeVisible()
+  await expect(page.locator('.customer-readiness-demo .panel-kicker').filter({ hasText: 'Synthetic site evaluation' })).toBeVisible()
   await expect(page.getByText('SAFE_CONSERVATIVE', { exact: true })).toBeVisible()
   await expect(page.getByText('Customer calibration loop', { exact: true })).toBeVisible()
   await expect(page.getByText('Calibration needed: reduce false refusals without weakening refuse', { exact: true })).toBeVisible()

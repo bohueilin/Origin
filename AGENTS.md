@@ -9,6 +9,8 @@
 Unified monorepo merging the source projects.
 **Built copy-first; originals untouched and are the rollback.**
 
+Also read `CODEX.md`. If your launch prompt or `~/.codex/AGENTS.md` names a private status handoff, read it before editing.
+
 ## Operating rules (for agents)
 - **No deploy, no push, no git staging, no external APIs** without explicit Bo-Huei authorization.
 - **Oracle-only:** the deterministic oracle is the sole label/reward authority — never an LLM grading an LLM.
@@ -17,7 +19,7 @@ Unified monorepo merging the source projects.
 - **Never commit `.env*`** except `.env.example` (`.gitignore` covers `.env*`).
 
 ## Layout
-- `apps/origin-web` — the LIVE site (Cloudflare Pages). Byte-preserve its HTML/og/robots/sitemap/insforge.toml.
+- `apps/origin-web` — the LIVE site (Cloudflare Pages). Byte-preserve canonical URLs, `og:url`, JSON-LD URLs, OG images, `public/legal/*` text, `robots.txt`, `insforge.toml`, and dated evidence under `public/trust/` and `public/proof/`, unless the task names explicit owner approval. Named HTML body edits are allowed.
 - `apps/janus` — Janus (formerly Passport; agent credential broker) + Autonomy Trace Console (eval gym).
 - `apps/chronos-ui` — Chronos front-end (React 18 + Tailwind).
 - `services/{cobra,chronos}` — Python (`uv`), each isolated with its own venv.
@@ -31,12 +33,12 @@ Front door is the [Makefile](Makefile). pnpm/turbo are a documented future upgra
 ## Hard rules
 - **Never commit `.env*` except `.env.example`.** Live keys (Snaplii real-money, InsForge admin, GMI,
   1Password, Nebius) live only in per-app `.env.local`.
-- **Origin is the canonical deploy source** for the live site (`apps/origin-web`), replacing the legacy
-  `physical-ai-demo-test`. The Cloudflare Pages **cutover** (repointing the Git source) is a human-owned
-  dashboard action — see [docs/CUTOVER.md](docs/CUTOVER.md). Until it's done, pushing this repo does not
-  deploy; after it's done, deploys stay **human-gated** (push builds+checks only; a human dispatches the
-  deploy). Never trigger a deploy without explicit authorization.
-- **Keep deploy-critical files in `apps/origin-web` byte-for-byte** (hardcoded canonical URLs).
+- **Origin is the canonical deploy source** for the live site (`apps/origin-web`,
+  https://originphysicalai.com), replacing the legacy `physical-ai-demo-test`. The Cloudflare Pages
+  **cutover** happened on 2026-09-16 (runbook: [docs/CUTOVER.md](docs/CUTOVER.md)). Deploys are
+  **human-dispatched**: pushing builds and checks only; a human runs `workflow_dispatch` on
+  `.github/workflows/deploy-origin-web.yml` with the typed confirmation `DEPLOY` (see
+  [docs/DEPLOY.md](docs/DEPLOY.md)). Never trigger a deploy without explicit authorization.
 - `SNAPLII_LIVE=0` by default (fail-closed money path); `EPISODE_SIGNING_SECRET` required for prod backend.
 
 ## Next goal

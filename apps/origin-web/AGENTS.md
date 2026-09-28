@@ -21,6 +21,23 @@ Key patterns:
 - For storage uploads, persist both the returned `url` and `key`.
 <!-- INSFORGE:END -->
 
-## Imported Claude Cowork project instructions
+## Non-negotiables (trust)
+- **Determinism is sacred.** The deterministic oracle is the sole authority over labels,
+  gates, and hard-zeros — never an LLM grading an LLM. (An optional post-gate reward shaper
+  exists in `env/reward-module.ts`; off by default, can only reduce within the oracle's verdict.)
+- **"measured" = a real oracle-scored run only; everything else is labeled "projected."** No
+  fabricated metrics. Physical-AI training metrics shown on the site are private-pipeline and
+  labeled as such (not re-derivable from this public repo).
+- Claims stay scoped: "reproducible under this verifier," never "safe"/"correct." `honesty-lint`
+  enforces this on served pages (prose + meta/og/title + curated React copy) — keep it green.
+- Secrets stay server-side; `VITE_*` holds **public values only**. Never commit `.env*` except
+  `.env.example`.
 
-Y-Combinator
+## Deploy (Origin is canonical; human-dispatched)
+This repo (`apps/origin-web`) is the **canonical deploy source** for the live site,
+https://originphysicalai.com, replacing the legacy `physical-ai-demo-test`. The cutover happened on
+2026-09-16. The Cloudflare Pages project is a direct upload, not a Git-integration build: pushing to
+`main` runs the build-and-gate job of `.github/workflows/deploy-origin-web.yml` only. A deploy is a
+human `workflow_dispatch` of that workflow with the typed confirmation `DEPLOY`; it re-tests that
+commit and uploads the built `dist` with Wrangler (see [`../../docs/DEPLOY.md`](../../docs/DEPLOY.md)).
+Never deploy without explicit authorization.

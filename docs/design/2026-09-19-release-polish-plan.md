@@ -10,7 +10,7 @@ The owner approved the cinematic direction, confirmed real Google sign-in works,
 - [x] Make website canonical metadata, public site links and machine-readable discovery use `originphysicalai.com`; make source links use `bohueilin/Origin`. Preserve historical evidence bytes, backend OAuth compatibility and deployment identifiers.
 - [x] Refresh the repository landing page and GitHub About metadata around the canonical website and repository.
 - [x] Verify responsive layouts, media loading/reduced motion, accessibility, functional regressions, evidence gates and source identity; obtain an independent patch review.
-- [ ] Commit and push the reviewed changes; integrate the repository update after passing checks. Do not dispatch a production deployment.
+- [x] Commit, push and integrate the reviewed changes — shipped in PR #65 (`48a1df8`) on 2026-09-19.
 
 ## Design direction
 

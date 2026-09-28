@@ -1,5 +1,7 @@
 # Origin Overnight Product, Demo, Trust, and GEO Improvement Mission
 
+> **Completed 2026-07-18 — historical; §16 no longer binding.**
+
 ## 1. Outcome
 
 Inspect the complete Origin source tree and implement the highest-impact bounded improvements needed for a compelling, technically credible 90-second hackathon demonstration to a frontier-AI audience.

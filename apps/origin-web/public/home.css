@@ -36,6 +36,10 @@
   --verify:     #0f7a57;
   --warn:       #8a5800;
   --danger:     #b23a30;
+  --status-pass-surface: #e8f1e5;
+  --status-fail-surface: #f8eae6;
+  --status-neutral-surface: #edf0e9;
+  --control-selected-line: #668258;
 
   /* shadows */
   --sh-sm: 0 1px 2px rgba(20,22,26,.05), 0 1px 3px rgba(20,22,26,.06);
@@ -44,6 +48,7 @@
 
   /* type */
   --font-sans: 'Avenir Next', Avenir, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Consolas, monospace;
   --font-display: 'Avenir Next', Avenir, system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* type scale (16px root) */
   --fs-11: .6875rem;  --fs-12: .75rem;   --fs-13: .8125rem; --fs-14: .875rem;
@@ -56,8 +61,8 @@
 
   /* rhythm */
   --shell: 1240px;
-  --radius: 22px;
-  --radius-sm: 10px;
+  --radius: 14px;
+  --radius-sm: 8px;
   --section-y: clamp(64px, 9vw, 120px);
 }
 
@@ -1272,7 +1277,16 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .site-footer__brand > p { font-size: 22px; line-height: 1.4; color: var(--ink); letter-spacing: -.025em; margin-top: 22px; }
 .site-footer__brand > .site-footer__boundary { font-size: var(--fs-14); color: var(--steel); letter-spacing: 0; margin-top: 18px; }
 .site-footer__nav { column-gap: 64px; }
-@media(max-width:680px) { .site-header__inner { height: 74px; gap: 12px; }.brand__name { font-size: 27px; }.brand__logo { width: 28px; height: 28px; }.site-header__cta { gap: 9px; }.site-header__cta-mobile { font-size: 11px; padding: 10px 13px; }.site-footer__nav { gap: 30px; } }
+@media(max-width:680px) { .site-header__inner { height: 74px; gap: 12px; }.brand__name { font-size: 27px; }.brand__logo { width: 28px; height: 28px; }.site-header__cta { gap: 9px; }.site-header .site-header__cta-mobile { font-size: 11px; padding: 10px 13px; }.site-footer__nav { gap: 30px; } }
+@media (max-width: 380px) {
+  .site-header__inner { padding-inline: 16px; gap: 8px; }
+  .site-header .brand { flex-shrink: 0; }
+  .site-header .brand__name { font-size: 24px; }
+  .site-header .brand__logo { width: 26px; height: 26px; }
+  .site-header__cta { gap: 8px; min-width: 0; }
+  .site-header .site-header__cta-mobile { min-width: 0; padding-inline: 10px; white-space: normal; text-align: center; line-height: 1.3; }
+  .site-header__burger { flex-shrink: 0; }
+}
 
 /* Reserve the initial viewport while the interactive route modules mount. */
 html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root, #overgrant-root, #refcheck-root) {

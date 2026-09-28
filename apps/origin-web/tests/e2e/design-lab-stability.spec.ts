@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 
 const paths = [
+  ['/passport', '/src/passport/main.tsx', '#passport-root'],
+  ['/clip', '/src/foundry/clip/main.tsx', '#root'],
   ['/foundry', '/src/foundry/main.tsx', '#root'],
   ['/soc', '/src/foundry/soc/main.tsx', '#root'],
   ['/capture', '/src/captureMain.tsx', '#capture-root'],

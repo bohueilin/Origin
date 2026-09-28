@@ -53,13 +53,13 @@ test('brief shows the founder and a contact on screen, and prints the contact on
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/brief')
     await expect(page.locator('main'), `${width}px`).toContainText('Founder: Bo-Huei Lin')
-    await expect(page.locator('main a[href="mailto:bohueilin@gmail.com"]'), `${width}px`).toBeVisible()
+    await expect(page.locator('main a[href="mailto:bohueilin@originphysicalai.com"]'), `${width}px`).toBeVisible()
   }
 
   await page.emulateMedia({ media: 'print' })
   const printed = await page.locator('main').innerText()
   expect(printed).toContain('Founder: Bo-Huei Lin')
-  expect(printed.split('bohueilin@gmail.com').length - 1).toBe(1)
+  expect(printed.split('bohueilin@originphysicalai.com').length - 1).toBe(1)
   if (testInfo.project.name === 'desktop-chromium') {
     const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true })
     const pages = pdf.toString('latin1').match(/\/Type\s*\/Page(?!s)/g) ?? []

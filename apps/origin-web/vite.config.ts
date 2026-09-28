@@ -10,7 +10,7 @@ import { evidenceDiagrams } from './scripts/evidence-diagrams.ts'
 // archived research, JavaScript and backend compatibility configuration stay intact.
 // See ../../docs/domain-and-inbox-cutover.md.
 const DEFAULT_HOST = 'originphysicalai.com'
-const DEFAULT_EMAIL = 'bohueilin@gmail.com'
+const DEFAULT_EMAIL = 'bohueilin@originphysicalai.com'
 
 function siteUrlRewrite(): Plugin {
   const siteUrl = (process.env.SITE_URL || process.env.PUBLIC_SITE_URL || '').replace(/\/+$/, '')

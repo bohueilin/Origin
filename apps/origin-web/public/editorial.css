@@ -148,7 +148,7 @@
 .research-page .research-nav { padding: 22px 32px; border-bottom: 1px solid #d9dfd3; display: flex; justify-content: space-between; gap: 24px; align-items: center; max-width: 1240px; margin: 0 auto; }
 .research-page .research-nav a { color: #2b523b; text-decoration: none; font-size: 13px; }
 .research-page .research-nav .research-brand { font-size: 24px; font-weight: 600; letter-spacing: -.05em; }
-.research-page .research-status { padding: 18px 24px; margin-bottom: 26px; background: #edf1e7; border: 1px solid #d9dfd3; border-radius: 4px; font-size: 13px; color: #4e5b48; }
+.research-page .research-status { padding: 18px 24px; margin-bottom: 26px; background: #edf1e7; border: 1px solid #d9dfd3; border-radius: 4px; font-size: var(--fs-14); line-height: 1.65; color: #4e5b48; }
 .research-page .research-status b { color: #272d26; }
 .research-page header.hero { background: transparent; border: 0; box-shadow: none; padding: 28px 0 44px; border-bottom: 1px solid #d9dfd3; }
 .research-page header.hero h1 { font-family: inherit; max-width: 22ch; font-size: clamp(36px, 4.7vw, 60px); font-weight: 500; letter-spacing: -.055em; line-height: 1.07; margin-block: 20px 28px; }
@@ -219,4 +219,13 @@
   .brief-page .brief__screen-only { display: none; }
   .brief-page a { color: #000; }
   @page { size: A4; margin: 13mm; }
+}
+
+/* Research readouts wrap identifiers; figures and numeric results stay intact. */
+.research-page :is(.grid2, .score-grid, .lane-layout, .cf-ex, .ladder) > * { min-width: 0; }
+.research-page :is(p, .sub) { max-inline-size: 75ch; }
+.research-page :is(.card, .cf-fam, .stat, code, .section-head) { overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .research-page :is(.grid2, .score-grid, .lane-layout, .cf-ex, .ladder, .money .verdict, .cf-fam) { grid-template-columns: minmax(0, 1fr); }
+  .research-page :is(.funnel-row, .balance .row) { grid-template-columns: minmax(0, 1fr) minmax(20px, 1fr) 40px; gap: 8px; }
 }

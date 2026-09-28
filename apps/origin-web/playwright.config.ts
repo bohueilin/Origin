@@ -31,7 +31,7 @@ export default defineConfig({
   // 1280x800 and at 390x844, so every spec runs twice.
   projects: [
     // reducedMotion is scoped to the projects, NOT global: enhance.ts gates the
-    // scroll-reveal observers and the demo Play button on !reduceMotion, so a global
+    // motion feedback and the demo Play button on !reduceMotion, so a global
     // 'reduce' would delete those branches from ALL coverage. Desktop keeps the
     // default (no-preference) so they stay exercised; mobile uses 'reduce' because
     // scroll-behavior:smooth fights Playwright's auto-scroll at 390px.

@@ -3177,14 +3177,13 @@ select.field-input {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
+  html { scroll-behavior: auto; }
+  :is(button, a, input, select, textarea, summary, .rl-step, .floorlib-card) {
     transition-property: color, background-color, border-color, opacity, box-shadow, filter !important;
     transition-duration: 120ms !important;
-    animation: none !important;
   }
+  .voice-pulse, .voice-spinner, .field.field-filled .field-input,
+  .embodiment-media, .bs-dot, .bs-cursor { animation: none !important; }
 }
 
 /* ============================================================ */

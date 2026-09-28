@@ -42,6 +42,11 @@ export function OperationsPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const visible = usePlaybackVisibility(canvasRef)
   const [playing, setPlaying] = useState(() => !prefersReducedMotion())
+  const [playbackScene, setPlaybackScene] = useState(scene)
+  if (playbackScene !== scene) {
+    setPlaybackScene(scene)
+    setPlaying(!prefersReducedMotion())
+  }
   const r2d = useRef<Warehouse2DRenderer | null>(null)
   const frame = useRef(0)
   const raf = useRef(0)
@@ -150,8 +155,8 @@ export function OperationsPage() {
           ))}
         </div>
         <div className="ops-stage">
-          <button className="btn btn--ghost btn--sm" onClick={togglePlayback} aria-label={playing ? 'Pause wave playback' : 'Play wave playback'}>
-            {playing ? 'Pause playback' : 'Play playback'}
+          <button className="btn btn--ghost btn--sm" onClick={togglePlayback}>
+            {playing ? 'Pause playback' : 'Play'}
           </button>
           <canvas ref={canvasRef} className="ops-canvas" />
           <p className="ops-caption">Wave {wave.wave} · {wave.verdict} · {Math.round(wave.metrics.fleet_utilization * 100)}% utilization · 0 collisions</p>

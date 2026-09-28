@@ -7,6 +7,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { usePlaybackVisibility } from '../shared/usePlaybackVisibility'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import type { DescriptiveSiteMap } from '../workflowDraft'
 import { siteFleets } from '../workflowDraft'
@@ -259,11 +260,16 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
   siteMap: DescriptiveSiteMap; verdict?: string; embodiment?: RobotEmbodiment; domain?: PhysicalDomain
 }) {
   const mountRef = useRef<HTMLDivElement | null>(null)
+  const visible = usePlaybackVisibility(mountRef)
+  const visibleRef = useRef(false)
+  const wakeRef = useRef<() => void>(() => {})
+  const replayRef = useRef<() => void>(() => {})
   const playingRef = useRef(true)
   const speedRef = useRef(1)
   const progFillRef = useRef<HTMLDivElement | null>(null)
   const progTxtRef = useRef<HTMLSpanElement | null>(null)
   const [playing, setPlaying] = useState(true)
+  const [complete, setComplete] = useState(false)
   const [speed, setSpeed] = useState(1)
   const webglOK = useMemo(() => {
     try {
@@ -294,6 +300,13 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     return { plan: p as MultiAgentPlan, robotFleet: rFleet, fleetEmbs: fEmbs }
   }, [siteMap])
 
+  const [playbackPlan, setPlaybackPlan] = useState(plan)
+  if (playbackPlan !== plan) {
+    setPlaybackPlan(plan)
+    setPlaying(true)
+    setComplete(false)
+  }
+
   useEffect(() => {
     const mount = mountRef.current
     if (!mount || !webglOK) return
@@ -322,7 +335,8 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     camera.position.set(maxDim * 0.95, maxDim * 0.95 + 3.2, maxDim * 1.25)
 
     const controls = new OrbitControls(camera, renderer.domElement)
-    controls.enableDamping = true; controls.dampingFactor = 0.08
+    // Event-driven camera changes also work while playback is paused.
+    controls.enableDamping = false
     controls.target.set(0, 1.1, 0)
     controls.minDistance = maxDim * 0.55; controls.maxDistance = maxDim * 3.6
     controls.maxPolarAngle = Math.PI * 0.49
@@ -445,18 +459,24 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
 
     const ticks = Math.max(plan.ticks, 1)
     const clock = new THREE.Clock()
-    let tickF = 0, raf = 0, disposed = false
+    let tickF = 0, raf = 0, disposed = false, elapsed = 0
     const headings = bots.map(() => 0)
 
     const frame = () => {
       if (disposed) return
-      raf = requestAnimationFrame(frame)
-      const dt = Math.min(clock.getDelta(), 0.05)
-      if (playingRef.current) tickF += (dt / TICK_SECONDS) * speedRef.current
-      if (tickF > ticks - 1 + 2.6) tickF = 0
+      raf = 0
+      if (!visibleRef.current) return
+      const dt = playingRef.current ? Math.min(clock.getDelta(), 0.05) : 0
+      elapsed += dt
+      if (playingRef.current) tickF = Math.min(ticks - 1, tickF + (dt / TICK_SECONDS) * speedRef.current)
+      if (playingRef.current && tickF >= ticks - 1) {
+        playingRef.current = false
+        setPlaying(false)
+        setComplete(true)
+      }
       const dTick = Math.max(0, Math.min(Math.floor(tickF), ticks - 1))
       const frac = smoother(Math.max(0, Math.min(tickF - dTick, 1)))
-      const time = clock.elapsedTime
+      const time = elapsed
       const isPlaying = playingRef.current // freeze ALL motion (legs, wheels, rotors, hover) on pause
 
       plan.robots.forEach((r, i) => {
@@ -512,17 +532,26 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
       }
 
       controls.update(); renderer.render(scene, camera)
+      if (playingRef.current && visibleRef.current) raf = requestAnimationFrame(frame)
     }
-    raf = requestAnimationFrame(frame)
+    const wake = () => {
+      // Discard time spent paused/hidden, so returning never jumps ahead.
+      clock.getDelta()
+      if (!raf && visibleRef.current && !disposed) raf = requestAnimationFrame(frame)
+    }
+    wakeRef.current = wake
+    replayRef.current = () => { tickF = 0; elapsed = 0; headings.fill(0); wake() }
+    controls.addEventListener('change', wake)
+    wake()
 
     const onResize = () => {
       const w = mount.clientWidth || w0, h = mount.clientHeight || h0
-      camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h)
+      camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h); wake()
     }
     const ro = new ResizeObserver(onResize); ro.observe(mount)
 
     return () => {
-      disposed = true; cancelAnimationFrame(raf); ro.disconnect(); controls.dispose(); renderer.dispose()
+      disposed = true; wakeRef.current = () => {}; replayRef.current = () => {}; controls.removeEventListener('change', wake); cancelAnimationFrame(raf); ro.disconnect(); controls.dispose(); renderer.dispose()
       scene.traverse((o) => {
         const m = o as THREE.Mesh
         if (m.geometry) m.geometry.dispose()
@@ -533,7 +562,19 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     }
   }, [siteMap, plan, robotFleet, fleetEmbs, emb, domain, webglOK])
 
-  const togglePlay = () => { const v = !playing; setPlaying(v); playingRef.current = v }
+  useEffect(() => {
+    visibleRef.current = visible
+    playingRef.current = playing
+    wakeRef.current()
+  }, [visible, playing, plan])
+
+  const togglePlay = () => {
+    const next = complete || !playing
+    playingRef.current = next
+    setPlaying(next)
+    if (complete) { setComplete(false); replayRef.current() }
+    else wakeRef.current()
+  }
   const bumpSpeed = () => { const v = speed >= 2 ? 1 : speed + 0.5; setSpeed(v); speedRef.current = v }
 
   if (!webglOK) return <div className="pg3d-fallback">This browser can’t open a 3D (WebGL) view — use the 2D toggle.</div>
@@ -543,7 +584,7 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
       <div className="pg3d-canvas" ref={mountRef} />
       {/* Transport sits directly above the progress bar; Play is the clear primary. */}
       <div className="pg3d-controls">
-        <button className="pg3d-btn primary" onClick={togglePlay} aria-label={playing ? 'Pause the animation' : 'Play the animation'}>{playing ? '❚❚ Pause' : '▶ Play'}</button>
+        <button className="pg3d-btn primary" onClick={togglePlay}>{complete ? 'Replay' : playing ? 'Pause' : 'Play'}</button>
         <button className="pg3d-btn" onClick={bumpSpeed} aria-label="Change playback speed">{speed}× speed</button>
       </div>
       <div className="pg3d-progress">

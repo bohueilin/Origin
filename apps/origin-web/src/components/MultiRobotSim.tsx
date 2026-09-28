@@ -1,6 +1,6 @@
 // Shared multi-robot proving-ground animation. Single source of truth so the
 // SAME deployment (N robots, M items, the floor you drew) animates identically on
-// the Illustrate step and the readiness-gym page. Self-animating + deterministic.
+// the Illustrate step and the readiness-gym page. Finite, pausable deterministic playback.
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { DescriptiveSiteMap } from '../workflowDraft'
@@ -93,8 +93,8 @@ export function MultiRobotSim({
 
   return (
     <>
-      <button className="btn btn--ghost btn--sm" onClick={togglePlayback} aria-label={advancing ? 'Pause floor playback' : 'Play floor playback'}>
-        {advancing ? 'Pause playback' : 'Play playback'}
+      <button className="btn btn--ghost btn--sm" onClick={togglePlayback}>
+        {advancing ? 'Pause playback' : 'Play'}
       </button>
       <div ref={gridRef} className="sim-grid" style={{ gridTemplateColumns: `repeat(${siteMap.width}, 1fr)` }}>
         {Array.from({ length: siteMap.width * siteMap.height }, (_, i) => {

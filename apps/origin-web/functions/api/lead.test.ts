@@ -18,6 +18,10 @@
 import { describe, expect, test, vi, afterEach } from 'vitest'
 import { onRequestGet, onRequestHead, onRequestPost, MAX_LEAD_BODY_BYTES } from './lead.ts'
 
+// Persistence/delivery contracts begin after admission. The complete handler's
+// real admission path is exercised separately in lead-rate-limit.test.ts.
+vi.mock('../../server/leadAdmission.ts', () => ({ admitLead: async () => ({ allowed: true }) }))
+
 interface Env {
   LEAD_WEBHOOK_URL?: string
   RESEND_API_KEY?: string

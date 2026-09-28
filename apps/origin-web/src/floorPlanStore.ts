@@ -56,19 +56,19 @@ function write(plans: SavedFloorPlan[]): boolean {
 /** Save (or overwrite a same-named plan). Returns the stored entry, or null when the
  *  write was refused — callers must not treat a rejected save as a stored plan (a
  *  rename that deletes the original on the strength of a failed save loses the plan). */
-export function saveFloorPlan(name: string, snapshot: FloorPlanSnapshot): SavedFloorPlan | null {
+export function saveFloorPlan(name: string, snapshot: FloorPlanSnapshot, replacingId?: string): SavedFloorPlan | null {
   const trimmed = name.trim() || 'Untitled floor'
   const plans = listFloorPlans()
   const entry: SavedFloorPlan = {
     ...snapshot,
-    id: `fp-${crypto.randomUUID()}`,
+    id: replacingId ?? `fp-${crypto.randomUUID()}`,
     name: trimmed,
     savedAt: Date.now(),
   }
-  const others = plans.filter((p) => p.name.toLowerCase() !== trimmed.toLowerCase())
+  const others = plans.filter((p) => p.id !== replacingId && p.name.toLowerCase() !== trimmed.toLowerCase())
   return write([entry, ...others].slice(0, MAX_PLANS)) ? entry : null
 }
 
-export function deleteFloorPlan(id: string): void {
-  write(listFloorPlans().filter((p) => p.id !== id))
+export function deleteFloorPlan(id: string): boolean {
+  return write(listFloorPlans().filter((p) => p.id !== id))
 }

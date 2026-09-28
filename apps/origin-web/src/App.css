@@ -3553,6 +3553,7 @@ select.field-input {
 .smp-plans-action.danger:hover { border-color: var(--neg, #b2271d); background: rgba(178, 39, 29, 0.06); }
 .smp-sync-note { font: 500 12px/1.4 inherit; color: var(--muted); flex-basis: 100%; }
 /* A store write that did not land — the plan is untouched. */
+.smp-plans-notice:empty { margin: 0; }
 .smp-plans-notice { margin: 6px 0 0; font: 600 12px/1.4 inherit; color: var(--neg, #b2271d); }
 .smp-plans-action:disabled, .smp-save-btn:disabled { opacity: .55; cursor: default; }
 .smp-plans-action:disabled:hover { border-color: var(--line); background: transparent; }

@@ -10,12 +10,13 @@ import type { FloorPlanSnapshot, SavedFloorPlan } from './floorPlanStore'
  *  (`cloudSaveFloorPlan` / `cloudDeleteFloorPlan`) or device-backed pair.
  *  `save` resolves to null when the store did NOT persist the plan. */
 export interface FloorPlanWriter {
-  save: (name: string, snapshot: FloorPlanSnapshot) => Promise<SavedFloorPlan | null>
-  remove: (id: string) => Promise<void>
+  save: (name: string, snapshot: FloorPlanSnapshot, replacingId?: string) => Promise<SavedFloorPlan | null>
+  remove: (id: string) => Promise<boolean>
 }
 
 export type RenameResult =
   | { status: 'renamed'; plan: SavedFloorPlan }
+  | { status: 'partial'; plan: SavedFloorPlan; message: string }
   /** Nothing to do — blank name, or the same name it already had. */
   | { status: 'unchanged' }
   /** The save did not land. The original is untouched; show `message`. */
@@ -38,7 +39,7 @@ export function snapshotOf(plan: SavedFloorPlan): FloorPlanSnapshot {
 }
 
 /**
- * Rename = save under the new name, then drop the old row (a same-name overwrite is
+ * Rename = persist the replacement, then drop the old row if its ID changed (a same-name overwrite is
  * handled by both stores).
  *
  * THE DELETE IS GATED ON A CONFIRMED SAVE. It used to be unconditional: when the save
@@ -53,9 +54,11 @@ export async function renameFloorPlan(
 ): Promise<RenameResult> {
   const name = rawName.trim()
   if (!name || name === plan.name) return { status: 'unchanged' }
-  const saved = await writer.save(name, snapshotOf(plan))
+  const saved = await writer.save(name, snapshotOf(plan), plan.id)
   if (!saved) return { status: 'failed', message: RENAME_FAILED_NOTICE }
-  await writer.remove(plan.id)
+  if (saved.id !== plan.id && !(await writer.remove(plan.id))) {
+    return { status: 'partial', plan: saved, message: 'The new name was saved, but the old plan could not be removed. Both copies remain.' }
+  }
   return { status: 'renamed', plan: saved }
 }
 

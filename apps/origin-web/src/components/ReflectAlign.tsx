@@ -445,11 +445,10 @@ export function ReflectAlign({
   // ── Saved floor plans (account when signed in, else this device) ──
   // Every plan write goes through here, so the account/device choice is made once.
   const planWriter: FloorPlanWriter = {
-    save: async (name, snapshot) =>
-      planStore === 'account' ? await cloudSaveFloorPlan(name, snapshot) : saveFloorPlan(name, snapshot),
+    save: async (name, snapshot, replacingId) =>
+      planStore === 'account' ? await cloudSaveFloorPlan(name, snapshot) : saveFloorPlan(name, snapshot, replacingId),
     remove: async (id) => {
-      if (planStore === 'account') await cloudDeleteFloorPlan(id)
-      else deleteFloorPlan(id)
+      return planStore === 'account' ? await cloudDeleteFloorPlan(id) : deleteFloorPlan(id)
     },
   }
 
@@ -480,12 +479,16 @@ export function ReflectAlign({
   async function handleDeletePlan(id: string) {
     if (planStore === 'pending') return
     setPlanNotice('')
-    await planWriter.remove(id)
+    if (!(await planWriter.remove(id))) {
+      setPlanNotice('Couldn’t delete — your plan is still saved. Try again.')
+      return
+    }
     setSelectedPlanId((s) => (s === id ? '' : s))
     await refreshPlans()
   }
   // Pick a plan from the dropdown → load it into the editor.
   function handleSelectPlan(id: string) {
+    setPlanNotice('')
     setSelectedPlanId(id)
     const p = savedPlans.find((x) => x.id === id)
     if (p) handleLoadPlan(p)
@@ -506,6 +509,7 @@ export function ReflectAlign({
       return
     }
     if (result.status === 'unchanged') return
+    if (result.status === 'partial') setPlanNotice(result.message)
     setSelectedPlanId(result.plan.id)
     await refreshPlans()
   }
@@ -583,10 +587,10 @@ export function ReflectAlign({
               </div>
               <span className="smp-sync-note">
                 {planStore === 'account' && '🔒 Synced to your account — your templates are private to you and load on any device.'}
-                {planStore === 'device' && 'Saving to this device — these templates stay in this browser. Sign in to sync them to your account and use them anywhere.'}
+                {planStore === 'device' && 'Saved in this browser only. Plans saved while signed in are stored separately in your account.'}
                 {planStore === 'pending' && 'Checking your account — saving is paused until we know where your templates belong.'}
               </span>
-              {planNotice && <p className="smp-plans-notice" role="status">{planNotice}</p>}
+              <p className="smp-plans-notice" role="status">{planNotice}</p>
             </div>
 
             <div className="smp-fleets" role="group" aria-label="Fleets to deploy">

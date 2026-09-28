@@ -15,9 +15,7 @@ for (const route of routes) for (const scripts of ['disabled', 'failed']) {
       const fallback = page.locator('main .lab-fallback')
       await expect(fallback.getByRole('heading', { level: 1 })).toBeVisible()
       await expect(fallback).toContainText('JavaScript')
-      if (['/foundry', '/soc', '/capture'].includes(route)) {
-        expect(await page.locator('main').evaluate(el => parseFloat(getComputedStyle(el).minHeight) || 0)).toBe(0)
-      }
+      expect(await page.locator('main').evaluate(el => parseFloat(getComputedStyle(el).minHeight) || 0)).toBe(0)
       const back = fallback.getByRole('link', { name: 'Back to Labs' })
       expect((await back.boundingBox())!.height).toBeGreaterThanOrEqual(44)
       await back.click()

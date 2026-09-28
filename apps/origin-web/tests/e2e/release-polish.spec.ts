@@ -21,6 +21,10 @@ for (const pathname of ENHANCED_ROUTES) test(`mobile header reserves its enhance
   })
   try {
     await page.goto(pathname, { waitUntil: 'commit' })
+    // Navigation commit can expose an unstyled DOM before the render-blocking
+    // stylesheet has parsed. Measure the styled header while enhance.ts is
+    // still paused, rather than racing an intermediate DOM that cannot paint.
+    await page.waitForFunction(() => Boolean(document.querySelector<HTMLLinkElement>('link[href^="/home.css"]')?.sheet))
     await expect(page.locator('.site-header')).toBeVisible()
     const height = await page.locator('.site-header').evaluate(el => el.getBoundingClientRect().height)
     expect(height).toBeLessThanOrEqual(88)

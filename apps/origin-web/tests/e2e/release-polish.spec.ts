@@ -78,15 +78,40 @@ test('Labs stays reachable from the home footer', async ({ page }) => {
 
 test('unavailable decorative video leaves its image and removes the unusable play control', async ({ page }) => {
   await localOnly(page)
-  await page.route('**/brand/review-loop.mp4', (route) => route.abort('failed'))
+  await page.route('**/brand/review-loop*', (route) => route.abort('failed'))
   await page.goto('/')
   const film = page.locator('[data-cinematic-film]')
   const control = page.locator('[data-cinematic-toggle]')
   // Reduced-motion browsers only request the video after deliberate interaction.
   if (await control.isVisible()) await control.click()
   await expect(control).toBeHidden()
-  await expect(film).toHaveAttribute('poster', '/brand/review.webp')
+  await expect(film).toHaveAttribute('poster', '/brand/review-2026-09-28.webp')
   await expect(page.getByRole('link', { name: 'Run the synthetic reference check', exact: true })).toBeVisible()
+})
+
+test('a failed first hero source leaves a playable fallback and its control', async ({ page }) => {
+  await localOnly(page)
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.route('**/brand/review-loop*.av1.mp4', route => route.abort('failed'))
+  await page.goto('/')
+  const film = page.locator('[data-cinematic-film]')
+  // Exercise the skipped/failed-source event even on platforms without AV1 support.
+  await film.locator('source').first().dispatchEvent('error', { bubbles: false })
+  await expect(page.locator('[data-cinematic-toggle]')).toBeVisible()
+  await expect.poll(() => film.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0)
+  expect(await film.evaluate((el: HTMLVideoElement) => el.currentSrc)).not.toMatch(/av1\.mp4$/)
+})
+
+test('data saver keeps the hero still until playback is requested', async ({ page }) => {
+  await localOnly(page)
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.addInitScript(() => Object.defineProperty(navigator, 'connection', { value: { saveData: true } }))
+  await page.goto('/')
+  const film = page.locator('[data-cinematic-film]')
+  await expect(page.locator('[data-cinematic-toggle]')).toHaveText('Play scene')
+  expect(await film.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true)
+  await page.locator('[data-cinematic-toggle]').click()
+  await expect.poll(() => film.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0)
 })
 
 test('reduced motion keeps the hero still until the visitor chooses playback', async ({ page }) => {

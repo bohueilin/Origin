@@ -328,7 +328,7 @@ export function AuthPage() {
 
       {/* Decorative original brand scene; not a customer or pilot photograph. */}
       <aside className="ap-art" aria-label="Illustration">
-        <img className="ap-art-photo" src="/brand/review.webp" alt="" fetchPriority="high" />
+        <img className="ap-art-photo" src="/brand/review-2026-09-28.webp" alt="" fetchPriority="high" />
         <p className="ap-art-caption">AI-generated illustration · fictional people and setting</p>
         <div className="ap-art-inner" aria-hidden="true">
           <p className="ap-art-label">Capability is not permission.</p>

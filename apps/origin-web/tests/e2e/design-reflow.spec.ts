@@ -14,11 +14,13 @@ for (const route of ['/', '/app', '/brief', '/trust', '/operations']) {
       await expect(page.locator('h1')).toBeVisible()
       const measure = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }))
       expect(measure.document, `${route} at ${width}px`).toBeLessThanOrEqual(measure.viewport)
+      // A wider fallback font must fit too (Linux/Windows do not have Avenir).
+      await page.addStyleTag({ content: ':root { --font-sans: monospace; }' })
       for (const control of await page.locator('main .btn').all()) {
         if (!await control.isVisible()) continue
         const box = await control.boundingBox()
         expect(box!.x).toBeGreaterThanOrEqual(0)
-        expect(box!.x + box!.width).toBeLessThanOrEqual(width + 1)
+        expect(box!.x + box!.width, await control.innerText()).toBeLessThanOrEqual(width + 1)
         expect(box!.height).toBeGreaterThanOrEqual(44)
       }
     }

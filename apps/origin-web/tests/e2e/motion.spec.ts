@@ -183,6 +183,7 @@ test('3D playback pauses rendering off screen and hidden, finishes once, and rep
 
 for (const field of ['Domain', 'Robot embodiment']) {
   test(`changing ${field} starts a fresh 3D preview after completion`, async ({ page }) => {
+    test.setTimeout(60_000) // Two complete previews also run with software WebGL in CI.
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.clock.install()
     const siteMap = { width: 5, height: 5, start: { x: 0, y: 0 }, item: { x: 1, y: 0 }, drop: { x: 0, y: 0 }, robots: [{ x: 0, y: 0 }], obstacles: [], hazards: [], humanOnly: [] }
@@ -194,6 +195,9 @@ for (const field of ['Domain', 'Robot embodiment']) {
     const canvas = page.locator('.pg3d-canvas')
     const controls = page.locator('.pg3d-controls')
     await canvas.scrollIntoViewIfNeeded()
+    // IntersectionObserver delivery and React's visibility commit run outside
+    // the virtual frame burst. Observe a real first draw before advancing it.
+    await expect(page.locator('.pg3d-prog-txt')).not.toHaveText('starting…')
     await page.clock.runFor(8000)
     await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
     const select = page.getByRole('combobox', { name: field, exact: true })
@@ -202,6 +206,7 @@ for (const field of ['Domain', 'Robot embodiment']) {
     await select.selectOption(next)
     await canvas.scrollIntoViewIfNeeded()
     await expect(controls.getByRole('button', { name: 'Pause', exact: true })).toBeVisible()
+    await expect(page.locator('.pg3d-prog-txt')).not.toHaveText(/^✓ all/)
     await page.clock.runFor(8000)
     await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
   })

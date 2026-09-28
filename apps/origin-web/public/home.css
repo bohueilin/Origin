@@ -1292,5 +1292,5 @@ html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root,
 
 /* Narrow actions wrap their labels while retaining the touch target. */
 @media (max-width: 375px) {
-  :is(.brief-page, .trust-page) main .btn { white-space: normal; max-width: 100%; min-width: 0; min-height: 44px; line-height: 1.4; text-align: center; }
+  main .btn { white-space: normal; max-width: 100%; min-width: 0; min-height: 44px; line-height: 1.4; text-align: center; }
 }

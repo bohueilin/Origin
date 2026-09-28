@@ -55,6 +55,7 @@ check('reference-check pristine value remains VALID after tampering copy', refer
 
 // ── 2 · Sigil: sign → detect → verify 0 → tamper 1 → corrupt 2 → wrong signer 3
 const sigil = await makeExample('sigil')
+check('demo sigil payload carries no licence/readiness level', !('license_level' in sigil.payload) && !('rsl_level' in sigil.payload))
 check('sigil detect', detectArtifact(sigil) === 'sigil')
 const sv = await verifyArtifact(sigil)
 check('sigil verify code 0', sv.ok && sv.code === 0 && sv.verdict === 'VALID', sv.headline)

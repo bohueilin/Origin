@@ -20,6 +20,7 @@
 // "safe" or "correct". All payloads below are SYNTHETIC demo artifacts.
 // =============================================================================
 import { useState } from 'react'
+import { DEMO_RECEIPT } from './demoReceipt'
 import '../shared/product-workspace.css'
 import type { ReactNode } from 'react'
 import { generateSigningKey, signSigil, verifySigil } from '@origin/verifier-core/sigil'
@@ -116,16 +117,7 @@ function DemoCard(props: { id: string; kicker: string; title: string; lede: stri
 
 // ── 1 · Origin Attestation ────────────────────────────────────────────────────────────────
 // A SYNTHETIC score receipt — the payload we sign. Labeled synthetic on purpose.
-const DEMO_RECEIPT = {
-  receipt_schema_version: '1.0.0',
-  kind: 'demo.score_receipt',
-  note: 'SYNTHETIC demo receipt — not customer data',
-  episode_id: 'ep_demo_001',
-  reward: 1,
-  passed: true,
-  license_level: 'L2',
-  verifier_version: 'demo-verifier-1.0.0',
-}
+
 
 function SigilPanel() {
   const [steps, setSteps] = useState<Step[]>([])

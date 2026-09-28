@@ -38,7 +38,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Origin Evidence Console — prototype preview" />
     <meta name="twitter:description" content="From agent proposal to review-ready evidence — enforce, control the side effect, and prove it. Simulated / sandbox data." />
-    <link rel="stylesheet" href="/home.css?v=dacdc1f0" />
+    <link rel="stylesheet" href="/home.css?v=3498abd5" />
     <title>Origin Evidence Console — prototype preview</title>
     <script>
       (() => {
@@ -64,8 +64,8 @@
       .ec__flow em { color: var(--steel); font-style: normal; font-weight: 700; }
       .ec__grid { margin-top: 26px; display: grid; grid-template-columns: 300px 1fr 320px; gap: 16px; align-items: start; }
       @media (max-width: 1000px) { .ec__grid { grid-template-columns: 1fr 1fr; } }
-      @media (max-width: 680px) { .ec__grid { grid-template-columns: 1fr; } }
-      .ec__col { display: flex; flex-direction: column; gap: 16px; }
+      @media (max-width: 680px) { .ec__grid { grid-template-columns: minmax(0, 1fr); } }
+      .ec__col { min-width: 0; overflow-wrap: anywhere; display: flex; flex-direction: column; gap: 16px; }
       .p { background: var(--paper-2); border: 1px solid var(--line); border-radius: 20px; box-shadow: none; overflow: hidden; }
       .p__h { display: flex; align-items: center; gap: 8px; padding: 12px 15px; border-bottom: 1px solid var(--line); font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--steel); }
       .p__b { padding: 14px 15px; }

@@ -39,7 +39,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=dacdc1f0" />
+    <link rel="stylesheet" href="/home.css?v=3498abd5" />
 
     <style>
       .ops-wrap { display: grid; gap: 18px; margin-top: 24px; }
@@ -63,7 +63,12 @@
       .ops-tiles span { font-size: 11px; color: var(--ink-soft); }
       .ops-tile-ok b { color: #0f9d6e; } .ops-tile-bad b { color: #e5484d; }
       .ops-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 18px; }
-      @media (max-width: 820px) { .ops-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 820px) {
+        .ops-wrap, .ops-grid { grid-template-columns: minmax(0, 1fr); }
+        .ops-wrap > *, .ops-grid > * { min-width: 0; }
+        .ops-wrap .btn { white-space: normal; max-width: 100%; line-height: 1.4; }
+        .ops-controls { overflow-wrap: anywhere; }
+      }
       .ops-h { font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); margin: 0 0 10px; }
       .ops-timeline { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--surface, #fff); }
       .ops-wave { display: grid; grid-template-columns: 14px 66px 1fr; align-items: center; gap: 10px; width: 100%; text-align: left; background: none; border: none; border-radius: 8px; padding: 7px 8px; cursor: pointer; font: inherit; }

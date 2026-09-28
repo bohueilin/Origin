@@ -6,7 +6,7 @@ This pass makes the working prototypes easier to find and gives the public pages
 
 - **Homepage:** separate the proposition and existing labelled illustration into two columns; add a numbered index linking to policy evaluation, Proving Ground and artifact verification; introduce a dark Labs section with readable text and keyboard focus.
 - **Proving Ground:** retain the new inner margins and responsive controls; make the three workflow steps link to the editor, playback and oracle record, with native keyboard focus and sticky-header clearance. Align the robot-context panel to its content instead of stretching it down the editor.
-- **Shared pages:** use smaller shared corner radii and consistent workspace surfaces, status fills and selected borders. Keep narrow header actions separate from the brand, including when route styles load.
+- **Shared pages:** use smaller shared corner radii and consistent workspace surfaces, status fills and selected borders. Keep narrow header actions separate from the brand, including when route styles load. At 320px the action can wrap for wider system-font fallbacks while the logo and menu keep their space.
 - **Passport and Clip:** apply the existing Labs loading-space guard to both remaining routes. The footer stays below the viewport while modules and the first render arrive; disabled or failed scripts retain the compact recovery path.
 - **Returning visitors:** version home, cinematic and editorial stylesheets by their content hashes. The existing lint and automatic repair now cover all three.
 
@@ -19,6 +19,8 @@ The public business contact is `bohueilin@originphysicalai.com`; the owner sign-
 ## Verification
 
 Local final checks: honesty clean; visible-text 4/4; application gates 806 tests in 100 files; full browser suite 466 passed and 3 existing skips; production-build focused browser checks 16/16. See the pull request and release checks for the final revision. Local verification includes honesty and visible-text checks, application gates, the complete browser suite and focused tests against the production build. The site collector covers 25 routes at 1440px, 375px and 320px, plus JavaScript-off and keyboard-focus views. The final production-preview matrix has zero page overflow, zero automated axe violations and zero measured CLS across all 75 route/width combinations. This combines the original matrix with six affected-route reruns after the loading fix. Browser and visual outputs are kept outside Git.
+
+Linux checks also caught wider-font header overflow; the narrow action now flexes and wraps. The regression suite stresses all six main route families with a wider fallback font.
 
 The header loading test now waits for render-blocking CSS while the navigation module stays paused. This removes an unpainted-DOM timing race; all 66 repeated header checks passed, and independent review confirmed that a missing reservation still fails the unchanged assertion.
 

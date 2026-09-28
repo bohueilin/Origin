@@ -6,6 +6,10 @@ test('narrow headers keep the brand separate from their actions', async ({ page 
     for (const path of ['/', '/labs', '/proving-ground', '/reference-check', '/verify', '/simulation']) {
       await page.goto(path)
       await expect(page.locator('.site-header__cta-mobile')).toBeVisible()
+      if (width === 320) {
+        // Linux and Windows fallbacks can be wider than the macOS brand font.
+        await page.addStyleTag({ content: '.site-header, .site-header a, .site-header span, .site-header button { font-family: monospace !important; }' })
+      }
       await page.evaluate(() => document.fonts.ready)
       const brand = await page.locator('.site-header .brand__name').boundingBox()
       const actions = await page.locator('.site-header__cta').boundingBox()

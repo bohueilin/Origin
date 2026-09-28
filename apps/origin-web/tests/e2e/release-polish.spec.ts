@@ -10,7 +10,7 @@ async function localOnly(page: Page) {
   })
 }
 
-test('mobile header reserves its enhanced size while the nav module loads', async ({ page }) => {
+for (const pathname of ENHANCED_ROUTES) test(`mobile header reserves its enhanced size while the nav module loads: ${pathname}`, async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await localOnly(page)
   let release!: () => void
@@ -20,7 +20,7 @@ test('mobile header reserves its enhanced size while the nav module loads', asyn
     await route.continue()
   })
   try {
-    await page.goto('/', { waitUntil: 'commit' })
+    await page.goto(pathname, { waitUntil: 'commit' })
     await expect(page.locator('.site-header')).toBeVisible()
     const height = await page.locator('.site-header').evaluate(el => el.getBoundingClientRect().height)
     expect(height).toBeLessThanOrEqual(88)
@@ -50,6 +50,8 @@ test('mobile navigation remains usable when JavaScript is unavailable', async ({
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
     for (const route of [...ENHANCED_ROUTES, '/proof', '/reference-check-vs-runtime']) {
       await page.goto(`${baseURL}${route}`)
+      const emptyRoots = page.locator('#sim-root, #pg-root, #ops-root')
+      for (const root of await emptyRoots.all()) expect(await root.evaluate(el => el.getBoundingClientRect().height), route).toBeLessThan(100)
       await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
     }
   } finally {

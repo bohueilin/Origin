@@ -1279,7 +1279,7 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 @media(max-width:680px) { .site-header__inner { height: 74px; gap: 12px; }.brand__name { font-size: 27px; }.brand__logo { width: 28px; height: 28px; }.site-header__cta { gap: 9px; }.site-header__cta-mobile { font-size: 11px; padding: 10px 13px; }.site-footer__nav { gap: 30px; } }
 
 /* Reserve the initial viewport while the interactive route modules mount. */
-#verify-root, #security-root, #sim-root, #pg-root, #ops-root, #overgrant-root, #refcheck-root {
+html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root, #overgrant-root, #refcheck-root) {
   min-height: 100vh;
   display: flow-root; /* Keep mounted content margins inside the reserved space. */
 }

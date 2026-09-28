@@ -4,7 +4,7 @@
 .product-route .product-hero h1 { max-width: 22ch; font-size: clamp(36px, 4.3vw, 56px); line-height: 1.08; letter-spacing: -.045em; font-weight: 500; }
 .product-route .section--tint { padding-block: 48px; }
 .product-route .product-hero > .shell > .section__lede { max-width: 65ch; font-size: clamp(17px, 1.7vw, 20px); line-height: 1.65; margin-top: 24px; }
-.product-route .product-hero__scope { max-width: 86ch; font-size: var(--fs-14); line-height: 1.75; color: var(--ink-soft); padding-left: 18px; border-left: 2px solid #adbd9d; margin: 24px 0 0; }
+.product-route .product-hero__scope { max-width: 75ch; font-size: var(--fs-14); line-height: 1.75; color: var(--ink-soft); padding-left: 18px; border-left: 2px solid #adbd9d; margin: 24px 0 0; }
 .product-route .product-hero__links { display: flex; flex-wrap: wrap; gap: 12px 26px; margin-top: 24px; font-size: 13px; font-weight: 600; }
 .product-route .product-hero__links a { color: var(--signal-ink); }
 .product-workspace {
@@ -23,7 +23,7 @@
 .product-workspace h3 { margin: 0 0 12px; font-size: var(--fs-22); line-height: 1.25; letter-spacing: -.025em; }
 .product-workspace .section__lede { font-size: 15px; line-height: 1.65; max-width: 74ch; }
 .workspace-intro { padding: 24px 28px; border-radius: 22px; background: var(--paper-3); }
-.workspace-intro p { margin: 0; font-size: 15px; line-height: 1.7; max-width: 86ch; }
+.workspace-intro p { margin: 0; font-size: 15px; line-height: 1.7; max-width: 75ch; }
 .workspace-eyebrow { display: block; margin: 0 0 9px; color: var(--signal-ink); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }
 .workspace-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; padding: 0; margin: 0; }
 .workspace-steps li { display: flex; align-items: center; gap: 12px; font-size: var(--fs-14); line-height: 1.45; color: var(--ink-soft); }
@@ -43,7 +43,7 @@
 .workspace-scope > div + div { border-left: 1px solid var(--line); }
 .workspace-scope dt { color: var(--steel); font-size: 11px; letter-spacing: .04em; margin-bottom: 6px; }
 .workspace-scope dd { color: var(--ink); font-size: var(--fs-14); font-weight: 600; margin: 0; line-height: 1.45; }
-.product-workspace :is(.rc-hint, .vfy-note, .sec-note, .pg-note) { font-size: 14px; line-height: 1.65; color: var(--ink-soft); }
+.product-workspace :is(.rc-hint, .vfy-note, .sec-note, .pg-note) { max-inline-size: 75ch; font-size: 14px; line-height: 1.65; color: var(--ink-soft); }
 .product-workspace :is(.rc-step, .pg-h) { color: var(--signal-ink); letter-spacing: .1em; font-size: 11px; font-weight: 700; text-transform: uppercase; }
 .product-workspace :is(.rc-field input, .rc-toggle--select select, .field input, .field textarea) {
   min-width: 0; max-width: 100%; width: 100%; border: 1px solid #bfc9b7; border-radius: 10px; background: #fff; color: var(--ink); padding: 12px 14px; font-size: 14px;

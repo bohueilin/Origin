@@ -33,7 +33,7 @@
     <link rel="canonical" href="https://originphysicalai.com/operations" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
     <meta property="og:title" content="Verified fleet-operations console — Origin" />
-    <meta property="og:description" content="Run a fleet shift, watch utilization, peak-parallel and collisions, and mint a signed fleet-readiness credential. Reproducible under this verifier." />
+    <meta property="og:description" content="Run a synthetic fleet shift, inspect utilization, peak-parallel activity and collisions, and sign its outcomes. Reproducible under this verifier; no deployment permission." />
 
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -47,11 +47,9 @@
       .ops-range { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ink); }
       .ops-range input { accent-color: var(--signal); }
       .ops-targets { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; margin-left: auto; }
-      .ops-verdict { display: flex; align-items: center; gap: 18px; padding: 16px 20px; border-radius: 14px; border: 1.5px solid currentColor; }
+      .ops-verdict { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; padding: 16px 20px; border-radius: 14px; border: 1.5px solid currentColor; }
+      .ops-verdict .ops-verdict__title { font-size: 20px; line-height: 1.4; }
       .ops-verdict p { margin: 0; font-size: var(--fs-14); }
-      .ops-verdict__badge { display: flex; flex-direction: column; align-items: center; line-height: 1; flex: 0 0 auto; }
-      .ops-verdict__badge b { font-size: 30px; letter-spacing: .03em; }
-      .ops-verdict__badge span { font-size: var(--fs-11); font-weight: 700; letter-spacing: .08em; margin-top: 5px; }
       .ops-ok { color: #0b6e52; background: #e6f4ec; }
       .ops-warn { color: #6b4400; background: #fbf1e0; }
       .ops-bad { color: #b23a30; background: #fbe9e6; }
@@ -123,9 +121,8 @@
           <p class="section__lede">
             Run a robot fleet across a full shift and watch it like a real operations dashboard —
             <b>fleet utilization</b>, <b>peak-simultaneous</b> activity, <b>throughput</b>, and
-            <b>collision events</b>. Origin’s deterministic oracle scores every wave, and the fleet
-            earns a <b>signed RSL readiness credential</b> only if it clears the targets with
-            <b>zero collisions</b> — the same evidence spine a digital agent action earns.
+            <b>collision events</b>. Origin’s deterministic oracle scores every wave against the displayed synthetic targets.
+            Sign the resulting evidence for offline re-verification; it grants no operating authority.
           </p>
           <p class="mono-note" style="margin-top: 14px;">
             Every metric is computed <b>deterministically</b> from the oracle-verified run — <b>no

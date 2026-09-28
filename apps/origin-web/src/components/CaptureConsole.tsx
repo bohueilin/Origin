@@ -160,7 +160,7 @@ const RSI_PIPELINE = [
   {
     step: '06',
     title: 'Deployment evidence',
-    detail: 'Teams get refuse recall, unsafe- / missed-action rates, trace proof, and a measured readiness boundary.',
+    detail: 'Inspect refuse recall, unsafe- / missed-action rates, trace proof, and measured outcomes under this synthetic verifier.',
   },
 ]
 
@@ -517,7 +517,7 @@ export function CaptureConsole({
           deterministic checks. Real-world readiness requires separately authorized evidence and validation.
         </p>
 
-        <div className="site-thesis" aria-label="How Origin turns site context into robot readiness">
+        <div className="site-thesis" aria-label="How Origin evaluates synthetic site context">
           <div>
             <span>Customer inputs</span>
             <strong>Plans, videos, docs, notes</strong>
@@ -648,7 +648,7 @@ export function CaptureConsole({
                   Upload files
                 </button>
                 <button className="btn" onClick={loadSamplePackage}>
-                  Run customer-owned readiness demo
+                  Run synthetic site evaluation
                 </button>
                 <span>MP4, MOV, images, PDFs, TXT, or Markdown</span>
               </div>
@@ -853,13 +853,13 @@ export function CaptureConsole({
                     <div className="customer-loop-stack">
                       <div className="customer-readiness-demo">
                         <div className="demo-verdict">
-                          <span className="panel-kicker">Customer-owned readiness demo</span>
+                          <span className="panel-kicker">Synthetic site evaluation</span>
                           <strong>Verdict path: safe-conservative, needs calibration</strong>
                           <p>
                             This sample generates a compiler-ready <code>customer_floor.json</code> for
                             the Floor-design verification run. The current saved budget policy catches
-                            restricted-zone refuse cases, but the customer holdout shows over-refusal on
-                            valid finish/escalate tasks, so it must be calibrated before live authority.
+                            restricted-zone refuse cases, but the synthetic holdout shows over-refusal on
+                            valid finish/escalate tasks. Calibration and operating approval require separate evidence.
                           </p>
                         </div>
                         <div className="demo-readiness-grid">
@@ -1705,7 +1705,7 @@ export function CaptureConsole({
             <p>
               RSI means Reference State Initialization: Origin turns your customer-owned site into
               many realistic robot starting states and tasks. The verification run then evaluates
-              whether the robot should finish, escalate, or refuse before it earns live authority.
+              whether the simulated policy finishes, escalates, or refuses; operating authority requires separate approval.
             </p>
           </div>
           <ol className="rsi-pipeline">

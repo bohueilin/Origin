@@ -33,7 +33,7 @@
     <link rel="canonical" href="https://originphysicalai.com/proving-ground" />
     <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
     <meta property="og:title" content="Robot proving ground — draw a floor, deploy a mixed fleet — Origin" />
-    <meta property="og:description" content="Paint a floor, deploy humanoids, AMRs and quadrupeds, watch it in 2D and 3D, and earn a Verified Readiness Level from a deterministic oracle." />
+    <meta property="og:description" content="Paint a synthetic floor, place a mixed robot fleet, and inspect terminal outcomes under a deterministic oracle. Signed evidence grants no deployment permission." />
 
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -59,22 +59,13 @@
       .pg-episode__name { color: var(--ink-soft); }
       .pg-episode__verdict { font-family: ui-monospace, monospace; font-weight: 700; text-transform: uppercase; font-size: var(--fs-12); }
       .pg-episode__meta { font-size: 12px; color: var(--ink-soft); margin-left: auto; }
-      .pg-ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-      .pg-rung { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: grid; gap: 2px; opacity: .45; }
-      .pg-rung.is-earned { opacity: 1; }
-      .pg-rung.is-on { border-width: 2px; }
-      .pg-rung b { font-size: 13px; }
-      .pg-rung span { font-size: 11px; color: var(--ink-soft); }
       .pg-verdict { display: flex; gap: 14px; align-items: flex-start; border: 2px solid var(--line); border-radius: 14px; padding: 14px 16px; }
-      .pg-verdict__badge { color: #fff; border-radius: 10px; padding: 10px 14px; display: grid; text-align: center; flex: none; }
-      .pg-verdict__badge b { font-size: 20px; }
-      .pg-verdict__badge span { font-size: var(--fs-11); letter-spacing: .04em; text-transform: uppercase; }
       .pg-verdict__line { margin: 0 0 6px; font-size: 14px; line-height: 1.5; }
       .pg-verdict__perm { margin: 0 0 6px; font-size: var(--fs-13); color: var(--ink-soft); }
       .pg-verdict__scope { margin: 0; font-size: var(--fs-12); color: var(--ink-soft); font-family: ui-monospace, monospace; }
       .pg-evidence { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
       .pg-thumb { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; }
-      @media (max-width: 720px) { .pg-ladder { grid-template-columns: repeat(2, 1fr); } .pg-episode__meta { margin-left: 20px; } }
+      @media (max-width: 720px) { .pg-episode__meta { margin-left: 20px; } }
     </style>
   </head>
 

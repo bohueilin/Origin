@@ -402,7 +402,7 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
   const CAPS = [
     'The exact configuration is bound into a digest.',
     'A deterministic battery exercises allow, deny, and escalate.',
-    'The oracle grades FAR, FRR, catastrophic failures, and readiness.',
+    'The fixed oracle scores false accepts, false rejects, and catastrophic failures.',
     'Origin issues a configuration-bound sandbox attestation.',
     'The artifact verifies offline — until a bound field changes.',
   ]

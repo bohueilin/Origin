@@ -159,6 +159,8 @@
         .site-nav a { min-height: 44px; display: inline-flex; align-items: center; }
         .site-header__burger, .site-header__cta, .site-header__cta-mobile { display: none; }
       }
+      .tr2why__a, .tr2-exec .tr2-not, .tracerail__hint, .tr2-verify .tr2-verify__cap, .tr2-verify__plain, .proof__foot { font-size: var(--fs-14); line-height: 1.65; max-inline-size: 75ch; }
+      .tr2-verify__lbl { font-size: var(--fs-12); line-height: 1.5; }
     </style>
     <link rel="stylesheet" href="/editorial.css" />
   </head>
@@ -399,7 +401,7 @@
             <p class="tr2-verify__lbl">Verify this artifact yourself</p>
             <button type="button" class="tr2-verify__copy" data-copy="npm run proof:verify" aria-label="Copy the verify command">Copy command</button>
           </div>
-          <p class="tr2-verify__lbl" style="font-weight:400;opacity:0.85;margin:0 0 10px;">No install needed, paste the downloaded JSON into <a href="/verify" style="color:var(--signal-ink);font-weight:600">/verify</a> and it re-checks offline in your browser (green = reproducible; tamper any field &rarr; VOID). Or clone the public repo <a href="https://github.com/bohueilin/Origin" style="color:var(--signal-ink);font-weight:600">github.com/bohueilin/Origin</a> and run:</p>
+          <p class="tr2-verify__plain" style="font-weight:400;opacity:0.85;margin:0 0 10px;">No install needed, paste the downloaded JSON into <a href="/verify" style="color:var(--signal-ink);font-weight:600">/verify</a> and it re-checks offline in your browser (green = reproducible; tamper any field &rarr; VOID). Or clone the public repo <a href="https://github.com/bohueilin/Origin" style="color:var(--signal-ink);font-weight:600">github.com/bohueilin/Origin</a> and run:</p>
           <pre><span class="tr2-verify__c"># in the repo — re-derive the hash chain of the published JSON</span>
 npm run proof:verify
 <span class="tr2-verify__c"># → PASS every event hash + prev_hash link verifies · digest recomputes</span>

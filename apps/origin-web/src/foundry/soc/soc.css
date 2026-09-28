@@ -187,3 +187,20 @@
 @media (prefers-reduced-motion: reduce) {
   .soc-attack__caret { animation: none; opacity: 1; }
 }
+
+/* Explanations and scope stay readable at every viewport. */
+.cpt__honest,
+.cpt__col li,
+.pp-narrate-note,
+.pp-sub,
+.soc-counter {
+  font-size: var(--fs-14, 0.875rem);
+  line-height: 1.65;
+  max-inline-size: 75ch;
+}
+
+/* Provenance labels stay readable at every viewport. */
+.soc-tag {
+  font-size: var(--fs-12, 0.75rem);
+  line-height: 1.5;
+}

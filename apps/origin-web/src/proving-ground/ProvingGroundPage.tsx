@@ -95,15 +95,17 @@ export function ProvingGroundPage() {
   return (
     <div className="pg-wrap product-workspace">
       <ol className="workspace-steps" aria-label="Proving-ground workflow">
-        <li><span>01</span><div><b>Edit the synthetic floor</b>Geometry and fleet composition</div></li>
-        <li><span>02</span><div><b>Explore the playback</b>The same floor in 2D or 3D</div></li>
-        <li><span>03</span><div><b>Inspect the oracle result</b>Per-type episodes and demo evidence</div></li>
+        <li><a href="#pg-editor"><span aria-hidden="true">01</span><div><b>Edit the synthetic floor</b>Geometry and fleet composition</div></a></li>
+        <li><a href="#pg-playback"><span aria-hidden="true">02</span><div><b>Explore the playback</b>The same floor in 2D or 3D</div></a></li>
+        <li><a href="#pg-results"><span aria-hidden="true">03</span><div><b>Inspect the oracle result</b>Per-type episodes and demo evidence</div></a></li>
       </ol>
       {/* 1 · Paint the floor + the mixed fleet (the original console step, intact) */}
+      <div className="pg-section" id="pg-editor" tabIndex={-1}>
       <ReflectAlign draft={draft} onApprove={approve} onEdit={setSnapshot} onBack={() => window.location.assign('/labs')} backLabel="← Back to Labs" mode="proving-ground" />
+      </div>
 
       {/* 2 · Watch the SAME floor in 2D / 3D — descriptive playback of the deployment */}
-      <div className="pg-stage">
+      <div className="pg-stage pg-section" id="pg-playback" tabIndex={-1}>
         <div className="pg-stage__bar">
           <div><p className="pg-h">02 · Descriptive playback</p><h2>The floor you just painted.</h2></div>
           <div className="pg-toggle" role="group" aria-label="Playback view">
@@ -122,7 +124,7 @@ export function ProvingGroundPage() {
       </div>
 
       {/* 3 · Terminal outcomes under the fixed synthetic verifier */}
-      <div className="pg-results" ref={resultsRef}>
+      <div className="pg-results pg-section" id="pg-results" tabIndex={-1} ref={resultsRef}>
         <div><p className="pg-h">03 · The oracle record</p><h2>One episode per robot type.</h2></div>
         <div className="pg-episodes">
           {episodes.map((e) => (

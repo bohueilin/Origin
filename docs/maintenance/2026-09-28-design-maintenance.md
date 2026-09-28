@@ -10,7 +10,7 @@ Use the shared named colors for matching visual roles: page/card backgrounds, bo
 
 ## Ordered backlog
 
-1. **Public workspace styles:** inspect repeated surface, border and text values in `apps/origin-web/src/shared/product-workspace.css`. Map only genuinely equivalent roles to existing tokens from `public/home.css`. The September 28 floor-editor polish replaces its white panel fill with `--paper-2`; the broader inventory is still open.
+1. **Public workspace styles:** inspect repeated surface, border and text values in `apps/origin-web/src/shared/product-workspace.css`. Map only genuinely equivalent roles to existing tokens from `public/home.css`. The September 28 design passes replace shared white workspace surfaces with `--paper-2`, introduce named pass/fail/neutral surface tokens and a selected-control border token, and use shared radii. This is the first bounded batch; remaining component-specific literals still need classification.
 2. **Legacy console styles:** review `src/App.css` by component family. Consolidate repeated declarations only after identifying the cascade and checking every affected route.
 3. **Other route themes:** review Passport, capture and editorial styles separately. Do not erase purposeful status or theme differences.
 4. **Ratchet:** after the inventory is classified, consider a narrow check against new duplicated palette values. Do not enforce the raw 1,473 count as a visual-quality metric.

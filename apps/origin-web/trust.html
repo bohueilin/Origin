@@ -48,7 +48,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=ed86bef1" />
+    <link rel="stylesheet" href="/home.css?v=9dfbe357" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -146,7 +146,7 @@
           <p class="kicker">Trust &amp; controls</p>
           <h1 id="trust-title">Evidence you can inspect. Limits you can see.</h1>
           <p class="section__lede">A useful reference check starts with a clear boundary. Origin evaluates a bound configuration against deterministic synthetic tasks and gives reviewers an artifact they can recheck.</p>
-          <p class="editorial-caption">Working prototype. Seeking design partners. Not production SaaS, compliance certification, or a guarantee of approval.</p>
+          <p class="editorial-caption">Working prototype. Seeking design partners. Not production SaaS or compliance certification. Not a guarantee of approval.</p>
           <div class="editorial-actions"><a class="btn btn--primary" href="/verify">Inspect an artifact</a><a class="btn btn--ghost" href="/reference-check-vs-runtime">Understand the boundary</a></div>
         </div></div><!-- ORIGIN:POSTURE -->
         <nav class="editorial-jumps" aria-label="On this page"><a href="#posture"><span>01</span>Current posture</a><a href="#gated"><span>02</span>Verification</a><a href="#data"><span>03</span>Data &amp; retention</a><a href="#controls"><span>04</span>Responsibility</a><a href="#packet"><span>05</span>Security review</a></nav>
@@ -218,7 +218,7 @@
         <div class="editorial-heading"><p class="kicker">04 / Responsibility</p><div><h2 id="controls-title">Verification informs a decision. It does not take ownership of it.</h2><p>Capability is not permission. The customer retains responsibility for its systems, agent deployment, business decisions, and release authority.</p></div></div>
         <div class="editorial-cards">
           <article class="editorial-card"><span class="editorial-card__number">01 / Evaluation</span><h3>Deterministic authority</h3><p>The verifier evaluates the bound checks. Model output does not grade itself. A failed integrity or configuration check invalidates the relevant artifact.</p></article>
-          <article class="editorial-card"><span class="editorial-card__number">02 / Evidence</span><h3>Check the artifact type</h3><p>Supported artifacts carry different bindings, signatures, digests, chains, or inclusion proofs. <a href="/verify">The verifier</a> reports the checks and limitations of the artifact you provide.</p></article>
+          <article class="editorial-card"><span class="editorial-card__number">02 / Evidence</span><h3>Check the artifact type</h3><p>Supported artifacts carry different bindings, signatures, digests, chains, or inclusion proofs. <a href="/verify">The verifier</a> reports the checks and limitations of the artifact you provide. You can exercise each mechanism in the <a href="/security">verification workbench</a> and compare held with exercised authority in the <a href="/over-grant">over-grant analyzer</a>.</p></article>
           <article class="editorial-card"><span class="editorial-card__number">03 / Release</span><h3>A named owner decides</h3><p>A demo result does not grant production access. Integration design, access controls, incident ownership, and residual risk need separate review and agreement.</p></article>
         </div>
       </div></section>

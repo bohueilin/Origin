@@ -322,7 +322,7 @@ export function ReferenceCheckPage() {
       <div className="rc-card rc-card--cta">
         <p className="rc-step">Need an authorized evaluation beyond this browser demo?</p>
         <p className="rc-hint">This page only evaluates a selected policy against Origin’s synthetic battery. A design-partner evidence review can scope whether any authorized evaluation of an actual agent is appropriate.</p>
-        <div className="rc-actions"><a className="btn btn--ghost" href="/#contact" data-analytics="refcheck_book_click">Book an evidence review</a></div>
+        <div className="rc-actions"><a className="btn btn--ghost" href="/#contact" data-analytics="refcheck_book_click">Book an Agent Evidence Review</a></div>
       </div>
     </div>
   )

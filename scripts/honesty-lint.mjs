@@ -339,6 +339,15 @@ const LAUNCH_CONTRACTS = [
     ],
   },
   {
+    // The homepage stepper's live caption (aria-live) is set from this module, so a static
+    // scan of index.html never sees it. Panel 4 and "What Origin is not" say the browser
+    // signs the demo evidence and that it is not Origin-issued; the caption must agree.
+    file: 'apps/origin-web/src/home/enhance.ts',
+    forbid: [
+      [/\bOrigin\s+issues\b/i, 'Origin issuance in the stepper caption (browser demo evidence is session-signed)'],
+    ],
+  },
+  {
     file: 'apps/origin-web/reference-check.html',
     forbid: [
       [/browser(?:-generated)?[^.]{0,100}\bis\s+(?:an?\s+)?Origin-issued/i, 'trusted Origin issuance for a browser-session signature'],

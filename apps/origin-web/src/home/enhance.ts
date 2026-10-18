@@ -417,11 +417,11 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
   const nextBtn = demo.querySelector<HTMLButtonElement>('[data-demo-next]')
   if (panels.length < 2) return
   const CAPS = [
-    'The exact configuration is bound into a digest.',
+    'Declared inputs are bound into a single input digest.',
     'A deterministic battery exercises allow, deny, and escalate.',
     'The fixed oracle scores false accepts, false rejects, and catastrophic failures.',
-    'Origin issues a configuration-bound sandbox attestation.',
-    'The artifact verifies offline — until a bound field changes.',
+    'The browser signs a synthetic envelope over the local policy evaluation.',
+    'Offline it verifies UNTRUSTED; change one bound field and it returns VOID.',
   ]
   demo.classList.add('is-enhanced')
   const N = panels.length

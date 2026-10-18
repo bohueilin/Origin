@@ -28,6 +28,16 @@ for (const [route, shot, claim] of [
     await expect(pill).toHaveText('Recorded · one take · synthetic data')
     expect(await pill.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(12)
     expect((await pill.boundingBox())!.y).toBeGreaterThanOrEqual((await video.boundingBox())!.y + (await video.boundingBox())!.height)
+    // Text captions are available but off by default (the burned-in captions already show).
+    const track = video.locator('track[kind="captions"]')
+    await expect(track).toHaveCount(1)
+    expect(await track.getAttribute('default')).toBeNull()
+    for (const url of [await video.getAttribute('poster'), await track.getAttribute('src')]) {
+      expect((await page.request.get(url!)).status(), url!).toBe(200)
+    }
+    await video.evaluate((el: HTMLVideoElement) => { el.textTracks[0].mode = 'hidden' })
+    await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.textTracks[0].cues?.length ?? 0)).toBeGreaterThan(1)
+    await expect(figure.locator('figcaption small')).toContainText(/Duration \d:\d\d\./)
     await video.evaluate((el: HTMLVideoElement) => el.play())
     await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0)
   })

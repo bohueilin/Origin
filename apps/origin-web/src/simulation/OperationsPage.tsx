@@ -161,8 +161,8 @@ export function OperationsPage() {
           <button className="btn btn--ghost btn--sm" onClick={togglePlayback}>
             {playing ? 'Pause playback' : 'Play'}
           </button>
-          <canvas ref={canvasRef} className="ops-canvas" />
-          <p className="ops-caption">Wave {wave.wave} · {wave.verdict} · {Math.round(wave.metrics.fleet_utilization * 100)}% utilization · 0 collisions</p>
+          <canvas ref={canvasRef} className="ops-canvas" role="img" aria-label={`Wave ${wave.wave} playback`} aria-describedby="ops-caption" />
+          <p id="ops-caption" className="ops-caption">Wave {wave.wave} · {wave.verdict} · {Math.round(wave.metrics.fleet_utilization * 100)}% utilization · 0 collisions</p>
         </div>
       </div>
 

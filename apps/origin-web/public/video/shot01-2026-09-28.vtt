@@ -1,0 +1,23 @@
+WEBVTT
+
+NOTE One take · synthetic demo data · recorded 2026-09-28 on originphysicalai.com (57d5ccf) · captions and cursor dot overlaid
+
+1
+00:00:01.099 --> 00:00:09.633
+/verify loads a synthetic demo attestation, signed in this tab
+
+2
+00:00:09.633 --> 00:00:13.139
+VALID (code 0): intact and signed by its embedded key — not signer identity
+
+3
+00:00:13.139 --> 00:00:22.545
+Network off from here — the next two verdicts are computed in this tab with no network
+
+4
+00:00:22.545 --> 00:00:31.929
+One field changed without re-signing: VOID (code 1)
+
+5
+00:00:31.929 --> 00:00:36.432
+Field restored: VALID (code 0), still offline

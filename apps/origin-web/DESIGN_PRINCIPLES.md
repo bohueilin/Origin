@@ -40,8 +40,8 @@ high-consequence agents — plus investors reading over their shoulder. Assume a
   **"projected"**. Never present a projection as measured. Never fabricate a metric.
 - Synthetic demo data is labeled synthetic, on the surface where it renders.
 - Results are **"reproducible under this verifier,"** never "safe" or "correct."
-- State boundaries plainly. The hero's maturity line (*"Explore the working prototype. Not
-  production SaaS or compliance certification. Evaluate a selected policy in your browser using
+- State boundaries plainly. The hero's maturity line (*"Synthetic demo · runs in your browser.
+  Not production SaaS or compliance certification. Evaluate a selected policy in your browser using
   synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is
   untrusted by default."*) is **pinned by `tests/e2e/investor-ready.spec.ts`** (the two
   `.hero__status` assertions in the first test) and by the `index.html` launch contract in

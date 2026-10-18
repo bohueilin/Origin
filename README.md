@@ -13,8 +13,11 @@ inspectable through deterministic policy evaluations, configuration-bound artifa
 independent verification. Its Physical AI demos explore the same evidence questions in bounded
 simulations.
 
-> Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.
+> Model proposes. Environment verifies. Gate decides. Trace proves.
 > **Capability is not permission.**
+
+The proposed controlled execution path (proposed architecture, not deployed) splits execution from evaluation:
+*Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.*
 
 [**Explore the website**](https://originphysicalai.com) ·
 [**Run a reference check**](https://originphysicalai.com/reference-check) ·

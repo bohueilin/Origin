@@ -1,5 +1,7 @@
 # Origin canonical content map — iteration 1
 
+> **Historical; not binding.** The current maxim rule (four-beat for the implemented flow, five-beat only for the proposed architecture) is in [README.md](README.md).
+
 Canonical entity sentence: **Origin is the evidence layer for AI agents: prototype/private-pilot infrastructure that tests proposed actions with deterministic verifiers, gates permission before side effects, and emits tamper-evident evidence that can be independently rechecked.**
 
 Canonical thesis: **The model proposes. The environment verifies. The gate decides. The trace proves. Capability is not permission.**

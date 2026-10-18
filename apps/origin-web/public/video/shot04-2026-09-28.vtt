@@ -1,0 +1,27 @@
+WEBVTT
+
+NOTE One take · synthetic demo data · recorded 2026-09-28 on originphysicalai.com (57d5ccf) · captions and cursor dot overlaid
+
+1
+00:00:00.714 --> 00:00:08.383
+/reference-check · a selected policy vs a synthetic battery; no agent contacted
+
+2
+00:00:08.383 --> 00:00:14.768
+12 synthetic policy decisions scored by the deterministic oracle
+
+3
+00:00:14.768 --> 00:00:21.266
+Signed policy-evaluation evidence downloaded (browser-session key)
+
+4
+00:00:21.266 --> 00:00:30.660
+One tool added (payments.transfer): the legacy config-bound credential VOIDs (code 4); the downloaded evidence is unchanged
+
+5
+00:00:30.660 --> 00:00:36.164
+Downloaded policy-evaluation evidence pasted into /verify
+
+6
+00:00:36.164 --> 00:00:41.667
+Pasted into /verify: UNTRUSTED — intact, but the session signer is unpinned

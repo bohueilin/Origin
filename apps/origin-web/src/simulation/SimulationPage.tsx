@@ -142,13 +142,13 @@ export function SimulationPage() {
 
       <div className="sim-stage">
         {view === '2d'
-          ? <canvas ref={canvasRef} className="sim-canvas" />
-          : <div ref={containerRef} className="sim-canvas sim-canvas--3d" />}
+          ? <canvas ref={canvasRef} className="sim-canvas" role="img" aria-label="Warehouse simulation, 2D floor view" aria-describedby="sim-verdict" />
+          : <div ref={containerRef} className="sim-canvas sim-canvas--3d" role="img" aria-label="Warehouse simulation, 3D view" aria-describedby="sim-verdict" />}
         <div className="sim-progress"><span style={{ transform: `scaleX(${frameIdx / Math.max(1, result.frames.length - 1)})` }} /></div>
       </div>
 
       <div className="sim-panel">
-        <div className={`sim-verdict ${v.cls}`}>
+        <div id="sim-verdict" className={`sim-verdict ${v.cls}`}>
           <b>{v.label}</b>
           <span>{result.reason}</span>
         </div>

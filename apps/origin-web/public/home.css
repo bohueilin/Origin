@@ -15,8 +15,8 @@
   --graphite-2: #2c3a30;
 
   /* ink */
-  --ink:        #272d26;   /* primary text (~14:1 on paper) */
-  --ink-soft:   #4e5b48;   /* secondary (~8:1 on paper) */
+  --ink:        #272d26;   /* primary text (13.2:1 on paper) */
+  --ink-soft:   #4e5b48;   /* secondary (6.7:1 on paper) */
   --steel:      #59664f;   /* muted (~5.7:1 on paper) */
   --on-dark:    #f4f6ee;
   --on-dark-soft:#c0cbbc;
@@ -27,8 +27,8 @@
   --line-dark:  #435246;
 
   /* signal (one accent) */
-  --signal:     #2b523b;   /* primary fill; white text ~5.3:1 */
-  --signal-ink: #2b523b;   /* accent as text on paper ~7:1 */
+  --signal:     #2b523b;   /* primary fill; white text 8.9:1 */
+  --signal-ink: #2b523b;   /* accent as text on paper 8.3:1 */
   --signal-wash:#e7eedf;
   --signal-hover:#203f2d;   /* primary fill on hover; white text ~11.6:1 */
 
@@ -99,7 +99,7 @@ img, svg { max-width: 100%; }
 a { color: var(--signal-ink); text-decoration: none; }
 a:hover { text-decoration: underline; }
 /* inline links inside body copy must be distinguishable without color (WCAG 1.4.1) */
-.section__lede a, .tc p a, .proofslot__note a, figcaption a, p a:not(.btn):not(.truststrip__link):not(.routecard) { text-decoration: underline; text-underline-offset: 2px; }
+.section__lede a, .tc p a, .proofslot__note a, figcaption a, .onpage-static a, p a:not(.btn):not(.truststrip__link):not(.routecard) { text-decoration: underline; text-underline-offset: 2px; }
 
 /* focus — visible everywhere */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
@@ -1237,7 +1237,7 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 .proofladder__id { font-family: ui-monospace, Menlo, monospace; font-weight: 700; color: var(--ink); font-size: var(--fs-14); }
 .proofladder__label { font-size: var(--fs-14); color: var(--ink-soft); }
 .proofladder__status { justify-self: end; font-size: var(--fs-11); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 3px 11px; border-radius: 999px; white-space: nowrap; }
-.proofladder__status--ok { color: #2f7d57; background: #eaf6f0; border: 1px solid #bfe3d3; }
+.proofladder__status--ok { color: var(--signal-ink); background: #eaf6f0; border: 1px solid #bfe3d3; }
 .proofladder__status--pending { color: var(--steel); background: var(--paper-3); border: 1px solid var(--line-2); }
 @media (max-width: 520px) { .proofladder__row { grid-template-columns: 74px 1fr; } .proofladder__status { grid-column: 2; justify-self: start; margin-top: 2px; } }
 

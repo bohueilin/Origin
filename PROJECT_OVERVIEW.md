@@ -4,8 +4,11 @@ Origin is a public trust layer, evidence format, and set of working prototypes f
 review. The canonical website is [originphysicalai.com](https://originphysicalai.com); the public
 source is [bohueilin/Origin](https://github.com/bohueilin/Origin).
 
-> Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.
+> Model proposes. Environment verifies. Gate decides. Trace proves.
 > Capability is not permission.
+
+The proposed controlled execution path (proposed architecture, not deployed) splits execution from evaluation:
+*Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.*
 
 ## What is implemented publicly
 

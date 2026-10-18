@@ -282,7 +282,7 @@
             </ul>
           </div>
         </div>
-        <p class="mono-note" style="margin-top:18px;">Origin is decision-support and evidence infrastructure. We use "tamper-evident" to mean alteration is detectable by replay and digest checks; "review-ready," not "reviewer-accepted." The prototype runs; it is not production SaaS, and it does not provide legal or compliance certification.</p>
+        <p class="mono-note" style="margin-top:18px;">Origin is decision-support and evidence infrastructure. We use "tamper-evident" to mean alteration is detectable by replay and digest checks; "review-ready," not "reviewer-accepted." The prototype runs. Not production SaaS or compliance certification. Not legal certification.</p>
       </section>
 
       <!-- ═══════════ TR-A002 — machine-emitted sandbox trace ═══════════ -->
@@ -438,7 +438,7 @@ node scripts/verify-tr-a002.mjs tr-a002.json
           A single high-consequence action, a payments-ops agent proposing a refund above its
           auto-cap, worked through Origin's runtime semantics: the policy verdict, the controlled
           tool-call proxy, the human approval, a blocked over-scope action, and the audit-chain
-          digest. This is the payments-ops sample from the homepage console, written out in full.
+          digest. TR-A002 above follows the same refund scenario through the trace emitter: same scenario, different provenance.
         </p>
 
         <dl class="spec">

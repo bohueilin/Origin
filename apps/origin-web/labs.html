@@ -82,29 +82,29 @@
         <h1 id="labs-title">One evidence spine. Many domain verifiers.</h1>
         <p class="section__lede">Change the actor. Change the environment. Keep the question: what was checked, under which rules, and what evidence remains?</p>
         <p class="editorial-caption">The agent reference check is the product. Labs explores the same evidence contract in bounded simulations and research demonstrations, not production products.</p>
-        <div class="editorial-actions"><a class="btn btn--primary" href="#experiments">Explore the experiments</a><a class="btn btn--ghost" href="/reference-check">Try the reference check</a></div>
-      </div><figure class="editorial-hero__media"><img src="/brand/lab-1200-2026-09-28.webp" srcset="/brand/lab-1200-2026-09-28.webp 1200w, /brand/lab.webp 1672w" sizes="(max-width: 700px) 100vw, 48vw" width="1672" height="941" alt="" fetchpriority="high" /><figcaption class="editorial-caption">Generated illustration of an experimental environment; not a robot deployment, Origin facility, or customer evidence.</figcaption></figure></div></div></section>
+        <div class="editorial-actions"><a class="btn btn--primary" href="#experiments">Explore the experiments</a><a class="btn btn--ghost" href="/reference-check">Run the reference check</a></div>
+      </div><figure class="editorial-hero__media"><img src="/brand/lab-1200-2026-09-28.webp" srcset="/brand/lab-1200-2026-09-28.webp 1200w, /brand/lab.webp 1672w" sizes="(max-width: 700px) 100vw, 48vw" width="1672" height="941" alt="Illustrative researcher beside a mobile robot in a sunlit workspace" fetchpriority="high" /><figcaption class="editorial-caption">AI-generated illustration · fictional researcher and robot · not an Origin facility, deployment or customer evidence</figcaption></figure></div></div></section>
       <section class="editorial-section" id="experiments"><div class="shell">
         <div class="editorial-heading"><p class="kicker">The experiment index</p><div><h2>Different domains. Explicit limits.</h2><p>Each demonstration pairs an actor with a domain verifier. Synthetic data, simulated actions, and mock credentials stay labeled at the point of use.</p></div></div>
                   <div class="labs-grid">
             <article class="labs-card" data-lab="01">
               <span class="labs-card__kicker">Physical actor · mixed robot fleet</span>
               <h3>Robot proving ground</h3>
-              <p>Paint your own floor (walls, hazards, human-only zones) and place a <b>simulated mixed fleet</b> (humanoid, AMR, quadruped, arm, drone). Watch it in 2D + 3D; the oracle scores one episode per robot type and the fleet earns a <b>Verified Readiness Level</b>, sealed as a signed credential.</p>
-              <p class="labs-verifier">Domain verifier: <b>the deterministic drawn-floor oracle</b> (finish / escalate / refuse; catastrophic hard-caps the level).</p>
+              <p>Paint your own floor (walls, hazards, human-only zones) and place a <b>simulated mixed fleet</b> (humanoid, AMR, quadruped, arm, drone). Watch it in 2D + 3D; the oracle scores one episode per robot type and reports a <b>synthetic tier under this fixed verifier</b>, which you can sign in your browser; it grants no deployment permission.</p>
+              <p class="labs-verifier">Domain verifier: <b>the deterministic drawn-floor oracle</b> (finish / escalate / refuse; catastrophic hard-caps the tier).</p>
               <div class="labs-card__cta"><a class="btn btn--ghost btn--sm" href="/proving-ground">Enter the proving ground →</a></div>
             </article>
             <article class="labs-card" data-lab="02">
               <span class="labs-card__kicker">Software actor · credential broker</span>
               <h3>Agent credential broker</h3>
-              <p>An agent asks for access it does not hold. A named human approves one scoped grant, the broker mints an <b>opaque lease handle</b>, never a secret, and the value is resolved only at the tool-call boundary, then discarded. Revoke mid-flight and the next call fails closed.</p>
+              <p>An agent asks for access it does not hold. A named human approves one scoped grant, the broker mints an <b>opaque lease handle</b>: a reference to the credential, bound to that one grant, that cannot be exchanged for the secret. The value is resolved only at the tool-call boundary, then discarded. Revoke mid-flight and the next call fails closed.</p>
               <p class="labs-verifier">Domain verifier: <b>the grant ledger</b> (approve / lease / revoke; every use recorded). Runs against a mock vault, no real credential is brokered here.</p>
               <div class="labs-card__cta"><a class="btn btn--ghost btn--sm" href="/passport">Open the broker demo →</a></div>
             </article>
             <article class="labs-card" data-lab="03">
               <span class="labs-card__kicker">Physical actor · robot plan</span>
               <h3>Verified warehouse</h3>
-              <p>Multi-robot fleet follows the oracle’s BFS-verified plan, avoids a moving human + exclusion zones, and emits a signed attestation. Rendered in 2D and 3D.</p>
+              <p>Multi-robot fleet follows the oracle’s BFS-verified plan, avoids a moving human + exclusion zones, and emits a signed attestation. BFS (breadth-first search) finds each robot’s shortest grid route around the shelving. The same oracle refuses an order whose item or drop sits in a hazard or human-only cell, and escalates one with no route inside its step and battery budgets. Rendered in 2D and 3D.</p>
               <p class="labs-verifier">Domain verifier: <b>a deterministic grid/collision oracle</b> (finish / escalate / refuse).</p>
               <div class="labs-card__cta"><a class="btn btn--ghost btn--sm" href="/simulation">Open the simulation →</a></div>
             </article>
@@ -118,7 +118,7 @@
             <article class="labs-card" data-lab="05">
               <span class="labs-card__kicker">Physical actor · fleet operations</span>
               <h3>Fleet operations experiment</h3>
-              <p>Run a multi-wave shift; track utilization, peak-simultaneous, and collision counts and throughput. The simulated fleet earns a demo operations attestation only if it clears deterministic targets.</p>
+              <p>Run a multi-wave shift; track utilization, peak-simultaneous, and collision counts and throughput. A deterministic oracle reports whether the simulated fleet met the synthetic shift targets; you can sign the result in your browser, and it grants no operating authority.</p>
               <p class="labs-verifier">Domain verifier: <b>a deterministic operations-SLA oracle</b> over the verified run.</p>
               <div class="labs-card__cta"><a class="btn btn--ghost btn--sm" href="/operations">Open the ops console →</a></div>
             </article>
@@ -131,7 +131,7 @@
             </article>
           </div>
         <aside class="editorial-note"><p><b>Capability is not permission, for any autonomous actor.</b> These demonstrations explore a shared evidence contract with synthetic, seeded, replayable inputs. Results mean reproducible under this verifier, never “safe,” production autonomy, or robot certification.</p></aside>
-        <div class="editorial-closing"><div><h2>Look beneath the result.</h2><p>The published research snapshot separates learned results, oracle-recovery upper bounds, generated counterfactuals, and the blocked real-customer evidence gate.</p></div><a class="btn btn--ghost" href="/rsi/rsi_dashboard.html">Read the research snapshot</a></div>
+        <div class="editorial-closing"><div><h2>Look beneath the result.</h2><p>The published research snapshot separates learned results, oracle-recovery upper bounds (scores reached when a model is handed a precomputed feature that replicates the oracle’s own check: a ceiling, not a learned result), generated counterfactuals, and the blocked real-customer evidence gate.</p></div><a class="btn btn--ghost" href="/rsi/rsi_dashboard.html">Read the research snapshot</a></div>
       </div></section>
     </main>
 

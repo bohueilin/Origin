@@ -3,7 +3,7 @@
 These are original illustrative brand assets created for the September 2026 website redesign.
 
 - `review-2026-09-28.webp`: AI-generated fictional people reviewing a laptop. Not customer, employee or office photography.
-- `trace.webp`: AI-generated glass and sunlight composition used as a metaphor for traceability.
+- `trace.webp`: AI-generated glass and sunlight composition used as a metaphor for traceability. Retired from the homepage evidence section on 2026-10-18 (illustration stays away from measured numbers); used only on /404.
 - `lab.webp`: AI-generated fictional researcher and robot. Not an Origin facility, product deployment or evidence of robot capability.
 - `review-loop-2026-09-28.av1.mp4`, `.vp9.webm`, `.h264.mp4`: silent camera movement over the generated review still. The homepage plays it once with pause/replay controls; reduced motion and data saver leave it stopped.
 - `origin-mark.svg`: code-native geometric Origin mark.
@@ -15,7 +15,7 @@ The browser favicon, Apple touch icon and raster logo now share the same geometr
 
 Generated with the built-in image-generation tool. Final art direction: a landscape editorial photograph of a precisely crafted architectural warehouse model, viewed from an elevated isometric camera. Warm ivory tabletop, off-white low walls, sage-green mobile robot models, wooden crates and one restrained ochre floor area. Matte ceramic/paper materials, soft afternoon sunlight, elegant shadows and a subtle route line. No people, text, logos, watermarks or science-fiction effects. Explicitly imagined illustrative model, not a real robot installation or working simulator. The output was only resized and WebP-encoded for delivery; its content was not altered.
 
-The dated 1200px `trace`/`lab` variants, 800px `proving-floor` variant and 1280px review poster use WebP quality 78. Hero video variants retain the full eight seconds without audio: AV1 CRF 38, VP9 CRF 36 and H.264 CRF 26.
+The dated 1200px `lab` variant, 800px `proving-floor` variant and 1280px review poster use WebP quality 78. Hero video variants retain the full eight seconds without audio: AV1 CRF 38, VP9 CRF 36 and H.264 CRF 26.
 
 The WebP images are optimized encodings of the approved generated originals. None of these brand assets is product evidence.
 

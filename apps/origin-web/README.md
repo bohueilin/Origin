@@ -6,10 +6,13 @@
 > Proprietary algorithm work stays in its private repository. This public app contains
 > the trust layer, deterministic verifiers, evidence formats, and explicitly labeled demos.
 
-Origin's core control model is:
+Origin's core control model, as implemented in the public reference check, is:
 
-> Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.
+> Model proposes. Environment verifies. Gate decides. Trace proves.
 > Capability is not permission.
+
+The proposed controlled execution path (proposed architecture, not deployed) splits execution from evaluation:
+*Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves.*
 
 ## What is implemented publicly
 

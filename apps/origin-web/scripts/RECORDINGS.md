@@ -26,7 +26,7 @@ Before publication:
 
 1. Inspect a frame 1.5 seconds after each state beat, plus the poster. `end` is a stop marker, not a state. Confirm the caption's claim is visible and neither disclosure nor verdict is covered.
 2. Check the encode with ffprobe: 1280×720, H.264 High, yuv420p, no audio; verify the MP4 `moov` atom precedes `mdat`.
-3. Copy each successful `run.json` to `scripts/recordings/shotNN.json`; never copy raw masters or downloaded evidence into Git. Update the dated HTML paths and complete figure descriptions from those facts.
+3. Copy each successful `run.json` to `scripts/recordings/shotNN.json`; never copy raw masters or downloaded evidence into Git. Update the dated HTML paths and complete figure descriptions from those facts. Run `node scripts/recording-tracks.mjs` to regenerate the WebVTT text tracks from the rendered captions, and update each figure's `<track>` and `Duration m:ss.` line (the check reads the encoded MP4 duration).
 4. Run `python3 scripts/burn-captions.test.py`, `npm run recordings:check`, the honesty lint and the complete app gates/browser suite.
 
 The provenance check compares the committed video, poster, font and caption text with the manifest. A changed asset or caption requires a new render and manifest. Recordings remain click-to-play. The recorded lane is synthetic demonstration data, not customer evidence or deployment authority.

@@ -52,8 +52,8 @@
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=ed86bef1" />
-    <link rel="stylesheet" href="/cinematic.css?v=f991e79b" />
+    <link rel="stylesheet" href="/home.css?v=9dfbe357" />
+    <link rel="stylesheet" href="/cinematic.css?v=afce41a0" />
 
     <!-- Structured data keeps the canonical product website and public source distinct.
          Contact remains the founder's deliverable inbox. -->
@@ -144,7 +144,7 @@
         </div>
         <div class="shell cin-intro">
           <p class="hero__status"><b>Synthetic demo · runs in your browser.</b> Not production SaaS or compliance certification. Evaluate a selected policy in your browser using synthetic scenarios. Origin does not contact or execute your named agent. Browser evidence is untrusted by default.</p>
-          <a class="cin-text-link" href="/reference-check-vs-runtime">What works today <span aria-hidden="true">↗</span></a>
+          <div class="cin-intro__links"><a class="cin-text-link" href="/reference-check-vs-runtime">What works today <span aria-hidden="true">↗</span></a><a class="cin-text-link" href="#not" data-analytics="hero_boundaries_click">What Origin is not <span aria-hidden="true">↓</span></a></div>
         </div>
         <nav class="shell lab-index" aria-label="Explore the working prototypes">
           <a href="/reference-check">
@@ -173,6 +173,7 @@
                      width="1280" height="720" muted playsinline controls preload="none"
                      aria-label="Screen recording: a synthetic demo attestation verifies VALID online, then VOID after tampering and VALID after restoration with the network disabled.">
                 <source src="/video/shot01-2026-09-28.mp4" type="video/mp4" />
+                <track kind="captions" srclang="en" label="English" src="/video/shot01-2026-09-28.vtt" />
               </video>
             </div>
             <span class="pill pill--rec vband__pill">Recorded &middot; one take &middot; synthetic data</span>
@@ -225,13 +226,10 @@
       <section class="section cin-evidence" id="evidence" data-investor-section aria-labelledby="evidence-title">
         <div class="shell">
           <div class="cin-section-head"><div><p class="kicker">03 / The evidence</p><h2 id="evidence-title">Trust grows from<br>what you can verify.</h2></div><p class="section__lede">Inspect the record, its source and its limits. Each evidence level says what has been earned—and what is still ahead.</p></div>
-          <div class="cin-evidence-grid">
-            <figure class="cin-image"><img src="/brand/trace-1200-2026-09-28.webp" srcset="/brand/trace-1200-2026-09-28.webp 1200w, /brand/trace.webp 1672w" sizes="(max-width: 700px) 100vw, 48vw" width="1672" height="941" loading="lazy" decoding="async" alt="Sunlight refracting through sculptural glass forms" /><figcaption>AI-generated illustration · a visual study of traceability</figcaption></figure>
-            <div class="cin-evidence-list" aria-label="Proof-status ladder">
-              <a href="/proof#tr-a002"><span class="cin-status">Available · sandbox</span><h3>Follow a machine-emitted trace.</h3><p>TR-A002 · 12 events, a real SHA-256 hash chain and an offline re-verification command.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
-              <a href="/proof#tr-a001"><span class="cin-status">Available · authored</span><h3>Understand the evidence format.</h3><p>TR-A001 · an authored specimen showing the record a reviewer could receive.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
-              <div class="cin-evidence-pending"><span class="cin-status cin-status--pending">Not earned yet</span><h3>A real customer's workflow.</h3><p>TR-A003 · external design-partner evidence has not been collected. No customer validation is claimed.</p></div>
-            </div>
+          <div class="cin-evidence-list" aria-label="Proof-status ladder">
+            <a href="/proof#tr-a002"><span class="cin-status">Available · sandbox</span><h3>Follow a machine-emitted trace.</h3><p>TR-A002 · 12 events, a real SHA-256 hash chain and an offline re-verification command.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
+            <a href="/proof#tr-a001"><span class="cin-status">Available · authored</span><h3>Understand the evidence format.</h3><p>TR-A001 · an authored specimen showing the record a reviewer could receive.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
+            <div class="cin-evidence-pending"><span class="cin-status cin-status--pending">Not earned yet</span><h3>A real customer's workflow.</h3><p>TR-A003 · external design-partner evidence has not been collected. No customer validation is claimed.</p></div>
           </div>
           <div class="cin-footnote"><p>For the Origin Attestation format, VALID means intact and signed by the embedded key &mdash; not signer identity, execution, issuer trust, safety or approval.</p><a class="cin-text-link" href="/verify">Verify an attestation <span aria-hidden="true">↗</span></a></div>
         </div>
@@ -247,7 +245,7 @@
       <section class="section cin-trust" id="trust" data-investor-section aria-labelledby="trust-title">
         <div class="shell"><div class="cin-section-head"><div><p class="kicker">05 / Built around the reviewer</p><h2 id="trust-title">Evidence, with<br>the boundaries included.</h2></div><p class="section__lede">Capability, permission, execution and verification are different questions. A useful record keeps them separate.</p></div>
           <div class="cin-trust-grid"><article><span class="cin-icon" aria-hidden="true">⌘</span><h3>Deterministic evaluation</h3><p>A defined oracle grades the policy against a synthetic battery. Never an LLM grading another LLM.</p></article><article><span class="cin-icon" aria-hidden="true">◈</span><h3>Visible provenance</h3><p>Authored, synthetic, machine-emitted and customer-owned evidence stay distinct. Unpinned browser signers stay UNTRUSTED.</p></article><article><span class="cin-icon" aria-hidden="true">↗</span><h3>Your authority to decide</h3><p>The artifact supports review. It does not certify an agent, confirm an external effect or approve a deployment.</p></article></div>
-          <h3 class="trust__not-h">What Origin is not.</h3>
+          <h3 class="trust__not-h" id="not">What Origin is not.</h3>
           <div class="notgrid">
             <article class="card"><h4>Not yet validated by a customer</h4><p>No design partner, no pilot, no paying user &mdash; today. Everything shown here is authored, synthetic, or machine-emitted in a sandbox; none of it is customer-owned. If a real workflow from a real reviewer is earned, it will appear on <a href="/proof">/proof</a>, labelled as plainly as everything else.</p></article>
             <article class="card"><h4>Not production SaaS</h4><p>A working prototype on synthetic sandbox evidence. Customer-specific execution requires separately agreed work.</p></article>

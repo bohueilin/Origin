@@ -363,3 +363,48 @@ test('with JavaScript, /foundry and /passport keep the scope line and drop the n
   await expect(page.locator('#passport-root')).not.toBeEmpty()
   expect(await page.locator('main').innerText()).not.toContain('needs JavaScript')
 })
+
+test('/security names its six experiments without JavaScript; the app replaces the list', async ({ browser, baseURL, page }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  try {
+    const noJs = await context.newPage()
+    await noJs.goto(`${baseURL}/security`)
+    const list = noJs.locator('#security-root .onpage-static li')
+    await expect(list).toHaveCount(6)
+    await expect(list.first()).toHaveText('01 · Signature integrity — Flip one byte and it voids.')
+    await expect(noJs.locator('#security-root a[href="/over-grant"]')).toHaveCount(1)
+  } finally {
+    await context.close()
+  }
+  await page.goto('/security')
+  await expect(page.locator('#signatures')).toBeVisible()
+  await expect(page.locator('.onpage-static')).toHaveCount(0)
+  await expect(page.locator('#fleet-analysis a[href="/over-grant"]')).toHaveText(/Open the full analyzer/)
+  // The same panel renders on /over-grant itself, where it must not link to its own page.
+  await page.goto('/over-grant')
+  await expect(page.locator('#fleet-analysis')).toBeVisible()
+  await expect(page.locator('#fleet-analysis a[href="/over-grant"]')).toHaveCount(0)
+})
+
+test('tool pages link onward from their static scope notes, outside the app roots', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  try {
+    for (const route of ['/verify', '/security']) {
+      await page.goto(`${baseURL}${route}`)
+      await expect(page.locator('.product-hero__scope a[href="/reference-check-vs-runtime"]'), route).toHaveCount(1)
+    }
+    for (const route of ['/simulation', '/operations', '/proving-ground']) {
+      await page.goto(`${baseURL}${route}`)
+      const hero = page.locator('main > section').first()
+      await expect(hero.locator('a[href="/labs"]'), route).toHaveCount(1)
+      await expect(hero.locator('a[href="/verify"]'), route).toHaveCount(1)
+    }
+    await page.goto(`${baseURL}/over-grant`)
+    await expect(page.locator('.product-hero__scope a[href="/reference-check"]')).toHaveCount(1)
+    await page.goto(`${baseURL}/trust`)
+    await expect(page.locator('#controls a[href="/over-grant"]')).toHaveCount(1)
+  } finally {
+    await context.close()
+  }
+})

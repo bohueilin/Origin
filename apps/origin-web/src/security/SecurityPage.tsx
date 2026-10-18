@@ -626,7 +626,7 @@ export function DelegationPanel() {
   )
 }
 
-export function OverGrantPanel() {
+export function OverGrantPanel({ showFullPageLink = false }: { showFullPageLink?: boolean }) {
   const [steps, setSteps] = useState<Step[]>([])
   const [corpus, setCorpus] = useState<OverGrantCorpus | null>(null)
   const [surface, setSurface] = useState<number | null>(null)
@@ -770,6 +770,11 @@ export function OverGrantPanel() {
         <a className="btn btn--ghost btn--sm" href="/trust/over-grant-bench.json">
           The published artifact &rarr;
         </a>
+        {showFullPageLink ? (
+          <a className="btn btn--ghost btn--sm" href="/over-grant">
+            Open the full analyzer &rarr;
+          </a>
+        ) : null}
       </div>
     </DemoCard>
   )
@@ -793,7 +798,7 @@ export function SecurityPage() {
       <PolicyPanel />
       <ReferenceCheckPanel />
       <DelegationPanel />
-      <OverGrantPanel />
+      <OverGrantPanel showFullPageLink />
     </div>
   )
 }

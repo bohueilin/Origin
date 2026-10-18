@@ -1,5 +1,7 @@
 # Origin Overnight Acceptance Criteria
 
+> **Historical; not binding.** The current maxim rule (four-beat for the implemented flow, five-beat only for the proposed architecture) is in [README.md](README.md).
+
 Every criterion must be assessed using actual code, tests, locally generated artifacts, or precise file-level evidence.
 
 ## AC-1 — Immediate product clarity

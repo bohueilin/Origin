@@ -2,6 +2,7 @@
 import fs from 'node:fs'
 import { createHash } from 'node:crypto'
 import { requireRelease } from './recLib.mjs'
+import { trackName, vttFor } from './recording-tracks.mjs'
 const sha = path => createHash('sha256').update(fs.readFileSync(path)).digest('hex')
 const root = new URL('../', import.meta.url)
 for (const shot of ['shot01', 'shot02', 'shot04']) {
@@ -22,5 +23,28 @@ for (const shot of ['shot01', 'shot02', 'shot04']) {
   const expected = [spec.tag, ...spec.captions.map(c => c.text)].map(resolve)
   if (JSON.stringify(expected) !== JSON.stringify(run.render.captions.map(c => c.text))) throw new Error(`${shot}: caption text differs from recorded render`)
   if (run.render.caption_px < 44 || run.render.tag_px < 30 || JSON.stringify(run.render.tag_xy) !== '[24,24]') throw new Error(`${shot}: unreadable disclosure`)
-  console.log(`${shot}: dated encode, poster, captions, font and release provenance match`)
+  const track = trackName(run)
+  if (fs.readFileSync(new URL(`public/video/${track}`, root), 'utf8') !== vttFor(run)) throw new Error(`${shot}: ${track} differs from the rendered captions (run scripts/recording-tracks.mjs)`)
+  // Every page that shows this recording carries its text track and states the encoded duration.
+  const seconds = Math.round(mp4Seconds(fs.readFileSync(new URL(`public/video/${run.render.output}`, root))))
+  const label = `Duration ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}.`
+  const pages = fs.readdirSync(root).filter(f => f.endsWith('.html')).map(f => [f, fs.readFileSync(new URL(f, root), 'utf8')])
+    .filter(([, html]) => html.includes(`poster="/video/${run.render.poster}"`))
+  if (!pages.length) throw new Error(`${shot}: no page shows this recording`)
+  for (const [file, html] of pages) {
+    const figure = html.slice(html.indexOf(`poster="/video/${run.render.poster}"`)).split('</figure>')[0]
+    if (!figure.includes(`<track kind="captions" srclang="en" label="English" src="/video/${track}" />`)) throw new Error(`${shot}: ${file} lacks its caption track`)
+    if (!figure.includes(label)) throw new Error(`${shot}: ${file} must state "${label}" (encoded duration)`)
+  }
+  console.log(`${shot}: dated encode, poster, captions, text track, duration, font and release provenance match`)
+}
+
+// Movie duration from the MP4 'mvhd' box (version 0: 32-bit fields, version 1: 64-bit).
+function mp4Seconds(buf) {
+  const at = buf.indexOf('mvhd')
+  if (at < 0) throw new Error('mp4 without mvhd')
+  const v1 = buf[at + 4] === 1
+  const scale = buf.readUInt32BE(at + (v1 ? 24 : 16))
+  const duration = v1 ? Number(buf.readBigUInt64BE(at + 28)) : buf.readUInt32BE(at + 20)
+  return duration / scale
 }

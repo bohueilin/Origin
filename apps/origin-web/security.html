@@ -48,7 +48,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=ed86bef1" />
+    <link rel="stylesheet" href="/home.css?v=9dfbe357" />
 
     <style>
       /* Local helpers for the live demo panels, layered on the shared design system. */
@@ -119,7 +119,7 @@
           <p class="kicker">The verification workbench</p>
           <h1 id="security-title">Trust starts with a check you can repeat.</h1>
           <p class="section__lede">Sign a receipt. Change one field. Challenge a signer. Follow a policy version. Six small experiments make the evidence mechanisms visible and inspectable.</p>
-          <p class="product-hero__scope">The verification code runs locally on synthetic inputs. These demonstrations establish bounded properties under their verifiers; they do not provide production runtime enforcement or certify an agent.</p>
+          <p class="product-hero__scope">The verification code runs locally on synthetic inputs. These demonstrations establish bounded properties under their verifiers; they do not provide production runtime enforcement or certify an agent. See <a href="/reference-check-vs-runtime">what runs today and what is only proposed</a>.</p>
         </div>
       </section>
 
@@ -127,6 +127,14 @@
       <section class="section section--tint" aria-label="Live verification demos">
         <div class="shell">
           <div id="security-root">
+          <ul class="onpage-static" aria-label="Experiments on this page">
+            <li>01 · Signature integrity — Flip one byte and it voids.</li>
+            <li>02 · Batch inclusion — Eight receipts. One signature. Each provable alone.</li>
+            <li>03 · Policy history — Yesterday's decision, judged by yesterday's policy.</li>
+            <li>04 · Configuration binding — Change the configuration. Re-check the evidence.</li>
+            <li>05 · Delegated authority — Widen one edge. Watch the root's blast radius move.</li>
+            <li>06 · Authority analysis — Inspect the authority that goes unused. Full page: <a href="/over-grant">the over-grant analyzer</a>.</li>
+          </ul>
           <div class="skel" aria-hidden="true">
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>

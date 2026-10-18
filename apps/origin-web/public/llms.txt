@@ -53,6 +53,7 @@ Generated brand imagery and footage are illustrations, not product recordings, c
 - One-page brief: https://originphysicalai.com/brief
 - Labs: https://originphysicalai.com/labs
 - Public verifier demos: https://originphysicalai.com/security
+- Over-grant analyzer (synthetic standing versus exercised authority): https://originphysicalai.com/over-grant
 - Warehouse simulation: https://originphysicalai.com/simulation
 - Simulated fleet operations: https://originphysicalai.com/operations
 - Robot proving ground: https://originphysicalai.com/proving-ground

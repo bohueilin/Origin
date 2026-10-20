@@ -20,7 +20,7 @@ test('proof reports clipboard denial without claiming the command was copied', a
   await page.goto('/proof')
   await page.getByRole('button', { name: 'Copy the verify command' }).click()
 
-  const status = page.getByRole('status')
+  const status = page.locator('#copy-status')
   await expect(status).toHaveText('Copy unavailable — select the command')
   await expect(status).not.toContainText('Copied')
   // The manual recovery path remains readable after the failed enhancement.

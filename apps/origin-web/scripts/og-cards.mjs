@@ -121,6 +121,30 @@ export const CARDS = [
     status: 'Synthetic sandbox evidence · working prototype',
     rows: [['Reference check', 'Try it', ''], ['Evidence', 'Inspect it', ''], ['First step', 'A review', '']],
   },
+  {
+    out: 'og/simulation.jpg',
+    eyebrow: 'VERIFIED WAREHOUSE SIMULATION',
+    h1: 'Watch a verified plan execute.',
+    sub: 'Inspect paths, constraints, and a deterministic plan in a seeded warehouse simulation.',
+    status: 'Seeded synthetic simulation · no physical robot connected',
+    rows: [['Floor', 'Seeded', ''], ['Plan', 'Oracle-verified', ''], ['Physical robot', 'None', '']],
+  },
+  {
+    out: 'og/operations.jpg',
+    eyebrow: 'THE OPERATIONS CONSOLE',
+    h1: 'Compare the fleet. Understand the tradeoffs.',
+    sub: 'Inspect utilization, throughput, and collision events against synthetic shift targets.',
+    status: 'Synthetic shift targets · no learned-coordinator result claimed',
+    rows: [['Shift', 'Synthetic', ''], ['Metrics', 'Oracle-derived', ''], ['Coordinator', 'Not learned', '']],
+  },
+  {
+    out: 'og/reference-check-vs-runtime.jpg',
+    eyebrow: 'TECHNICAL EXPLAINER',
+    h1: 'Reference check vs runtime enforcement',
+    sub: 'Separate a browser-local synthetic reference check from proposed controlled execution.',
+    status: 'What runs today, what is only proposed',
+    rows: [['Reference check', 'Implemented', ''], ['Runtime gate', 'Proposed', ''], ['Verifier codes', '0 valid · 1–4 fail', '']],
+  },
 ]
 
 const esc = (s) => String(s).replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' })[c])

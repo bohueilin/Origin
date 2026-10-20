@@ -1103,7 +1103,8 @@ a:hover { text-decoration: underline; }
 .cards--3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 /* The rung that is NOT earned yet sits alone on a full-width row: the shape carries the
    distinction, not just the badge. Dashed border = nothing to show here yet. */
-.card--pending { border-style: dashed; border-color: var(--line-2); background: transparent; box-shadow: none; }
+.card--pending, .cin-evidence-list > .cin-evidence-pending { border-style: dashed; border-color: var(--line-2); background: transparent; box-shadow: none; }
+.cin-evidence-list > .cin-evidence-pending { border-width: 1px; }
 .card__k { display: block; font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); margin-bottom: 8px; }
 .card h3 { font-family: var(--font-sans); font-size: var(--fs-17); line-height: 1.3; margin: 0 0 7px; color: var(--ink); }
 .card--tint { background: var(--signal-wash); border-color: #cfdcff; }
@@ -1320,7 +1321,7 @@ html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root,
 .evidence-diagram .diagram-lane{fill:var(--steel)}
 .evidence-diagram .diagram-danger{fill:var(--danger)}
 .evidence-diagram .diagram-hash{font-family:monospace}
-.evidence-diagram figcaption{font-size:var(--fs-body-sm);line-height:1.6;max-width:75ch;margin-top:16px}
+.evidence-diagram figcaption{font-size:var(--fs-14);line-height:1.6;max-width:75ch;margin-top:16px}
 .evidence-diagram figcaption code{overflow-wrap:anywhere}
 .diagram-scroll{max-width:100%;overflow-x:auto}
 .diagram-scroll:focus-visible{outline:2px solid var(--signal);outline-offset:4px}
@@ -1338,3 +1339,66 @@ html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root,
 }
 .evidence-contract b { color: var(--ink, #272d26); }
 .cin-demo .demo__panel .demo__question { font-size: var(--fs-14); font-weight: 600; color: var(--signal, #2b523b); margin: 0 0 14px; }
+/* On-request trace stepping; the complete neutral figure is the first paint. */
+.evidence-diagram [data-trace-node] { cursor: pointer; }
+.evidence-diagram [data-trace-node] > rect { transition: stroke 200ms cubic-bezier(.23,1,.32,1); }
+.evidence-diagram.is-stepping [data-trace-node] .diagram-hash { fill: var(--steel); transition: fill 200ms cubic-bezier(.23,1,.32,1); }
+.evidence-diagram.is-stepping [data-trace-node].is-stepped .diagram-hash { fill: var(--ink); }
+.evidence-diagram.is-stepping [data-trace-node].is-plan.is-stepped > rect { stroke: var(--signal); }
+.evidence-diagram.is-stepping [data-trace-node].is-held.is-stepped > rect { stroke: var(--warn); }
+.evidence-diagram.is-stepping [data-trace-node].is-ok.is-stepped > rect { stroke: var(--verify); }
+.evidence-diagram.is-stepping [data-trace-node].is-block.is-stepped > rect { stroke: var(--danger); stroke-width: 2; }
+.evidence-diagram.is-stepping [data-trace-node].is-seal.is-stepped > rect { stroke: var(--ink); stroke-width: 2; }
+.evidence-diagram.is-stepping [data-link] { stroke: var(--line); transition: stroke 200ms cubic-bezier(.23,1,.32,1); }
+.evidence-diagram.is-stepping [data-link].is-stepped { stroke: var(--signal); }
+.evidence-diagram [data-trace-node][tabindex]:focus-visible > rect,
+.evidence-diagram.is-stepping [data-trace-node].is-stepped[tabindex]:focus-visible > rect { stroke: var(--signal); stroke-width: 3; }
+.proof-page .tr2-flow li.is-current { outline: 2px solid var(--signal); outline-offset: 2px; }
+.trace-controls { margin-top: 18px; }
+.trace-controls [hidden] { display: inline-flex; visibility: hidden; }
+.trace-controls button { min-height: 44px; }
+[data-trace-detail] { font-size: var(--fs-14); line-height: 1.65; min-height: 3.3em; max-width: 75ch; margin-block: 14px 0; }
+[data-trace-block]:not([hidden]) { display: block; margin-top: 10px; border-left: 2px solid var(--danger); padding-left: 12px; }
+.tr2-tamper { margin-block: 16px; }
+.tr2-tamper[hidden] { display: none; }
+.tr2-tamper__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.tr2-tamper .tr2-verify__copy { min-height: 44px; white-space: normal; }
+.proof-page .tr2-tamper button:focus-visible, .trace-controls button:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+[data-tamper-out] { min-height: 1.65em; transition: color 120ms; overflow-wrap: anywhere; }
+[data-tamper-out][data-state="ok"] { color: #7fd88f; }
+[data-tamper-out][data-state="bad"] { color: #f0a9a0; }
+[data-tamper-out] code { display: block; font-family: var(--font-mono); font-size: var(--fs-13); }
+@media (prefers-reduced-motion: reduce) {
+  .evidence-diagram [data-trace-node] > rect,
+  .evidence-diagram.is-stepping [data-trace-node] .diagram-hash,
+  .evidence-diagram.is-stepping [data-link] { transition-duration: 0ms; }
+}
+/* The promoted delegation panel is rendered in HTML. These first-paint styles
+   match the shared workspace styles before its interactive bundle is loaded. */
+.og-delegation { padding-block: 36px; color: var(--ink); font-family: var(--font-sans); min-width: 0; }
+:is(.og-delegation, .delegation-static) *, :is(.og-delegation, .delegation-static) *::before, :is(.og-delegation, .delegation-static) *::after { box-sizing: border-box; }
+:is(.og-delegation, .delegation-static).product-workspace .sec-card { min-width: 0; padding: clamp(22px, 3vw, 38px); background: var(--paper-3); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: none; scroll-margin-top: 120px; }
+:is(.og-delegation, .delegation-static) .sec-card > h2 { max-width: 25ch; color: var(--ink); font-family: var(--font-display); font-size: clamp(24px, 2.5vw, 34px); line-height: 1.16; letter-spacing: -.035em; font-weight: 600; }
+:is(.og-delegation, .delegation-static) .section__lede { font-size: 15px; line-height: 1.65; max-width: 74ch; }
+:is(.og-delegation, .delegation-static) .deleg { max-width: 920px; margin-inline: auto; aspect-ratio: 2; }
+:is(.og-delegation, .delegation-static) .btn { min-height: 44px; white-space: normal; text-align: center; font: inherit; }
+:is(.og-delegation, .delegation-static) .btn:focus-visible { outline: 3px solid var(--signal); outline-offset: 4px; }
+:is(.og-delegation, .delegation-static) .sec-log { gap: 12px; }
+:is(.og-delegation, .delegation-static) .sec-log li { min-width: 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: var(--fs-14); line-height: 1.65; overflow-wrap: anywhere; }
+:is(.og-delegation, .delegation-static) .sec-pill { min-width: 40px; justify-content: center; border-radius: 6px; padding: 3px 7px; flex: none; font-size: var(--fs-12); }
+:is(.og-delegation, .delegation-static) .sec-pill--ok { color: var(--signal-ink); background: var(--status-pass-surface); }
+:is(.og-delegation, .delegation-static) .sec-pill--bad { color: var(--danger); background: var(--status-fail-surface); }
+:is(.og-delegation, .delegation-static) .sec-pill--info { color: #4b5744; background: var(--status-neutral-surface); }
+.og-recorded-stats { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 36px; margin-top: 44px; }
+.og-recorded-stats p { margin: 0; max-width: 44ch; color: var(--steel); font-size: var(--fs-14); font-weight: 400; line-height: 1.65; }
+.og-recorded-stats__value { display: block; margin-bottom: 14px; color: var(--ink); font-size: clamp(36px, 4.1vw, 58px); font-weight: 500; letter-spacing: -.05em; font-variant-numeric: tabular-nums; line-height: 1.1; white-space: nowrap; }
+@media (max-width: 959px) { .og-recorded-stats { display: none; } }
+
+/* Both variants are in the HTML so reflow never waits for browser JavaScript. */
+.deleg--narrow { display: none; }
+@media (max-width: 699px) {
+  .deleg--wide { display: none; }
+  .deleg--narrow { display: block; width: 100%; max-width: 320px; height: auto; margin-inline: auto; }
+  :is(.og-delegation, .delegation-static) .deleg--narrow { max-width: 320px; aspect-ratio: 220 / 365; }
+  .deleg--narrow .deleg__l { font-size: 14px; }
+}

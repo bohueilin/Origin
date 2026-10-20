@@ -22,7 +22,9 @@
 import { useState } from 'react'
 import { DEMO_RECEIPT } from './demoReceipt'
 import '../shared/product-workspace.css'
-import type { ReactNode } from 'react'
+import { DelegationPanel } from './DelegationPanel'
+import { DemoCard, Log } from './panelUi'
+import type { Step } from './panelUi'
 import { generateSigningKey, signSigil, verifySigil } from '@origin/verifier-core/sigil'
 import type { Sigil } from '@origin/verifier-core/sigil'
 import { batchReceipts, verifyReceiptInBatch } from '@origin/verifier-core/merkleBatch'
@@ -60,37 +62,10 @@ import { shareUrl } from '../shared/shareLink'
 import type { LicenseVerdict } from '../license'
 
 // ── tiny UI vocabulary ───────────────────────────────────────────────────────
-type Tone = 'ok' | 'bad' | 'info'
-interface Step {
-  tone: Tone
-  label: string
-  text: string
-}
 const ok = (label: string, text: string): Step => ({ tone: 'ok', label, text })
 const bad = (label: string, text: string): Step => ({ tone: 'bad', label, text })
 const info = (label: string, text: string): Step => ({ tone: 'info', label, text })
 const short = (d: unknown) => String(d).slice(0, 12) + '…'
-
-function Pill({ tone }: { tone: Tone }) {
-  const txt = tone === 'ok' ? 'pass' : tone === 'bad' ? 'blocked' : 'note'
-  return <span className={`sec-pill sec-pill--${tone}`}>{txt}</span>
-}
-
-function Log({ steps }: { steps: Step[] }) {
-  if (steps.length === 0) return null
-  return (
-    <ul className="sec-log" aria-live="polite">
-      {steps.map((s, i) => (
-        <li key={i}>
-          <Pill tone={s.tone} />
-          <span>
-            <b>{s.label}</b> — {s.text}
-          </span>
-        </li>
-      ))}
-    </ul>
-  )
-}
 
 function Peek({ title, value }: { title: string; value: unknown }) {
   if (value == null) return null
@@ -99,19 +74,6 @@ function Peek({ title, value }: { title: string; value: unknown }) {
       <summary>{title}</summary>
       <pre>{JSON.stringify(value, null, 2)}</pre>
     </details>
-  )
-}
-
-function DemoCard(props: { id: string; kicker: string; title: string; lede: string; children: ReactNode }) {
-  return (
-    <article className="card sec-card" id={props.id} aria-labelledby={`${props.id}-title`}>
-      <p className="kicker">{props.kicker}</p>
-      <h2 id={`${props.id}-title`} style={{ marginTop: 6 }}>{props.title}</h2>
-      <p className="section__lede" style={{ marginTop: 8 }}>
-        {props.lede}
-      </p>
-      {props.children}
-    </article>
   )
 }
 
@@ -524,107 +486,6 @@ const OG_SEED = 20260818
 const OG_ROOTS = 400
 const OG_DEPTH = 4
 const pct1 = (n: number) => `${(n * 100).toFixed(1)}%`
-
-// Six identities, laid out so the whole delegation tree reads at a glance. The
-// percentages are computed by the SAME blastRadius() the published bench uses -- widening
-// an edge really does change what the root can reach, it is not a typed-in number.
-const TREE = [
-  { id: 'root', parent: null, x: 300, y: 46, label: 'platform', granted: ['payroll:read', 'customer-pii:read', 'ledger:read', 'wire-transfer:read', 'source-secrets:read', 'dashboards:read'] },
-  { id: 'ops', parent: 'root', x: 168, y: 150, label: 'ops', granted: ['payroll:read', 'customer-pii:read', 'dashboards:read'] },
-  { id: 'fin', parent: 'root', x: 432, y: 150, label: 'finance', granted: ['ledger:read', 'wire-transfer:read'] },
-  { id: 'ops-a', parent: 'ops', x: 96, y: 254, label: 'payroll-bot', granted: ['payroll:read'], widen: 'hr-records:read' },
-  { id: 'ops-b', parent: 'ops', x: 240, y: 254, label: 'pii-bot', granted: ['customer-pii:read'], widen: 'prod-db:delete' },
-  { id: 'fin-a', parent: 'fin', x: 432, y: 254, label: 'ledger-bot', granted: ['ledger:read'], widen: 'audit-log:read' },
-] as const
-
-export function DelegationPanel() {
-  const [widened, setWidened] = useState<ReadonlySet<string>>(new Set())
-  const at = (id: string) => TREE.find((n) => n.id === id)!
-
-  const corpus = {
-    seed: 1,
-    windowDays: 30,
-    resources: overGrantResources,
-    identities: TREE.map((n) => ({
-      id: n.id,
-      parent: n.parent,
-      owner: 'human-01',
-      tainted: false,
-      granted: widened.has(n.id) && 'widen' in n ? [...n.granted, n.widen].sort() : [...n.granted],
-      granted_day: 0,
-      ttl_days: 30,
-    })),
-    events: [],
-    planted: { violationEdges: [], dormantScopes: [] },
-  } as unknown as OverGrantCorpus
-
-  const root = blastRadius(corpus).perIdentity.find((p) => p.id === 'root')!
-  const sensitive = overGrantResources.filter(isSensitive).length
-  const pct = (n: number) => `${(n * 100).toFixed(1)}%`
-
-  const toggle = (id: string) =>
-    setWidened((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-
-  return (
-    <DemoCard
-      id="delegation"
-      kicker="05 · Delegated authority"
-      title="Widen one edge. Watch the root's blast radius move."
-      lede="A correct capability token can only narrow as it is delegated, so an ancestor reaches exactly its own grant. Break that on any edge and authority flows back up the tree."
-    >
-      <svg viewBox="0 0 600 300" className="deleg" role="img" aria-label={`Delegation tree. Root reaches ${root.reachable} of ${sensitive} sensitive resources.`}>
-        {TREE.filter((n) => n.parent).map((n) => {
-          const p = at(n.parent!)
-          const bad = widened.has(n.id)
-          return (
-            <line key={`e-${n.id}`} x1={p.x} y1={p.y + 18} x2={n.x} y2={n.y - 18}
-              stroke={bad ? 'var(--warn)' : 'var(--line-2)'} strokeWidth={bad ? 3 : 1.5} />
-          )
-        })}
-        {TREE.filter(n => widened.has(n.id)).map(leaf => {
-          let node: typeof TREE[number] = leaf
-          const segments: string[] = []
-          while (node.parent) {
-            const parent = at(node.parent)
-            segments.push(`M ${node.x} ${node.y - 18} L ${parent.x} ${parent.y + 18}`)
-            node = parent
-          }
-          const path = segments.join(' ')
-          return <path key={`inherit-${leaf.id}`} className="deleg__inheritance" d={path} fill="none" stroke="var(--warn)" strokeWidth="2" strokeDasharray="4 3" />
-        })}
-        {widened.size > 0 && <circle className="deleg__inheritance" cx={at('root').x} cy={at('root').y} r="24" fill="none" stroke="var(--warn)" strokeWidth="2" />}
-        {TREE.map((n) => (
-          <g key={n.id}>
-            <circle cx={n.x} cy={n.y} r="18" fill={n.id === 'root' ? 'var(--signal)' : 'var(--paper-2)'}
-              stroke={widened.has(n.id) ? 'var(--warn)' : 'var(--line-2)'} strokeWidth={widened.has(n.id) ? 3 : 1.5} />
-            <text x={n.x} y={n.y + 34} textAnchor="middle" className="deleg__l">{n.label}</text>
-          </g>
-        ))}
-      </svg>
-
-      <div className="deleg__ctl">
-        {TREE.filter((n) => 'widen' in n).map((n) => (
-          <button key={n.id} type="button" className={`btn btn--ghost btn--sm${widened.has(n.id) ? ' is-on' : ''}`}
-            aria-pressed={widened.has(n.id)} onClick={() => toggle(n.id)}>
-            {widened.has(n.id) ? 'Narrow' : 'Widen'} {n.label}
-          </button>
-        ))}
-      </div>
-
-      <Log steps={[
-        widened.size === 0
-          ? ok('attenuation holds', `Every child narrows. The root reaches exactly its own grant: ${root.reachable} of ${sensitive} sensitive resources.`)
-          : bad(`${widened.size} edge${widened.size > 1 ? 's' : ''} widened`, `A descendant now holds a scope its parent never had, so the root inherits it.`),
-        info('blast radius at the root', `${root.reachable} / ${sensitive} sensitive resources reachable — BRI ${pct(root.bri)}`),
-      ]} />
-    </DemoCard>
-  )
-}
 
 export function OverGrantPanel({ showFullPageLink = false }: { showFullPageLink?: boolean }) {
   const [steps, setSteps] = useState<Step[]>([])

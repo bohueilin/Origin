@@ -12,7 +12,7 @@ export function AdminPortal() {
     <div className="ap-shell">
       <main className="ap-form-col">
         <a className="ap-brand" href="/" aria-label="Origin home">
-          <img className="ap-logo" src="/brand/origin-mark-2026-09-28.svg" alt="" />
+          <img className="ap-logo" src="/brand/origin-mark-2026-09-28.svg" width="48" height="48" alt="" />
           <span>origin</span>
         </a>
         <div className="ap-form-wrap">
@@ -43,7 +43,7 @@ export function AdminPortal() {
         <p className="ap-legal">Restricted prototype · Account access is restricted.</p>
       </main>
       <aside className="ap-art" aria-label="Illustration">
-        <img className="ap-art-photo" src="/brand/review-2026-09-28.webp" alt="" fetchPriority="high" />
+        <img className="ap-art-photo" src="/brand/review-2026-09-28.webp" width="1280" height="720" alt="" fetchPriority="high" />
         <p className="ap-art-caption">AI-generated illustration · fictional people and setting</p>
         <div className="ap-art-inner" aria-hidden="true">
           <p className="ap-art-label">Capability is not permission.</p>

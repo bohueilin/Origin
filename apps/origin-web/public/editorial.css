@@ -223,6 +223,50 @@
   .brief-page .brief__screen-only { display: none; }
   .brief-page a { color: #000; }
   @page { size: A4; margin: 13mm; }
+
+  /* Evidence pages retain every digest and written boundary on monochrome paper. */
+  @page evidence { size: auto; margin: 18mm; }
+  :is(.proof-page, .trust-page) { page: evidence; background: #fff !important; color: #000 !important; }
+  body:is(.proof-page, .trust-page).editorial * { color: #000 !important; background-color: transparent !important; box-shadow: none !important; text-shadow: none !important; }
+  body:is(.proof-page, .trust-page).editorial :is(.btn, .status, .proofladder__status) { border-color: #000; }
+  :is(.proof-page, .trust-page) :is(.shell, .proof) { max-width: none; width: 100%; padding: 0; }
+  :is(.proof-page, .trust-page) .editorial-hero { padding: 0; }
+  .proof-page .proof .editorial-hero__grid { padding-top: 0; }
+  :is(.proof-page, .trust-page) .editorial-hero h1 { font-size: var(--fs-22); max-width: none; margin-block: 12px; }
+  :is(.proof-page, .trust-page) :is(.section__lede, .proof__lede) { font-size: var(--fs-14); }
+  :is(.proof-page, .trust-page) .editorial-section { padding-block: 24px; }
+  .proof-page .proof > section:not(.editorial-hero):not(.vband) { margin-top: 24px; padding-top: 24px; }
+  :is(.proof-page, .trust-page) .editorial-heading { display: block; margin-bottom: 18px; }
+  :is(.proof-page, .trust-page) :is(.editorial-heading h2, .editorial-closing h2), .proof-page .proof h2 { font-size: var(--fs-22); max-width: none; }
+  :is(.proof-page, .trust-page) .editorial-cards { display: block; }
+  :is(.proof-page, .trust-page) .editorial-card { padding: 16px; margin-block: 12px; break-inside: avoid; }
+  :is(.proof-page, .trust-page) .editorial-card h3 { margin-block: 10px; font-size: var(--fs-19); }
+  :is(.proof-page, .trust-page) :is(.editorial-note, .editorial-closing) { padding: 16px; margin-block: 18px; break-inside: avoid; }
+  :is(.proof-page, .trust-page) .editorial-table-wrap { overflow: visible; }
+  :is(.proof-page, .trust-page) .editorial-table { table-layout: fixed; }
+  :is(.proof-page, .trust-page) .editorial-table :is(th, td) { padding: 12px 8px; }
+  :is(.proof-page, .trust-page) .editorial-table :is(th, td):first-child { width: 24%; }
+  :is(.proof-page, .trust-page) :is(tr, .tr2why__tile, .tr2-verify, .proof__card, .rung, .evidence-diagram li), .proof-page .spec > div { break-inside: avoid; }
+  :is(.proof-page, .trust-page) p { orphans: 3; widows: 3; }
+  :is(.proof-page, .trust-page) :is(.site-header, .site-footer, .skip-link, button, .editorial-actions, .editorial-jumps, .vband, .trace-controls) { display: none !important; }
+  :is(.proof-page, .trust-page) :is(.tr2-exec, .tr2-verify, .tr2-digest, .blockline, .tr2why) { background: #fff !important; color: #000 !important; border: 1px solid #000; box-shadow: none; }
+  :is(.proof-page, .trust-page) :is(p, span, b, strong, code, pre, a, li, td, th, h1, h2, h3) { color: #000 !important; }
+  :is(.proof-page, .trust-page) .tr2-flow { display: block; }
+  :is(.proof-page, .trust-page) .tr2-flow li { break-inside: avoid; margin-block: 7px; border-left-width: 3px; border-left-color: #000; background: #fff; }
+  :is(.proof-page, .trust-page) .ev__s { position: static; width: auto; height: auto; margin: 0; padding: 0; overflow: visible; clip: auto; clip-path: none; white-space: normal; grid-column: 2; font: 9pt var(--font-mono); }
+  :is(.proof-page, .trust-page) .evidence-diagram .diagram-desktop { display: block; min-width: 0; width: 100%; }
+  :is(.proof-page, .trust-page) .evidence-diagram .diagram-mobile { display: none; }
+  :is(.proof-page, .trust-page) .evidence-diagram { break-inside: avoid; }
+  :is(.proof-page, .trust-page) .evidence-diagram :is(svg, rect) { background: #fff; fill: #fff; }
+  :is(.proof-page, .trust-page) .evidence-diagram :is(rect, path, line) { stroke: #000 !important; }
+  :is(.proof-page, .trust-page) .evidence-diagram :is(text, circle) { fill: #000 !important; }
+  :is(.proof-page, .trust-page) .evidence-diagram .sr-only { position: static; width: auto; height: auto; margin: 12pt 0; padding-left: 18pt; overflow: visible; clip: auto; clip-path: none; white-space: normal; font: 9pt/1.5 var(--font-mono); overflow-wrap: anywhere; }
+  :is(.proof-page, .trust-page) .diagram-scroll { overflow: visible; }
+  :is(.proof-page, .trust-page) pre { white-space: pre-wrap; overflow: visible; font-size: 10pt; }
+  .proof-page .spec-json code { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .proof-page .tr2-verify__plain { opacity: 1 !important; }
+  .proof-page a[href^="/proof/"]::after { content: " (originphysicalai.com" attr(href) ")"; }
+  :is(.proof-page, .trust-page) :is(h2, h3) { break-after: avoid; }
 }
 
 /* Research readouts wrap identifiers; figures and numeric results stay intact. */

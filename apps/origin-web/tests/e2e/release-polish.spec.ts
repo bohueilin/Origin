@@ -86,7 +86,7 @@ test('unavailable decorative video leaves its image and removes the unusable pla
   await page.goto('/')
   const film = page.locator('[data-cinematic-film]')
   const control = page.locator('[data-cinematic-toggle]')
-  // Reduced-motion browsers only request the video after deliberate interaction.
+  // The poster stays still until deliberate interaction.
   if (await control.isVisible()) await control.click()
   await expect(control).toBeHidden()
   await expect(film).toHaveAttribute('poster', '/brand/review-2026-09-28.webp')
@@ -102,9 +102,39 @@ test('a failed first hero source leaves a playable fallback and its control', as
   // Exercise the skipped/failed-source event even on platforms without AV1 support.
   await film.locator('source').first().dispatchEvent('error', { bubbles: false })
   await expect(page.locator('[data-cinematic-toggle]')).toBeVisible()
+  await page.locator('[data-cinematic-toggle]').click()
   await expect.poll(() => film.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0)
   expect(await film.evaluate((el: HTMLVideoElement) => el.currentSrc)).not.toMatch(/av1\.mp4$/)
 })
+
+for (const mode of ['normal', 'reduced-motion', 'save-data'] as const) {
+  test(`hero transfers no video until activation: ${mode}`, async ({ page }) => {
+    await localOnly(page)
+    await page.emulateMedia({ reducedMotion: mode === 'reduced-motion' ? 'reduce' : 'no-preference' })
+    if (mode === 'save-data') {
+      await page.addInitScript(() => Object.defineProperty(navigator, 'connection', { value: { saveData: true } }))
+    }
+    const requests: string[] = []
+    page.on('request', request => {
+      if (/\.(mp4|webm)(?:\?|$)/.test(request.url())) requests.push(request.url())
+    })
+    await page.goto('/')
+    const film = page.locator('[data-cinematic-film]')
+    const control = page.locator('[data-cinematic-toggle]')
+    await expect(control).toHaveText('Play scene')
+    await page.waitForLoadState('networkidle')
+    await page.locator('.site-footer').scrollIntoViewIfNeeded()
+    await control.scrollIntoViewIfNeeded()
+    expect(requests).toEqual([])
+    await expect(film).toHaveAttribute('preload', 'none')
+    expect(await film.evaluate((el: HTMLVideoElement) => el.paused && el.currentTime === 0)).toBe(true)
+    await control.click()
+    await expect.poll(() => film.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0)
+    expect(requests.length).toBeGreaterThan(0)
+    await control.click()
+    await expect(control).toHaveText('Play scene')
+  })
+}
 
 test('data saver keeps the hero still until playback is requested', async ({ page }) => {
   await localOnly(page)

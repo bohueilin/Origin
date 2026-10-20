@@ -34,5 +34,4 @@ if (film && toggle) {
   media.addEventListener('change', () => { if (media.matches) film.pause() })
   document.addEventListener('visibilitychange', () => { if (document.hidden) film.pause() })
   if (film.error) unavailable()
-  else if (!media.matches && !(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) play()
 }

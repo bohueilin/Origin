@@ -114,7 +114,7 @@
 .product-workspace .sec-rsl { border-radius: 14px; padding: 14px 18px; background: var(--paper-3); color: var(--signal-ink); }
 .product-workspace .sec-badge-row { padding: 16px 0; }
 .og-workspace .section { padding-block: 36px; }
-.og-workspace .deleg { max-width: 720px; margin-inline: auto; }
+.og-workspace .deleg { max-width: 920px; margin-inline: auto; }
 .og-workspace .scorecard-wrap { margin-top: 22px; border-radius: 18px; }
 .og-workspace .scorecard thead th { background: var(--paper-3); }
 .og-workspace .scorecard code { white-space: nowrap; }

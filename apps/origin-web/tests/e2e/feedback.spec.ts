@@ -60,10 +60,12 @@ test('a mobile reference check brings its verdict into view', async ({ page }) =
 test('widening a diagram leaf draws its actual parent chain and root ring', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/over-grant')
-  const tree = page.locator('#delegation svg')
+  const tree = page.locator('#delegation svg:visible')
   await page.getByRole('button', { name: 'Widen payroll-bot', exact: true }).click()
   const path = tree.locator('path[stroke-dasharray="4 3"]')
-  await expect(path).toHaveAttribute('d', 'M 96 236 L 168 168 M 168 132 L 300 64')
+  await expect(path).toHaveAttribute('d', page.viewportSize()!.width < 700
+    ? 'M 68 150 H 56 V 108 M 38 90 H 26 V 48'
+    : 'M 96 236 L 168 168 M 168 132 L 300 64')
   await expect(tree.locator('circle[r="24"]')).toHaveCount(1)
   await expect(path).toHaveCSS('opacity', '1')
   const fade = await path.evaluate(el => el.getAnimations().map(a => ({ duration: a.effect?.getTiming().duration, frames: (a.effect as KeyframeEffect).getKeyframes() })))

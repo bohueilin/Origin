@@ -9,7 +9,7 @@ describe('artifact-derived diagrams', () => {
   it('renders all real nodes and links in both layouts and an accessible ordered list', () => {
     const html = renderTraceDiagram(trace, summary)
     expect((html.match(/data-trace-node=/g) ?? []).length).toBe(trace.event_count * 2)
-    expect((html.match(/<li>/g) ?? []).length).toBe(trace.event_count)
+    expect((html.match(/<li(?:\s[^>]*)?>/g) ?? []).length).toBe(trace.event_count)
     for (const [i, event] of trace.events.entries()) {
       expect(html).toContain(event.action)
       expect(html).toContain(event.event_hash.slice(0, 8))
@@ -18,6 +18,17 @@ describe('artifact-derived diagrams', () => {
     expect(html).toContain(summary.final_digest.slice(0, 12))
     expect(html).toContain(summary.verify_command)
     expect(html).toContain('<title')
+  })
+  it('gives each real event a focusable description and each link its sequence', () => {
+    const html = renderTraceDiagram(trace, summary)
+    for (const event of trace.events) {
+      expect(html).toContain(`id="trace-ev-${event.seq}"`)
+      expect((html.match(new RegExp(`aria-describedby="trace-ev-${event.seq}"`, 'g')) ?? []).length).toBe(2)
+      expect(html).toMatch(new RegExp(`data-trace-node="${event.seq}"[^>]*tabindex="0"[^>]*role="button"`))
+      if (event.seq < trace.event_count) expect((html.match(new RegExp(`data-link="${event.seq}"`, 'g')) ?? []).length).toBe(2)
+    }
+    expect(html).toContain('data-trace-step hidden')
+    expect(html).toContain('data-trace-detail')
   })
   it('rejects a changed event, broken link, incorrect count or summary digest', () => {
     expect(() => validateTrace({ ...trace, event_count: 1 }, summary)).toThrow()

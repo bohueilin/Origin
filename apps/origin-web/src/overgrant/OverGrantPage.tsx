@@ -6,7 +6,7 @@
 // SYNTHETIC corpus, by the same functions the published bench artifact re-derives from.
 import { useMemo } from 'react'
 import '../shared/product-workspace.css'
-import { DelegationPanel, OverGrantPanel } from '../security/SecurityPage'
+import { OverGrantPanel } from '../security/SecurityPage'
 import { generateCorpus, grantUtilization, blastRadius } from '@origin/verifier-core/overGrant'
 
 const SEED = 20260818
@@ -69,12 +69,6 @@ export function OverGrantPage() {
             </table>
           </div>
           <p className="sec-note">The analyzer below uses 400 roots; the published benchmark uses 2,000. All use the same seeded generator. Sample sizes differ, so their totals are not directly interchangeable.</p>
-        </div>
-      </section>
-
-      <section className="section section--tint" aria-label="Attenuation, interactive">
-        <div className="shell">
-          <DelegationPanel />
         </div>
       </section>
 

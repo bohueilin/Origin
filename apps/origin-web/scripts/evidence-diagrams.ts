@@ -43,7 +43,8 @@ export function renderTraceDiagram(trace: Trace, summary: Summary): string {
     svg += text(mobile ? 8 : 18, mobile ? 80 : 53, '● Executed sandbox side effect', 'diagram-lane', 12)
     trace.events.forEach((e, i) => {
       const p = positions[i], held = /held|blocked/.test(e.action) || e.verdict === 'deny'
-      svg += `<g data-trace-node="${e.seq}" data-hash="${e.event_hash}" data-prev-hash="${e.prev_hash}"><rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="8" class="diagram-node"/>`
+      const state = e.action === 'evidence.digest_sealed' ? 'seal' : e.verdict === 'deny' ? 'block' : e.verdict === 'approved' ? 'ok' : e.verdict === 'require_approval' || e.action === 'approval.requested' ? 'held' : 'plan'
+      svg += `<g data-trace-node="${e.seq}" class="is-${state}" tabindex="0" role="button" aria-pressed="false" aria-label="Event ${e.seq}: ${escape(e.action)}" aria-describedby="trace-ev-${e.seq}" data-hash="${e.event_hash}" data-prev-hash="${e.prev_hash}"><rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="8" class="diagram-node"/>`
       svg += text(p.x + 12, p.y + 24, `Event ${e.seq}${e.side_effect?.executed ? ' ●' : ''}`, '', 14)
       const actionLines = lines(e.action, mobile ? 29 : 19)
       svg += actionLines.map((s, n) => text(p.x + 12, p.y + 49 + n * 18, s, held ? 'diagram-danger' : '', 13)).join('')
@@ -58,13 +59,13 @@ export function renderTraceDiagram(trace: Trace, summary: Summary): string {
         if (mobile) { path = `M${x} ${p.y + p.h} V${q.y}`; tx = x + 10; ty = p.y + p.h + 29 }
         else if (i === 5) { path = `M${x} ${p.y + p.h} V${q.y}`; tx = x + 10; ty = 333 }
         else { const y = p.y + p.h + 38; path = `M${x} ${p.y + p.h} V${y} H${nx} V${q.y + q.h}`; tx = (x + nx) / 2 - 30; ty = y - 5 }
-        svg += `<path d="${path}" class="diagram-chain"/>${text(tx, ty, e.event_hash.slice(0, 8), 'diagram-hash', 12)}`
+        svg += `<path d="${path}" class="diagram-chain" data-link="${e.seq}"/>${text(tx, ty, e.event_hash.slice(0, 8), 'diagram-hash', 12)}`
       }
     })
     return svg + '</svg>'
   }
-  const list = trace.events.map(e => `<li>Event ${e.seq}: ${escape(e.action)}; tool ${escape(e.tool || 'none')}; verdict ${escape(e.verdict || 'none')}; sandbox side effect ${e.side_effect?.executed ? 'executed' : 'not executed'}. Hash ${e.event_hash}; previous ${e.prev_hash}.</li>`).join('')
-  return `<figure class="evidence-diagram" data-diagram="trace"><div class="diagram-scroll" tabindex="0" role="group" aria-label="TR-A002 hash chain; scroll horizontally at intermediate widths">${draw(false)}${draw(true)}</div><ol class="sr-only">${list}</ol><figcaption>Computed from <a href="/proof/tr-a002.json">/proof/tr-a002.json</a>. Re-verify the chain yourself: <code>${escape(summary.verify_command)}</code>. Link labels show the preceding event’s hash; the final node shows the seal.</figcaption></figure>`
+  const list = trace.events.map(e => `<li id="trace-ev-${e.seq}">Event ${e.seq}: ${escape(e.action)}; tool ${escape(e.tool || 'none')}; verdict ${escape(e.verdict || 'none')}; sandbox side effect ${e.side_effect?.executed ? 'executed' : 'not executed'}. Hash ${e.event_hash}; previous ${e.prev_hash}.</li>`).join('')
+  return `<figure class="evidence-diagram" data-diagram="trace"><div class="diagram-scroll" tabindex="0" role="group" aria-label="TR-A002 hash chain; scroll horizontally at intermediate widths">${draw(false)}${draw(true)}</div><ol class="sr-only">${list}</ol><figcaption>Computed from <a href="/proof/tr-a002.json">/proof/tr-a002.json</a>. Re-verify the chain yourself: <code>${escape(summary.verify_command)}</code>. Link labels show the preceding event’s hash; the final node shows the seal.<span data-trace-block hidden></span></figcaption><div class="trace-controls"><button type="button" class="btn btn--ghost" data-trace-step hidden aria-pressed="false">Step through the chain</button><p role="status" aria-live="polite" data-trace-detail></p></div></figure>`
 }
 
 export function renderPostureCards(): string {

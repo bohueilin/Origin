@@ -175,6 +175,136 @@
 .pg-wrap.product-workspace .pg-verdict { border-radius: 18px; padding: 22px; }
 .pg-wrap.product-workspace .pg-verdict__scope { font-family: var(--font-sans); line-height: 1.6; }
 
+/* ── Floor editor, P0 of the 2026-10-24 proving-ground audit ───────────────────────
+   The grid reads as a map (axes, scale, docked legend, readout); the active fleet,
+   tool and type stay in view; every editor control is a 44px target. Paper, ink and
+   forest green only: fleet colours are the existing data colours shared with the 2D
+   playback, and nothing here animates. */
+
+/* Editor bar: sticky just under the site header while the build panel is on screen.
+   It summarises the active state; the controls themselves stay where they are. */
+/* App.css sets `overflow-x: hidden` on html AND body; on the body that makes a scroll
+   container, so no `position: sticky` descendant (the site header included) could
+   stick on this page. `clip` stops horizontal overflow the same way without creating
+   a scroll container; browsers without `clip` keep today's `hidden`. */
+body.product-route--proving-ground { overflow-x: clip; }
+
+.pg-wrap.product-workspace .pg-editbar {
+  position: sticky; top: 87px; z-index: 6;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px;
+  margin: 0 0 14px; padding: 8px 12px 8px 14px;
+  background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 12px;
+}
+.pg-wrap.product-workspace .pg-editbar-state { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+.pg-wrap.product-workspace .pg-editbar-state b { color: var(--ink); }
+.pg-wrap.product-workspace .pg-editbar-dot { flex: none; width: 12px; height: 12px; border-radius: 50%; }
+.pg-wrap.product-workspace .pg-editbar-sep { color: var(--steel); }
+.pg-wrap.product-workspace .pg-editbar-change {
+  margin-left: auto; min-height: 44px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: var(--radius-sm);
+  background: var(--paper-2); color: var(--signal-ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: border-color .12s, color .12s;
+}
+.pg-wrap.product-workspace .pg-editbar-change:hover { border-color: var(--signal); }
+.pg-wrap.product-workspace .pg-editbar-change:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+.pg-wrap.product-workspace .pg-editbar .count-strip { flex-basis: 100%; margin: 0; }
+
+/* One floor-total line, the same everywhere it appears. */
+.pg-wrap.product-workspace .count-strip { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 0 0 14px; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+.pg-wrap.product-workspace .count-strip b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pg-wrap.product-workspace .count-strip__label { margin-right: 2px; font-size: 12px; line-height: 1.6; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); }
+.pg-wrap.product-workspace .count-strip__sep { color: var(--steel); }
+.pg-wrap.product-workspace .pg-results .count-strip { margin: 0; }
+.pg-wrap.product-workspace .pg-stage .count-strip { margin: 14px 0 0; }
+
+/* Floor header and synthetic scale. */
+.pg-wrap.product-workspace .floor-head { margin: 2px 0 12px; }
+.pg-wrap.product-workspace .floor-head-title { margin: 0; font-size: 16px; line-height: 1.5; color: var(--ink); font-variant-numeric: tabular-nums; }
+.pg-wrap.product-workspace .floor-head-scale { margin: 4px 0 0; max-width: 70ch; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+
+/* Docked legend: the grid's own marks, shown before the first tap. */
+.pg-wrap.product-workspace .grid-legend { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
+.pg-wrap.product-workspace .grid-legend-title { margin: 0 0 8px; font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
+.pg-wrap.product-workspace .grid-legend-title b { margin-right: 8px; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); }
+.pg-wrap.product-workspace .grid-legend-note { margin: 0 0 6px; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
+.pg-wrap.product-workspace .grid-legend ul { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.pg-wrap.product-workspace .grid-legend ul + ul { margin-top: 8px; }
+.pg-wrap.product-workspace .grid-legend li { display: flex; align-items: center; gap: 5px; }
+.pg-wrap.product-workspace .lg-cell {
+  display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 4px;
+  border: 1px solid var(--line-2); border-radius: 7px;
+  font-size: 12px; font-weight: 800; line-height: 1;
+}
+.pg-wrap.product-workspace .cell-wall { background: color-mix(in srgb, var(--ink) 12%, var(--paper-2)); color: var(--ink); border-color: var(--line-2); }
+
+/* Axes: letters across the top, numbers down the side; the row numbers stay
+   pinned at the left edge while a narrow screen scrolls the grid sideways. */
+.pg-wrap.product-workspace .site-grid--axes { gap: 4px; }
+.pg-wrap.product-workspace .grid-axis { display: grid; place-items: center; font-size: 13px; line-height: 1.5; font-weight: 600; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.pg-wrap.product-workspace .grid-axis--col { align-self: end; padding-bottom: 2px; border-bottom: 1px solid var(--line-2); }
+.pg-wrap.product-workspace :is(.grid-axis--row, .grid-axis--corner) { position: sticky; left: 0; z-index: 1; background: var(--paper-2); box-shadow: 4px 0 0 var(--paper-2); }
+.pg-wrap.product-workspace .grid-axis--row { border-right: 1px solid var(--line-2); }
+
+/* One code per cell; the fleet mark sits on its own line below it. */
+.pg-wrap.product-workspace .site-grid--axes .site-cell {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0;
+  font-size: 15px; scroll-margin: 220px 0 120px 40px;
+}
+.pg-wrap.product-workspace .site-grid--axes .site-cell-code { line-height: 1; }
+/* The focused cell paints above the pinned row axis, so its ring is never cut. */
+.pg-wrap.product-workspace .site-grid--axes .site-cell:focus-visible { z-index: 2; }
+/* Items read as a fleet-colour outline on paper; the jade tint the shared sheet
+   gives .cell-item is the finish-verdict green and stays reserved for verdicts. */
+.pg-wrap.product-workspace :is(.site-grid--axes .cell-item, .lg-cell.cell-item) { background: var(--paper-2); }
+.pg-wrap.product-workspace .site-grid--axes .site-fleet-tag { position: static; font-size: 12px; line-height: 1.5; letter-spacing: 0; }
+
+/* Scale bar: drawn in HTML, exactly three cells wide, with end ticks. */
+.pg-wrap.product-workspace .grid-scale-bar { height: 9px; margin-top: 10px; border: 2px solid var(--ink); border-top: 0; }
+.pg-wrap.product-workspace .grid-scale-label { font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+
+/* "You are here": what the focused or hovered cell holds, and what a tap would do. */
+.pg-wrap.product-workspace .grid-readout { margin: 12px 0 0; min-height: 4.8em; max-width: 70ch; font-size: 15px; line-height: 1.6; color: var(--ink); }
+
+/* Plan and boundary notes grow with their text; nothing truncates by default. */
+.pg-wrap.product-workspace .note-field { display: block; width: 100%; resize: none; overflow-y: auto; max-height: 22em; font-size: 16px; line-height: 1.6; }
+.pg-wrap.product-workspace .note-more { display: block; margin-top: 4px; font-size: 13px; line-height: 1.5; color: var(--steel); }
+.pg-wrap.product-workspace .sb-field { min-width: 0; }
+.pg-wrap.product-workspace .notes-status { margin: 10px 0 0; max-width: 70ch; font-size: 16px; line-height: 1.6; color: var(--ink); }
+
+/* Every editor control is at least a 44 × 44 px target. */
+.pg-wrap.product-workspace .smp-step-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
+/* Wide enough for two 44px buttons and the value, so a narrow two-column card
+   wraps the steppers instead of pushing a button over its neighbour. */
+.pg-wrap.product-workspace .smp-fleet-steppers .smp-stepper { min-width: 160px; }
+/* Keyboard focus moving back through the controls lands below header + bar. */
+.pg-wrap.product-workspace .site-map-panel :is(.smp-fleets, .smp-palette, .smp-rtype, .grid-size, .grid-legend) :is(button, select) { scroll-margin-top: 220px; }
+.pg-wrap.product-workspace .smp-fleet-remove { width: 44px; height: 44px; }
+.pg-wrap.product-workspace .stepper .btn { min-width: 44px; min-height: 44px; }
+.pg-wrap.product-workspace :is(.smp-tool, .smp-rtype-chip, .smp-clear, .smp-save-btn, .smp-plans-action, .smp-add-fleet, .btn.ghost.back, .smp-plans-select, .smp-fleet-emb-select, .field-input, .pg3d-btn) { min-height: 44px; }
+
+/* The evaluation button in the site's own language: flat forest green. */
+.pg-wrap.product-workspace .btn.primary.hero-action,
+.pg-wrap.product-workspace .btn.primary.hero-action:hover {
+  min-height: 44px; padding: 12px 22px; border: 1px solid var(--signal); border-radius: var(--radius-sm);
+  background: var(--signal); color: var(--paper-2); box-shadow: none; font-size: 15px; font-weight: 600;
+}
+.pg-wrap.product-workspace .btn.primary.hero-action:hover { background: var(--signal-hover); border-color: var(--signal-hover); }
+@media (max-width: 720px) {
+  /* On a phone the bar is one state line plus the floor total, so the grid keeps
+     most of the screen; the dropped words stay for screen readers. */
+  .pg-wrap.product-workspace .pg-editbar { gap: 0 8px; padding: 4px 6px 6px 12px; }
+  .pg-wrap.product-workspace .pg-editbar-state { flex: 1 1 0; min-width: 0; font-size: 15px; }
+  .pg-wrap.product-workspace .pg-editbar-k { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .pg-wrap.product-workspace .pg-editbar-change { padding: 0 14px; }
+  .pg-wrap.product-workspace .pg-editbar .count-strip { gap: 0 6px; font-size: 13px; line-height: 1.5; }
+  .pg-wrap.product-workspace .pg-editbar .count-strip__label { font-size: 11px; }
+  .pg-wrap.product-workspace .grid-legend { padding: 8px 10px; }
+  .pg-wrap.product-workspace .grid-legend ul { gap: 6px 14px; font-size: 13px; }
+}
+/* The site header drops to 74px + 1px border at 680px (public/home.css). */
+@media (max-width: 680px) {
+  .pg-wrap.product-workspace .pg-editbar { top: 75px; }
+}
+
 @media (max-width: 900px) {
   .rc-grid.product-workspace, .product-workspace .vfy-workbench { grid-template-columns: minmax(0, 1fr); }
   .product-workspace .rc-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }

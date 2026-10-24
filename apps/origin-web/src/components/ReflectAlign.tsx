@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, type CSSProperties } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, type CSSProperties, type KeyboardEvent } from 'react'
 import { PHYSICAL_DOMAINS, ROBOT_EMBODIMENTS, EMBODIMENT_CODE, getDomainTheme, getEmbodimentProfile, type PhysicalDomain, type RobotEmbodiment } from '../environmentPlan'
 import {
   freezeWorkflow,
@@ -20,6 +20,7 @@ import { renameFloorPlan, planStoreFor, SAVE_FAILED_NOTICE, type FloorPlanWriter
 import { useAuth } from '../auth/AuthProvider'
 import { StepBridge } from './StepBridge'
 import { GRID_MIN, GRID_MAX, clampN, resizeSiteMap } from '../siteMapResize'
+import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
 
 function keyOf(p: { x: number; y: number }): string {
   return `${p.x},${p.y}`
@@ -40,18 +41,26 @@ type FleetLayer = 'robots' | 'items' | 'drops'
 // One colour per fleet, matching the proving-ground sim (up to MAX_FLEETS).
 const FLEET_COLORS = ['#2b523b', '#1e6a52', '#8a5200', '#6940a3', '#9d2e68', '#0b637a']
 
-// The placement palette doubles as the legend (paint-program model): a tool is
-// always selected; tap the grid to place it, tap a placed element (or use Erase)
-// to remove it. Glyph + colour here match exactly what's drawn on the grid.
+// The placement palette (paint-program model): a tool is always selected; tap the
+// grid to place it, tap a placed element (or use Erase) to remove it. Robot, item
+// and drop glyphs take the ACTIVE fleet's colour at render time, because that is
+// the colour the grid draws them in; the global layers use site ink and the
+// hazard / human-only text colours their cells use.
 const PALETTE: { id: Tool; glyph: string; label: string; color: string }[] = [
   { id: 'robot', glyph: 'R', label: 'Robot', color: '#2b523b' },
-  { id: 'item', glyph: 'I', label: 'Item', color: '#1e6a52' },
-  { id: 'drop', glyph: 'D', label: 'Drop', color: '#294b99' },
-  { id: 'wall', glyph: 'W', label: 'Wall', color: '#475569' },
+  { id: 'item', glyph: 'I', label: 'Item', color: '#2b523b' },
+  { id: 'drop', glyph: 'D', label: 'Drop', color: '#2b523b' },
+  { id: 'wall', glyph: 'W', label: 'Wall', color: '#4e5b48' },
   { id: 'hazard', glyph: '!', label: 'Hazard', color: '#962e28' },
   { id: 'human', glyph: 'H', label: 'Human-only', color: '#704400' },
-  { id: 'clear', glyph: '⌫', label: 'Erase', color: '#64748b' },
+  { id: 'clear', glyph: '⌫', label: 'Erase', color: '#59664f' },
 ]
+const TOOL_LABEL = Object.fromEntries(PALETTE.map((t) => [t.id, t.label])) as Record<Tool, string>
+
+/** Column letters A–L across the top, row numbers 1–9 down the side: the same
+ *  reference a sighted visitor reads off the axes and a screen reader hears. */
+const colLetter = (x: number) => String.fromCharCode(65 + x)
+const coordOf = (x: number, y: number) => `${colLetter(x)}${y + 1}`
 
 const LAYER_OF: Record<'robot' | 'item' | 'drop', FleetLayer> = {
   robot: 'robots',
@@ -68,13 +77,14 @@ function totalIn(fleets: FleetDeployment[], layer: FleetLayer): number {
   return fleets.reduce((n, f) => n + f[layer].length, 0)
 }
 
-/** Locate a deployed cell: which layer + fleet it belongs to, and its GLOBAL
- *  index (numbered in fleet order, then within-fleet) for the R#/I#/D# label. */
+/** Locate a deployed cell: which layer + fleet it belongs to, its GLOBAL index
+ *  (fleet order, then within-fleet) for the I#/D# labels, and its index WITHIN
+ *  its fleet, which numbers robots on the cell (each fleet's first robot is 1). */
 function locate(
   fleets: FleetDeployment[],
   x: number,
   y: number,
-): { layer: 'robot' | 'item' | 'drop'; fleet: number; global: number } | null {
+): { layer: 'robot' | 'item' | 'drop'; fleet: number; global: number; local: number } | null {
   const layers: [FleetLayer, 'robot' | 'item' | 'drop'][] = [
     ['robots', 'robot'],
     ['items', 'item'],
@@ -83,10 +93,9 @@ function locate(
   for (const [key, layer] of layers) {
     let g = 0
     for (let fi = 0; fi < fleets.length; fi += 1) {
-      for (const p of fleets[fi][key]) {
-        if (p.x === x && p.y === y) return { layer, fleet: fi, global: g }
-        g += 1
-      }
+      const local = fleets[fi][key].findIndex((p) => p.x === x && p.y === y)
+      if (local >= 0) return { layer, fleet: fi, global: g + local, local }
+      g += fleets[fi][key].length
     }
   }
   return null
@@ -112,9 +121,12 @@ function applyTool(
   const tkey = `${x},${y}`
 
   // Tapping an existing robot: re-type it when a different type is painted,
-  // otherwise toggle-remove. (Without a paint type, behaviour is unchanged.)
+  // otherwise toggle-remove. The comparison uses the robot's EFFECTIVE type (its
+  // painted type, else its fleet's), so tapping a robot that already shows the
+  // painted type removes it instead of silently pinning the same type.
   if (tool === 'robot' && here?.layer === 'robot') {
-    if (robotType && map.robotTypes?.[tkey] !== robotType) {
+    const current = map.robotTypes?.[tkey] ?? fleets[here.fleet]?.embodiment
+    if (robotType && current !== robotType) {
       return normalizeFleets({ ...map, robotTypes: { ...(map.robotTypes ?? {}), [tkey]: robotType } }, fleets)
     }
     fleets[here.fleet].robots = without(fleets[here.fleet].robots, x, y)
@@ -192,13 +204,15 @@ function cellKind(map: DescriptiveSiteMap, x: number, y: number): string {
   return 'clear'
 }
 
-/** The glyph + number drawn in a cell. Robots read as their TYPE (HU1, DG2, AM3…);
- *  items/drops/walls/hazards/humans keep I/D/W/!/H numbering. */
+/** The glyph + number drawn in a cell. Robots read as their TYPE plus their number
+ *  WITHIN their fleet (each fleet starts at 1: AM1, AM2, HU1, DG1), so a reader
+ *  never assumes robots are missing; the fleet itself is the F# mark and colour.
+ *  Items/drops/walls/hazards/humans keep their floor-wide I/D/W/!/H numbering. */
 function cellText(fleets: FleetDeployment[], map: DescriptiveSiteMap, x: number, y: number, fallbackEmb: RobotEmbodiment): string {
   const here = locate(fleets, x, y)
   if (here?.layer === 'robot') {
     const emb = map.robotTypes?.[`${x},${y}`] ?? fleets[here.fleet]?.embodiment ?? fallbackEmb
-    return `${EMBODIMENT_CODE[emb]}${here.global + 1}`
+    return `${EMBODIMENT_CODE[emb]}${here.local + 1}`
   }
   if (here?.layer === 'item') return `I${here.global + 1}`
   if (here?.layer === 'drop') return `D${here.global + 1}`
@@ -218,6 +232,117 @@ function firstFreeCell(map: DescriptiveSiteMap): GridPos | null {
     }
   }
   return null
+}
+
+/** What one cell holds, in words: `desc` for its accessible name and the readout
+ *  ("Fleet 1 AMR robot 1"), `noun` for a sentence about placing it ("an item for
+ *  Fleet 2"), and `the` for one about removing it ("the wall W3"). */
+function cellInfo(map: DescriptiveSiteMap, x: number, y: number, fallbackEmb: RobotEmbodiment) {
+  const fleets = siteFleets(map)
+  const here = locate(fleets, x, y)
+  const text = cellText(fleets, map, x, y, fallbackEmb)
+  if (here?.layer === 'robot') {
+    const emb = map.robotTypes?.[`${x},${y}`] ?? fleets[here.fleet]?.embodiment ?? fallbackEmb
+    const type = getEmbodimentProfile(emb).label
+    // "AMR robot", "Humanoid robot", but "Robot dog", never "Robot dog robot".
+    const named = /robot/i.test(type) ? type : `${type} robot`
+    const desc = `Fleet ${here.fleet + 1} ${named} ${here.local + 1}`
+    const article = /^[aeiou]/i.test(named) ? 'an' : 'a'
+    return { kind: 'robot', fleet: here.fleet, type, desc, noun: `${article} ${named} for Fleet ${here.fleet + 1}`, the: `${desc} (${text})` }
+  }
+  if (here) {
+    const desc = `Fleet ${here.fleet + 1} ${here.layer} ${text}`
+    return { kind: here.layer, fleet: here.fleet, type: '', desc, noun: `${here.layer === 'item' ? 'an item' : 'a drop'} for Fleet ${here.fleet + 1}`, the: `${here.layer} ${text} of Fleet ${here.fleet + 1}` }
+  }
+  const kind = cellKind(map, x, y)
+  if (kind === 'wall') return { kind, fleet: -1, type: '', desc: `wall ${text}`, noun: 'a wall', the: `wall ${text}` }
+  if (kind === 'hazard') return { kind, fleet: -1, type: '', desc: 'hazard, off-limits to robots', noun: 'a hazard', the: 'hazard' }
+  if (kind === 'human') return { kind, fleet: -1, type: '', desc: 'human-only, reserved for people', noun: 'a human-only cell', the: 'human-only cell' }
+  return { kind: 'clear', fleet: -1, type: '', desc: 'empty', noun: '', the: '' }
+}
+
+/** Describe a tap BEFORE and AFTER it happens, from the real `applyTool` result, so
+ *  the readout and the screen-reader announcement can never disagree with the grid.
+ *  Pure description: no verdict, score or oracle claim. */
+function tapResult(
+  map: DescriptiveSiteMap,
+  next: DescriptiveSiteMap,
+  x: number,
+  y: number,
+  tool: Tool,
+  activeFleet: number,
+  fallbackEmb: RobotEmbodiment,
+): { future: string; past: string } {
+  const at = coordOf(x, y)
+  const before = cellInfo(map, x, y, fallbackEmb)
+  const after = next === map ? before : cellInfo(next, x, y, fallbackEmb)
+  // A tap is a no-op when the cell reads the same afterwards, whether or not
+  // applyTool returned a new object (normalizeFleets always does).
+  if (before.kind === after.kind && before.desc === after.desc) {
+    const fleets = siteFleets(map)
+    let why = before.kind === 'clear' ? 'it is already empty' : 'nothing would change'
+    if (before.kind === 'item' && totalIn(fleets, 'items') <= 1) why = 'the floor keeps at least one item'
+    else if (before.kind === 'drop' && totalIn(fleets, 'drops') <= 1) why = 'the floor keeps at least one drop'
+    else if (tool === 'robot' || tool === 'item' || tool === 'drop') {
+      const layer = LAYER_OF[tool]
+      if ((fleets[activeFleet]?.[layer].length ?? 0) >= MAX_PER_FLEET) why = `Fleet ${activeFleet + 1} already has ${MAX_PER_FLEET} ${layer}`
+    }
+    return { future: `leaves ${at} as it is, because ${why}`, past: `No change at ${at}: ${why}.` }
+  }
+  if (before.kind === 'clear') return { future: `places ${after.noun} here`, past: `Placed ${after.noun} at ${at}.` }
+  if (after.kind === 'clear') return { future: `removes the ${before.the}`, past: `Removed the ${before.the} at ${at}.` }
+  if (before.kind === 'robot' && after.kind === 'robot' && before.type !== after.type) {
+    return { future: `changes this robot to ${after.type}`, past: `Changed the robot at ${at} to ${after.type}.` }
+  }
+  return { future: `replaces the ${before.the} with ${after.noun}`, past: `Replaced the ${before.the} at ${at} with ${after.noun}.` }
+}
+
+/** A note box that grows with its text, so a reader never scrolls inside a small
+ *  box to finish a sentence the page wrote. It stops growing at a generous cap
+ *  (CSS max-height) and only then scrolls, with a visible "more below" line. */
+function NoteField({ value, onChange, label, className }: { value: string; onChange: (text: string) => void; label: string; className?: string }) {
+  const ref = useRef<HTMLTextAreaElement>(null)
+  const [overflows, setOverflows] = useState(false)
+  const fit = useCallback(() => {
+    const el = ref.current
+    if (!el) return
+    const s = getComputedStyle(el)
+    const borders = parseFloat(s.borderTopWidth) + parseFloat(s.borderBottomWidth)
+    el.style.height = 'auto'
+    const cap = parseFloat(s.maxHeight)
+    const wanted = el.scrollHeight + borders
+    el.style.height = `${Number.isFinite(cap) ? Math.min(wanted, cap) : wanted}px`
+    setOverflows(el.scrollHeight > el.clientHeight + 1)
+  }, [])
+  useLayoutEffect(fit, [value, fit])
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    // Re-fit when the box's WIDTH changes (rotation, column reflow) or the web font
+    // settles; its own height changes are ours and must not re-trigger the observer.
+    // The refit is deferred a frame so it never resizes the observed box inside the
+    // observer callback (which would raise a ResizeObserver loop error).
+    let width = el.clientWidth
+    let frame = 0
+    const ro = new ResizeObserver(() => {
+      if (el.clientWidth === width) return
+      width = el.clientWidth
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(fit)
+    })
+    ro.observe(el)
+    void document.fonts?.ready.then(fit)
+    return () => {
+      cancelAnimationFrame(frame)
+      ro.disconnect()
+    }
+  }, [fit])
+  return (
+    <>
+      <textarea ref={ref} className={`note-field ${className ?? ''}`} aria-label={label} value={value} rows={1} onChange={(e) => onChange(e.target.value)} />
+      {overflows && <span className="note-more" aria-hidden="true">More below — scroll inside this note</span>}
+    </>
+  )
 }
 
 type Verdict = 'finish' | 'escalate' | 'refuse'
@@ -250,12 +375,11 @@ function TriadCard({
       <div className="triad-list">
         {facts.map((fact, index) => (
           <label className="triad-rule" key={fact.id}>
-            <textarea
-              aria-label={`${name} rule ${index + 1}`}
+            <NoteField
+              label={`${name} rule ${index + 1}`}
               value={fact.text}
-              rows={2}
-              onChange={(e) =>
-                onChange(facts.map((f, i) => (i === index ? { ...f, text: e.target.value, state: 'edited' } : f)))
+              onChange={(text) =>
+                onChange(facts.map((f, i) => (i === index ? { ...f, text, state: 'edited' } : f)))
               }
             />
           </label>
@@ -278,15 +402,16 @@ function StoryboardEditor({
       {facts.map((fact, index) => (
         <li className="sb-step" key={fact.id}>
           <span className="sb-num">{index + 1}</span>
-          <textarea
-            className="sb-text"
-            aria-label={`Storyboard step ${index + 1}`}
-            value={fact.text}
-            rows={2}
-            onChange={(e) =>
-              onChange(facts.map((f, i) => (i === index ? { ...f, text: e.target.value, state: 'edited' } : f)))
-            }
-          />
+          <div className="sb-field">
+            <NoteField
+              className="sb-text"
+              label={`Storyboard step ${index + 1}`}
+              value={fact.text}
+              onChange={(text) =>
+                onChange(facts.map((f, i) => (i === index ? { ...f, text, state: 'edited' } : f)))
+              }
+            />
+          </div>
         </li>
       ))}
     </ol>
@@ -364,6 +489,72 @@ export function ReflectAlign({
   const robotTotal = totalIn(fleets, 'robots')
   const itemTotal = totalIn(fleets, 'items')
   const dropTotal = totalIn(fleets, 'drops')
+  const activeColor = FLEET_COLORS[af % FLEET_COLORS.length]
+  const proving = mode === 'proving-ground'
+
+  // The grid is one Tab stop (roving tabindex); arrow keys move a visible focus
+  // across it. `cursor` is the cell that owns tabIndex 0, `hover` the cell under
+  // the pointer: both feed the readout, which describes what a tap would do.
+  const [cursor, setCursor] = useState<GridPos>({ x: 0, y: 0 })
+  const [hover, setHover] = useState<GridPos | null>(null)
+  const [focused, setFocused] = useState<GridPos | null>(null)
+  // The readout follows whichever the visitor used last: the pointer or the keyboard.
+  const [look, setLook] = useState<GridPos | null>(null)
+  const [announcement, setAnnouncement] = useState('')
+  const gridRef = useRef<HTMLDivElement>(null)
+  const fleetsRef = useRef<HTMLDivElement>(null)
+  const barRef = useRef<HTMLDivElement>(null)
+  const cx = clampN(cursor.x, 0, siteMap.width - 1)
+  const cy = clampN(cursor.y, 0, siteMap.height - 1)
+
+  // Clear, then set on the next frame, so a repeated sentence is still announced.
+  function announce(text: string) {
+    setAnnouncement('')
+    requestAnimationFrame(() => setAnnouncement(text))
+  }
+  function tapCell(x: number, y: number) {
+    const next = applyTool(siteMap, x, y, tool, af, robotPaintType)
+    announce(tapResult(siteMap, next, x, y, tool, af, embodiment).past)
+    setCursor({ x, y })
+    if (next !== siteMap) setSiteMap(next)
+  }
+  function onGridKey(e: KeyboardEvent<HTMLDivElement>) {
+    const t = e.target as HTMLElement
+    if (t.dataset.x === undefined || e.altKey || e.ctrlKey || e.metaKey) return
+    const x = Number(t.dataset.x)
+    const y = Number(t.dataset.y)
+    const moves: Record<string, [number, number]> = {
+      ArrowLeft: [x - 1, y], ArrowRight: [x + 1, y], ArrowUp: [x, y - 1], ArrowDown: [x, y + 1],
+      Home: [0, y], End: [siteMap.width - 1, y],
+    }
+    const to = moves[e.key]
+    if (!to) return
+    e.preventDefault()
+    const nx = clampN(to[0], 0, siteMap.width - 1)
+    const ny = clampN(to[1], 0, siteMap.height - 1)
+    setCursor({ x: nx, y: ny })
+    gridRef.current?.querySelector<HTMLButtonElement>(`[data-x="${nx}"][data-y="${ny}"]`)?.focus()
+  }
+  // Scroll the fleet cards to just below the site header + the stuck editor bar,
+  // then focus the active fleet, so focus never lands under the bar.
+  function showControls() {
+    const fleetsEl = fleetsRef.current
+    if (!fleetsEl) return
+    const header = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? 0
+    const bar = barRef.current?.getBoundingClientRect().height ?? 0
+    // 'instant', not the page's smooth scroll: a smooth scroll is cancelled by the focus() below.
+    window.scrollTo({ top: fleetsEl.getBoundingClientRect().top + window.scrollY - (header + bar + 14), behavior: 'instant' })
+    fleetsEl.querySelector<HTMLButtonElement>('.smp-fleet.on .smp-fleet-select')?.focus({ preventScroll: true })
+  }
+  const toolPhrase = `${TOOL_LABEL[tool]} tool${tool === 'robot' ? ` (${getEmbodimentProfile(robotPaintType).label})` : ''}`
+  const readout = look && look.x < siteMap.width && look.y < siteMap.height
+    ? (() => {
+        const info = cellInfo(siteMap, look.x, look.y, embodiment)
+        const next = applyTool(siteMap, look.x, look.y, tool, af, robotPaintType)
+        const what = tapResult(siteMap, next, look.x, look.y, tool, af, embodiment).future
+        return `${coordOf(look.x, look.y)}: ${info.desc}. A tap with the ${toolPhrase} ${what}.`
+      })()
+    : `Active: Fleet ${af + 1} · ${toolPhrase}. Point at a cell, or move with the arrow keys, to see what a tap does there.`
 
   function approve() {
     onApprove(
@@ -467,6 +658,7 @@ export function ReflectAlign({
     await refreshPlans()
   }
   function handleLoadPlan(p: SavedFloorPlan) {
+    setAnnouncement('')
     setDomain(p.domain)
     setEmbodiment(p.embodiment)
     setSiteMap(p.siteMap)
@@ -516,6 +708,7 @@ export function ReflectAlign({
 
   // Reset every placement back to the template's default floor + size (one fleet).
   function clearAll() {
+    setAnnouncement('')
     setTool('robot')
     setActiveFleet(0)
     setSiteMap(draft.siteMap)
@@ -527,7 +720,7 @@ export function ReflectAlign({
         <button className="btn ghost back" onClick={onBack}>
           {backLabel}
         </button>
-        <div className="flow-kicker">{mode === 'proving-ground' ? '01 · Synthetic floor editor' : 'Review & confirm'}</div>
+        <div className="flow-kicker">{mode === 'proving-ground' ? '01 · Draw the floor' : 'Review & confirm'}</div>
         <h2 className="flow-title">{mode === 'proving-ground' ? 'Make this floor your experiment.' : 'Does this match the real workflow?'}</h2>
         <p className="flow-sub">
           {mode === 'proving-ground' ? <>Start with this synthetic template. Change walls, hazards, and robot types to see the fixed oracle's evaluation update below. The editable storyboard and rules are descriptive notes; they do not change the oracle.</> : <>Origin drafted the floor, the plan, and the safety calls below from what you submitted. Fix
@@ -547,7 +740,7 @@ export function ReflectAlign({
           <div className="align-panel site-map-panel">
             <div className="smp-head">
               <div>
-                <div className="panel-kicker">Build your site</div>
+                <div className="panel-kicker">{proving ? 'Floor and fleets' : 'Build your site'}</div>
                 <p className="smp-sub">
                   Size each fleet — its robots, the items they carry, and their drop-offs — then tap
                   the grid to place or move them into the <strong>active</strong> fleet. Deployment
@@ -593,7 +786,31 @@ export function ReflectAlign({
               <p className="smp-plans-notice" role="status">{planNotice}</p>
             </div>
 
-            <div className="smp-fleets" role="group" aria-label="Fleets to deploy">
+            {/* The editor bar: sticky under the site header for as long as this panel
+                (fleets, tools, grid) is on screen, so the active fleet, tool and type
+                never scroll away. It summarises; the controls stay where they are. */}
+            {proving && (
+              <div className="pg-editbar" role="group" aria-label="Editing now" ref={barRef}>
+                <p className="pg-editbar-state">
+                  <span className="pg-editbar-dot" style={{ background: activeColor }} aria-hidden="true" />
+                  <span><b>Fleet {af + 1}</b><span className="pg-editbar-k"> active</span></span>
+                  <span className="pg-editbar-sep" aria-hidden="true">·</span>
+                  <span><span className="pg-editbar-k">Tool: </span><b>{TOOL_LABEL[tool]}</b></span>
+                  {tool === 'robot' && (
+                    <>
+                      <span className="pg-editbar-sep" aria-hidden="true">·</span>
+                      <span><span className="pg-editbar-k">Type: </span><b>{getEmbodimentProfile(robotPaintType).label}</b></span>
+                    </>
+                  )}
+                </p>
+                <button type="button" className="pg-editbar-change" onClick={showControls}>
+                  Change<span className="pg-editbar-k"> fleet or tool</span>
+                </button>
+                <FloorCountStrip map={siteMap} fallback={embodiment} />
+              </div>
+            )}
+
+            <div className="smp-fleets" role="group" aria-label="Fleets to deploy" ref={fleetsRef}>
               {fleets.map((f, fi) => {
                 const color = FLEET_COLORS[fi % FLEET_COLORS.length]
                 const active = fi === af
@@ -706,9 +923,9 @@ export function ReflectAlign({
                     className={`smp-tool ${tool === t.id ? 'on' : ''}`}
                     aria-pressed={tool === t.id}
                     onClick={() => setTool(t.id)}
-                    style={tool === t.id ? ({ '--smp-c': t.color } as CSSProperties) : undefined}
+                    style={tool === t.id ? ({ '--smp-c': t.id === 'robot' || t.id === 'item' || t.id === 'drop' ? activeColor : t.color } as CSSProperties) : undefined}
                   >
-                    <span className="smp-glyph" style={{ background: t.color }}>{t.glyph}</span>
+                    <span className="smp-glyph" style={{ background: t.id === 'robot' || t.id === 'item' || t.id === 'drop' ? activeColor : t.color }}>{t.glyph}</span>
                     {t.label}
                   </button>
                 ))}
@@ -753,6 +970,54 @@ export function ReflectAlign({
               </div>
             </div>
 
+            {/* Floor header: the size in words and a synthetic scale, so 108 squares
+                read as a room. The scale is a stated convention of this synthetic floor,
+                never a claim about a real building. */}
+            {proving && (
+              <div className="floor-head">
+                <p className="floor-head-title">
+                  <b>Floor</b> · {siteMap.width} wide × {siteMap.height} deep · {siteMap.width * siteMap.height} cells
+                </p>
+                <p className="floor-head-scale">
+                  In this synthetic floor, one cell is about one metre square, so this floor is about{' '}
+                  {siteMap.width} m wide × {siteMap.height} m deep: an illustrative bay, not a real facility.
+                </p>
+              </div>
+            )}
+
+            {/* Docked legend: the exact marks the grid draws, before the first tap. */}
+            {proving && (
+              <div className="grid-legend" role="group" aria-label="Legend">
+                <p className="grid-legend-title"><b>Legend</b> Tap a tool, then tap the floor.</p>
+                <p className="grid-legend-note">
+                  Robot, item (I) and drop (D) in each fleet’s colour{fleets.length > 1 ? '; F1 marks Fleet 1' : ''}:
+                </p>
+                <ul className="grid-legend-fleets">
+                  {fleets.map((f, fi) => {
+                    const c = FLEET_COLORS[fi % FLEET_COLORS.length]
+                    // The codes this fleet's cells actually show (a fleet can hold a mix).
+                    const fleetType = f.embodiment ?? embodiment
+                    const codes = [...new Set((f.robots.length ? f.robots.map((r) => siteMap.robotTypes?.[`${r.x},${r.y}`] ?? fleetType) : [fleetType]).map((e) => EMBODIMENT_CODE[e]))]
+                    return (
+                      <li key={fi}>
+                        {codes.map((code) => (
+                          <span key={code} className="lg-cell" style={{ background: c, color: '#fff', borderColor: c }} aria-hidden="true">{code}</span>
+                        ))}
+                        <span className="lg-cell cell-item" style={{ color: c, borderColor: c }} aria-hidden="true">I</span>
+                        <span className="lg-cell" style={{ color: c, borderColor: c, background: `color-mix(in srgb, ${c} 14%, #fff)` }} aria-hidden="true">D</span>
+                        <span>{fleets.length > 1 ? `F${fi + 1}` : `Fleet ${fi + 1}`}<span className="sr-only">{fleets.length > 1 ? `, Fleet ${fi + 1}` : ''}</span></span>
+                      </li>
+                    )
+                  })}
+                </ul>
+                <ul className="grid-legend-global">
+                  <li><span className="lg-cell cell-wall" aria-hidden="true">W</span> Wall</li>
+                  <li><span className="lg-cell cell-hazard" aria-hidden="true">!</span> Hazard: off-limits to robots</li>
+                  <li><span className="lg-cell cell-human" aria-hidden="true">H</span> Human-only: reserved for people</li>
+                </ul>
+              </div>
+            )}
+
             {/* Fixed 44px tracks inside a keyboard-reachable scroller. `1fr` tracks
                 collapsed to their 43.6px min-content floor on a phone, so a 12-wide map
                 laid out 589px inside a 231px column and `overflow-x: clip` on body
@@ -761,51 +1026,98 @@ export function ReflectAlign({
                 page's primary interaction, so the cells must stay reachable AND stay at
                 the 44px touch target. The wrapper carries role/tabIndex/aria-label so the
                 horizontal scroll is operable by keyboard, matching the /trust scoreboard
-                scroller pattern. */}
+                scroller pattern. Column letters and row numbers ride along as axes; the
+                row numbers stay pinned at the left edge while the grid scrolls sideways. */}
             <div
               className="site-grid-scroll"
               role="region"
               aria-label="Floor plan grid (scrollable)"
+              aria-describedby={proving ? 'pg-grid-keys' : undefined}
               tabIndex={0}
             >
-              <div className="site-grid" style={{ gridTemplateColumns: `repeat(${siteMap.width}, 44px)` }}>
-              {Array.from({ length: siteMap.width * siteMap.height }, (_, i) => {
-                const x = i % siteMap.width
-                const y = Math.floor(i / siteMap.width)
+              <div
+                className={`site-grid${proving ? ' site-grid--axes' : ''}`}
+                ref={gridRef}
+                style={{ gridTemplateColumns: proving ? `24px repeat(${siteMap.width}, 44px)` : `repeat(${siteMap.width}, 44px)` }}
+                onKeyDown={onGridKey}
+                onMouseLeave={() => { setHover(null); setLook(focused) }}
+                onFocus={(e) => {
+                  const t = e.target as HTMLElement
+                  if (t.dataset.x === undefined) return
+                  const at = { x: Number(t.dataset.x), y: Number(t.dataset.y) }
+                  setFocused(at)
+                  setLook(at)
+                  setCursor(at)
+                }}
+                onBlur={(e) => {
+                  if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+                  setFocused(null)
+                  setLook(hover)
+                }}
+              >
+              {proving && <span className="grid-axis grid-axis--corner" aria-hidden="true" />}
+              {proving && Array.from({ length: siteMap.width }, (_, x) => (
+                <span key={`col-${x}`} className="grid-axis grid-axis--col" aria-hidden="true">{colLetter(x)}</span>
+              ))}
+              {Array.from({ length: siteMap.height }, (_, y) => [
+                proving ? <span key={`row-${y}`} className="grid-axis grid-axis--row" aria-hidden="true">{y + 1}</span> : null,
+                ...Array.from({ length: siteMap.width }, (_, x) => {
                 const kind = cellKind(siteMap, x, y)
                 const text = cellText(fleets, siteMap, x, y, embodiment)
-                // Colour robots / items / drops by their fleet; tag the cell with F#.
+                // Colour robots / items / drops by their fleet; mark the cell F#.
                 const loc = kind === 'robot' || kind === 'item' || kind === 'drop' ? locate(fleets, x, y) : null
                 let style: CSSProperties | undefined
                 let tag = ''
                 if (loc) {
                   const c = FLEET_COLORS[loc.fleet % FLEET_COLORS.length]
-                  if (fleets.length > 1) tag = `Fleet ${loc.fleet + 1}`
+                  if (fleets.length > 1) tag = `F${loc.fleet + 1}`
                   if (kind === 'robot') style = { background: c, color: '#fff', borderColor: c }
                   else if (kind === 'drop') style = { color: c, borderColor: c, background: `color-mix(in srgb, ${c} 14%, #fff)` }
                   else style = { color: c, borderColor: c }
                 }
+                const label = proving
+                  ? `${coordOf(x, y)}, ${cellInfo(siteMap, x, y, embodiment).desc}`
+                  : `Cell ${x},${y} ${kind}${text ? ` ${text}` : ''}${tag ? ` Fleet ${loc!.fleet + 1}` : ''}`
                 return (
                   <button
                     key={keyOf({ x, y })}
                     className={`site-cell cell-${kind}`}
                     style={style}
-                    onClick={() => setSiteMap((m) => applyTool(m, x, y, tool, af, robotPaintType))}
-                    aria-label={`Cell ${x},${y} ${kind}${text ? ` ${text}` : ''}${tag ? ` ${tag}` : ''}`}
+                    data-x={x}
+                    data-y={y}
+                    tabIndex={proving ? (x === cx && y === cy ? 0 : -1) : undefined}
+                    onClick={() => tapCell(x, y)}
+                    onMouseEnter={() => { setHover({ x, y }); setLook({ x, y }) }}
+                    aria-label={label}
                   >
-                    {text}
-                    {tag && <span className="site-fleet-tag">{tag}</span>}
+                    <span className="site-cell-code">{text}</span>
+                    {tag && <span className="site-fleet-tag" aria-hidden="true">{tag}</span>}
                   </button>
                 )
-              })}
+              })])}
+              {proving && (
+                <>
+                  <span className="grid-scale-bar" style={{ gridColumn: '2 / span 3' }} aria-hidden="true" />
+                  <span className="grid-scale-label" style={{ gridColumn: '2 / -1' }}>3 cells ≈ 3 m in this synthetic scale</span>
+                </>
+              )}
               </div>
             </div>
 
-            <p className="smp-hint">
-              The palette is the key — each tool’s colour matches what’s drawn here, and the small{' '}
-              <strong>F#</strong> badge shows which fleet a cell belongs to. Tap any placed cell with
-              its tool to remove it; switch tools (or fleets) to move it.
-            </p>
+            {!proving && (
+              <p className="smp-hint">
+                The palette is the key — each tool’s colour matches what’s drawn here, and the small{' '}
+                <strong>F#</strong> badge shows which fleet a cell belongs to. Tap any placed cell with
+                its tool to remove it; switch tools (or fleets) to move it.
+              </p>
+            )}
+            {proving && (
+              <>
+                <p className="sr-only" id="pg-grid-keys">Arrow keys move between cells; Home and End jump to the ends of a row; Enter or Space applies the active tool.</p>
+                <p className="grid-readout">{readout}</p>
+                <p className="sr-only" role="status" aria-live="polite">{announcement}</p>
+              </>
+            )}
           </div>
 
           <div className="align-panel">
@@ -870,15 +1182,21 @@ export function ReflectAlign({
             <span className="panel-kicker">The plan</span>
             <h2>What {robotTotal > 1 ? `your ${robotTotal} robots` : 'the robot'} will do</h2>
             <p>
-              {mode === 'proving-ground' ? 'Describe the intended sequence — pick up, route, drop. These notes do not change the geometry-based evaluation below.' : 'The sequence Origin read from your site — pick up, route, drop. Edit any step; it’s descriptive only, and verification scores nothing until you freeze.'}
+              {proving ? 'Describe the intended sequence: pick up, route, drop.' : 'The sequence Origin read from your site — pick up, route, drop. Edit any step; it’s descriptive only, and verification scores nothing until you freeze.'}
             </p>
+            {proving && <p className="notes-status">These notes describe intent only. They do not change the scored result, which comes from floor geometry and robot types.</p>}
           </div>
+          {proving && <FloorCountStrip map={siteMap} fallback={embodiment} />}
           {(fleets.length > 1 || robotTotal > 1 || itemTotal > 1 || dropTotal > 1) && (
             <p className="plan-fleet">
-              <strong>{fleets.length} fleet{fleets.length === 1 ? '' : 's'}</strong>{' '}
-              · <strong>{robotTotal} robot{robotTotal === 1 ? '' : 's'}</strong>{' '}
-              · <strong>{itemTotal} item{itemTotal === 1 ? '' : 's'}</strong>{' '}
-              · <strong>{dropTotal} drop{dropTotal === 1 ? '' : 's'}</strong>.{' '}
+              {!proving && (
+                <>
+                  <strong>{fleets.length} fleet{fleets.length === 1 ? '' : 's'}</strong>{' '}
+                  · <strong>{robotTotal} robot{robotTotal === 1 ? '' : 's'}</strong>{' '}
+                  · <strong>{itemTotal} item{itemTotal === 1 ? '' : 's'}</strong>{' '}
+                  · <strong>{dropTotal} drop{dropTotal === 1 ? '' : 's'}</strong>.{' '}
+                </>
+              )}
               {fleets.length > 1
                 ? 'Each fleet works on its own (matching colour) — its robots carry only its items to its nearest drop, '
                 : 'Each item is assigned to its nearest robot, '}
@@ -899,6 +1217,7 @@ export function ReflectAlign({
               <span className="lbl-escalate">escalate</span> to a human, and when it must{' '}
               <span className="lbl-refuse">refuse</span> outright.
             </p>
+            {proving && <p className="notes-status">These notes describe intent only. They do not change the scored result, which comes from floor geometry and robot types.</p>}
           </div>
           <div className="triad-rules">
             <TriadCard verdict="finish" name="Finish" meaning="May finish the job on its own when —" facts={finishRules} onChange={setFinishRules} />
@@ -909,7 +1228,7 @@ export function ReflectAlign({
 
         <div className="flow-actions">
           <button className="btn primary hero-action" onClick={approve}>
-            {mode === 'proving-ground' ? 'Inspect this floor’s results' : 'Approve workflow'}
+            {mode === 'proving-ground' ? 'Inspect the result' : 'Approve workflow'}
           </button>
           <span className="trust-note">{mode === 'proving-ground' ? 'The deterministic oracle scores geometry and robot types. No real robot executes.' : 'Approving locks this exact snapshot — evidence-backed verification scores it, not a model.'}</span>
         </div>

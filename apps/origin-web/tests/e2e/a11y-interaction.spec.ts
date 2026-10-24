@@ -33,10 +33,11 @@ test('floor editor places a tool from the keyboard alone', async ({ page }) => {
   const wall = page.locator('.smp-tool').filter({ hasText: 'Wall' })
   await press(page, wall)
   await expect(wall).toHaveAttribute('aria-pressed', 'true')
-  const clear = page.getByRole('button', { name: /^Cell \d+,\d+ clear$/ }).first()
-  const [, xy] = (await clear.getAttribute('aria-label'))!.match(/^Cell (\d+,\d+) /)!
+  // Cells are named by their on-screen axes (column letter, row number) and contents.
+  const clear = page.getByRole('button', { name: /^[A-L]\d+, empty$/ }).first()
+  const [, at] = (await clear.getAttribute('aria-label'))!.match(/^([A-L]\d+), /)!
   await press(page, clear, 'Space')
-  await expect(page.getByRole('button', { name: new RegExp(`^Cell ${xy} wall`) })).toBeFocused()
+  await expect(page.getByRole('button', { name: new RegExp(`^${at}, wall W\\d+$`) })).toBeFocused()
   await expectNoSeriousViolations(page, '/proving-ground after a keyboard edit')
 })
 

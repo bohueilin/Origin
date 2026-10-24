@@ -48,7 +48,7 @@
     "@insforge/sdk": "^1.4.2",
     "@origin/evidence": "*",
     "@origin/verifier-core": "*",
-    "hono": "^4.12.26",
+    "hono": "^4.13.11",
     "openai": "^6.44.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

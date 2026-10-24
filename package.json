@@ -20,7 +20,7 @@
     "build:janus": "npm run build -w @origin/janus",
     "build:chronos-ui": "npm --prefix apps/chronos-ui install && npm --prefix apps/chronos-ui run build"
   },
-  "comment:overrides": "@insforge/shared-schemas (via @insforge/sdk) still declares zod ^3, and every zod below 4.6.6 carries GHSA-mrhx-c7xc-m3w5 (no v3 patch). The SDK reads only ERROR_CODES and oAuthProvidersSchema.options from it and parses nothing with zod; both values are identical under zod 4. Its .d.ts files are written for zod 3, so its types resolve to any under zod 4 (skipLibCheck hides this): in Origin that loosens only the signUp and signInWithPassword calls in apps/origin-web/src/auth/AuthProvider.tsx. Drop this override once @insforge/shared-schemas depends on zod >=4.6.6.",
+  "comment:overrides": "@insforge/shared-schemas (via @insforge/sdk) still declares zod ^3, and every zod below 4.6.6 carries GHSA-mrhx-c7xc-m3w5 (zod 3 has no patch). The SDK never parses with zod; it reads two enum values, identical under zod 4. Cost: its zod-3 .d.ts types degrade under zod 4 (skipLibCheck hides it): two auth calls and the OAuth provider type in apps/origin-web/src/auth/AuthProvider.tsx, and user/id/email typing in 6 edge functions under apps/origin-web/functions. Redo the never-parses check on every @insforge/sdk bump; drop this once shared-schemas depends on zod >=4.6.6. Detail: PR #103.",
   "overrides": {
     "@insforge/shared-schemas": {
       "zod": "^4.6.6"

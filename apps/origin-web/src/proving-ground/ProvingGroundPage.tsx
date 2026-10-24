@@ -12,6 +12,7 @@ import { MultiRobotSim } from '../components/MultiRobotSim'
 import { ProvingGround3D } from '../components/ProvingGround3D'
 import { starterUnderstanding } from './starterFloor'
 import { fleetReadiness } from './fleetReadiness'
+import { FloorCountStrip } from './FloorCountStrip'
 import { EMBODIMENT_CODE } from '../environmentPlan'
 import type { FloorPlanSnapshot } from '../floorPlanStore'
 import type { FrozenWorkflow } from '../workflowDraft'
@@ -95,9 +96,9 @@ export function ProvingGroundPage() {
   return (
     <div className="pg-wrap product-workspace">
       <ol className="workspace-steps" aria-label="Proving-ground workflow">
-        <li><a href="#pg-editor"><span aria-hidden="true">01</span><div><b>Edit the synthetic floor</b>Geometry and fleet composition</div></a></li>
-        <li><a href="#pg-playback"><span aria-hidden="true">02</span><div><b>Explore the playback</b>The same floor in 2D or 3D</div></a></li>
-        <li><a href="#pg-results"><span aria-hidden="true">03</span><div><b>Inspect the oracle result</b>Per-type episodes and demo evidence</div></a></li>
+        <li><a href="#pg-editor"><span aria-hidden="true">01</span><div><b>Draw the floor</b>Geometry, fleets and intent notes</div></a></li>
+        <li><a href="#pg-playback"><span aria-hidden="true">02</span><div><b>Watch the playback</b>The same floor in 2D or 3D</div></a></li>
+        <li><a href="#pg-results"><span aria-hidden="true">03</span><div><b>Inspect the result</b>One oracle episode per robot type</div></a></li>
       </ol>
       {/* 1 · Paint the floor + the mixed fleet (the original console step, intact) */}
       <div className="pg-section" id="pg-editor" tabIndex={-1}>
@@ -107,7 +108,7 @@ export function ProvingGroundPage() {
       {/* 2 · Watch the SAME floor in 2D / 3D — descriptive playback of the deployment */}
       <div className="pg-stage pg-section" id="pg-playback" tabIndex={-1}>
         <div className="pg-stage__bar">
-          <div><p className="pg-h">02 · Descriptive playback</p><h2>The floor you just painted.</h2></div>
+          <div><p className="pg-h">02 · Watch the playback</p><h2>The floor you just drew.</h2></div>
           <div className="pg-toggle" role="group" aria-label="Playback view">
             <button aria-pressed={view === '2d'} className={view === '2d' ? 'is-on' : ''} onClick={() => setView('2d')}>2D</button>
             <button aria-pressed={view === '3d'} className={view === '3d' ? 'is-on' : ''} onClick={() => setView('3d')}>3D</button>
@@ -118,14 +119,15 @@ export function ProvingGroundPage() {
           : <ProvingGround3D siteMap={siteMap} embodiment={embodiment} domain={domain} />}
         <p className="pg-note">
           The animation is <b>descriptive</b> — robot placements drive what you watch, never the verdict.
-          The deterministic oracle scores the floor's geometry and policy alone; move every robot and the
+          The deterministic oracle scores the floor's geometry and robot types; move every robot and the
           verdicts below stay byte-identical.
         </p>
       </div>
 
       {/* 3 · Terminal outcomes under the fixed synthetic verifier */}
       <div className="pg-results pg-section" id="pg-results" tabIndex={-1} ref={resultsRef}>
-        <div><p className="pg-h">03 · The oracle record</p><h2>One episode per robot type.</h2></div>
+        <div><p className="pg-h">03 · Inspect the result</p><h2>One episode per robot type.</h2></div>
+        <FloorCountStrip map={siteMap} fallback={embodiment} />
         <div className="pg-episodes">
           {episodes.map((e) => (
             <div key={e.embodiment} className="pg-episode">

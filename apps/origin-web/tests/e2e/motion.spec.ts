@@ -102,7 +102,7 @@ test('reduced-motion floor edits show the new plan at its final frame', async ({
   const robotCells = () => page.locator('.sim-grid .sim-cell').evaluateAll(cells => cells.flatMap((cell, i) => cell.classList.contains('robot') ? [i] : []))
   await expect.poll(robotCells).toEqual([0])
   await page.locator('.smp-tool').filter({ hasText: 'Item' }).click()
-  await page.getByRole('button', { name: /^Cell 4,4 / }).click()
+  await page.getByRole('button', { name: /^E5, / }).click()
   await expect.poll(robotCells).toEqual([0])
   await expect(page.locator('.sim-grid .sim-cell').nth(24)).toHaveClass(/picked/)
   await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeVisible()

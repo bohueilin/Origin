@@ -8,6 +8,7 @@ import { siteFleets } from '../workflowDraft'
 import { planMultiAgent } from '../multiAgent'
 import { EMBODIMENT_CODE, type RobotEmbodiment } from '../environmentPlan'
 import { usePlaybackVisibility } from '../shared/usePlaybackVisibility'
+import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
 
 // One colour per FLEET. Robots, their items, and their drop inherit the fleet
 // colour, so the grouping — which robots serve which work — reads at a glance.
@@ -31,6 +32,8 @@ export function MultiRobotSim({
   const items = useMemo(() => fleets.flatMap((f) => f.items), [fleets])
   const drops = useMemo(() => fleets.flatMap((f) => f.drops), [fleets])
   const robotFleet = useMemo(() => fleets.flatMap((f, fi) => f.robots.map(() => fi)), [fleets])
+  // Each robot's number WITHIN its fleet, matching the editor's cell labels (AM1, AM2, HU1…).
+  const robotLocal = useMemo(() => fleets.flatMap((f) => f.robots.map((_, i) => i)), [fleets])
   const itemFleet = useMemo(() => fleets.flatMap((f, fi) => f.items.map(() => fi)), [fleets])
   const dropFleet = useMemo(() => fleets.flatMap((f, fi) => f.drops.map(() => fi)), [fleets])
   const multiFleet = fleets.length > 1
@@ -124,19 +127,19 @@ export function MultiRobotSim({
                 siteMap.robotTypes?.[`${home.x},${home.y}`] ??
                 fleetEmbs[plan.robots[rIdx].fleet] ??
                 embodiment
-              text = `${EMBODIMENT_CODE[emb]}${rIdx + 1}`
+              text = `${EMBODIMENT_CODE[emb]}${(robotLocal[rIdx] ?? rIdx) + 1}`
             }
-            if (multiFleet) tag = `Fleet ${plan.robots[rIdx].fleet + 1}`
+            if (multiFleet) tag = `F${plan.robots[rIdx].fleet + 1}`
             style = { background: fleetColor, color: '#fff', borderColor: fleetColor }
           } else if (dropIdx >= 0) {
             cls = 'cell-drop'
             text = drops.length > 1 ? `D${dropIdx + 1}` : 'D'
-            if (multiFleet) tag = `Fleet ${dropFleet[dropIdx] + 1}`
+            if (multiFleet) tag = `F${dropFleet[dropIdx] + 1}`
             style = { color: dropColor, borderColor: dropColor, background: `color-mix(in srgb, ${dropColor} 14%, #fff)` }
           } else if (itemIdx >= 0) {
             cls = `cell-I ${picked ? 'picked' : ''}`
             text = picked ? '✓' : items.length > 1 ? `I${itemIdx + 1}` : 'I'
-            if (multiFleet && !picked) tag = `Fleet ${itemFleet[itemIdx] + 1}`
+            if (multiFleet && !picked) tag = `F${itemFleet[itemIdx] + 1}`
             if (!picked && multiFleet) style = { color: itemColor, borderColor: itemColor }
           } else if (isWall) { cls = 'wall'; text = 'W' }
           else if (isHazard) { cls = 'hazard'; text = '!' }
@@ -159,11 +162,9 @@ export function MultiRobotSim({
         <span className="lg-human">H Human-only</span>
         <span className="lg-wall">W Wall</span>
       </div>
+      <FloorCountStrip map={siteMap} fallback={embodiment} />
       <p className="deploy-note">
-        <strong>{fleets.length} fleet{fleets.length === 1 ? '' : 's'}</strong> ·{' '}
-        <strong>{robots.length} robot{robots.length === 1 ? '' : 's'}</strong> ·{' '}
-        <strong>{items.length} item{items.length === 1 ? '' : 's'}</strong> ·{' '}
-        <strong>{drops.length} drop{drops.length === 1 ? '' : 's'}</strong>. Each robot serves{' '}
+        Each robot serves{' '}
         <strong>only its own fleet</strong> (matching colour) and delivers to its nearest fleet
         drop — <strong>one item per trip</strong>, picked (turns to{' '}
         <span className="lbl-finish">✓</span>), carried home, then back for the next.{' '}
@@ -171,7 +172,7 @@ export function MultiRobotSim({
           ? 'Collision-free in time and space.'
           : 'Routed around walls, hazards, and — where the space allows — each other.'}
         {verdictLabel && (
-          <> Evidence-backed verification still scores one lane as the verified verdict (<span className={`lbl-${verdictLabel}`}>{verdictLabel}</span>).</>
+          <> The oracle scores one fixed lane, once per robot type (<span className={`lbl-${verdictLabel}`}>{verdictLabel}</span>).</>
         )}
       </p>
     </>

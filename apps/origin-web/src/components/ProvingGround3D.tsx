@@ -516,19 +516,24 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
 
       // progress: overall run fraction + "N of M delivered" so the eye can read completion
       const totalDeliv = delivered.length
+      const totalItems = flatItems.length
+      const unreached = Math.max(0, totalItems - totalDeliv)
       let doneDeliv = 0
       for (const dv of delivered) if (dTick >= dv.tick) doneDeliv += 1
       const runPct = ticks > 1 ? Math.min(1, tickF / (ticks - 1)) : 1
       if (progFillRef.current) {
         progFillRef.current.style.transform = `scaleX(${runPct})`
-        progFillRef.current.classList.toggle('done', totalDeliv > 0 && doneDeliv >= totalDeliv)
+        progFillRef.current.classList.toggle('done', totalDeliv > 0 && doneDeliv >= totalDeliv && unreached === 0)
       }
       if (progTxtRef.current) {
-        progTxtRef.current.textContent = totalDeliv === 0
-          ? 'no deliveries in this plan'
+        // The denominator is the floor's items, the same count the page's floor
+        // total states; items no route reaches are named, never dropped.
+        const noun = totalItems === 1 ? 'item' : 'items'
+        progTxtRef.current.textContent = doneDeliv >= totalDeliv && unreached === 0
+          ? `✓ all ${totalItems} ${noun} delivered`
           : doneDeliv >= totalDeliv
-            ? `✓ all ${totalDeliv} delivered`
-            : `${doneDeliv} of ${totalDeliv} delivered`
+            ? `${doneDeliv} of ${totalItems} ${noun} delivered · ${unreached} not reached in this plan`
+            : `${doneDeliv} of ${totalItems} ${noun} delivered`
       }
 
       controls.update(); renderer.render(scene, camera)

@@ -195,7 +195,8 @@ body.product-route--proving-ground { overflow-x: clip; }
   margin: 0 0 14px; padding: 8px 12px 8px 14px;
   background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 12px;
 }
-.pg-wrap.product-workspace .pg-editbar-state { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+.pg-wrap.product-workspace .pg-editbar-state { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; flex: 1 1 0; min-width: 12em; margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
+/* The state shrinks and wraps inside its own space, so Undo and Change always stay on the first row. */
 .pg-wrap.product-workspace .pg-editbar-state b { color: var(--ink); }
 .pg-wrap.product-workspace .pg-editbar-dot { flex: none; width: 12px; height: 12px; border-radius: 50%; }
 .pg-wrap.product-workspace .pg-editbar-sep { color: var(--steel); }

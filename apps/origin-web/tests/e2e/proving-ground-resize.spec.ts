@@ -37,16 +37,28 @@ test('12 → 11: the loss list names each cell; cancel loses nothing; confirm, t
   const panel = page.locator('.resize-confirm')
   await expect(panel).toContainText('Making the floor 11 × 9 removes 2 placed cells:')
   await expect(panel.locator('.resize-loss li')).toHaveText(['1 drop: D1 at L5, Fleet 1', '1 human-only cell: H2 at L2'])
-  await expect(panel).toContainText('after this it uses D2 at I2 instead, so the scored result is re-computed')
-  await expect(page.locator('#pg-resize-title')).toBeFocused()
-  // Focus lands where it can be read: below the site header and the stuck editor bar.
-  const title = (await page.locator('#pg-resize-title').boundingBox())!
+  // The lane is defined in plain words where it appears, with the route before and after.
+  await expect(panel.locator('.resize-lane')).toHaveText('The oracle scores one lane: the route from the start (not drawn on the grid) to the first item, then the first drop. Now it runs A5 → I1 at J5 → D1 at L5. After this resize it runs A5 → I1 at J5 → D2 at I2, so the result is re-computed.')
+  // Before → after floor totals, so the visitor can compare.
+  await expect(panel.locator('.resize-totals')).toHaveText('Floor total, now → after: robots 4 → 4 · fleets 3 → 3 · items 3 → 3 · drops 3 → 2 · robot types scored 3 → 3')
+  // "Keep the floor as it is" has focus by default, below the site header and the stuck bar.
+  const keep = page.getByRole('button', { name: 'Keep the floor as it is', exact: true })
+  await expect(keep).toBeFocused()
+  const keepBox = (await keep.boundingBox())!
   const bar = (await page.locator('.pg-editbar').boundingBox())!
-  expect(title.y).toBeGreaterThanOrEqual(bar.y + bar.height)
+  expect(keepBox.y).toBeGreaterThanOrEqual(bar.y + bar.height)
   await expect(page.locator('.site-cell.is-ghost-remove')).toHaveCount(9) // every cell of column L
   expect(await floorState(page)).toEqual(before) // a stepper tap alone removes nothing
 
-  // Cancel (Escape): nothing lost, focus back on the stepper.
+  // Enter on the default button keeps the floor: Enter never confirms a removal by default.
+  await page.keyboard.press('Enter')
+  await expect(panel).toHaveCount(0)
+  await expect(step(page, 'Fewer columns')).toBeFocused()
+  expect(await floorState(page)).toEqual(before)
+
+  // Escape is the same as Keep: nothing lost, focus back on the stepper.
+  await step(page, 'Fewer columns').click()
+  await expect(keep).toBeFocused()
   await page.keyboard.press('Escape')
   await expect(panel).toHaveCount(0)
   await expect(step(page, 'Fewer columns')).toBeFocused()
@@ -64,6 +76,9 @@ test('12 → 11: the loss list names each cell; cancel loses nothing; confirm, t
   }
   await expect(page.locator('.pg-editbar .count-strip')).toContainText('3 robot types scored')
   await expect(page.locator('.pg-episode b')).toHaveText(['AM', 'HU', 'DG'])
+  // The closed panel lets the grid slide up under the pointer, and the readout follows
+  // whatever the pointer is on; off the grid, it reports the resize.
+  await page.mouse.move(0, 0)
   await expect(page.locator('.grid-readout')).toContainText('the resize removed H2 at L2 and D1 at L5')
 
   // Undo from the keyboard, on the sticky bar: the exact prior floor, including
@@ -85,8 +100,29 @@ test('a removed robot is named by type and cell in the summary, so it never clas
   await page.getByRole('button', { name: 'Remove 3 cells and resize', exact: true }).click()
   await expect(page.locator('.grid-readout')).toContainText('the resize removed a Robot dog at C8, W4 at D8 and D3 at I8')
   // Fleet 3 has no robots now, and is still scored as its type: the card and the panel say so.
-  await expect(page.locator('.smp-fleet').nth(2).locator('.smp-fleet-types-empty')).toHaveText('No robots. The oracle still scores this fleet as Robot dog.')
+  await expect(page.locator('.smp-fleet').nth(2).locator('.smp-fleet-types-empty')).toHaveText('No robots. The oracle still scores this fleet as Robot dog, the type this fleet started with.')
   await expect(page.locator('.pg-episode b')).toHaveText(['AM', 'HU', 'DG'])
+})
+
+test('Undo after a resize renumbers a fleet restores every robot exactly, with no duplicate number', async ({ page }) => {
+  // AM3 at L3; then remove rows 9 down to 6, the last of which holds AM2 at B6.
+  await cell(page, 'L3, empty').click()
+  await expect(cell(page, 'L3, Fleet 1 AMR robot 3')).toBeVisible()
+  await step(page, 'Fewer rows').click() // row 9: empty
+  for (const removes of ['Remove 3 cells and resize', 'Remove 3 cells and resize']) { // rows 8 and 7
+    await step(page, 'Fewer rows').click()
+    await page.getByRole('button', { name: removes, exact: true }).click()
+  }
+  await step(page, 'Fewer rows').click() // row 6 holds AM2 at B6 and W7 at H6
+  await expect(page.locator('.resize-loss li').first()).toHaveText('1 robot: Fleet 1 AMR robot 2 (AM2) at B6')
+  await page.getByRole('button', { name: 'Remove 2 cells and resize', exact: true }).click()
+  // Robots are numbered within their fleet: L3 is now AM2.
+  await expect(cell(page, 'L3, Fleet 1 AMR robot 2')).toBeVisible()
+  await page.locator('.pg-editbar').getByRole('button', { name: 'Undo resize (back to 12 × 6)', exact: true }).click()
+  await expect(cell(page, 'B6, Fleet 1 AMR robot 2')).toBeVisible()
+  await expect(cell(page, 'L3, Fleet 1 AMR robot 3')).toBeVisible()
+  const robotTwos = await page.locator('.site-cell').evaluateAll((els) => els.filter((el) => /Fleet 1 AMR robot 2$/.test(el.getAttribute('aria-label') ?? '')).length)
+  expect(robotTwos).toBe(1)
 })
 
 test('a confirm that was abandoned by another edit never comes back, even when the same floor returns', async ({ page }) => {
@@ -109,10 +145,7 @@ test('a resize that removes nothing applies at once, keeps every type, and can b
   // The pointer is still on the stepper: its ghost now previews the NEXT step (row 11).
   await expect(page.locator('.site-cell-ghost')).toHaveCount(12)
   await expect(page.locator('.grid-size-preview')).toHaveText('Adds an empty row 11.')
-  // Leave the stepper first, as a person does: its ghost row goes, and with it the
-  // 48px the ghost added above the readout, so Undo is clicked where it settles.
-  await page.mouse.move(0, 0)
-  await expect(page.locator('.site-cell-ghost')).toHaveCount(0)
+  // The ghost row takes the scale's slot, so Undo below the grid is where it was.
   await page.locator('.grid-readout-row').getByRole('button', { name: 'Undo resize (back to 12 × 9)', exact: true }).click()
   expect(await floorState(page)).toEqual(before)
 })
@@ -124,9 +157,15 @@ test('the ghost outlines what a stepper would remove or add, on pointer hover an
   await step(page, 'Fewer columns').hover()
   await expect(page.locator('.grid-size-preview')).toHaveText('Removes column L, which holds 2 placed cells (H2 at L2 and D1 at L5). You see the full list and confirm before anything is removed.')
   await page.mouse.move(0, 0)
+  // Previewing an added row moves nothing below the grid: it takes the scale row's slot.
+  const below = async () => (await page.locator('.grid-readout').boundingBox())!.y + (await page.evaluate(() => window.scrollY))
+  const settled = await below()
   await step(page, 'More rows').focus()
   await expect(page.locator('.site-cell.is-ghost-remove')).toHaveCount(0)
   await expect(page.locator('.site-cell-ghost')).toHaveCount(12) // a 10th row of 12 cells
+  expect(await below()).toBe(settled)
+  await step(page, 'More rows').hover()
+  expect(await below()).toBe(settled)
   await expect(page.locator('.grid-size-preview')).toHaveText('Adds an empty row 10.')
   // The ghost is an outline only: neutral ink for removal, never a verdict colour.
   await step(page, 'Fewer columns').focus()
@@ -152,13 +191,31 @@ test('the column cap is explained in visible text, and a shrink that would remov
   const before = await floorState(page)
   await step(page, 'Fewer columns').click()
   await expect(page.locator('.resize-confirm')).toHaveCount(0)
-  await expect(page.locator('.grid-size-refusal')).toHaveText('The floor stays 9 × 9. Making it 8 × 9 would remove every drop, and the floor keeps at least one item and one drop. Place a drop inside the smaller floor first.')
+  await expect(page.locator('.grid-size-refusal')).toHaveText('The floor stays 9 × 9. Making it 8 × 9 would remove every drop, and the floor keeps at least one item and one drop. Place a drop in columns A to H and rows 1 to 9 first, then try again.')
   expect(await floorState(page)).toEqual(before)
   await expect(step(page, 'Fewer columns')).toHaveAccessibleDescription(/^Removes column I: refused, because it would remove every drop/)
   // The refusal belongs to that floor only: once the floor changes, it is gone.
   await page.locator('.pg-editbar').getByRole('button', { name: /Undo resize/ }).click()
   await expect(page.locator('.floor-head-title')).toContainText('10 wide × 9 deep')
   await expect(page.locator('.grid-size-refusal')).toHaveCount(0)
+})
+
+test('the refusal says how to get unstuck, and following it works', async ({ page }) => {
+  for (const removes of ['Remove 2 cells and resize', 'Remove 1 cell and resize', 'Remove 1 cell and resize']) {
+    await step(page, 'Fewer columns').click()
+    await page.getByRole('button', { name: removes, exact: true }).click()
+  }
+  await step(page, 'Fewer columns').click()
+  await expect(page.locator('.grid-size-refusal')).toContainText('Place a drop in columns A to H and rows 1 to 9 first')
+  // Do what it says: a drop at A1 with the Drop tool, then shrink again.
+  await page.locator('.smp-tool').filter({ hasText: 'Drop' }).click()
+  await cell(page, 'A1, empty').click()
+  await expect(page.locator('.grid-size-refusal')).toHaveCount(0)
+  await step(page, 'Fewer columns').click()
+  await expect(page.locator('.resize-loss li')).toContainText(['2 drops: D2 at I2, Fleet 2; D3 at I8, Fleet 3'])
+  await page.locator('.resize-confirm-go').click()
+  await expect(page.locator('.floor-head-title')).toContainText('8 wide × 9 deep')
+  await expect(cell(page, 'A1, Fleet 1 drop D4')).toBeVisible()
 })
 
 test('one type list: a mixed fleet shows the same types in its fleet card, the type panel and the result', async ({ page }) => {
@@ -180,7 +237,7 @@ test('one type list: a mixed fleet shows the same types in its fleet card, the t
   await expect(page.getByRole('combobox', { name: 'Robot embodiment' })).toHaveCount(0)
   await expect(page.locator('.embodiment-preview')).toHaveCount(0)
   await expect(page.locator('.pg-types-inputs')).toContainText('What decides the oracle’s verdicts: the floor’s geometry')
-  await expect(page.locator('.pg-types-inputs')).toContainText('the scored lane from A5 to I1 at J5 and on to D1 at L5')
+  await expect(page.locator('.pg-types-inputs')).toContainText('the one lane it scores: the route from the start, which is not drawn on the grid, to the first item and then the first drop, now A5 → I1 at J5 → D1 at L5')
   await expect(page.locator('.pg-types-inputs')).toContainText('the robot types it scores (each robot’s type, plus the type of any fleet with no robots)')
 
   // + adds a robot of the placement type, as a grid tap does, and its name says so.
@@ -191,8 +248,8 @@ test('one type list: a mixed fleet shows the same types in its fleet card, the t
 
 test('an empty fleet says it is still scored as its type, in the card and the panel', async ({ page }) => {
   await page.getByRole('button', { name: 'One fewer robot in fleet 3', exact: true }).click()
-  await expect(page.locator('.smp-fleet').nth(2).locator('.smp-fleet-types-empty')).toHaveText('No robots. The oracle still scores this fleet as Robot dog.')
-  await expect(page.locator('.pg-type-where').nth(2)).toHaveText('Fleet 3 has no robots and is still scored as this type.')
+  await expect(page.locator('.smp-fleet').nth(2).locator('.smp-fleet-types-empty')).toHaveText('No robots. The oracle still scores this fleet as Robot dog, the type this fleet started with.')
+  await expect(page.locator('.pg-type-where').nth(2)).toHaveText('Fleet 3 has no robots and is still scored as this type, the type it started with.')
   await expect(page.locator('.pg-episode b')).toHaveText(['AM', 'HU', 'DG'])
 })
 
@@ -276,6 +333,8 @@ test('measured: new text meets 4.5:1, the removal outline 3:1, and every new con
     expect(Math.min(box.width, box.height), name).toBeGreaterThanOrEqual(44)
   }
   const barWithUndo = Math.round((await page.locator('.pg-editbar').boundingBox())!.height)
+  // Offering Undo never makes the bar taller on a desktop, and at most one floor-total line on a phone.
+  expect(barWithUndo - barHeight).toBeLessThanOrEqual(info.project.name.startsWith('mobile') ? 24 : 0)
   await info.attach('measurements', { body: JSON.stringify({ project: info.project.name, contrast: measured, sizes, barHeight, barWithUndo }, null, 2), contentType: 'application/json' })
   console.log(`MEASURED ${info.project.name} ${JSON.stringify({ contrast: measured, sizes, barHeight, barWithUndo })}`)
 })

@@ -23,7 +23,7 @@ import { useAuth } from '../auth/AuthProvider'
 import { StepBridge } from './StepBridge'
 import { GRID_MIN, GRID_MAX, clampN, planResize, type LostCell, type ResizePlan } from '../siteMapResize'
 import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
-import { floorTypes } from '../proving-ground/floorCounts'
+import { floorCounts, floorTypes } from '../proving-ground/floorCounts'
 
 function keyOf(p: { x: number; y: number }): string {
   return `${p.x},${p.y}`
@@ -335,15 +335,15 @@ function describeResize(map: DescriptiveSiteMap, plan: ResizePlan, fallbackEmb: 
     .filter((g) => g.cells.length)
     .map((g) => ({ title: `${g.cells.length} ${g.cells.length === 1 ? g.one : g.many}`, entries: g.cells.map(name) }))
   const next = plan.next
-  const lane = next
-    ? plan.lane.map((m) => {
-        const to = coordOf(m.to.x, m.to.y)
-        if (m.part === 'start') return `The oracle’s scored lane starts at ${coordOf(m.from.x, m.from.y)} (the start is not drawn on the grid); after this it starts at ${to}, so the scored result is re-computed.`
-        const layer = m.part === 'item' ? 'items' : 'drops'
-        const label = `${m.part === 'item' ? 'I' : 'D'}${cellNumber(next, layer, m.to.x, m.to.y)}`
-        return `The oracle’s scored lane uses the ${m.part} at ${coordOf(m.from.x, m.from.y)}; after this it uses ${label} at ${to} instead, so the scored result is re-computed.`
-      })
+  // The lane in plain words, defined where it appears: the one route the oracle scores.
+  const lane = next && plan.lane.length
+    ? [`The oracle scores one lane: the route from the start (not drawn on the grid) to the first item, then the first drop. Now it runs ${laneRoute(map)}. After this resize it runs ${laneRoute(next)}, so the result is re-computed.`]
     : []
+  // Before → after totals, so the visitor can compare the floor, not only read a list.
+  const count = (m: DescriptiveSiteMap) => ({ ...floorCounts(m, fallbackEmb), drops: siteFleets(m).reduce((n, f) => n + f.drops.length, 0) })
+  const was = count(map)
+  const will = next ? count(next) : was
+  const totals = `robots ${was.robots} → ${will.robots} · fleets ${was.fleets} → ${will.fleets} · items ${was.items} → ${will.items} · drops ${was.drops} → ${will.drops} · robot types scored ${was.robotTypes} → ${will.robotTypes}`
   // The one-line summary outlives the resize, so a robot is named by type and cell,
   // not by its number: robots are numbered within their fleet, and a fleet's later
   // robots move up a number once an earlier one is removed.
@@ -354,7 +354,12 @@ function describeResize(map: DescriptiveSiteMap, plan: ResizePlan, fallbackEmb: 
     return `${/^[aeiou]/i.test(noun) ? 'an' : 'a'} ${noun} at ${at}`
   }
   const brief = groups.length ? listProse(plan.lost.map(short)) : ''
-  return { groups, lane, brief }
+  return { groups, lane, brief, totals }
+}
+
+/** The oracle's lane as the grid names it: "A5 → I1 at J5 → D1 at L5". */
+function laneRoute(m: DescriptiveSiteMap): string {
+  return `${coordOf(m.start.x, m.start.y)} → I${cellNumber(m, 'items', m.item.x, m.item.y)} at ${coordOf(m.item.x, m.item.y)} → D${cellNumber(m, 'drops', m.drop.x, m.drop.y)} at ${coordOf(m.drop.x, m.drop.y)}`
 }
 
 /** A note box that grows with its text, so a reader never scrolls inside a small
@@ -606,7 +611,7 @@ export function ReflectAlign({
   const [pendingResize, setPendingResize] = useState<{ base: DescriptiveSiteMap; plan: ResizePlan; trigger: HTMLButtonElement | null } | null>(null)
   const [resizeRefusal, setResizeRefusal] = useState<{ base: DescriptiveSiteMap; text: string } | null>(null)
   const [lastResize, setLastResize] = useState<{ before: DescriptiveSiteMap; after: DescriptiveSiteMap; from: string; to: string; removed: string; trigger: HTMLButtonElement | null } | null>(null)
-  const confirmTitleRef = useRef<HTMLParagraphElement>(null)
+  const keepRef = useRef<HTMLButtonElement>(null)
   const undoRef = useRef<HTMLButtonElement>(null)
   const sizeGroupRef = useRef<HTMLDivElement>(null)
   // Each is also bound to the exact floor it was made for, so none can outlive it.
@@ -626,14 +631,14 @@ export function ReflectAlign({
     if (plan.blocked) {
       setPendingResize(null)
       const move = plan.blocked.items && plan.blocked.drops ? 'an item and a drop' : plan.blocked.items ? 'an item' : 'a drop'
-      const text = `The floor stays ${sizeOf(siteMap)}. Making it ${sizeOf(plan)} would remove ${emptied(plan.blocked)}, and the floor keeps at least one item and one drop. Place ${move} inside the smaller floor first.`
+      const text = `The floor stays ${sizeOf(siteMap)}. Making it ${sizeOf(plan)} would remove ${emptied(plan.blocked)}, and the floor keeps at least one item and one drop. Place ${move} in columns A to ${colLetter(plan.width - 1)} and rows 1 to ${plan.height} first, then try again.`
       setResizeRefusal({ base: siteMap, text })
       announce(text) // through the live region, so a repeated refusal is heard again
       return
     }
     if (plan.lost.length || plan.lane.length) {
       setPendingResize({ base: siteMap, plan, trigger })
-      requestAnimationFrame(() => confirmTitleRef.current?.focus())
+      requestAnimationFrame(() => keepRef.current?.focus())
       return
     }
     applyResize(siteMap, plan, trigger, false)
@@ -685,7 +690,7 @@ export function ReflectAlign({
       const n = plan.lost.length
       return `${what}, which holds ${n} placed cell${n === 1 ? '' : 's'} (${describeResize(pinCellNumbers(siteMap), plan, embodiment).brief}). You see the full list and confirm before anything is removed.`
     }
-    if (plan.lane.length) return `${what}, which moves the oracle’s scored lane. You confirm first.`
+    if (plan.lane.length) return `${what}, which changes the lane the oracle scores (its route from the start to the first item and drop). You confirm first.`
     return w < siteMap.width || h < siteMap.height ? `${what}, which is empty. Nothing placed is removed.` : `${what}.`
   }
   const sizeSteps: { key: StepKey; name: string; glyph: string; w: number; h: number; off: boolean }[] = [
@@ -1015,14 +1020,18 @@ export function ReflectAlign({
                     <span className="pg-editbar-long">Placement tool</span><span className="pg-editbar-short" aria-hidden="true">Tool</span>: <b>{placing}</b>
                   </span>
                 </p>
+                {/* A compact pill, so offering Undo never makes the stuck bar taller on a
+                    desktop; on a phone it shares the floor-total row. The full name is read
+                    to a screen reader. It stays until the floor changes another way. */}
                 {undoable && (
-                  <button type="button" className="pg-editbar-change pg-editbar-undo" ref={undoRef} onClick={undoResize}>
-                    Undo resize<span className="pg-editbar-k"> (back to {undoable.from})</span>
+                  <button type="button" className="pg-editbar-change pg-editbar-undo" ref={undoRef} onClick={undoResize} title={`Undo resize (back to ${undoable.from})`}>
+                    Undo<span className="sr-only"> resize (back to {undoable.from})</span>
                   </button>
                 )}
                 <button type="button" className="pg-editbar-change" onClick={showControls}>
                   Change<span className="pg-editbar-k"> fleet or tool</span>
                 </button>
+                <span className="pg-editbar-break" aria-hidden="true" />
                 <FloorCountStrip map={siteMap} fallback={embodiment} />
               </div>
             )}
@@ -1115,7 +1124,7 @@ export function ReflectAlign({
                         {(() => {
                           const here = types.filter((t) => t.byFleet.some((b) => b.fleet === fi))
                           if (!here.length) {
-                            return <p className="smp-fleet-types-empty">No robots. The oracle still scores this fleet as {getEmbodimentProfile(f.embodiment ?? embodiment).label}.</p>
+                            return <p className="smp-fleet-types-empty">No robots. The oracle still scores this fleet as {getEmbodimentProfile(f.embodiment ?? embodiment).label}, {f.embodiment ? 'the type this fleet started with' : 'the page’s default type'}.</p>
                           }
                           return (
                             <ul className="smp-type-chips">
@@ -1239,10 +1248,10 @@ export function ReflectAlign({
                 aria-labelledby="pg-resize-title"
                 onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); cancelResize() } }}
               >
-                <p className="resize-confirm-title" id="pg-resize-title" tabIndex={-1} ref={confirmTitleRef}>
+                <p className="resize-confirm-title" id="pg-resize-title">
                   {pending.plan.lost.length
                     ? `Making the floor ${sizeOf(pending.plan)} removes ${pending.plan.lost.length} placed cell${pending.plan.lost.length === 1 ? '' : 's'}:`
-                    : `Making the floor ${sizeOf(pending.plan)} moves the oracle’s scored lane:`}
+                    : `Making the floor ${sizeOf(pending.plan)} changes the lane the oracle scores:`}
                 </p>
                 {resizeView.groups.length > 0 && (
                   <ul className="resize-loss">
@@ -1252,6 +1261,7 @@ export function ReflectAlign({
                   </ul>
                 )}
                 {resizeView.lane.map((line) => <p key={line} className="resize-lane">{line}</p>)}
+                <p className="resize-totals"><b>Floor total, now → after:</b> {resizeView.totals}</p>
                 <p className="resize-confirm-note">
                   Nothing changes until you choose. The cells outlined with dashes on the grid are the ones that go. After a resize, Undo resize brings back this exact floor.
                 </p>
@@ -1259,7 +1269,8 @@ export function ReflectAlign({
                   <button type="button" className="btn primary resize-confirm-go" onClick={confirmResize}>
                     {pending.plan.lost.length ? `Remove ${pending.plan.lost.length} cell${pending.plan.lost.length === 1 ? '' : 's'} and resize` : 'Resize'}
                   </button>
-                  <button type="button" className="btn ghost resize-confirm-keep" onClick={cancelResize}>Keep the floor as it is</button>
+                  {/* Focus starts here: Enter keeps the floor, as Escape does. */}
+                  <button type="button" className="btn ghost resize-confirm-keep" ref={keepRef} onClick={cancelResize}>Keep the floor as it is</button>
                 </div>
               </div>
             )}
@@ -1393,11 +1404,13 @@ export function ReflectAlign({
                   </button>
                 )
               })])}
-              {proving && (
-                <>
-                  <span className="grid-scale-bar" style={{ gridColumn: '2 / span 3' }} aria-hidden="true" />
-                  <span className="grid-scale-label" style={{ gridColumn: '2 / -1' }}>3 cells ≈ 3 m in this synthetic scale</span>
-                </>
+              {/* The scale is one row exactly as tall as a cell row. A previewed extra
+                  row takes this same slot, so a preview never moves anything below. */}
+              {proving && gridH === siteMap.height && (
+                <span className="grid-scale" style={{ gridColumn: '2 / -1' }}>
+                  <span className="grid-scale-bar" aria-hidden="true" />
+                  <span className="grid-scale-label">3 cells ≈ 3 m in this synthetic scale</span>
+                </span>
               )}
               </div>
             </div>
@@ -1444,7 +1457,10 @@ export function ReflectAlign({
                       ? `${t.robots} ${t.robots === 1 ? 'robot' : 'robots'} in Fleet ${t.byFleet[0].fleet + 1}`
                       : `${t.robots} robots: ${listProse(where)}`)
                   }
-                  for (const fleet of t.emptyFleets) parts.push(`Fleet ${fleet + 1} has no robots and is still scored as this type`)
+                  for (const fleet of t.emptyFleets) {
+                    const own = fleets[fleet]?.embodiment
+                    parts.push(`Fleet ${fleet + 1} has no robots and is still scored as this type, ${own ? 'the type it started with' : 'the page’s default type'}`)
+                  }
                   return (
                     <li key={t.embodiment} className="pg-type">
                       {media ? <img className="pg-type-img" src={media.src} alt="" width={72} height={54} loading="lazy" /> : <span className="pg-type-img" aria-hidden="true" />}
@@ -1458,7 +1474,7 @@ export function ReflectAlign({
                 })}
               </ul>
               <p className="pg-types-inputs">
-                <b>What decides the oracle’s verdicts:</b> the floor’s geometry (its size, walls, hazards, human-only cells, and the scored lane from {coordOf(siteMap.start.x, siteMap.start.y)} to I{cellNumber(siteMap, 'items', siteMap.item.x, siteMap.item.y)} at {coordOf(siteMap.item.x, siteMap.item.y)} and on to D{cellNumber(siteMap, 'drops', siteMap.drop.x, siteMap.drop.y)} at {coordOf(siteMap.drop.x, siteMap.drop.y)}) and the robot types it scores (each robot’s type, plus the type of any fleet with no robots). Where robots stand, the other items and drops, and the descriptive notes do not change the verdicts.
+                <b>What decides the oracle’s verdicts:</b> the floor’s geometry (its size, walls, hazards, human-only cells, and the one lane it scores: the route from the start, which is not drawn on the grid, to the first item and then the first drop, now {laneRoute(siteMap)}) and the robot types it scores (each robot’s type, plus the type of any fleet with no robots). Where robots stand, the other items and drops, and the descriptive notes do not change the verdicts.
               </p>
               <label className="field">
                 <span className="field-label">Domain</span>

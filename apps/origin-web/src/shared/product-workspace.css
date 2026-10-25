@@ -258,8 +258,10 @@ body.product-route--proving-ground { overflow-x: clip; }
 .pg-wrap.product-workspace .site-grid--axes .site-fleet-tag { position: static; font-size: 12px; line-height: 1.5; letter-spacing: 0; }
 
 /* Scale bar: drawn in HTML, exactly three cells wide, with end ticks. */
-.pg-wrap.product-workspace .grid-scale-bar { height: 9px; margin-top: 10px; border: 2px solid var(--ink); border-top: 0; }
-.pg-wrap.product-workspace .grid-scale-label { font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+.pg-wrap.product-workspace .grid-scale { display: flex; flex-direction: column; gap: 4px; height: 44px; }
+/* Three 44px cells and their two 4px gaps. */
+.pg-wrap.product-workspace .grid-scale-bar { width: 140px; height: 9px; margin-top: 8px; border: 2px solid var(--ink); border-top: 0; }
+.pg-wrap.product-workspace .grid-scale-label { font-size: 13px; line-height: 1.5; color: var(--ink-soft); white-space: nowrap; }
 
 /* "You are here": what the focused or hovered cell holds, and what a tap would do. */
 .pg-wrap.product-workspace .grid-readout { margin: 12px 0 0; min-height: 4.8em; max-width: 70ch; font-size: 15px; line-height: 1.6; color: var(--ink); }
@@ -304,11 +306,11 @@ body.product-route--proving-ground { overflow-x: clip; }
 .pg-wrap.product-workspace .resize-confirm { margin: 0 0 14px; padding: 14px 16px; border: 1px solid var(--line-2); border-left: 4px solid var(--ink); border-radius: 12px; background: var(--paper); color: var(--ink); }
 /* Ink set on each line: `.site-map-panel p` would otherwise mute them to steel. */
 .pg-wrap.product-workspace .resize-confirm-title { margin: 0 0 8px; font-size: 16px; font-weight: 700; line-height: 1.5; color: var(--ink); }
-.pg-wrap.product-workspace .resize-confirm-title:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 4px; }
 /* Focus lands below the site header and the stuck editor bar (up to 166px with Undo). */
-.pg-wrap.product-workspace .resize-confirm :is(.resize-confirm-title, button) { scroll-margin-top: 260px; }
+.pg-wrap.product-workspace .resize-confirm button { scroll-margin-top: 260px; }
 .pg-wrap.product-workspace .resize-loss { margin: 0 0 8px; padding-left: 20px; font-size: 15px; line-height: 1.6; }
 .pg-wrap.product-workspace .resize-lane { margin: 0 0 8px; max-width: 70ch; font-size: 15px; line-height: 1.6; color: var(--ink); }
+.pg-wrap.product-workspace .resize-totals { margin: 0 0 8px; max-width: 70ch; font-size: 15px; line-height: 1.6; color: var(--ink); font-variant-numeric: tabular-nums; }
 .pg-wrap.product-workspace .resize-confirm-note { margin: 0 0 12px; max-width: 70ch; font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
 .pg-wrap.product-workspace .resize-confirm-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .pg-wrap.product-workspace .resize-confirm-actions .btn { min-height: 44px; padding: 10px 18px; font-size: 15px; }
@@ -323,8 +325,10 @@ body.product-route--proving-ground { overflow-x: clip; }
 .pg-wrap.product-workspace .grid-axis--ghost { color: var(--steel); border-color: transparent; }
 
 .pg-wrap.product-workspace .pg-editbar-short { display: none; }
-.pg-wrap.product-workspace .pg-editbar-undo { margin-left: auto; }
+.pg-wrap.product-workspace .pg-editbar-undo { margin-left: auto; padding: 0 14px; }
 .pg-wrap.product-workspace .pg-editbar-undo + .pg-editbar-change { margin-left: 0; }
+/* A zero-height line break, needed only on a phone (below), where Undo shares the floor-total row. */
+.pg-wrap.product-workspace .pg-editbar-break { display: none; flex-basis: 100%; height: 0; }
 .pg-wrap.product-workspace .grid-readout-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 16px; margin: 12px 0 0; }
 .pg-wrap.product-workspace .grid-readout-row .grid-readout { flex: 1 1 36ch; margin: 0; }
 .pg-wrap.product-workspace .grid-readout-undo { flex: none; min-height: 44px; }
@@ -356,8 +360,12 @@ body.product-route--proving-ground { overflow-x: clip; }
   /* "Placement tool" is read in full to a screen reader; the narrow bar shows "Tool". */
   .pg-wrap.product-workspace .pg-editbar-long { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .pg-wrap.product-workspace .pg-editbar-short { display: inline; }
-  /* While Undo is offered it takes its own row, so the state line keeps its width. */
-  .pg-wrap.product-workspace .pg-editbar-undo { order: 3; margin: 4px 0 0; }
+  /* While Undo is offered it shares the floor-total row, so the state line keeps
+     its width and the bar grows by at most a line of the floor total. */
+  .pg-wrap.product-workspace .pg-editbar-break { display: block; }
+  .pg-wrap.product-workspace .pg-editbar .count-strip { order: 1; }
+  .pg-wrap.product-workspace .pg-editbar-undo { order: 2; align-self: center; margin: 0; }
+  .pg-wrap.product-workspace .pg-editbar:has(.pg-editbar-undo) .count-strip { flex: 1 1 0; min-width: 0; }
   .pg-wrap.product-workspace .pg-editbar-undo + .pg-editbar-change { margin-left: auto; }
   .pg-wrap.product-workspace .pg-editbar-k { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .pg-wrap.product-workspace .pg-editbar-change { padding: 0 14px; }

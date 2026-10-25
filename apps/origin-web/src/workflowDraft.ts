@@ -74,7 +74,20 @@ export interface DescriptiveSiteMap {
    * flat fields so older maps keep working.
    */
   fleets?: FleetDeployment[]
+  /**
+   * Stable display numbers (I1, D2, W3, !1, H2), keyed by cell. Once a cell has a
+   * number it keeps it until that cell is removed, so a resize, an erase or a new
+   * placement never renumbers the cells that survive. Absent on a floor that has
+   * never been edited: its numbers are then its list order, which is what pinning
+   * records. Display only — never reaches the oracle, the digest or the playback plan.
+   */
+  cellNumbers?: CellNumbers
 }
+
+/** The numbered cell layers. Robots are numbered within their fleet instead. */
+export const NUMBERED_LAYERS = ['items', 'drops', 'obstacles', 'hazards', 'humanOnly'] as const
+export type NumberedLayer = (typeof NUMBERED_LAYERS)[number]
+export type CellNumbers = Partial<Record<NumberedLayer, Record<string, number>>>
 
 /** One fleet's deployment intent: its robots, the items they pick, and the
  *  drop-off points they deliver to. Descriptive only — the oracle never sees it. */
@@ -126,7 +139,8 @@ export function siteFleets(map: DescriptiveSiteMap): FleetDeployment[] {
 
 /** Rebuild the flat fields + oracle anchors from an edited fleet list. Fleet 0
  *  supplies the primary item/drop the deterministic oracle scores; everything is
- *  de-duplicated so a cell never belongs to two layers. */
+ *  de-duplicated so a cell never belongs to two layers. Per-robot types are kept
+ *  only for robots still on the floor, and pinned cell numbers are carried over. */
 export function normalizeFleets(map: DescriptiveSiteMap, fleets: FleetDeployment[]): DescriptiveSiteMap {
   const clean = (fleets.length ? fleets : [{ robots: [], items: [], drops: [] }]).map((f) => ({
     robots: dedupe(f.robots ?? []),
@@ -141,7 +155,7 @@ export function normalizeFleets(map: DescriptiveSiteMap, fleets: FleetDeployment
   // strictly fleet 0 — it may have been emptied), falling back to the prior anchor.
   const item = allItems[0] ?? map.item
   const drop = allDrops[0] ?? map.drop
-  return {
+  const next: DescriptiveSiteMap = {
     ...map,
     fleets: clean,
     robots: allRobots,
@@ -150,6 +164,51 @@ export function normalizeFleets(map: DescriptiveSiteMap, fleets: FleetDeployment
     item,
     drop,
   }
+  if (map.robotTypes) {
+    const kept = new Set(allRobots.map((p) => `${p.x},${p.y}`))
+    next.robotTypes = Object.fromEntries(Object.entries(map.robotTypes).filter(([key]) => kept.has(key)))
+  }
+  if (map.cellNumbers) next.cellNumbers = carryCellNumbers(next, map.cellNumbers)
+  return next
+}
+
+/** The cells of one numbered layer, in list order (fleet order for items and drops). */
+function layerCells(map: DescriptiveSiteMap, layer: NumberedLayer): GridPos[] {
+  if (layer === 'items') return siteItems(map)
+  if (layer === 'drops') return siteDrops(map)
+  return map[layer]
+}
+
+/** A cell's display number in its layer: its pinned number, else its list position. */
+export function cellNumber(map: DescriptiveSiteMap, layer: NumberedLayer, x: number, y: number): number {
+  const pinned = map.cellNumbers?.[layer]?.[`${x},${y}`]
+  if (pinned !== undefined) return pinned
+  return layerCells(map, layer).findIndex((p) => p.x === x && p.y === y) + 1
+}
+
+/** Keep each surviving cell's number; give a new cell the next number in its layer. */
+function carryCellNumbers(map: DescriptiveSiteMap, prior: CellNumbers): CellNumbers {
+  const out: CellNumbers = {}
+  for (const layer of NUMBERED_LAYERS) {
+    const before = prior[layer] ?? {}
+    const keys = layerCells(map, layer).map((p) => `${p.x},${p.y}`)
+    const kept = Object.fromEntries(keys.filter((k) => before[k] !== undefined).map((k) => [k, before[k]]))
+    let top = Math.max(0, ...Object.values(kept))
+    for (const k of keys) if (kept[k] === undefined) kept[k] = ++top
+    out[layer] = kept
+  }
+  return out
+}
+
+/** Record the numbers a floor shows now, so later edits keep them. Called before
+ *  the first edit, never on an untouched floor (its object stays byte-identical). */
+export function pinCellNumbers(map: DescriptiveSiteMap): DescriptiveSiteMap {
+  if (map.cellNumbers) return map
+  const cellNumbers: CellNumbers = {}
+  for (const layer of NUMBERED_LAYERS) {
+    cellNumbers[layer] = Object.fromEntries(layerCells(map, layer).map((p, i) => [`${p.x},${p.y}`, i + 1]))
+  }
+  return { ...map, cellNumbers }
 }
 
 /** All pickup cells across every fleet, de-duplicated. */

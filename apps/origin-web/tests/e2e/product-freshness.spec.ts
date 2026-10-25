@@ -64,7 +64,7 @@ test('proving-ground removes signed evidence when the evaluated fleet changes', 
   await page.goto('/proving-ground')
   await page.getByRole('button', { name: /Sign synthetic floor evidence/ }).click()
   await expect(page.getByRole('button', { name: 'Download signed floor evidence' })).toBeVisible()
-  await page.getByRole('button', { name: 'One more robot in fleet 1', exact: true }).click()
+  await page.getByRole('button', { name: 'One more AMR robot in fleet 1', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Download signed floor evidence' })).toHaveCount(0)
   await expect(page.getByRole('button', { name: /Sign synthetic floor evidence/ })).toBeEnabled()
 })

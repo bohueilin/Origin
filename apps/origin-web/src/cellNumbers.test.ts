@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cellNumber, normalizeFleets, pinCellNumbers, siteFleets } from './workflowDraft'
+import { cellNumber, normalizeFleets, pinCellNumbers, robotNumber, siteFleets } from './workflowDraft'
 import { starterUnderstanding } from './proving-ground/starterFloor'
 import { deployedEmbodiments } from './proving-ground/fleetReadiness'
 import { floorTypes } from './proving-ground/floorCounts'
@@ -39,6 +39,28 @@ describe('stable cell numbers', () => {
     const walls = normalizeFleets({ ...next, obstacles: [...next.obstacles.filter((_, i) => i !== 2), { x: 0, y: 0 }] }, siteFleets(next))
     expect(cellNumber(walls, 'obstacles', template.obstacles[3].x, template.obstacles[3].y)).toBe(4)
     expect(cellNumber(walls, 'obstacles', 0, 0)).toBe(9)
+  })
+
+  it('robots keep their number within their fleet; a new robot takes the lowest free number', () => {
+    const pinned = pinCellNumbers(template)
+    // Untouched numbering: AM1 at B4, AM2 at B6, HU1, DG1.
+    expect([robotNumber(template, 1, 3), robotNumber(template, 1, 5), robotNumber(template, 2, 1), robotNumber(template, 2, 7)]).toEqual([1, 2, 1, 1])
+    expect(pinned.cellNumbers?.robots).toEqual({ '1,3': 1, '1,5': 2, '2,1': 1, '2,7': 1 })
+    // Add AM3 at L3, then remove AM1: AM2 and AM3 keep their numbers.
+    const withThird = siteFleets(pinned)
+    withThird[0] = { ...withThird[0], robots: [...withThird[0].robots, { x: 11, y: 2 }] }
+    const three = normalizeFleets(pinned, withThird)
+    expect(robotNumber(three, 11, 2)).toBe(3)
+    const fewer = siteFleets(three)
+    fewer[0] = { ...fewer[0], robots: fewer[0].robots.filter((r) => !(r.x === 1 && r.y === 3)) }
+    const gap = normalizeFleets(three, fewer)
+    expect([robotNumber(gap, 1, 5), robotNumber(gap, 11, 2)]).toEqual([2, 3])
+    // The next robot in Fleet 1 fills the gap (1); Fleet 2's next robot is its 2.
+    const refill = siteFleets(gap)
+    refill[0] = { ...refill[0], robots: [...refill[0].robots, { x: 0, y: 0 }] }
+    refill[1] = { ...refill[1], robots: [...refill[1].robots, { x: 0, y: 8 }] }
+    const filled = normalizeFleets(gap, refill)
+    expect([robotNumber(filled, 0, 0), robotNumber(filled, 0, 8), robotNumber(filled, 1, 5), robotNumber(filled, 11, 2)]).toEqual([1, 2, 2, 3])
   })
 
   it('an untouched floor stays unpinned through normalizeFleets (its object, digest and hash do not change)', () => {

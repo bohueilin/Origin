@@ -75,7 +75,7 @@ export interface DescriptiveSiteMap {
    */
   fleets?: FleetDeployment[]
   /**
-   * Stable display numbers (I1, D2, W3, !1, H2), keyed by cell. Once a cell has a
+   * Stable display numbers (I1, D2, W3, !1, H2, and each robot's number in its fleet), keyed by cell. Once a cell has a
    * number it keeps it until that cell is removed, so a resize, an erase or a new
    * placement never renumbers the cells that survive. Absent on a floor that has
    * never been edited: its numbers are then its list order, which is what pinning
@@ -84,10 +84,12 @@ export interface DescriptiveSiteMap {
   cellNumbers?: CellNumbers
 }
 
-/** The numbered cell layers. Robots are numbered within their fleet instead. */
+/** The floor-wide numbered layers. Robots are numbered within their fleet (`robots`). */
 export const NUMBERED_LAYERS = ['items', 'drops', 'obstacles', 'hazards', 'humanOnly'] as const
 export type NumberedLayer = (typeof NUMBERED_LAYERS)[number]
-export type CellNumbers = Partial<Record<NumberedLayer, Record<string, number>>>
+/** Floor-wide numbers per layer, plus `robots`: each robot's number within its own
+ *  fleet (AM1, AM2 … per fleet), kept the same way. */
+export type CellNumbers = Partial<Record<NumberedLayer | 'robots', Record<string, number>>>
 
 /** One fleet's deployment intent: its robots, the items they pick, and the
  *  drop-off points they deliver to. Descriptive only — the oracle never sees it. */
@@ -186,7 +188,20 @@ export function cellNumber(map: DescriptiveSiteMap, layer: NumberedLayer, x: num
   return layerCells(map, layer).findIndex((p) => p.x === x && p.y === y) + 1
 }
 
-/** Keep each surviving cell's number; give a new cell the next number in its layer. */
+/** A robot's number within its fleet: its pinned number, else its place in the fleet. */
+export function robotNumber(map: DescriptiveSiteMap, x: number, y: number): number {
+  const pinned = map.cellNumbers?.robots?.[`${x},${y}`]
+  if (pinned !== undefined) return pinned
+  for (const f of siteFleets(map)) {
+    const i = f.robots.findIndex((p) => p.x === x && p.y === y)
+    if (i >= 0) return i + 1
+  }
+  return 0
+}
+
+/** Keep each surviving cell's number; give a new cell the next number in its layer.
+ *  A new robot takes the lowest number free in its own fleet, so a removed robot's
+ *  number is reused before the fleet counts on, and no surviving robot ever changes. */
 function carryCellNumbers(map: DescriptiveSiteMap, prior: CellNumbers): CellNumbers {
   const out: CellNumbers = {}
   for (const layer of NUMBERED_LAYERS) {
@@ -197,6 +212,24 @@ function carryCellNumbers(map: DescriptiveSiteMap, prior: CellNumbers): CellNumb
     for (const k of keys) if (kept[k] === undefined) kept[k] = ++top
     out[layer] = kept
   }
+  const before = prior.robots ?? {}
+  const robots: Record<string, number> = {}
+  for (const f of siteFleets(map)) {
+    const keys = f.robots.map((p) => `${p.x},${p.y}`)
+    const used = new Set<number>()
+    for (const k of keys) {
+      const n = before[k]
+      if (n !== undefined && !used.has(n)) { robots[k] = n; used.add(n) }
+    }
+    for (const k of keys) {
+      if (robots[k] !== undefined) continue
+      let n = 1
+      while (used.has(n)) n += 1
+      robots[k] = n
+      used.add(n)
+    }
+  }
+  out.robots = robots
   return out
 }
 
@@ -208,6 +241,7 @@ export function pinCellNumbers(map: DescriptiveSiteMap): DescriptiveSiteMap {
   for (const layer of NUMBERED_LAYERS) {
     cellNumbers[layer] = Object.fromEntries(layerCells(map, layer).map((p, i) => [`${p.x},${p.y}`, i + 1]))
   }
+  cellNumbers.robots = Object.fromEntries(siteFleets(map).flatMap((f) => f.robots.map((p, i) => [`${p.x},${p.y}`, i + 1])))
   return { ...map, cellNumbers }
 }
 

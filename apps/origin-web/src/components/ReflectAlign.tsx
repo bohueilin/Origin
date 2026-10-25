@@ -6,6 +6,7 @@ import {
   normalizeFleets,
   pinCellNumbers,
   cellNumber,
+  robotNumber,
   MAX_FLEETS,
   MAX_PER_FLEET,
   type DescriptiveSiteMap,
@@ -230,15 +231,16 @@ function cellKind(map: DescriptiveSiteMap, x: number, y: number): string {
 }
 
 /** The glyph + number drawn in a cell. Robots read as their TYPE plus their number
- *  WITHIN their fleet (each fleet starts at 1: AM1, AM2, HU1, DG1), so a reader
- *  never assumes robots are missing; the fleet itself is the F# mark and colour.
- *  Items/drops/walls/hazards/humans keep a floor-wide I/D/W/!/H number that stays
- *  with the cell until it is removed (`cellNumber`), so edits never renumber them. */
+ *  WITHIN their fleet (each fleet starts at 1: AM1, AM2, HU1, DG1); the fleet itself
+ *  is the F# mark and colour. Items/drops/walls/hazards/humans keep a floor-wide
+ *  I/D/W/!/H number. Every number stays with its cell until the cell is removed
+ *  (`cellNumber`, `robotNumber`), so no edit renumbers a survivor; a new robot takes
+ *  the lowest number free in its fleet. */
 function cellText(fleets: FleetDeployment[], map: DescriptiveSiteMap, x: number, y: number, fallbackEmb: RobotEmbodiment): string {
   const here = locate(fleets, x, y)
   if (here?.layer === 'robot') {
     const emb = map.robotTypes?.[`${x},${y}`] ?? fleets[here.fleet]?.embodiment ?? fallbackEmb
-    return `${EMBODIMENT_CODE[emb]}${here.local + 1}`
+    return `${EMBODIMENT_CODE[emb]}${robotNumber(map, x, y)}`
   }
   if (here?.layer === 'item') return `I${cellNumber(map, 'items', x, y)}`
   if (here?.layer === 'drop') return `D${cellNumber(map, 'drops', x, y)}`
@@ -268,7 +270,7 @@ function cellInfo(map: DescriptiveSiteMap, x: number, y: number, fallbackEmb: Ro
     const emb = map.robotTypes?.[`${x},${y}`] ?? fleets[here.fleet]?.embodiment ?? fallbackEmb
     const type = getEmbodimentProfile(emb).label
     const named = robotNoun(emb)
-    const desc = `Fleet ${here.fleet + 1} ${named} ${here.local + 1}`
+    const desc = `Fleet ${here.fleet + 1} ${named} ${robotNumber(map, x, y)}`
     const article = /^[aeiou]/i.test(named) ? 'an' : 'a'
     return { kind: 'robot', fleet: here.fleet, type, desc, noun: `${article} ${named} for Fleet ${here.fleet + 1}`, the: `${desc} (${text})` }
   }
@@ -344,9 +346,8 @@ function describeResize(map: DescriptiveSiteMap, plan: ResizePlan, fallbackEmb: 
   const was = count(map)
   const will = next ? count(next) : was
   const totals = `robots ${was.robots} → ${will.robots} · fleets ${was.fleets} → ${will.fleets} · items ${was.items} → ${will.items} · drops ${was.drops} → ${will.drops} · robot types scored ${was.robotTypes} → ${will.robotTypes}`
-  // The one-line summary outlives the resize, so a robot is named by type and cell,
-  // not by its number: robots are numbered within their fleet, and a fleet's later
-  // robots move up a number once an earlier one is removed.
+  // The one-line summary outlives the resize, so a robot is named by type and cell:
+  // its number is freed, and the fleet's next new robot may take it.
   const short = (c: LostCell) => {
     const at = coordOf(c.x, c.y)
     if (c.kind !== 'robot') return `${cellText(fleets, map, c.x, c.y, fallbackEmb)} at ${at}`
@@ -579,9 +580,8 @@ export function ReflectAlign({
     setAnnouncement('')
     requestAnimationFrame(() => setAnnouncement(text))
   }
-  // Every edit starts from a pinned floor (`pinCellNumbers`), so item, drop, wall,
-  // hazard and human-only numbers never shift under the visitor (robots are numbered
-  // within their fleet). A no-op keeps the old object. Any edit other than a resize
+  // Every edit starts from a pinned floor (`pinCellNumbers`), so no number a visitor
+  // reads on the grid ever shifts under them. A no-op keeps the old object. Any edit other than a resize
   // ends a pending resize confirm, a refusal note and the offer to undo a resize.
   function edit(fn: (m: DescriptiveSiteMap) => DescriptiveSiteMap) {
     forgetResize()

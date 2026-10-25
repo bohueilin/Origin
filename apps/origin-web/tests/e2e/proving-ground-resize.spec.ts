@@ -104,7 +104,7 @@ test('a removed robot is named by type and cell in the summary, so it never clas
   await expect(page.locator('.pg-episode b')).toHaveText(['AM', 'HU', 'DG'])
 })
 
-test('Undo after a resize renumbers a fleet restores every robot exactly, with no duplicate number', async ({ page }) => {
+test('a resize never renumbers a surviving robot; Undo restores the removed one exactly; a new robot fills the gap', async ({ page }) => {
   // AM3 at L3; then remove rows 9 down to 6, the last of which holds AM2 at B6.
   await cell(page, 'L3, empty').click()
   await expect(cell(page, 'L3, Fleet 1 AMR robot 3')).toBeVisible()
@@ -116,13 +116,23 @@ test('Undo after a resize renumbers a fleet restores every robot exactly, with n
   await step(page, 'Fewer rows').click() // row 6 holds AM2 at B6 and W7 at H6
   await expect(page.locator('.resize-loss li').first()).toHaveText('1 robot: Fleet 1 AMR robot 2 (AM2) at B6')
   await page.getByRole('button', { name: 'Remove 2 cells and resize', exact: true }).click()
-  // Robots are numbered within their fleet: L3 is now AM2.
-  await expect(cell(page, 'L3, Fleet 1 AMR robot 2')).toBeVisible()
+  // The survivor keeps its number: L3 is still AM3, with a gap where AM2 was.
+  await expect(cell(page, 'L3, Fleet 1 AMR robot 3')).toBeVisible()
+  await expect(cell(page, 'B4, Fleet 1 AMR robot 1')).toBeVisible()
+  // Undo: AM2 is back at B6, AM3 still at L3, and only one robot is number 2.
   await page.locator('.pg-editbar').getByRole('button', { name: 'Undo resize (back to 12 × 6)', exact: true }).click()
   await expect(cell(page, 'B6, Fleet 1 AMR robot 2')).toBeVisible()
   await expect(cell(page, 'L3, Fleet 1 AMR robot 3')).toBeVisible()
-  const robotTwos = await page.locator('.site-cell').evaluateAll((els) => els.filter((el) => /Fleet 1 AMR robot 2$/.test(el.getAttribute('aria-label') ?? '')).length)
-  expect(robotTwos).toBe(1)
+  const robotTwos = () => page.locator('.site-cell').evaluateAll((els) => els.filter((el) => /Fleet 1 AMR robot 2$/.test(el.getAttribute('aria-label') ?? '')).length)
+  expect(await robotTwos()).toBe(1)
+  // Erase AM2, then place a new robot: it takes the freed number 2, never a duplicate.
+  await page.locator('.smp-tool').filter({ hasText: 'Erase' }).click()
+  await cell(page, 'B6, Fleet 1 AMR robot 2').click()
+  await page.locator('.smp-tool').filter({ hasText: 'Robot' }).first().click()
+  await cell(page, 'A1, empty').click()
+  await expect(cell(page, 'A1, Fleet 1 AMR robot 2')).toBeVisible()
+  await expect(cell(page, 'L3, Fleet 1 AMR robot 3')).toBeVisible()
+  expect(await robotTwos()).toBe(1)
 })
 
 test('a confirm that was abandoned by another edit never comes back, even when the same floor returns', async ({ page }) => {

@@ -4,6 +4,9 @@ import {
   freezeWorkflow,
   siteFleets,
   normalizeFleets,
+  pinCellNumbers,
+  cellNumber,
+  robotNumber,
   MAX_FLEETS,
   MAX_PER_FLEET,
   type DescriptiveSiteMap,
@@ -19,8 +22,9 @@ import { cloudListFloorPlans, cloudSaveFloorPlan, cloudDeleteFloorPlan } from '.
 import { renameFloorPlan, planStoreFor, SAVE_FAILED_NOTICE, type FloorPlanWriter } from '../floorPlanActions'
 import { useAuth } from '../auth/AuthProvider'
 import { StepBridge } from './StepBridge'
-import { GRID_MIN, GRID_MAX, clampN, resizeSiteMap } from '../siteMapResize'
+import { GRID_MIN, GRID_MAX, clampN, planResize, type LostCell, type ResizePlan } from '../siteMapResize'
 import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
+import { floorCounts, floorTypes } from '../proving-ground/floorCounts'
 
 function keyOf(p: { x: number; y: number }): string {
   return `${p.x},${p.y}`
@@ -61,6 +65,26 @@ const TOOL_LABEL = Object.fromEntries(PALETTE.map((t) => [t.id, t.label])) as Re
  *  reference a sighted visitor reads off the axes and a screen reader hears. */
 const colLetter = (x: number) => String.fromCharCode(65 + x)
 const coordOf = (x: number, y: number) => `${colLetter(x)}${y + 1}`
+
+/** A type as a robot noun: "AMR robot", "Humanoid robot", but "Robot dog", never "Robot dog robot". */
+function robotNoun(emb: RobotEmbodiment): string {
+  const type = getEmbodimentProfile(emb).label
+  return /robot/i.test(type) ? type : `${type} robot`
+}
+
+/** Join a list as prose: "a", "a and b", "a, b and c". */
+function listProse(parts: string[]): string {
+  return parts.length < 3 ? parts.join(' and ') : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`
+}
+
+const LOST_GROUPS: { kind: LostCell['kind']; one: string; many: string }[] = [
+  { kind: 'robot', one: 'robot', many: 'robots' },
+  { kind: 'item', one: 'item', many: 'items' },
+  { kind: 'drop', one: 'drop', many: 'drops' },
+  { kind: 'wall', one: 'wall', many: 'walls' },
+  { kind: 'hazard', one: 'hazard', many: 'hazards' },
+  { kind: 'human', one: 'human-only cell', many: 'human-only cells' },
+]
 
 const LAYER_OF: Record<'robot' | 'item' | 'drop', FleetLayer> = {
   robot: 'robots',
@@ -112,6 +136,7 @@ function applyTool(
   tool: Tool,
   activeFleet: number,
   robotType?: RobotEmbodiment,
+  fallbackEmb?: RobotEmbodiment,
 ): DescriptiveSiteMap {
   const fleets = cloneFleets(siteFleets(map))
   const here = locate(fleets, x, y)
@@ -122,10 +147,11 @@ function applyTool(
 
   // Tapping an existing robot: re-type it when a different type is painted,
   // otherwise toggle-remove. The comparison uses the robot's EFFECTIVE type (its
-  // painted type, else its fleet's), so tapping a robot that already shows the
-  // painted type removes it instead of silently pinning the same type.
+  // painted type, else its fleet's, else the workflow fallback — the oracle's own
+  // order), so tapping a robot that already shows the painted type removes it
+  // instead of silently pinning the same type.
   if (tool === 'robot' && here?.layer === 'robot') {
-    const current = map.robotTypes?.[tkey] ?? fleets[here.fleet]?.embodiment
+    const current = map.robotTypes?.[tkey] ?? fleets[here.fleet]?.embodiment ?? fallbackEmb
     if (robotType && current !== robotType) {
       return normalizeFleets({ ...map, robotTypes: { ...(map.robotTypes ?? {}), [tkey]: robotType } }, fleets)
     }
@@ -205,23 +231,22 @@ function cellKind(map: DescriptiveSiteMap, x: number, y: number): string {
 }
 
 /** The glyph + number drawn in a cell. Robots read as their TYPE plus their number
- *  WITHIN their fleet (each fleet starts at 1: AM1, AM2, HU1, DG1), so a reader
- *  never assumes robots are missing; the fleet itself is the F# mark and colour.
- *  Items/drops/walls/hazards/humans keep their floor-wide I/D/W/!/H numbering. */
+ *  WITHIN their fleet (each fleet starts at 1: AM1, AM2, HU1, DG1); the fleet itself
+ *  is the F# mark and colour. Items/drops/walls/hazards/humans keep a floor-wide
+ *  I/D/W/!/H number. Every number stays with its cell until the cell is removed
+ *  (`cellNumber`, `robotNumber`), so no edit renumbers a survivor; a new robot takes
+ *  the lowest number free in its fleet. */
 function cellText(fleets: FleetDeployment[], map: DescriptiveSiteMap, x: number, y: number, fallbackEmb: RobotEmbodiment): string {
   const here = locate(fleets, x, y)
   if (here?.layer === 'robot') {
     const emb = map.robotTypes?.[`${x},${y}`] ?? fleets[here.fleet]?.embodiment ?? fallbackEmb
-    return `${EMBODIMENT_CODE[emb]}${here.local + 1}`
+    return `${EMBODIMENT_CODE[emb]}${robotNumber(map, x, y)}`
   }
-  if (here?.layer === 'item') return `I${here.global + 1}`
-  if (here?.layer === 'drop') return `D${here.global + 1}`
-  const wi = map.obstacles.findIndex((p) => p.x === x && p.y === y)
-  if (wi >= 0) return `W${wi + 1}`
-  const hz = map.hazards.findIndex((p) => p.x === x && p.y === y)
-  if (hz >= 0) return `!${hz + 1}`
-  const hm = map.humanOnly.findIndex((p) => p.x === x && p.y === y)
-  if (hm >= 0) return `H${hm + 1}`
+  if (here?.layer === 'item') return `I${cellNumber(map, 'items', x, y)}`
+  if (here?.layer === 'drop') return `D${cellNumber(map, 'drops', x, y)}`
+  if (has(map.obstacles, x, y)) return `W${cellNumber(map, 'obstacles', x, y)}`
+  if (has(map.hazards, x, y)) return `!${cellNumber(map, 'hazards', x, y)}`
+  if (has(map.humanOnly, x, y)) return `H${cellNumber(map, 'humanOnly', x, y)}`
   return ''
 }
 
@@ -244,9 +269,8 @@ function cellInfo(map: DescriptiveSiteMap, x: number, y: number, fallbackEmb: Ro
   if (here?.layer === 'robot') {
     const emb = map.robotTypes?.[`${x},${y}`] ?? fleets[here.fleet]?.embodiment ?? fallbackEmb
     const type = getEmbodimentProfile(emb).label
-    // "AMR robot", "Humanoid robot", but "Robot dog", never "Robot dog robot".
-    const named = /robot/i.test(type) ? type : `${type} robot`
-    const desc = `Fleet ${here.fleet + 1} ${named} ${here.local + 1}`
+    const named = robotNoun(emb)
+    const desc = `Fleet ${here.fleet + 1} ${named} ${robotNumber(map, x, y)}`
     const article = /^[aeiou]/i.test(named) ? 'an' : 'a'
     return { kind: 'robot', fleet: here.fleet, type, desc, noun: `${article} ${named} for Fleet ${here.fleet + 1}`, the: `${desc} (${text})` }
   }
@@ -272,7 +296,7 @@ function tapResult(
   tool: Tool,
   activeFleet: number,
   fallbackEmb: RobotEmbodiment,
-): { future: string; past: string } {
+): { future: string; past: string; changed: boolean } {
   const at = coordOf(x, y)
   const before = cellInfo(map, x, y, fallbackEmb)
   const after = next === map ? before : cellInfo(next, x, y, fallbackEmb)
@@ -287,14 +311,56 @@ function tapResult(
       const layer = LAYER_OF[tool]
       if ((fleets[activeFleet]?.[layer].length ?? 0) >= MAX_PER_FLEET) why = `Fleet ${activeFleet + 1} already has ${MAX_PER_FLEET} ${layer}`
     }
-    return { future: `leaves ${at} as it is, because ${why}`, past: `No change at ${at}: ${why}.` }
+    return { future: `leaves ${at} as it is, because ${why}`, past: `No change at ${at}: ${why}.`, changed: false }
   }
-  if (before.kind === 'clear') return { future: `places ${after.noun} here`, past: `Placed ${after.noun} at ${at}.` }
-  if (after.kind === 'clear') return { future: `removes the ${before.the}`, past: `Removed the ${before.the} at ${at}.` }
+  if (before.kind === 'clear') return { future: `places ${after.noun} here`, past: `Placed ${after.noun} at ${at}.`, changed: true }
+  if (after.kind === 'clear') return { future: `removes the ${before.the}`, past: `Removed the ${before.the} at ${at}.`, changed: true }
   if (before.kind === 'robot' && after.kind === 'robot' && before.type !== after.type) {
-    return { future: `changes this robot to ${after.type}`, past: `Changed the robot at ${at} to ${after.type}.` }
+    return { future: `changes this robot to ${after.type}`, past: `Changed the robot at ${at} to ${after.type}.`, changed: true }
   }
-  return { future: `replaces the ${before.the} with ${after.noun}`, past: `Replaced the ${before.the} at ${at} with ${after.noun}.` }
+  return { future: `replaces the ${before.the} with ${after.noun}`, past: `Replaced the ${before.the} at ${at} with ${after.noun}.`, changed: true }
+}
+
+/** The loss list for a shrink, grouped by kind, each cell named as the grid names
+ *  it ("D1 at L5, Fleet 1"), plus what moves on the oracle's scored lane. */
+function describeResize(map: DescriptiveSiteMap, plan: ResizePlan, fallbackEmb: RobotEmbodiment) {
+  const fleets = siteFleets(map)
+  const name = (c: LostCell) => {
+    const at = coordOf(c.x, c.y)
+    const text = cellText(fleets, map, c.x, c.y, fallbackEmb)
+    if (c.kind === 'robot') return `${cellInfo(map, c.x, c.y, fallbackEmb).desc} (${text}) at ${at}`
+    if (c.kind === 'item' || c.kind === 'drop') return `${text} at ${at}, Fleet ${c.fleet + 1}`
+    return `${text} at ${at}`
+  }
+  const groups = LOST_GROUPS
+    .map((g) => ({ ...g, cells: plan.lost.filter((c) => c.kind === g.kind) }))
+    .filter((g) => g.cells.length)
+    .map((g) => ({ title: `${g.cells.length} ${g.cells.length === 1 ? g.one : g.many}`, entries: g.cells.map(name) }))
+  const next = plan.next
+  // The lane in plain words, defined where it appears: the one route the oracle scores.
+  const lane = next && plan.lane.length
+    ? [`The oracle scores one lane: the route from the start (not drawn on the grid) to the first item, then the first drop. Now it runs ${laneRoute(map)}. After this resize it runs ${laneRoute(next)}, so the result is re-computed.`]
+    : []
+  // Before → after totals, so the visitor can compare the floor, not only read a list.
+  const count = (m: DescriptiveSiteMap) => ({ ...floorCounts(m, fallbackEmb), drops: siteFleets(m).reduce((n, f) => n + f.drops.length, 0) })
+  const was = count(map)
+  const will = next ? count(next) : was
+  const totals = `robots ${was.robots} → ${will.robots} · fleets ${was.fleets} → ${will.fleets} · items ${was.items} → ${will.items} · drops ${was.drops} → ${will.drops} · robot types scored ${was.robotTypes} → ${will.robotTypes}`
+  // The one-line summary outlives the resize, so a robot is named by type and cell:
+  // its number is freed, and the fleet's next new robot may take it.
+  const short = (c: LostCell) => {
+    const at = coordOf(c.x, c.y)
+    if (c.kind !== 'robot') return `${cellText(fleets, map, c.x, c.y, fallbackEmb)} at ${at}`
+    const noun = robotNoun(map.robotTypes?.[`${c.x},${c.y}`] ?? fleets[c.fleet]?.embodiment ?? fallbackEmb)
+    return `${/^[aeiou]/i.test(noun) ? 'an' : 'a'} ${noun} at ${at}`
+  }
+  const brief = groups.length ? listProse(plan.lost.map(short)) : ''
+  return { groups, lane, brief, totals }
+}
+
+/** The oracle's lane as the grid names it: "A5 → I1 at J5 → D1 at L5". */
+function laneRoute(m: DescriptiveSiteMap): string {
+  return `${coordOf(m.start.x, m.start.y)} → I${cellNumber(m, 'items', m.item.x, m.item.y)} at ${coordOf(m.item.x, m.item.y)} → D${cellNumber(m, 'drops', m.drop.x, m.drop.y)} at ${coordOf(m.drop.x, m.drop.y)}`
 }
 
 /** A note box that grows with its text, so a reader never scrolls inside a small
@@ -491,6 +557,8 @@ export function ReflectAlign({
   const dropTotal = totalIn(fleets, 'drops')
   const activeColor = FLEET_COLORS[af % FLEET_COLORS.length]
   const proving = mode === 'proving-ground'
+  // The scored robot types, in the oracle's episode order, with where each one is.
+  const types = floorTypes(siteMap, embodiment)
 
   // The grid is one Tab stop (roving tabindex); arrow keys move a visible focus
   // across it. `cursor` is the cell that owns tabIndex 0, `hover` the cell under
@@ -512,11 +580,153 @@ export function ReflectAlign({
     setAnnouncement('')
     requestAnimationFrame(() => setAnnouncement(text))
   }
+  // Every edit starts from a pinned floor (`pinCellNumbers`), so no number a visitor
+  // reads on the grid ever shifts under them. A no-op keeps the old object. Any edit other than a resize
+  // ends a pending resize confirm, a refusal note and the offer to undo a resize.
+  function edit(fn: (m: DescriptiveSiteMap) => DescriptiveSiteMap) {
+    forgetResize()
+    setSiteMap((m) => {
+      const pinned = pinCellNumbers(m)
+      const next = fn(pinned)
+      return next === pinned ? m : next
+    })
+  }
   function tapCell(x: number, y: number) {
-    const next = applyTool(siteMap, x, y, tool, af, robotPaintType)
-    announce(tapResult(siteMap, next, x, y, tool, af, embodiment).past)
+    const base = pinCellNumbers(siteMap)
+    const next = applyTool(base, x, y, tool, af, robotPaintType, embodiment)
+    const result = tapResult(base, next, x, y, tool, af, embodiment)
+    announce(result.past)
     setCursor({ x, y })
-    if (next !== siteMap) setSiteMap(next)
+    if (!result.changed) return
+    forgetResize()
+    setSiteMap(next)
+  }
+
+  // ── Resize: never a silent loss ──
+  // A shrink that would remove placed cells, or move the oracle's scored lane,
+  // waits for an explicit confirm that lists exactly what goes. An applied resize
+  // can be undone in one tap until the floor changes any other way.
+  type StepKey = 'cols-less' | 'cols-more' | 'rows-less' | 'rows-more'
+  const [sizePreview, setSizePreview] = useState<StepKey | null>(null)
+  const [pendingResize, setPendingResize] = useState<{ base: DescriptiveSiteMap; plan: ResizePlan; trigger: HTMLButtonElement | null } | null>(null)
+  const [resizeRefusal, setResizeRefusal] = useState<{ base: DescriptiveSiteMap; text: string } | null>(null)
+  const [lastResize, setLastResize] = useState<{ before: DescriptiveSiteMap; after: DescriptiveSiteMap; from: string; to: string; removed: string; trigger: HTMLButtonElement | null } | null>(null)
+  const keepRef = useRef<HTMLButtonElement>(null)
+  const undoRef = useRef<HTMLButtonElement>(null)
+  const sizeGroupRef = useRef<HTMLDivElement>(null)
+  // Each is also bound to the exact floor it was made for, so none can outlive it.
+  const pending = pendingResize?.base === siteMap ? pendingResize : null
+  const refusal = resizeRefusal?.base === siteMap ? resizeRefusal.text : ''
+  const undoable = lastResize?.after === siteMap ? lastResize : null
+  const sizeOf = (m: { width: number; height: number }) => `${m.width} × ${m.height}`
+
+  function forgetResize() {
+    setPendingResize(null)
+    setResizeRefusal(null)
+    setLastResize(null)
+  }
+  function requestResize(w: number, h: number, trigger: HTMLButtonElement | null) {
+    const plan = planResize(pinCellNumbers(siteMap), w, h)
+    setResizeRefusal(null)
+    if (plan.blocked) {
+      setPendingResize(null)
+      const move = plan.blocked.items && plan.blocked.drops ? 'an item and a drop' : plan.blocked.items ? 'an item' : 'a drop'
+      const text = `The floor stays ${sizeOf(siteMap)}. Making it ${sizeOf(plan)} would remove ${emptied(plan.blocked)}, and the floor keeps at least one item and one drop. Place ${move} in columns A to ${colLetter(plan.width - 1)} and rows 1 to ${plan.height} first, then try again.`
+      setResizeRefusal({ base: siteMap, text })
+      announce(text) // through the live region, so a repeated refusal is heard again
+      return
+    }
+    if (plan.lost.length || plan.lane.length) {
+      setPendingResize({ base: siteMap, plan, trigger })
+      requestAnimationFrame(() => keepRef.current?.focus())
+      return
+    }
+    applyResize(siteMap, plan, trigger, false)
+  }
+  function applyResize(before: DescriptiveSiteMap, plan: ResizePlan, trigger: HTMLButtonElement | null, focusUndo: boolean) {
+    if (!plan.next) return
+    const removed = describeResize(pinCellNumbers(before), plan, embodiment).brief
+    setSiteMap(plan.next)
+    setLastResize({ before, after: plan.next, from: sizeOf(before), to: sizeOf(plan), removed, trigger })
+    setPendingResize(null)
+    announce(`The floor is now ${sizeOf(plan)}${removed ? `; removed ${removed}` : ''}. Undo resize brings back the ${sizeOf(before)} floor.`)
+    // After a confirm, or when the stepper just reached its limit (disabled, so it
+    // drops focus), focus goes to Undo: one keypress from the exact prior floor.
+    requestAnimationFrame(() => { if (focusUndo || !trigger || trigger.disabled) undoRef.current?.focus() })
+  }
+  function confirmResize() {
+    if (!pending) return
+    applyResize(pending.base, pending.plan, pending.trigger, true)
+  }
+  function cancelResize() {
+    if (!pendingResize) return
+    const trigger = pendingResize.trigger
+    setPendingResize(null)
+    announce(`Kept the ${sizeOf(siteMap)} floor. Nothing was removed.`)
+    trigger?.focus()
+  }
+  /** Undo the last resize. From the keyboard, focus returns to the stepper that
+   *  started it; a pointer tap leaves the page where it is (no scroll jump). */
+  function undoResize(e: { detail: number }) {
+    if (!undoable) return
+    setSiteMap(undoable.before)
+    setLastResize(null)
+    announce(`Undid the resize. The floor is ${undoable.from} again, with every cell, robot type and number as it was.`)
+    if (e.detail > 0) return
+    requestAnimationFrame(() => {
+      const target = undoable.trigger && !undoable.trigger.disabled ? undoable.trigger : sizeGroupRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')
+      target?.focus()
+    })
+  }
+  /** What one size step would do, in words: the stepper's description and the hover/focus preview. */
+  function describeStep(w: number, h: number): string {
+    const what = w < siteMap.width ? `Removes column ${colLetter(w)}`
+      : h < siteMap.height ? `Removes row ${h + 1}`
+      : w > siteMap.width ? `Adds an empty column ${colLetter(siteMap.width)}`
+      : `Adds an empty row ${siteMap.height + 1}`
+    const plan = planResize(pinCellNumbers(siteMap), w, h)
+    if (plan.blocked) return `${what}: refused, because it would remove ${emptied(plan.blocked)}, and the floor keeps at least one item and one drop.`
+    if (plan.lost.length) {
+      const n = plan.lost.length
+      return `${what}, which holds ${n} placed cell${n === 1 ? '' : 's'} (${describeResize(pinCellNumbers(siteMap), plan, embodiment).brief}). You see the full list and confirm before anything is removed.`
+    }
+    if (plan.lane.length) return `${what}, which changes the lane the oracle scores (its route from the start to the first item and drop). You confirm first.`
+    return w < siteMap.width || h < siteMap.height ? `${what}, which is empty. Nothing placed is removed.` : `${what}.`
+  }
+  const sizeSteps: { key: StepKey; name: string; glyph: string; w: number; h: number; off: boolean }[] = [
+    { key: 'cols-less', name: 'Fewer columns', glyph: '−', w: siteMap.width - 1, h: siteMap.height, off: siteMap.width <= GRID_MIN },
+    { key: 'cols-more', name: 'More columns', glyph: '+', w: siteMap.width + 1, h: siteMap.height, off: siteMap.width >= GRID_MAX },
+    { key: 'rows-less', name: 'Fewer rows', glyph: '−', w: siteMap.width, h: siteMap.height - 1, off: siteMap.height <= GRID_MIN },
+    { key: 'rows-more', name: 'More rows', glyph: '+', w: siteMap.width, h: siteMap.height + 1, off: siteMap.height >= GRID_MAX },
+  ]
+  // The ghost: what the hovered or focused stepper would do from the CURRENT size
+  // (so it follows along after each step), or the size awaiting confirm.
+  const hovered = sizeSteps.find((s) => s.key === sizePreview && !s.off)
+  const preview = pending ? { w: pending.plan.width, h: pending.plan.height } : hovered ? { w: hovered.w, h: hovered.h } : null
+  const gridW = Math.max(siteMap.width, preview?.w ?? 0)
+  const gridH = Math.max(siteMap.height, preview?.h ?? 0)
+  const goes = (x: number, y: number) => !!preview && (x >= preview.w || y >= preview.h)
+  const renderStep = (s: (typeof sizeSteps)[number]) => (
+    <button
+      key={s.key}
+      type="button"
+      className="btn ghost"
+      disabled={s.off}
+      aria-label={s.name}
+      aria-describedby={s.off ? undefined : `pg-size-${s.key}`}
+      onClick={(e) => requestResize(s.w, s.h, e.currentTarget)}
+      onMouseEnter={() => setSizePreview(s.key)}
+      onMouseLeave={() => setSizePreview(null)}
+      onFocus={() => setSizePreview(s.key)}
+      onBlur={() => setSizePreview(null)}
+    >
+      {s.glyph}
+    </button>
+  )
+  const resizeView = pending ? describeResize(pinCellNumbers(siteMap), pending.plan, embodiment) : null
+  /** "every drop", "every item", or both: what a refused resize would have emptied. */
+  function emptied(b: NonNullable<ResizePlan['blocked']>) {
+    return b.items && b.drops ? 'every item and every drop' : b.items ? 'every item' : 'every drop'
   }
   function onGridKey(e: KeyboardEvent<HTMLDivElement>) {
     const t = e.target as HTMLElement
@@ -547,14 +757,19 @@ export function ReflectAlign({
     fleetsEl.querySelector<HTMLButtonElement>('.smp-fleet.on .smp-fleet-select')?.focus({ preventScroll: true })
   }
   const toolPhrase = `${TOOL_LABEL[tool]} tool${tool === 'robot' ? ` (${getEmbodimentProfile(robotPaintType).label})` : ''}`
+  // What a grid tap places: the one setting that decides a new robot's type.
+  const placing = tool === 'robot' ? robotNoun(robotPaintType) : tool === 'human' ? 'Human-only cell' : TOOL_LABEL[tool]
   const readout = look && look.x < siteMap.width && look.y < siteMap.height
     ? (() => {
-        const info = cellInfo(siteMap, look.x, look.y, embodiment)
-        const next = applyTool(siteMap, look.x, look.y, tool, af, robotPaintType)
-        const what = tapResult(siteMap, next, look.x, look.y, tool, af, embodiment).future
+        const base = pinCellNumbers(siteMap)
+        const info = cellInfo(base, look.x, look.y, embodiment)
+        const next = applyTool(base, look.x, look.y, tool, af, robotPaintType, embodiment)
+        const what = tapResult(base, next, look.x, look.y, tool, af, embodiment).future
         return `${coordOf(look.x, look.y)}: ${info.desc}. A tap with the ${toolPhrase} ${what}.`
       })()
-    : `Active: Fleet ${af + 1} · ${toolPhrase}. Point at a cell, or move with the arrow keys, to see what a tap does there.`
+    : undoable
+      ? `The floor is ${undoable.to} now (it was ${undoable.from})${undoable.removed ? `; the resize removed ${undoable.removed}` : ''}. Undo resize brings back the ${undoable.from} floor exactly.`
+      : `Active: Fleet ${af + 1} · ${toolPhrase}. Point at a cell, or move with the arrow keys, to see what a tap does there.`
 
   function approve() {
     onApprove(
@@ -572,21 +787,23 @@ export function ReflectAlign({
   }
 
   // Add one of a layer to a specific fleet (placed on the first free cell), and
-  // make that fleet + tool active so the next grid tap continues there.
+  // make that fleet + tool active so the next grid tap continues there. On the
+  // proving ground a robot added here takes the placement type, exactly like a
+  // robot placed by a grid tap: one setting decides every new robot's type.
   function addToFleet(fleetIdx: number, layer: 'robot' | 'item' | 'drop') {
     setActiveFleet(fleetIdx)
     setTool(layer)
-    setSiteMap((m) => {
+    edit((m) => {
       const fs = siteFleets(m)
       if (!fs[fleetIdx] || fs[fleetIdx][LAYER_OF[layer]].length >= MAX_PER_FLEET) return m
       const free = firstFreeCell(m)
-      return free ? applyTool(m, free.x, free.y, layer, fleetIdx) : m
+      return free ? applyTool(m, free.x, free.y, layer, fleetIdx, proving && layer === 'robot' ? robotPaintType : undefined) : m
     })
   }
   function removeFromFleet(fleetIdx: number, layer: 'robot' | 'item' | 'drop') {
     setActiveFleet(fleetIdx)
     setTool(layer)
-    setSiteMap((m) => {
+    edit((m) => {
       const fs = cloneFleets(siteFleets(m))
       const key = LAYER_OF[layer]
       if (!fs[fleetIdx] || fs[fleetIdx][key].length === 0) return m
@@ -595,14 +812,15 @@ export function ReflectAlign({
       return normalizeFleets(m, fs)
     })
   }
-  // Add a new fleet seeded with one robot / item / drop on free cells.
+  // Add a new fleet seeded with one robot / item / drop on free cells. On the
+  // proving ground the new fleet starts as the placement type.
   function addFleet() {
     if (fleets.length >= MAX_FLEETS) return
     const newIdx = fleets.length
-    setSiteMap((m) => {
+    edit((m) => {
       const fs = cloneFleets(siteFleets(m))
       if (fs.length >= MAX_FLEETS) return m
-      fs.push({ robots: [], items: [], drops: [] })
+      fs.push({ robots: [], items: [], drops: [], embodiment: proving ? robotPaintType : undefined })
       let next = normalizeFleets(m, fs)
       for (const layer of ['robot', 'item', 'drop'] as const) {
         const free = firstFreeCell(next)
@@ -612,11 +830,11 @@ export function ReflectAlign({
     })
     setActiveFleet(newIdx)
   }
-  // Set a fleet's robot type. Descriptive only (never touches the oracle path) —
-  // it drives the grid label + the 2D/3D robot model for that fleet's robots.
+  // Set a fleet's robot type (capture mode's fleet selector). It drives the grid
+  // label + the 2D/3D model for that fleet's robots that have no type of their own.
   function setFleetEmbodiment(fleetIdx: number, emb: RobotEmbodiment) {
     setActiveFleet(fleetIdx)
-    setSiteMap((m) => {
+    edit((m) => {
       const fs = cloneFleets(siteFleets(m))
       if (!fs[fleetIdx]) return m
       fs[fleetIdx] = { ...fs[fleetIdx], embodiment: emb }
@@ -624,7 +842,7 @@ export function ReflectAlign({
     })
   }
   function removeFleet(fleetIdx: number) {
-    setSiteMap((m) => {
+    edit((m) => {
       const fs = cloneFleets(siteFleets(m))
       if (fs.length <= 1) return m
       fs.splice(fleetIdx, 1)
@@ -659,6 +877,7 @@ export function ReflectAlign({
   }
   function handleLoadPlan(p: SavedFloorPlan) {
     setAnnouncement('')
+    forgetResize()
     setDomain(p.domain)
     setEmbodiment(p.embodiment)
     setSiteMap(p.siteMap)
@@ -709,6 +928,7 @@ export function ReflectAlign({
   // Reset every placement back to the template's default floor + size (one fleet).
   function clearAll() {
     setAnnouncement('')
+    forgetResize()
     setTool('robot')
     setActiveFleet(0)
     setSiteMap(draft.siteMap)
@@ -795,17 +1015,23 @@ export function ReflectAlign({
                   <span className="pg-editbar-dot" style={{ background: activeColor }} aria-hidden="true" />
                   <span><b>Fleet {af + 1}</b><span className="pg-editbar-k"> active</span></span>
                   <span className="pg-editbar-sep" aria-hidden="true">·</span>
-                  <span><span className="pg-editbar-k">Tool: </span><b>{TOOL_LABEL[tool]}</b></span>
-                  {tool === 'robot' && (
-                    <>
-                      <span className="pg-editbar-sep" aria-hidden="true">·</span>
-                      <span><span className="pg-editbar-k">Type: </span><b>{getEmbodimentProfile(robotPaintType).label}</b></span>
-                    </>
-                  )}
+                  {/* The placement tool, never the fleet: what the next tap or + places. */}
+                  <span>
+                    <span className="pg-editbar-long">Placement tool</span><span className="pg-editbar-short" aria-hidden="true">Tool</span>: <b>{placing}</b>
+                  </span>
                 </p>
+                {/* A compact pill, so offering Undo never makes the stuck bar taller on a
+                    desktop; on a phone it shares the floor-total row. The full name is read
+                    to a screen reader. It stays until the floor changes another way. */}
+                {undoable && (
+                  <button type="button" className="pg-editbar-change pg-editbar-undo" ref={undoRef} onClick={undoResize} title={`Undo resize (back to ${undoable.from})`}>
+                    Undo<span className="sr-only"> resize (back to {undoable.from})</span>
+                  </button>
+                )}
                 <button type="button" className="pg-editbar-change" onClick={showControls}>
                   Change<span className="pg-editbar-k"> fleet or tool</span>
                 </button>
+                <span className="pg-editbar-break" aria-hidden="true" />
                 <FloorCountStrip map={siteMap} fallback={embodiment} />
               </div>
             )}
@@ -877,7 +1103,7 @@ export function ReflectAlign({
                             </span>
                             <button
                               className="smp-step-btn"
-                              aria-label={`One more ${label} in fleet ${fi + 1}`}
+                              aria-label={`One more ${proving && layer === 'robot' ? robotNoun(robotPaintType) : label} in fleet ${fi + 1}`}
                               disabled={count >= MAX_PER_FLEET}
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -890,18 +1116,46 @@ export function ReflectAlign({
                         )
                       })}
                     </div>
-                    <label className="smp-fleet-emb" onClick={(e) => e.stopPropagation()}>
-                      <span className="smp-fleet-emb-label">Robot type</span>
-                      <select
-                        className="smp-fleet-emb-select"
-                        value={f.embodiment ?? embodiment}
-                        onChange={(e) => setFleetEmbodiment(fi, e.target.value as RobotEmbodiment)}
-                      >
-                        {ROBOT_EMBODIMENTS.filter((opt) => opt !== 'other').map((opt) => (
-                          <option key={opt} value={opt}>{getEmbodimentProfile(opt).label}</option>
-                        ))}
-                      </select>
-                    </label>
+                    {proving ? (
+                      // The types this fleet actually has, counted the way the oracle
+                      // resolves them, so the card, the type panel and the result agree.
+                      <div className="smp-fleet-types">
+                        <span className="smp-fleet-types-label">Robot types</span>
+                        {(() => {
+                          const here = types.filter((t) => t.byFleet.some((b) => b.fleet === fi))
+                          if (!here.length) {
+                            return <p className="smp-fleet-types-empty">No robots. The oracle still scores this fleet as {getEmbodimentProfile(f.embodiment ?? embodiment).label}, {f.embodiment ? 'the type this fleet started with' : 'the page’s default type'}.</p>
+                          }
+                          return (
+                            <ul className="smp-type-chips">
+                              {here.map((t) => {
+                                const n = t.byFleet.find((b) => b.fleet === fi)?.robots ?? 0
+                                return (
+                                  <li key={t.embodiment} className="smp-type-chip">
+                                    <b>{EMBODIMENT_CODE[t.embodiment]}</b> {getEmbodimentProfile(t.embodiment).label}{' '}
+                                    <span aria-hidden="true">×{n}</span>
+                                    <span className="sr-only">: {n} {n === 1 ? 'robot' : 'robots'}</span>
+                                  </li>
+                                )
+                              })}
+                            </ul>
+                          )
+                        })()}
+                      </div>
+                    ) : (
+                      <label className="smp-fleet-emb" onClick={(e) => e.stopPropagation()}>
+                        <span className="smp-fleet-emb-label">Robot type</span>
+                        <select
+                          className="smp-fleet-emb-select"
+                          value={f.embodiment ?? embodiment}
+                          onChange={(e) => setFleetEmbodiment(fi, e.target.value as RobotEmbodiment)}
+                        >
+                          {ROBOT_EMBODIMENTS.filter((opt) => opt !== 'other').map((opt) => (
+                            <option key={opt} value={opt}>{getEmbodimentProfile(opt).label}</option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
                   </div>
                 )
               })}
@@ -914,7 +1168,7 @@ export function ReflectAlign({
 
             <div className="smp-palette" role="group" aria-label="Placement tool — tap the grid to place">
               <span className="smp-palette-label">
-                Tool · tap the grid to place into <strong>Fleet {af + 1}</strong>
+                {proving ? 'Placement tool' : 'Tool'} · tap the grid to place into <strong>Fleet {af + 1}</strong>
               </span>
               <div className="smp-tools">
                 {PALETTE.map((t) => (
@@ -935,7 +1189,11 @@ export function ReflectAlign({
             {tool === 'robot' && (
               <div className="smp-rtype" role="group" aria-label="Robot type to place">
                 <span className="smp-rtype-label">
-                  Robot type — place a mix, then <strong>tap a robot to change its type</strong>
+                  {proving ? (
+                    <>Placement type: every robot you place, or add with +, is this type. <strong>Tap a placed robot to change it to this type.</strong></>
+                  ) : (
+                    <>Robot type — place a mix, then <strong>tap a robot to change its type</strong></>
+                  )}
                 </span>
                 <div className="smp-rtype-chips">
                   {ROBOT_EMBODIMENTS.filter((e) => e !== 'other').map((e) => (
@@ -953,22 +1211,69 @@ export function ReflectAlign({
               </div>
             )}
 
-            <div className="grid-size" role="group" aria-label="Grid size">
+            <div className="grid-size" role="group" aria-label="Grid size" ref={sizeGroupRef}>
               <span className="grid-size-label">Grid size — match your floor</span>
               <div className="grid-size-controls">
                 <div className="stepper" aria-label="Columns (width)">
-                  <button className="btn ghost" disabled={siteMap.width <= GRID_MIN} onClick={() => setSiteMap((m) => resizeSiteMap(m, m.width - 1, m.height))} aria-label="Fewer columns">−</button>
+                  {renderStep(sizeSteps[0])}
                   <span className="stepper-val">{siteMap.width} <small>cols</small></span>
-                  <button className="btn ghost" disabled={siteMap.width >= GRID_MAX} onClick={() => setSiteMap((m) => resizeSiteMap(m, m.width + 1, m.height))} aria-label="More columns">+</button>
+                  {renderStep(sizeSteps[1])}
                 </div>
                 <span className="grid-size-x" aria-hidden="true">×</span>
                 <div className="stepper" aria-label="Rows (height)">
-                  <button className="btn ghost" disabled={siteMap.height <= GRID_MIN} onClick={() => setSiteMap((m) => resizeSiteMap(m, m.width, m.height - 1))} aria-label="Fewer rows">−</button>
+                  {renderStep(sizeSteps[2])}
                   <span className="stepper-val">{siteMap.height} <small>rows</small></span>
-                  <button className="btn ghost" disabled={siteMap.height >= GRID_MAX} onClick={() => setSiteMap((m) => resizeSiteMap(m, m.width, m.height + 1))} aria-label="More rows">+</button>
+                  {renderStep(sizeSteps[3])}
                 </div>
               </div>
+              {/* Why a stepper stops: the gym's supported range, in visible text. */}
+              <p className="grid-size-range">
+                This synthetic gym supports {GRID_MIN} to {GRID_MAX} columns ({colLetter(0)} to {colLetter(GRID_MAX - 1)}) and {GRID_MIN} to {GRID_MAX} rows.
+              </p>
+              {sizeSteps.map((s) => !s.off && <span key={s.key} id={`pg-size-${s.key}`} hidden>{describeStep(s.w, s.h)}</span>)}
+              {/* Space is kept for this line so the grid below never jumps on hover. */}
+              {!pending && <p className="grid-size-preview">{hovered ? describeStep(hovered.w, hovered.h) : ''}</p>}
+              {refusal && !pending && <p className="grid-size-refusal">{refusal}</p>}
+              {!proving && undoable && (
+                <button type="button" className="btn ghost" ref={undoRef} onClick={undoResize}>Undo resize (back to {undoable.from})</button>
+              )}
             </div>
+
+            {/* A shrink that would remove placed cells, or move the scored lane, waits
+                here. Nothing changes until the visitor confirms; Escape keeps the floor. */}
+            {pending && resizeView && (
+              <div
+                className="resize-confirm"
+                role="group"
+                aria-labelledby="pg-resize-title"
+                onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); cancelResize() } }}
+              >
+                <p className="resize-confirm-title" id="pg-resize-title">
+                  {pending.plan.lost.length
+                    ? `Making the floor ${sizeOf(pending.plan)} removes ${pending.plan.lost.length} placed cell${pending.plan.lost.length === 1 ? '' : 's'}:`
+                    : `Making the floor ${sizeOf(pending.plan)} changes the lane the oracle scores:`}
+                </p>
+                {resizeView.groups.length > 0 && (
+                  <ul className="resize-loss">
+                    {resizeView.groups.map((g) => (
+                      <li key={g.title}><b>{g.title}:</b> {g.entries.join('; ')}</li>
+                    ))}
+                  </ul>
+                )}
+                {resizeView.lane.map((line) => <p key={line} className="resize-lane">{line}</p>)}
+                <p className="resize-totals"><b>Floor total, now → after:</b> {resizeView.totals}</p>
+                <p className="resize-confirm-note">
+                  Nothing changes until you choose. The cells outlined with dashes on the grid are the ones that go. After a resize, Undo resize brings back this exact floor.
+                </p>
+                <div className="resize-confirm-actions">
+                  <button type="button" className="btn primary resize-confirm-go" onClick={confirmResize}>
+                    {pending.plan.lost.length ? `Remove ${pending.plan.lost.length} cell${pending.plan.lost.length === 1 ? '' : 's'} and resize` : 'Resize'}
+                  </button>
+                  {/* Focus starts here: Enter keeps the floor, as Escape does. */}
+                  <button type="button" className="btn ghost resize-confirm-keep" ref={keepRef} onClick={cancelResize}>Keep the floor as it is</button>
+                </div>
+              </div>
+            )}
 
             {/* Floor header: the size in words and a synthetic scale, so 108 squares
                 read as a room. The scale is a stated convention of this synthetic floor,
@@ -1038,7 +1343,7 @@ export function ReflectAlign({
               <div
                 className={`site-grid${proving ? ' site-grid--axes' : ''}`}
                 ref={gridRef}
-                style={{ gridTemplateColumns: proving ? `24px repeat(${siteMap.width}, 44px)` : `repeat(${siteMap.width}, 44px)` }}
+                style={{ gridTemplateColumns: proving ? `24px repeat(${gridW}, 44px)` : `repeat(${gridW}, 44px)` }}
                 onKeyDown={onGridKey}
                 onMouseLeave={() => { setHover(null); setLook(focused) }}
                 onFocus={(e) => {
@@ -1056,12 +1361,16 @@ export function ReflectAlign({
                 }}
               >
               {proving && <span className="grid-axis grid-axis--corner" aria-hidden="true" />}
-              {proving && Array.from({ length: siteMap.width }, (_, x) => (
-                <span key={`col-${x}`} className="grid-axis grid-axis--col" aria-hidden="true">{colLetter(x)}</span>
+              {proving && Array.from({ length: gridW }, (_, x) => (
+                <span key={`col-${x}`} className={`grid-axis grid-axis--col${x >= siteMap.width ? ' grid-axis--ghost' : ''}`} aria-hidden="true">{colLetter(x)}</span>
               ))}
-              {Array.from({ length: siteMap.height }, (_, y) => [
-                proving ? <span key={`row-${y}`} className="grid-axis grid-axis--row" aria-hidden="true">{y + 1}</span> : null,
-                ...Array.from({ length: siteMap.width }, (_, x) => {
+              {Array.from({ length: gridH }, (_, y) => [
+                proving ? <span key={`row-${y}`} className={`grid-axis grid-axis--row${y >= siteMap.height ? ' grid-axis--ghost' : ''}`} aria-hidden="true">{y + 1}</span> : null,
+                ...Array.from({ length: gridW }, (_, x) => {
+                // A preview of cells a larger floor would add: outline only, not a cell yet.
+                if (x >= siteMap.width || y >= siteMap.height) {
+                  return <span key={`ghost-${x},${y}`} className="site-cell-ghost" aria-hidden="true" />
+                }
                 const kind = cellKind(siteMap, x, y)
                 const text = cellText(fleets, siteMap, x, y, embodiment)
                 // Colour robots / items / drops by their fleet; mark the cell F#.
@@ -1081,7 +1390,7 @@ export function ReflectAlign({
                 return (
                   <button
                     key={keyOf({ x, y })}
-                    className={`site-cell cell-${kind}`}
+                    className={`site-cell cell-${kind}${goes(x, y) ? ' is-ghost-remove' : ''}`}
                     style={style}
                     data-x={x}
                     data-y={y}
@@ -1095,11 +1404,13 @@ export function ReflectAlign({
                   </button>
                 )
               })])}
-              {proving && (
-                <>
-                  <span className="grid-scale-bar" style={{ gridColumn: '2 / span 3' }} aria-hidden="true" />
-                  <span className="grid-scale-label" style={{ gridColumn: '2 / -1' }}>3 cells ≈ 3 m in this synthetic scale</span>
-                </>
+              {/* The scale is one row exactly as tall as a cell row. A previewed extra
+                  row takes this same slot, so a preview never moves anything below. */}
+              {proving && gridH === siteMap.height && (
+                <span className="grid-scale" style={{ gridColumn: '2 / -1' }}>
+                  <span className="grid-scale-bar" aria-hidden="true" />
+                  <span className="grid-scale-label">3 cells ≈ 3 m in this synthetic scale</span>
+                </span>
               )}
               </div>
             </div>
@@ -1114,12 +1425,72 @@ export function ReflectAlign({
             {proving && (
               <>
                 <p className="sr-only" id="pg-grid-keys">Arrow keys move between cells; Home and End jump to the ends of a row; Enter or Space applies the active tool.</p>
-                <p className="grid-readout">{readout}</p>
+                <div className="grid-readout-row">
+                  <p className="grid-readout">{readout}</p>
+                  {undoable && (
+                    <button type="button" className="btn ghost grid-readout-undo" onClick={undoResize}>
+                      Undo resize (back to {undoable.from})
+                    </button>
+                  )}
+                </div>
                 <p className="sr-only" role="status" aria-live="polite">{announcement}</p>
               </>
             )}
           </div>
 
+          {proving ? (
+            // Fleet at a glance: every scored type on the floor, never one type
+            // standing for a mixed fleet. Same list, same order as the result.
+            <div className="align-panel pg-types-panel">
+              <div className="panel-kicker">Robot types on this floor</div>
+              <p className="pg-types-lead">
+                {types.length} robot type{types.length === 1 ? '' : 's'}, each scored in its own oracle episode under 03 · Inspect the result. The fleet cards and the result list the same types.
+              </p>
+              <ul className="pg-types">
+                {types.map((t) => {
+                  const media = embodimentMedia(t.embodiment)
+                  const profile = getEmbodimentProfile(t.embodiment)
+                  const parts: string[] = []
+                  if (t.robots) {
+                    const where = t.byFleet.map((b) => `${b.robots} in Fleet ${b.fleet + 1}`)
+                    parts.push(t.byFleet.length === 1
+                      ? `${t.robots} ${t.robots === 1 ? 'robot' : 'robots'} in Fleet ${t.byFleet[0].fleet + 1}`
+                      : `${t.robots} robots: ${listProse(where)}`)
+                  }
+                  for (const fleet of t.emptyFleets) {
+                    const own = fleets[fleet]?.embodiment
+                    parts.push(`Fleet ${fleet + 1} has no robots and is still scored as this type, ${own ? 'the type it started with' : 'the page’s default type'}`)
+                  }
+                  return (
+                    <li key={t.embodiment} className="pg-type">
+                      {media ? <img className="pg-type-img" src={media.src} alt="" width={72} height={54} loading="lazy" /> : <span className="pg-type-img" aria-hidden="true" />}
+                      <div>
+                        <p className="pg-type-name"><b className="pg-type-code">{EMBODIMENT_CODE[t.embodiment]}</b> {profile.label}</p>
+                        <p className="pg-type-where">{parts.join('; ')}.</p>
+                        <p className="pg-type-note">{profile.note}</p>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+              <p className="pg-types-inputs">
+                <b>What decides the oracle’s verdicts:</b> the floor’s geometry (its size, walls, hazards, human-only cells, and the one lane it scores: the route from the start, which is not drawn on the grid, to the first item and then the first drop, now {laneRoute(siteMap)}) and the robot types it scores (each robot’s type, plus the type of any fleet with no robots). Where robots stand, the other items and drops, and the descriptive notes do not change the verdicts.
+              </p>
+              <label className="field">
+                <span className="field-label">Domain</span>
+                <select className="field-input" value={domain} onChange={(e) => setDomain(e.target.value as PhysicalDomain)}>
+                  {PHYSICAL_DOMAINS.map((d) => (
+                    <option key={d} value={d}>
+                      {getDomainTheme(d).label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="field-hint">
+                The drawings are generic reference illustrations of each type, not specific products. Each note is a modelling assumption of this synthetic gym (battery and step budget), not a measured specification.
+              </p>
+            </div>
+          ) : (
           <div className="align-panel">
             <div className="panel-kicker">Confirmed robot context</div>
             <label className="field">
@@ -1174,6 +1545,7 @@ export function ReflectAlign({
               )
             })()}
           </div>
+          )}
 
         </div>
 

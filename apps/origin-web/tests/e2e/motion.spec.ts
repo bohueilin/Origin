@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 const ROUTES = ['/', '/verify', '/reference-check', '/over-grant', '/security', '/proving-ground', '/operations', '/simulation']
 
@@ -181,7 +181,23 @@ test('3D playback pauses rendering off screen and hidden, finishes once, and rep
   expect(await draws()).toBe(paused)
 })
 
-for (const field of ['Domain', 'Robot embodiment']) {
+// The two inputs that change what the 3D scene draws: the domain, and a robot's type
+// (painted on the grid with the placement type, the one control that sets types).
+const SCENE_CHANGES: Record<string, (page: Page) => Promise<void>> = {
+  Domain: async (page) => {
+    const select = page.getByRole('combobox', { name: 'Domain', exact: true })
+    await expect(select).toBeVisible()
+    const next = await select.locator('option').evaluateAll(options => (options.find(option => !(option as HTMLOptionElement).selected) as HTMLOptionElement).value)
+    await select.selectOption(next)
+  },
+  'a robot type': async (page) => {
+    await page.locator('.smp-rtype-chip').filter({ hasText: 'Humanoid' }).click()
+    await page.getByRole('button', { name: 'A1, Fleet 1 AMR robot 1', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'A1, Fleet 1 Humanoid robot 1', exact: true })).toBeVisible()
+  },
+}
+
+for (const [field, change] of Object.entries(SCENE_CHANGES)) {
   test(`changing ${field} starts a fresh 3D preview after completion`, async ({ page }) => {
     test.setTimeout(60_000) // Two complete previews also run with software WebGL in CI.
     await page.emulateMedia({ reducedMotion: 'no-preference' })
@@ -200,10 +216,7 @@ for (const field of ['Domain', 'Robot embodiment']) {
     await expect(page.locator('.pg3d-prog-txt')).not.toHaveText('starting…')
     await page.clock.runFor(8000)
     await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
-    const select = page.getByRole('combobox', { name: field, exact: true })
-    await expect(select).toBeVisible()
-    const next = await select.locator('option').evaluateAll(options => (options.find(option => !(option as HTMLOptionElement).selected) as HTMLOptionElement).value)
-    await select.selectOption(next)
+    await change(page)
     await canvas.scrollIntoViewIfNeeded()
     await expect(controls.getByRole('button', { name: 'Pause', exact: true })).toBeVisible()
     await expect(page.locator('.pg3d-prog-txt')).not.toHaveText(/^✓ all/)

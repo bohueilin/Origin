@@ -1,55 +1,106 @@
 // Pure grid-resize helper for the drawn site map. Kept out of the component file
 // so it's unit-testable and doesn't trip react-refresh's component-only-export rule.
+//
+// A resize clips; it never re-derives. Every fleet keeps its robot type, every
+// surviving robot keeps its painted type and every surviving cell keeps its number.
+// The editor shows `lost` before it applies a shrink, and offers an undo after.
 
 import { siteFleets, normalizeFleets, type DescriptiveSiteMap } from './workflowDraft'
+import type { GridPos } from './warehouse'
 
 export const GRID_MIN = 4
 export const GRID_MAX = 12
 export const clampN = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 
-// Resize the grid, keeping EVERY layer valid — including the authoritative fleets.
-// Cells outside the new bounds are dropped; at least one item + one drop always
-// survive (the oracle anchors); the scored start stays distinct from them.
-export function resizeSiteMap(map: DescriptiveSiteMap, w: number, h: number): DescriptiveSiteMap {
+export type LostKind = 'robot' | 'item' | 'drop' | 'wall' | 'hazard' | 'human'
+
+/** A placed cell a resize would remove. `fleet` is -1 for walls, hazards and human-only cells. */
+export interface LostCell {
+  kind: LostKind
+  x: number
+  y: number
+  fleet: number
+}
+
+/** A scored-lane cell (the oracle's start, item or drop) that a resize moves. */
+export interface LaneMove {
+  part: 'start' | 'item' | 'drop'
+  from: GridPos
+  to: GridPos
+}
+
+export interface ResizePlan {
+  width: number
+  height: number
+  /** Placed cells outside the new bounds, in reading order (row by row). */
+  lost: LostCell[]
+  /** Oracle-lane cells the resize moves: the scored result is re-computed on them. */
+  lane: LaneMove[]
+  /** Refused when it would remove every item or every drop (the floor keeps at least one of each); else null. */
+  blocked: { items: boolean; drops: boolean } | null
+  /** The resized floor, or null when the resize is refused. */
+  next: DescriptiveSiteMap | null
+}
+
+const same = (a: GridPos, b: GridPos) => a.x === b.x && a.y === b.y
+
+export function planResize(map: DescriptiveSiteMap, w: number, h: number): ResizePlan {
   const W = clampN(Math.round(w), GRID_MIN, GRID_MAX)
   const H = clampN(Math.round(h), GRID_MIN, GRID_MAX)
-  const inBounds = (p: { x: number; y: number }) => p.x >= 0 && p.y >= 0 && p.x < W && p.y < H
-  const clampPos = (p: { x: number; y: number }) => ({ x: clampN(p.x, 0, W - 1), y: clampN(p.y, 0, H - 1) })
+  const inBounds = (p: GridPos) => p.x >= 0 && p.y >= 0 && p.x < W && p.y < H
   const corner = (x: number, y: number) => ({ x: clampN(x, 0, W - 1), y: clampN(y, 0, H - 1) })
-  const k = (p: { x: number; y: number }) => `${p.x},${p.y}`
+  const k = (p: GridPos) => `${p.x},${p.y}`
 
-  // Filter every fleet's robots / items / drops to in-bounds cells.
-  const fleets = siteFleets(map).map((f) => ({
+  const source = siteFleets(map)
+  const lost: LostCell[] = []
+  source.forEach((f, fleet) => {
+    for (const p of f.robots) if (!inBounds(p)) lost.push({ kind: 'robot', ...p, fleet })
+    for (const p of f.items) if (!inBounds(p)) lost.push({ kind: 'item', ...p, fleet })
+    for (const p of f.drops) if (!inBounds(p)) lost.push({ kind: 'drop', ...p, fleet })
+  })
+  for (const p of map.obstacles) if (!inBounds(p)) lost.push({ kind: 'wall', ...p, fleet: -1 })
+  for (const p of map.hazards) if (!inBounds(p)) lost.push({ kind: 'hazard', ...p, fleet: -1 })
+  for (const p of map.humanOnly) if (!inBounds(p)) lost.push({ kind: 'human', ...p, fleet: -1 })
+  lost.sort((a, b) => a.y - b.y || a.x - b.x)
+
+  // Clip each fleet, carrying its robot type: rebuilding a fleet without its
+  // `embodiment` is what turned every fleet back into the workflow default on resize.
+  const fleets = source.map((f) => ({
     robots: f.robots.filter(inBounds),
     items: f.items.filter(inBounds),
     drops: f.drops.filter(inBounds),
+    embodiment: f.embodiment,
   }))
-  if (!fleets.length) fleets.push({ robots: [], items: [], drops: [] })
-  // Guarantee the oracle anchors survive: seed a default item / drop into fleet 0
-  // if a resize wiped them out.
-  if (!fleets.some((f) => f.items.length)) fleets[0].items.push(corner(Math.floor(W / 2), Math.floor(H / 2)))
-  if (!fleets.some((f) => f.drops.length)) fleets[0].drops.push(corner(W - 1, 0))
+  const noItem = !fleets.some((f) => f.items.length)
+  const noDrop = !fleets.some((f) => f.drops.length)
+  if (noItem || noDrop) return { width: W, height: H, lost, lane: [], blocked: { items: noItem, drops: noDrop }, next: null }
 
-  // The scored lane start stays distinct from the item/drop anchors.
+  // The scored lane: its item and drop follow the surviving cells; its start moves
+  // only if it falls outside, and never onto the item or drop.
   const anchorItem = fleets.flatMap((f) => f.items)[0]
   const anchorDrop = fleets.flatMap((f) => f.drops)[0]
-  let start = clampPos(map.start)
+  let start = corner(map.start.x, map.start.y)
   if (k(start) === k(anchorItem) || k(start) === k(anchorDrop)) start = corner(0, H - 1)
   if (k(start) === k(anchorItem) || k(start) === k(anchorDrop)) start = corner(0, 0)
 
-  // A cell can't be both a fleet element and a wall/hazard/human-only cell — strip
-  // any global that collides with a fleet cell (covers seeded anchors landing on one).
-  const fleetCells = new Set(fleets.flatMap((f) => [...f.robots, ...f.items, ...f.drops]).map(k))
-  const stripGlobals = (list: readonly { x: number; y: number }[]) =>
-    list.filter((p) => inBounds(p) && !fleetCells.has(k(p)))
   const base: DescriptiveSiteMap = {
     ...map,
     width: W,
     height: H,
     start,
-    obstacles: stripGlobals(map.obstacles),
-    hazards: stripGlobals(map.hazards),
-    humanOnly: stripGlobals(map.humanOnly),
+    obstacles: map.obstacles.filter(inBounds),
+    hazards: map.hazards.filter(inBounds),
+    humanOnly: map.humanOnly.filter(inBounds),
   }
-  return normalizeFleets(base, fleets)
+  const next = normalizeFleets(base, fleets)
+  const lane: LaneMove[] = []
+  if (!same(map.start, next.start)) lane.push({ part: 'start', from: map.start, to: next.start })
+  if (!same(map.item, next.item)) lane.push({ part: 'item', from: map.item, to: next.item })
+  if (!same(map.drop, next.drop)) lane.push({ part: 'drop', from: map.drop, to: next.drop })
+  return { width: W, height: H, lost, lane, blocked: null, next }
+}
+
+/** Resize, or return the floor unchanged when the resize is refused. */
+export function resizeSiteMap(map: DescriptiveSiteMap, w: number, h: number): DescriptiveSiteMap {
+  return planResize(map, w, h).next ?? map
 }

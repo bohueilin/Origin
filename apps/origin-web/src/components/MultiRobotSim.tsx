@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { DescriptiveSiteMap } from '../workflowDraft'
-import { siteFleets } from '../workflowDraft'
+import { siteFleets, cellNumber, robotNumber } from '../workflowDraft'
 import { planMultiAgent } from '../multiAgent'
 import { EMBODIMENT_CODE, type RobotEmbodiment } from '../environmentPlan'
 import { usePlaybackVisibility } from '../shared/usePlaybackVisibility'
@@ -32,8 +32,6 @@ export function MultiRobotSim({
   const items = useMemo(() => fleets.flatMap((f) => f.items), [fleets])
   const drops = useMemo(() => fleets.flatMap((f) => f.drops), [fleets])
   const robotFleet = useMemo(() => fleets.flatMap((f, fi) => f.robots.map(() => fi)), [fleets])
-  // Each robot's number WITHIN its fleet, matching the editor's cell labels (AM1, AM2, HU1…).
-  const robotLocal = useMemo(() => fleets.flatMap((f) => f.robots.map((_, i) => i)), [fleets])
   const itemFleet = useMemo(() => fleets.flatMap((f, fi) => f.items.map(() => fi)), [fleets])
   const dropFleet = useMemo(() => fleets.flatMap((f, fi) => f.drops.map(() => fi)), [fleets])
   const multiFleet = fleets.length > 1
@@ -127,18 +125,20 @@ export function MultiRobotSim({
                 siteMap.robotTypes?.[`${home.x},${home.y}`] ??
                 fleetEmbs[plan.robots[rIdx].fleet] ??
                 embodiment
-              text = `${EMBODIMENT_CODE[emb]}${(robotLocal[rIdx] ?? rIdx) + 1}`
+              // The editor's number for this robot within its fleet (AM1, AM2, HU1…).
+              text = `${EMBODIMENT_CODE[emb]}${robotNumber(siteMap, home.x, home.y)}`
             }
             if (multiFleet) tag = `F${plan.robots[rIdx].fleet + 1}`
             style = { background: fleetColor, color: '#fff', borderColor: fleetColor }
           } else if (dropIdx >= 0) {
             cls = 'cell-drop'
-            text = drops.length > 1 ? `D${dropIdx + 1}` : 'D'
+            // The editor's number for this drop, which an edit never shifts.
+            text = `D${cellNumber(siteMap, 'drops', x, y)}`
             if (multiFleet) tag = `F${dropFleet[dropIdx] + 1}`
             style = { color: dropColor, borderColor: dropColor, background: `color-mix(in srgb, ${dropColor} 14%, #fff)` }
           } else if (itemIdx >= 0) {
             cls = `cell-I ${picked ? 'picked' : ''}`
-            text = picked ? '✓' : items.length > 1 ? `I${itemIdx + 1}` : 'I'
+            text = picked ? '✓' : `I${cellNumber(siteMap, 'items', x, y)}`
             if (multiFleet && !picked) tag = `F${itemFleet[itemIdx] + 1}`
             if (!picked && multiFleet) style = { color: itemColor, borderColor: itemColor }
           } else if (isWall) { cls = 'wall'; text = 'W' }

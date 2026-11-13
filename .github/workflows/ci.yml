@@ -205,6 +205,9 @@ jobs:
       - name: proof:verify (TR-A002 hash chain re-derives)
         working-directory: apps/origin-web
         run: npm run --silent proof:verify
+      - name: proof:verify:test (an edited event fails; the top-level description is outside the chain)
+        working-directory: apps/origin-web
+        run: npm run --silent proof:verify:test
       - name: env:verify (ScoreReceipt is reproducible under the pinned verifier)
         working-directory: apps/origin-web
         run: npm run --silent env:verify

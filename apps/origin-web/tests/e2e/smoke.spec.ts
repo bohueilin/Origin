@@ -408,3 +408,46 @@ test('tool pages link onward from their static scope notes, outside the app root
     await context.close()
   }
 })
+
+// ── Wave 1: claims corrections ──────────────────────────────────────────────
+// TR-A002 is a machine-emitted trace of a scripted scenario: no agent, gate, proxy,
+// approver or sandbox ran. The /security panel grades a preset, not the oracle itself.
+
+test('wave 1: /proof calls TR-A002 scripted and never a sandbox run or a runtime trace', async ({ page }) => {
+  await page.goto('/proof.html')
+  const body = page.locator('body')
+  await expect(body).toContainText('scripted')
+  for (const phrase of ['This one is not authored', 'through the runtime', 'fails if a single byte changed', 'sandbox trace', 'sandboxed']) {
+    await expect(body, phrase).not.toContainText(phrase, { ignoreCase: true })
+  }
+})
+
+test('wave 1: home drops the sandbox chip and the independent-check claim', async ({ page }) => {
+  await page.goto('/')
+  const body = page.locator('body')
+  for (const phrase of ['Available · sandbox', 'independently checkable']) {
+    await expect(body, phrase).not.toContainText(phrase, { ignoreCase: true })
+  }
+})
+
+test('wave 1: the IAM over-grant warning names the IAM rule', async ({ page }) => {
+  await page.goto('/reference-check')
+  await page.getByRole('button', { name: /IAM least-privilege/ }).click()
+  await page.getByRole('button', { name: /Permissive \(the dangerous baseline\)/ }).click()
+  await page.getByRole('button', { name: 'Run the reference check' }).click()
+  const warning = page.locator('.rc-hint--warn').filter({ hasText: 'catastrophic over-grant' })
+  await expect(warning).toContainText('your policy allowed an access request the oracle denies or escalates (forbidden resource, tainted principal or high-sensitivity resource)')
+  await expect(warning).not.toContainText('personal data')
+})
+
+test('wave 1: /security grades the Least-privilege preset, not the oracle, and calls its re-check a self-check', async ({ page }) => {
+  await page.goto('/security')
+  const panel = page.locator('#config-binding')
+  await panel.getByRole('button', { name: 'Issue a reference check' }).click()
+  await expect(panel.locator('.sec-rsl')).toHaveText('11 of 12 synthetic decisions match the oracle')
+  const log = panel.locator('.sec-log')
+  await expect(log).toContainText('The policy under test is the Least-privilege (recommended) preset, not the oracle itself.')
+  await expect(log).toContainText("1 stricter than the oracle (Origin's answer key), 0 looser")
+  await expect(log).toContainText('re-checked in this tab')
+  await expect(log).not.toContainText('independently re-verified')
+})

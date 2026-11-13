@@ -65,6 +65,7 @@ run "ts:@origin/verifier-core"   bash -c 'cd packages/verifier-core && npx vites
 # ---- evidence-verify scripts (the numbers are real, not asserted) ----
 run "ev:verify:evidence"         bash -c 'cd apps/origin-web && npm run --silent verify:evidence'
 run "ev:proof:verify"            bash -c 'cd apps/origin-web && npm run --silent proof:verify'
+run "ev:proof:verify (tamper test)" bash -c 'cd apps/origin-web && npm run --silent proof:verify:test'
 run "ev:env:verify"              bash -c 'cd apps/origin-web && npm run --silent env:verify'
 run "ev:reward:diff"             bash -c 'cd apps/origin-web && npm run --silent reward:diff'
 run "ev:/verify selftest"        bash -c 'node apps/origin-web/src/verify/selftest.mjs'

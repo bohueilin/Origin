@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 import { createHash } from 'node:crypto'
 
 // Collect console errors + page errors so a "clean console" is a hard assertion, not a hope.
@@ -953,4 +954,107 @@ test('wave 4b: the home lead dialog links the privacy policy and makes no storag
   await expect(dialog.locator('.modal__close')).toBeFocused()
   await page.keyboard.press('Shift+Tab')
   await expect(privacy).toBeFocused()
+})
+
+// ── Wave 5: Labs ──
+// /simulation and /operations count collision events from the frames. The default
+// /simulation run counts one (a robot and the human marker swap cells) and reads ESCALATE;
+// the default /operations shift counts none and keeps its tier. The proving ground shows no
+// tier and signs a synthetic floor evaluation. Each Labs page names itself an Origin Labs
+// experiment and carries a static "How to read the result" section outside its app root.
+
+test('wave 5: the default /simulation run counts one collision event and reads ESCALATE', async ({ page }) => {
+  await page.goto('/simulation')
+  const verdict = page.locator('#sim-verdict')
+  await expect(verdict.locator('b')).toHaveText('ESCALATE')
+  await expect(verdict.locator('span')).toHaveText('1 collision event counted between robots or with the human marker. A human coordinator is required.')
+  const tile = page.locator('.sim-scores div').filter({ hasText: 'collision events (counted)' })
+  await expect(tile).toHaveCount(1)
+  await expect(tile.locator('b')).toHaveText('1')
+  await expect(page.locator('main')).not.toContainText(/collision-free|collisions \(invariant\)/i)
+  for (const meta of ['meta[name="description"]', 'meta[name="twitter:description"]', 'meta[property="og:description"]']) {
+    await expect(page.locator(meta), meta).toHaveAttribute('content', /collision events are counted/i)
+    await expect(page.locator(meta), meta).not.toHaveAttribute('content', /collision-free/i)
+  }
+})
+
+test('wave 5: the default /operations shift counts no collision event and keeps its tier', async ({ page }) => {
+  await page.goto('/operations')
+  const verdict = page.locator('.ops-verdict')
+  await expect(verdict).toContainText(/Tier L[34] on this seeded simulated shift only/)
+  await expect(verdict).toContainText('· 0 collision events.')
+  await expect(page.locator('.ops-tiles div').filter({ hasText: 'collision events' }).locator('b')).toHaveText('0')
+  const waves = page.locator('.ops-wave')
+  await expect(waves).toHaveCount(6)
+  for (let i = 0; i < 6; i += 1) {
+    await waves.nth(i).click()
+    await expect(page.locator('#ops-caption')).toHaveText(new RegExp(`^Wave ${i + 1} · \\w+ · \\d+% utilization · 0 collision events$`))
+  }
+})
+
+test('wave 5: an /operations shift with one counted collision event fails its targets at tier L0', async ({ page }) => {
+  await page.goto('/operations')
+  // Seed 777 with 5 robots and 3 waves counts exactly one event, in wave 2.
+  await page.locator('.ops-range', { hasText: 'Fleet' }).locator('input').fill('5')
+  await page.locator('.ops-range', { hasText: 'Waves' }).locator('input').fill('3')
+  const verdict = page.locator('.ops-verdict')
+  await expect(verdict).toContainText('Synthetic shift targets not met')
+  await expect(verdict).toContainText('Tier L0 on this seeded simulated shift only')
+  await expect(verdict).toContainText('· 1 collision event.')
+  await page.locator('.ops-wave').nth(1).click()
+  await expect(page.locator('#ops-caption')).toHaveText(/^Wave 2 · escalate · \d+% utilization · 1 collision event$/)
+  // The red L0 verdict and collision tile appear only in this state, so axe checks it here too.
+  const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()
+  expect(axe.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([])
+})
+
+test('wave 5: /proving-ground shows no tier and signs a synthetic floor evaluation', async ({ page }) => {
+  await page.goto('/proving-ground')
+  const verdict = page.locator('.pg-verdict')
+  await expect(verdict.locator('.pg-verdict__perm')).toHaveText('This result grants no deployment permission.')
+  await expect(verdict).toContainText('no deployment permission')
+  await expect(verdict).not.toContainText(/Synthetic tier/i)
+  await expect(verdict).not.toContainText(/\bL[0-4]\b/)
+  await page.getByRole('button', { name: 'Sign synthetic floor evidence', exact: true }).click()
+  const signedState = page.locator('.pg-thumb')
+  await expect(signedState).toHaveText(/^signed · synthetic floor evidence · key [0-9a-f]{10}…$/)
+  await expect(signedState).not.toContainText(/Synthetic tier|\bL[0-4]\b/i)
+  const downloading = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Download signed floor evidence', exact: true }).click()
+  const download = await downloading
+  expect(download.suggestedFilename()).toBe('synthetic-floor-evaluation.sigil.json')
+  const { readFile } = await import('node:fs/promises')
+  const record = JSON.parse(await readFile(await download.path(), 'utf8'))
+  expect(record.kind).toBe('synthetic-floor-evaluation')
+  expect(record.payload).toMatchObject({ kind: 'synthetic-floor-evaluation', evidence_lane: 'synthetic-demo', execution_mode: 'simulated' })
+  expect(record.payload).not.toHaveProperty('vrl_level')
+  expect(record.payload.episodes.length).toBeGreaterThan(0)
+  for (const episode of record.payload.episodes) expect(episode).not.toHaveProperty('autonomy_earned')
+  expect(record.payload.site.wall_cells).toHaveLength(record.payload.site.walls)
+  expect(JSON.stringify(record)).not.toMatch(/autonomy_earned|vrl_level|fleet-readiness/)
+})
+
+test('wave 5: without JavaScript, each Labs page explains how to read its result outside the app root', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  try {
+    for (const [route, id, root, labels] of [
+      ['/proving-ground', 'pg-read-title', '#pg-root', ['What is scored.', 'Verdicts.', 'Robot types.', 'Limits.']],
+      ['/simulation', 'sim-read-title', '#sim-root', ['What runs.', 'Verdicts.', 'Collision events.', 'Limits.']],
+      ['/operations', 'ops-read-title', '#ops-root', ['What runs.', 'Targets', 'Tier.', 'Metrics.', 'Limits.']],
+    ] as const) {
+      await page.goto(`${baseURL}${route}`)
+      const section = page.locator(`main > section[aria-labelledby="${id}"]`)
+      await expect(section, route).toBeVisible()
+      await expect(section.locator(`h2#${id}`), route).toHaveText('How to read the result')
+      await expect(section.locator('p > b'), route).toHaveText([...labels])
+      // After the console, and not inside the app root that JavaScript fills.
+      await expect(page.locator('main > section').last(), route).toHaveAttribute('aria-labelledby', id)
+      await expect(page.locator(`${root} #${id}`), route).toHaveCount(0)
+      // The hero scope note names the product and links it once.
+      await expect(page.locator('main > section').first().locator('a[href="/reference-check"]'), route).toHaveCount(1)
+    }
+  } finally {
+    await context.close()
+  }
 })

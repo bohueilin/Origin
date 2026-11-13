@@ -577,6 +577,39 @@ const LAUNCH_CONTRACTS = [
       [/Origin today[\s\S]{0,400}?your agent is not run/i, 'the "Origin today" limit that your agent is not run'],
     ],
   },
+  // Wave 4b: offer terms and contact lines. The home page shows the site's one contact
+  // address as text, and the /reference-check Book card offers a written review, not an
+  // evaluation of the visitor's agent. New objects only.
+  {
+    file: 'apps/origin-web/index.html',
+    forbid: [
+      [/originphysical\.ai\b/i, 'a contact domain that is not the site\'s (the address is on originphysicalai.com)'],
+      [/hello@originphysical/i, 'a contact address that is not the one shown on the site'],
+    ],
+    require: [
+      [/bohueilin@originphysicalai\.com/, 'the visible contact address'],
+      // Tags read as spaces here, so \s+ spans the nowrap span and the hidden copy control.
+      [/45-minute\s+review session · no charge · reply within 2 working days\.\s+Not a guarantee of approval\./, 'the #offer terms and the approval disclaimer'],
+      [/No record of your agent's decisions can be produced today/, 'the #offer limit that no record of the visitor\'s agent can be produced'],
+      [/Or email\s+bohueilin@originphysicalai\.com\s*(?:Copy address\s*)?\.\s+We reply within 2 working days\./, 'the #contact contact line and its reply time'],
+    ],
+  },
+  // /trust closing and /proof offer summary: the same terms, limits and contact line.
+  ...['apps/origin-web/trust.html', 'apps/origin-web/proof.html'].map((file) => ({
+    file,
+    require: [
+      [/Send nothing confidential: no data agreement is in place yet\./, 'the warning to send nothing confidential'],
+      [/No record of your agent's decisions can be produced today/, 'the limit that no record of the visitor\'s agent can be produced'],
+      [/45-minute\s+review session · no charge\./, 'the review terms'],
+      [/Or email\s+bohueilin@originphysicalai\.com\s*(?:Copy address\s*)?\.\s+We reply within 2 working days\./, 'the contact line and its reply time'],
+    ],
+  })),
+  {
+    file: 'apps/origin-web/src/reference-check/ReferenceCheckPage.tsx',
+    forbid: [
+      [/authorized evaluation beyond this browser demo/i, 'an evaluation offer in the Book card heading (the review delivers a written report)'],
+    ],
+  },
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

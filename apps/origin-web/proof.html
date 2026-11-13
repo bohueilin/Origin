@@ -146,6 +146,10 @@
       .tr2-verify__lbl { font-size: var(--fs-12); line-height: 1.5; }
       /* No JavaScript: the nav stays expanded, so hide the header box with the burger, which would do nothing. */
       @media (max-width: 960px) { html:not(.nav-ready) .site-header__cta { display: none; } }
+      /* The copy-address control matches the home one: bold, no underline until hover, 44 px tall on phones. */
+      .linklike[data-copy] { color: var(--signal-ink); font-weight: 600; text-decoration: none; }
+      .linklike[data-copy]:hover { text-decoration: underline; text-underline-offset: 5px; }
+      @media (max-width: 680px) { .linklike[data-copy] { display: inline-flex; align-items: center; min-height: 44px; } }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>
@@ -494,7 +498,9 @@ node scripts/verify-tr-a002.mjs tr-a002.json
         </div>
       </section>
 
-      <div class="proof__cta">
+      <p class="proof__sub" style="margin-top:44px;border-top:1px solid var(--line);padding-top:26px">TR-A002 is the trace of a scripted scenario. An Agent Evidence Review starts from one action your agent would take, as you describe it. Send nothing confidential: no data agreement is in place yet. You receive a short written report naming the cases your reviewer would need to see and the evidence still missing. No record of your agent's decisions can be produced today; any record attached is a browser reference check of a selected example policy and rates UNTRUSTED. <span style="white-space:nowrap">45-minute</span> review session · no charge.</p>
+      <p class="proof__sub" style="margin-top:12px">Or email <a href="mailto:bohueilin@originphysicalai.com?subject=Agent%20Evidence%20Review">bohueilin@originphysicalai.com</a><span data-copy-wrap hidden> <button type="button" class="linklike" data-copy="bohueilin@originphysicalai.com" aria-label="Copy address" data-copy-done="Address copied" data-copy-fail="Copy unavailable — select the address">Copy address</button></span>. We reply within 2 working days.</p>
+      <div class="proof__cta" style="border-top:0;padding-top:0;margin-top:20px">
         <a class="btn btn--primary" href="/#offer">Book an Agent Evidence Review</a>
         <a class="btn btn--ghost" href="/#evidence">See the evidence roadmap</a>
         <a class="btn btn--ghost" href="/brief">Read the one-page brief</a>
@@ -505,14 +511,28 @@ node scripts/verify-tr-a002.mjs tr-a002.json
 </main>
 <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark-2026-09-28.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Offline re-verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Run a policy reference check</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@originphysicalai.com">Contact</a><a href="/auth" rel="nofollow">Owner console</a></span></div></footer>
     <script>
-      // copy-to-clipboard for the verify command (progressive enhancement)
+      // copy-to-clipboard for the verify command and the contact address (progressive enhancement).
+      // Each control is marked data-copy-bound so enhance.ts leaves it to this handler, and the
+      // address wrap is revealed only where the Clipboard API exists. data-copy-done is what
+      // #copy-status announces on success; data-copy-fail is shown and announced on failure.
+      // One restore timer per control; an address control also clears #copy-status when its
+      // label returns, if the status still holds its own message.
       document.querySelectorAll('[data-copy]').forEach(function (btn) {
+        btn.setAttribute('data-copy-bound', '');
+        var wrap = btn.closest('[data-copy-wrap]');
+        if (wrap && navigator.clipboard && navigator.clipboard.writeText) wrap.hidden = false;
+        var label = btn.textContent, timer;
         btn.addEventListener('click', function () {
           var text = btn.getAttribute('data-copy');
-          var label = btn.textContent;
-          var report = function (message) { btn.textContent = message; document.getElementById('copy-status').textContent = message; setTimeout(function () { btn.textContent = label; }, 2200); };
-          var done = function () { report('Copied ✓'); };
-          var failed = function () { report('Copy unavailable — select the command'); };
+          var status = document.getElementById('copy-status');
+          var report = function (shown, said) {
+            var message = said || shown;
+            btn.textContent = shown; status.textContent = message;
+            clearTimeout(timer);
+            timer = setTimeout(function () { btn.textContent = label; if (wrap && status.textContent === message) status.textContent = ''; }, 2200);
+          };
+          var done = function () { report('Copied ✓', btn.getAttribute('data-copy-done')); };
+          var failed = function () { report(btn.getAttribute('data-copy-fail') || 'Copy unavailable — select the command'); };
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(done).catch(failed);
           } else {

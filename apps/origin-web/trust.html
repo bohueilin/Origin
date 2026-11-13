@@ -105,6 +105,10 @@
 
       @media (prefers-reduced-motion: reduce) { .status { transition: none; } }
       .site-nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; }
+      /* The copy-address control matches the home one: bold, no underline until hover, 44 px tall on phones. */
+      .linklike[data-copy] { color: var(--signal-ink); font-weight: 600; text-decoration: none; }
+      .linklike[data-copy]:hover { text-decoration: underline; text-underline-offset: 5px; }
+      @media (max-width: 680px) { .linklike[data-copy] { display: inline-flex; align-items: center; min-height: 44px; } }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>
@@ -231,7 +235,7 @@
           <tr><td>Security checklist</td><td><span class="status status--request">By request</span></td><td>Current prototype controls and the integration work still required.</td></tr>
           <tr><td>Incident ownership</td><td><span class="status status--pilot">Pilot-specific</span></td><td>Named contacts, escalation, and deployment-specific responsibilities.</td></tr>
         </tbody></table></div>
-        <div class="editorial-closing"><div><h2>Bring one workflow. Start with its boundary.</h2><p>Discuss the configuration, the approval blocker, and the evidence a reviewer would need.</p></div><a class="btn btn--primary" href="/#offer">Book an Agent Evidence Review</a></div>
+        <div class="editorial-closing"><div><h2>Bring one workflow. Start with its boundary.</h2><p>An Agent Evidence Review starts from one action your agent would take, as you describe it. Send nothing confidential: no data agreement is in place yet. You receive a short written report naming the cases your reviewer would need to see and the evidence still missing. No record of your agent's decisions can be produced today; any record attached is a browser reference check of a selected example policy and rates UNTRUSTED. <span style="white-space:nowrap">45-minute</span> review session · no charge.</p><p class="editorial-caption" style="margin-top:12px">Or email <a href="mailto:bohueilin@originphysicalai.com?subject=Agent%20Evidence%20Review">bohueilin@originphysicalai.com</a><span data-copy-wrap hidden> <button type="button" class="linklike" data-copy="bohueilin@originphysicalai.com" aria-label="Copy address">Copy address</button></span>. We reply within 2 working days.<span class="sr-only" role="status" aria-live="polite" data-copy-status></span></p></div><a class="btn btn--primary" href="/#offer">Book an Agent Evidence Review</a></div>
       </div></section>
     </main>
 

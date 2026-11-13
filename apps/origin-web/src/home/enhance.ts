@@ -95,6 +95,42 @@ document.addEventListener('click', (ev) => {
   track(name, params)
 })
 
+/* ---------- copy-address control ----------
+   The address and its mailto link are plain HTML. The copy button waits in a hidden
+   [data-copy-wrap] and appears only where the Clipboard API exists. A control a page's own
+   script already binds (data-copy-bound, as on /proof) is left to that script, so one click
+   writes the clipboard once, whichever script loads first. The status text clears when the
+   label returns. No analytics event. */
+if (typeof navigator.clipboard?.writeText === 'function') {
+  document.querySelectorAll<HTMLElement>('[data-copy-wrap]').forEach((wrap) => { wrap.hidden = false })
+  const copyState = new WeakMap<HTMLElement, { label: string; timer: number }>()
+  document.addEventListener('click', (ev) => {
+    const btn = (ev.target as HTMLElement | null)?.closest<HTMLElement>('[data-copy-wrap] [data-copy]')
+    if (!btn || btn.hasAttribute('data-copy-bound')) return
+    if (!copyState.has(btn)) {
+      copyState.set(btn, { label: btn.textContent ?? '', timer: 0 })
+      // Hold the label's width, so the shorter "Copied ✓" cannot reflow the line and move
+      // the button from under a second tap.
+      btn.style.minWidth = `${btn.getBoundingClientRect().width}px`
+    }
+    const state = copyState.get(btn) ?? { label: btn.textContent ?? '', timer: 0 }
+    const status = btn.closest('[data-copy-wrap]')?.parentElement?.querySelector<HTMLElement>('[data-copy-status]')
+    const report = (shown: string, said: string) => {
+      btn.textContent = shown
+      if (status) status.textContent = said
+      window.clearTimeout(state.timer)
+      state.timer = window.setTimeout(() => {
+        btn.textContent = state.label
+        if (status) status.textContent = ''
+      }, 2000)
+    }
+    const failed = 'Copy unavailable — select the address'
+    // Started inside a promise, so a synchronous throw also reports the failure text.
+    Promise.resolve().then(() => navigator.clipboard.writeText(btn.getAttribute('data-copy') ?? ''))
+      .then(() => report('Copied ✓', 'Address copied'), () => report(failed, failed))
+  })
+}
+
 /* ---------- Product walkthrough stepper ----------
    Enhancement only. With JS off or reduced-motion on, CSS shows all four panels
    stacked (the workflow is fully communicated) and the tabs/controls stay hidden. */

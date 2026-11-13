@@ -110,3 +110,36 @@ Two traces of the legacy credential's tier stay out of scope: the `/verify` chec
 - **`/proof` and the explainer:** both now load the site's navigation script. They get the same compact mobile header as the other pages, and their inline no-JavaScript header fallback is removed.
 
 **`/trust` scoreboard.** On phone widths, the gate scoreboard no longer breaks a result one character per line.
+
+**Wave 4a, as built and approved.** The owner approved the merged Wave 4a pages as built, including five points the review raised:
+- "An edit made without re-signing shows as VOID" stays the site's scoped phrase in the home comparison and in "Origin today". `/reference-check` and `/verify` state the caveat that the signature-block labels are not signed.
+- A browser-made record verifies as UNTRUSTED within its freshness window. After the window, `/verify` shows VOID for freshness, and the new copy does not repeat that.
+- The explainer keeps "Third-party assessors test your agent and report to your customer's reviewer."
+- The home comparison paragraph keeps its re-check sentence, though principle card 03 says much the same.
+- Without JavaScript, anchor links on `/proof` and the explainer land under the fallback header, as on `/trust`.
+
+The owner also approved two changes made during the build:
+- **The burger without JavaScript:** `/proof` and the explainer each carry one inline rule that hides the header's button box when JavaScript is off. Without it, the shared stylesheet would show a menu button that does nothing. The other pages still show that button without JavaScript; fixing them needs a shared-stylesheet change in its own pull request.
+- **The lint's module walk:** honesty-lint now follows side-effect imports (`import './x'`, stylesheets excluded), so the video band and cinematic modules are scanned.
+
+## Wave 4b — offer terms and contact lines
+
+**The offer states its terms.** The offer is an Agent Evidence Review, and the button keeps the label "Book an Agent Evidence Review". The home `#offer` section, the `/trust` closing, `/proof` and the `/reference-check` Book card now describe it:
+- what to bring: one action your agent would take;
+- what you receive: a short written report naming the cases your reviewer would need to see and the evidence still missing;
+- what it does not include: no record of your agent's decisions can be produced today, and any record attached is a browser reference check of a selected example policy, which rates UNTRUSTED;
+- the terms: a 45-minute review session and no charge, with a reply within 2 working days.
+
+Two lines appear on some of these pages only:
+- The home `#offer` section adds "Not a guarantee of approval.", which repeats the line `/trust` already shows near its top.
+- `/trust`, `/proof` and the `/reference-check` Book card say to send nothing confidential, because no data agreement is in place yet.
+
+Any fee is a later decision.
+
+**Contact.** The address `bohueilin@originphysicalai.com` appears as plain text and a mailto link on `/`, `/trust`, `/proof` and the `/reference-check` Book card, and the first three show it without JavaScript.
+- **Copy control:** on the first three pages, a "Copy address" control appears only when the browser offers a clipboard. It is styled as a text link, so each section keeps one filled action. It sends nothing to analytics.
+- **`/reference-check` Book card:** its heading now reads "Need more than this browser demo?", because the review produces a written report, not an evaluation. Its Book link goes to the offer.
+
+**Lead dialog.** The dialog's note no longer says leads are stored with a database provider. It now reads "Sent over TLS to Origin; see the privacy policy. No spam.", with a link to the privacy policy.
+
+**Before release.** Before the release that ships this wave, the owner sends one test message to the address from an outside account and confirms that it arrives. No page claims tested delivery.

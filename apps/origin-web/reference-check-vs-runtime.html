@@ -29,6 +29,7 @@
       }
     </script>
     <link rel="icon" type="image/png" href="/favicon-2026-09-28.png" />
+    <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
     <link rel="stylesheet" href="/home.css?v=2c68cafc" />
     <style>
       .mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:24px; }
@@ -39,13 +40,8 @@
       .evidence-list li { margin:8px 0; }
       main a { text-decoration:underline; text-underline-offset:2px; }
       @media (max-width:700px) { .mode-grid { grid-template-columns:1fr; } }
-      /* No-JS burger fallback: these static pages do not load enhance.ts */
-      @media (max-width: 960px) {
-        .site-header__inner { display: grid; grid-template-columns: auto 1fr; height: auto; min-height: 66px; padding: 12px 0; row-gap: 8px; align-items: center; }
-        .site-nav { grid-column: 1 / -1; margin-left: 0; display: flex; flex-wrap: wrap; gap: 0 16px; }
-        .site-nav a { min-height: 44px; display: inline-flex; align-items: center; }
-        .site-header__burger, .site-header__cta, .site-header__cta-mobile { display: none; }
-      }
+      /* No JavaScript: the nav stays expanded, so hide the header box with the burger, which would do nothing. */
+      @media (max-width:960px) { html:not(.nav-ready) .site-header__cta { display:none; } }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>
@@ -61,7 +57,7 @@
         <nav class="site-nav" id="site-nav" aria-label="Primary">
           <a href="/#product">Product</a>
           <a href="/#demo">Demo</a>
-          <a href="/proving-ground">Proving Ground</a>
+          <a href="/proving-ground">Labs: Proving Ground</a>
           <a href="/#evidence">Evidence</a>
           <a href="/trust">Trust</a>
           <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
@@ -82,7 +78,7 @@
         <p class="section__lede"><b>Origin is the evidence layer for AI agents:</b> a working prototype for agent-platform, security, trust, and infrastructure teams, currently seeking design partners. Its browser reference check grades a selected policy against fixed synthetic requests with deterministic code, separates capability from permission, and produces a record a reviewer can re-check in their own browser.</p>
         <p class="mono-note">Model proposes. Environment verifies. Gate decides. Trace proves. Capability is not permission.</p>
         </div></div><!-- ORIGIN:POSTURE -->
-        <nav class="editorial-jumps" aria-label="On this page"><a href="#reference-check"><span>01</span>Implemented today</a><a href="#runtime-enforcement"><span>02</span>Proposed architecture</a><a href="#boundaries"><span>03</span>Trust boundaries</a><a href="#provenance"><span>04</span>Evidence provenance</a></nav>
+        <nav class="editorial-jumps" aria-label="On this page"><a href="#reference-check"><span>01</span>Implemented today</a><a href="#runtime-enforcement"><span>02</span>Proposed architecture</a><a href="#boundaries"><span>03</span>Trust boundaries</a><a href="#alternatives"><span>04</span>Beside your tools</a><a href="#provenance"><span>05</span>Evidence provenance</a></nav>
         <div class="mode-grid">
           <article class="mode-card" id="reference-check"><span class="status">Implemented today</span><h2>Synthetic pre-access reference check</h2><p>The checked-in browser flow runs synthetic support and IAM task batteries against deterministic policy logic before production access. It produces synthetic, session-signed, unpinned evidence; execution is not attempted. On /reference-check, adding a tool voids the legacy configuration-bound credential (code 4); in the downloaded record, an edit made without re-signing shows as VOID. A valid demo signature does not establish trusted Origin issuance.</p><p><a href="/reference-check">Run the synthetic reference check →</a></p></article>
           <article class="mode-card" id="runtime-enforcement"><span class="status status--future">Proposed architecture</span><h2>Runtime enforcement through a controlled proxy</h2><p>The broader design places a deterministic gate between an agent proposal and a consequential side effect. The gate would evaluate permission, scope, policy, budget, and approval requirements; only an allowed action would reach a controlled executor. This page does not claim that architecture is generally available or deployed for customers.</p><p><a href="/trust">Inspect the trust model →</a></p></article>
@@ -97,6 +93,17 @@
           <li><b>Evidence integrity is not issuer identity or safety.</b> A valid digest, signature, or chain establishes consistency under the relevant verifier and bindings; it does not establish that an action is universally safe.</li>
         </ul>
       </div></section>
+      <section class="section editorial-section" aria-labelledby="alternatives"><div class="shell">
+        <h2 id="alternatives" style="text-wrap:balance">Beside the tools you already use</h2>
+        <p>Use the reference check next to these, not instead of them.</p>
+        <ul class="evidence-list">
+          <li><b>CI test suites</b> run your real agent against your own cases.</li>
+          <li><b>Evaluation platforms</b> score real traces with code or model graders, hosted or self-hosted.</li>
+          <li><b>Policy engines and gateways</b> allow, deny or hold each tool call; some trial a policy on live traffic or check it with automated analysis before enforcing it.</li>
+          <li><b>Third-party assessors</b> test your agent and report to your customer's reviewer.</li>
+          <li><b>Origin today:</b> in your browser, deterministic code grades a selected policy (a preset or five controls) against 12 fixed synthetic requests per scenario and an answer key Origin wrote; your agent is not run. The signed record states the result, and /verify re-runs the grading and shows an edit made without re-signing as VOID. A key your browser makes for that run signs the record, so it verifies as UNTRUSTED: anyone can make one, and nothing stops re-running until a record passes.</li>
+        </ul>
+      </div></section>
       <section class="section editorial-section" aria-labelledby="provenance"><div class="shell">
         <h2 id="provenance">Evidence provenance and limitations</h2>
         <p>Origin keeps four checked-in categories distinct: machine-emitted traces of scripted scenarios, authored examples, synthetic evaluations, and authorized fixtures. None is presented here as external customer evidence, production adoption, certification, or reviewer acceptance.</p>
@@ -106,15 +113,11 @@
           <li><a href="/proof">The evidence ladder</a> labels authored and machine-emitted artifacts separately.</li>
           <li>The implemented reference check uses synthetic task distributions. The runtime gate and controlled-proxy flow above remain proposed architecture, not evidence of a customer deployment.</li>
         </ul>
-        <p><b>Product distinction:</b> identity establishes who or what an actor is; observability records and debugs behavior; generic guardrails filter inputs or outputs; policy engines evaluate rules; compliance tools organize controls and evidence. Origin's intended role is to bind deterministic verification and permission decisions to a controlled action path and a re-verifiable trace.</p>
       </div></section>
-        <!-- Video band. GENERATED footage, labelled as such in the pill and the caption.
-         Poster-first, preload="none", plays once on scroll via src/shared/videoBand.ts,
-         and falls back to poster + native controls with no JS or under reduced motion. -->
 
 
 </main>
     <footer class="site-footer"><div class="shell site-footer__grid"><div class="site-footer__brand"><a class="brand" href="/" aria-label="Origin — home"><img class="brand__logo" src="/brand/origin-mark-2026-09-28.svg" width="36" height="36" alt="" /><span class="brand__name">Origin</span></a><p>Move AI forward.<br>With evidence.</p><p class="site-footer__boundary">Working prototypes. Explicit limits.<br>Offline re-verification.</p></div><nav class="site-footer__nav" aria-label="Footer"><div><p class="site-footer__h">Product</p><a href="/reference-check">Run a policy reference check</a><a href="/verify">Verify an attestation</a><a href="/security">Run the verifiers</a><a href="/trust">Trust center</a><a href="/reference-check-vs-runtime">Reference check vs runtime</a></div><div><p class="site-footer__h">Company</p><a href="/brief">One-page brief</a><a href="/proving-ground">Proving ground</a><a href="/labs">Labs</a><a href="/proof">Evidence traces</a><a href="/llms.txt">For AI agents</a><a href="https://github.com/bohueilin/Origin">Source on GitHub ↗</a></div></nav></div><div class="shell site-footer__legal"><span>© <span data-year>2026</span> Origin</span><span class="site-footer__legal-links"><a href="/legal/privacy-policy.html">Privacy</a><a href="/legal/terms-of-service.html">Terms</a><a href="mailto:bohueilin@originphysicalai.com">Contact</a><a href="/auth" rel="nofollow">Owner console</a></span></div></footer>
-    <script type="module" src="/src/shared/videoBand.ts"></script>
+    <script type="module" src="/src/home/enhance.ts"></script>
   </body>
 </html>

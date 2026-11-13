@@ -80,6 +80,8 @@ const metaAndTitleText = (html) => {
 // transitively, so a new claim-bearing module is covered the moment it is reachable.
 const MODULE_SRC = /<script[^>]*\btype=["']module["'][^>]*\bsrc=["']([^"']+)["']/gi
 const IMPORT_FROM = /(?:^|\n)\s*(?:import|export)[\s\S]*?from\s*['"]([^'"]+)['"]/g
+// Side-effect imports (`import './x'`) carry no `from`; follow them too, except stylesheets.
+const SIDE_EFFECT_IMPORT = /(?:^|\n)\s*import\s*['"]([^'"]+)['"]/g
 const CODE_EXT = ['', '.ts', '.tsx', '/index.ts', '/index.tsx']
 
 const resolveModule = (spec, fromFile) => {
@@ -114,7 +116,8 @@ const collectReactCopy = () => {
     seen.add(file)
     let src
     try { src = readFileSync(file, 'utf8') } catch { continue }
-    for (const m of src.matchAll(IMPORT_FROM)) {
+    for (const m of [...src.matchAll(IMPORT_FROM), ...src.matchAll(SIDE_EFFECT_IMPORT)]) {
+      if (m[1].endsWith('.css')) continue
       const next = resolveModule(m[1], file)
       if (next && !seen.has(next)) queue.push(next)
     }
@@ -558,6 +561,20 @@ const LAUNCH_CONTRACTS = [
     file: 'apps/origin-web/index.html',
     forbid: [
       [/caps the result at\s+L0/i, 'a readiness tier in demo panel 3 (the reference check shows no tier; over-grants are counted on their own)'],
+    ],
+  },
+  // Wave 4a: home, explainer comparison and navigation. The explainer compares by category
+  // only and ends with what Origin does today: your agent is not run, and a browser-made
+  // record verifies as UNTRUSTED. New objects only.
+  {
+    file: 'apps/origin-web/reference-check-vs-runtime.html',
+    forbid: [
+      [/across a trust boundary/i, 'a record described as trusted across a trust boundary (a browser-made record verifies as UNTRUSTED)'],
+      [/\bWhy not\b/i, 'a "why not" comparison against other tools (the section places the reference check beside them, by category)'],
+    ],
+    require: [
+      [/Beside the tools you already use[\s\S]{0,1500}?Origin today[\s\S]{0,700}?UNTRUSTED/, 'the "Origin today" item in the comparison section, with its UNTRUSTED limit'],
+      [/Origin today[\s\S]{0,400}?your agent is not run/i, 'the "Origin today" limit that your agent is not run'],
     ],
   },
 ]

@@ -123,7 +123,7 @@
         <nav class="site-nav" id="site-nav" aria-label="Primary">
           <a href="/#product">Product</a>
           <a href="/#demo">Demo</a>
-          <a href="/proving-ground">Proving Ground</a>
+          <a href="/proving-ground">Labs: Proving Ground</a>
           <a href="/#evidence">Evidence</a>
           <a href="/trust" aria-current="page">Trust</a>
           <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
@@ -166,14 +166,17 @@
           const res = await fetch('/trust/gates-summary.json', { cache: 'no-store' })
           if (!res.ok) throw new Error('no summary')
           const data = await res.json()
+          // Name and result share one cell: side by side when the row has room, the
+          // result on its own line on a phone, so it never shrinks to one character.
+          const nameCh = Math.max(...data.suites.map((s) => String(s.name).length))
           const rows = data.suites.map((s) => {
             const ok = s.result === 'PASS'
             const mark = ok ? '✓' : '✗'
             const color = ok ? '#1a7f4b' : '#b3261e'
             const detail = (s.detail || '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))
-            return `<tr><td style="color:${color};font-weight:600;padding-right:10px">${mark}</td>`
-              + `<td style="padding-right:16px;white-space:nowrap">${s.name}</td>`
-              + `<td>${detail}</td></tr>`
+            return `<tr><td style="color:${color};font-weight:600;padding-right:10px;vertical-align:top">${mark}</td>`
+              + `<td><div style="display:flex;flex-wrap:wrap;column-gap:16px">`
+              + `<span style="flex:0 1 ${nameCh}ch;font-weight:600">${s.name}</span> <span style="flex:1 1 32ch">${detail}</span></div></td></tr>`
           }).join('')
           const when = (data.generated_at || '').slice(0, 10)
           const sha = /^[0-9a-f]{7,40}$/.test(data.commit || '') ? data.commit.slice(0, 7) : ''
@@ -197,8 +200,8 @@
                 : `${when} · <b style="color:#b3261e">gates failing in this local run</b> · ${data.suites.length} suites — local run of <code>make gates-all</code>${commit ? ' at ' + commit : ''}. CI runs its own checks on pushes to main.`)
           document.getElementById('gates-scoreboard').innerHTML =
             `<div style="margin-bottom:10px">${bannerLine}</div>`
-            + `<div style="overflow-x:auto" tabindex="0" role="region" aria-label="Gate results table (scrollable)"><table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
-            + `<tbody>${rows}</tbody></table></div>`
+            + `<table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
+            + `<tbody>${rows}</tbody></table>`
         } catch {
           /* keep the static reproduce note */
         }

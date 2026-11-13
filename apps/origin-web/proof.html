@@ -26,6 +26,7 @@
     <link rel="icon" type="image/png" href="/favicon-2026-09-28.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon-2026-09-28.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
+    <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
     <link rel="stylesheet" href="/home.css?v=2c68cafc" />
     <style>
       /* Standalone page shell — same pattern as brief.html */
@@ -141,16 +142,10 @@
       .proof__cta { margin-top: 44px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--line); padding-top: 26px; }
       .proof__foot { margin-top: 20px; font-size: 13px; color: var(--ink-soft); }
       .proof__foot a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 2px; }
-    
-      /* No-JS burger fallback: these static pages do not load enhance.ts */
-      @media (max-width: 960px) {
-        .site-header__inner { display: grid; grid-template-columns: auto 1fr; height: auto; min-height: 66px; padding: 12px 0; row-gap: 8px; align-items: center; }
-        .site-nav { grid-column: 1 / -1; margin-left: 0; display: flex; flex-wrap: wrap; gap: 0 16px; }
-        .site-nav a { min-height: 44px; display: inline-flex; align-items: center; }
-        .site-header__burger, .site-header__cta, .site-header__cta-mobile { display: none; }
-      }
       .tr2why__a, .tr2-exec .tr2-not, .tr2-verify .tr2-verify__cap, .tr2-verify__plain, .proof__foot { font-size: var(--fs-14); line-height: 1.65; max-inline-size: 75ch; }
       .tr2-verify__lbl { font-size: var(--fs-12); line-height: 1.5; }
+      /* No JavaScript: the nav stays expanded, so hide the header box with the burger, which would do nothing. */
+      @media (max-width: 960px) { html:not(.nav-ready) .site-header__cta { display: none; } }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>
@@ -168,7 +163,7 @@
         <nav class="site-nav" id="site-nav" aria-label="Primary">
           <a href="/#product">Product</a>
           <a href="/#demo">Demo</a>
-          <a href="/proving-ground">Proving Ground</a>
+          <a href="/proving-ground">Labs: Proving Ground</a>
           <a href="/#evidence">Evidence</a>
           <a href="/trust">Trust</a>
           <a class="btn btn--primary btn--sm" href="/reference-check" data-analytics="nav_cta_click">Run reference check</a>
@@ -527,7 +522,7 @@ node scripts/verify-tr-a002.mjs tr-a002.json
         });
       });
     </script>
-    <script type="module" src="/src/shared/videoBand.ts"></script>
+    <script type="module" src="/src/home/enhance.ts"></script>
     <script type="module" src="/src/proof/chain.ts"></script>
   </body>
 </html>

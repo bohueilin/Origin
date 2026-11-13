@@ -50,7 +50,7 @@ test('home content is in the server HTML (crawler-readable, not client-rendered)
   // with nothing rather than a space, so text broken across elements in a way that would
   // change reading order still fails.
   const text = (await res.text()).replace(/<[^>]+>/g, '')
-  expect(html).toContain('Evidence for agent decisions')
+  expect(html).toContain('For teams whose AI agent is waiting in security review')
   expect(text).toContain('Test the policy. Inspect the evidence.')
   expect(html).toContain('Origin does not contact or execute your named agent. Browser evidence is untrusted by default.')
   expect(html).toContain('Book an Agent Evidence Review')
@@ -226,9 +226,23 @@ test('reference-check versus runtime explainer is crawlable and source-linked', 
   await expect(page.locator('h1')).toHaveText('Reference check vs runtime enforcement')
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', String(jsonLd.url))
   for (const href of ['/reference-check', '/verify', '/proof', '/trust']) {
-    await expect(page.locator(`a[href="${href}"]`).first()).toBeVisible()
+    await expect(page.locator(`main a[href="${href}"]`).first()).toBeVisible()
     expect((await page.request.get(href)).status(), href).toBe(200)
   }
+  // The comparison section ends with what Origin does today, limits included.
+  const alternatives = page.locator('section[aria-labelledby="alternatives"]')
+  await expect(page.locator('#alternatives')).toHaveCount(1)
+  await expect(alternatives.locator('h2#alternatives')).toBeVisible()
+  await expect(alternatives.locator('h2#alternatives')).toHaveCSS('text-wrap-style', 'balance')
+  for (const phrase of ['UNTRUSTED', 'your agent is not run', 're-runs the grading', 'nothing stops re-running']) {
+    await expect(alternatives, phrase).toContainText(phrase)
+  }
+  // The jump nav reaches the new section as 04; provenance moves to 05.
+  const jumps = page.locator('.editorial-jumps')
+  await expect(jumps.locator('a[href="#alternatives"] span')).toHaveText('04')
+  await expect(jumps.locator('a[href="#alternatives"]')).toContainText('Beside your tools')
+  await expect(jumps.locator('a[href="#provenance"] span')).toHaveText('05')
+  await expect(jumps.locator('a[href="#provenance"]')).toContainText('Evidence provenance')
 })
 
 test('auth page is owner-only with legal links', async ({ page }) => {
@@ -875,4 +889,24 @@ test('wave 3: home demo panel 3 counts over-grants on their own and names no tie
   await expect(panel).toContainText('Over-grants are counted on their own; matches elsewhere do not offset them.')
   await expect(panel.locator('.demo__readout')).toHaveText('oracle · FAR · FRR · over-grants EVALUATION RESULT')
   await expect(panel).not.toContainText(/\bL0\b|catastrophic cap/)
+})
+
+// ── Wave 4a: home, explainer, navigation and /trust ─────────────────────────
+// The sub-heading says what the record holds (the eyebrow and headline are pinned at the
+// top of this file and in investor-ready.spec.ts). #problem compares by category only and
+// keeps the UNTRUSTED limit, and the primary button stays above the fold at 375x812.
+
+test('wave 4a: home sub-heading, #problem comparison and the fold at 375x812', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.hero__lede')).toHaveText("See which of 12 fixed synthetic requests a selected agent policy allows, denies or escalates, graded by deterministic code against Origin's answer key, not a model. The record, signed by a key your browser makes for that run, states the result, and your reviewer can re-run the grading in their own browser.")
+  await expect(page.locator('.cin-intro__links').getByRole('link', { name: 'What works today vs. proposed' })).toHaveAttribute('href', '/reference-check-vs-runtime')
+  const problem = page.locator('#problem')
+  await expect(problem.locator('.cin-small')).toBeVisible()
+  await expect(problem.locator('.cin-small')).toHaveText("Origin does not replace your CI tests, evaluation platform or runtime policy engine. The reference check adds one thing beside them: a deterministic record of what a selected policy allows on fixed synthetic requests. Your reviewer can re-check it in their own browser, where an edit made without re-signing shows as VOID; a key the browser makes for that run signs it, so it rates UNTRUSTED.")
+  await expect(problem.getByRole('link', { name: 'Where Origin fits beside them' })).toHaveAttribute('href', '/reference-check-vs-runtime')
+  await expect(problem.locator('.btn')).toHaveCount(0)
+  // The longer eyebrow and sub-heading must not push the primary action below a 375x812 fold.
+  await page.setViewportSize({ width: 375, height: 812 })
+  const primaryBottom = await page.locator('.hero__actions .btn--primary').evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY)
+  expect(primaryBottom).toBeLessThanOrEqual(812)
 })

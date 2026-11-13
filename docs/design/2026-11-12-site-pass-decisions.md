@@ -80,3 +80,33 @@ Requests and expected answers agreed with a reviewer before a run are described 
 - A static summary of what the page evaluates serves readers without JavaScript; the app replaces it when it loads.
 - "Synthetic pilot battery" becomes "Synthetic demo battery", because there is no pilot.
 - The step hints name what each panel binds, and the step 04 hint scopes VOID to an edit made without re-signing.
+
+**Wave 3, as built and approved.** The owner approved four details of the merged Wave 3 page as built:
+- Panel 02 says the record lists each expected answer in `evaluation.decisions` but does not hash the oracle's code. Since Wave 2 the record carries those answers under its digests, so the earlier wording, "not hashed into the record", no longer held.
+- The "Try the permissive baseline" button and its hint sit in their own block at the end of the result card.
+- The hint keeps "so you can compare its over-grants with this result", even though the click replaces that result.
+- The button is offered only after a Least-privilege or Moderate run, so it never overwrites a policy set by hand.
+
+Two traces of the legacy credential's tier stay out of scope: the `/verify` check line for a Crucible credential, and the raw `rsl_level` field in that credential's JSON. The credential format is unchanged.
+
+## Wave 4a — home, explainer comparison and navigation
+
+**Home.**
+- **Headline:** stays "Test the policy. Inspect the evidence."
+- **Maturity line:** unchanged.
+- **Eyebrow:** now names the buyer's moment: "For teams whose AI agent is waiting in security review".
+- **Sub-heading:** says what the demo does and what the record holds: "See which of 12 fixed synthetic requests a selected agent policy allows, denies or escalates, graded by deterministic code against Origin's answer key, not a model. The record, signed by a key your browser makes for that run, states the result, and your reviewer can re-run the grading in their own browser."
+- **Intro link:** relabelled "What works today vs. proposed"; same target.
+
+**Comparison, by category only.**
+- **The sections:** the home `#problem` section gains one paragraph, and the explainer gains a section, "Beside the tools you already use". It describes CI test suites, evaluation platforms, policy engines and gateways, and third-party assessors, and says to use the reference check next to them, not instead of them.
+- **No vendor names:** review keeps vendor names off the site. There is no lint rule for them, because such a rule would publish the list.
+- **"Origin today":** the explainer's last item says what Origin does now. Your agent is not run. The signed record states the result, and `/verify` re-runs the grading. Browser-made records verify as UNTRUSTED.
+- **No future item:** an item describing records signed with a published Origin key is not published. It waits until such a key exists.
+- **"Product distinction":** the explainer's "Product distinction" paragraph is replaced by the new section.
+
+**Navigation.**
+- **The label:** the header link to the proving ground keeps its place and target and reads "Labs: Proving Ground" on every page. That marks the one robot simulation in the header as a Labs page.
+- **`/proof` and the explainer:** both now load the site's navigation script. They get the same compact mobile header as the other pages, and their inline no-JavaScript header fallback is removed.
+
+**`/trust` scoreboard.** On phone widths, the gate scoreboard no longer breaks a result one character per line.

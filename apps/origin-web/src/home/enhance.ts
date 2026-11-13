@@ -244,7 +244,9 @@ function openLead(trigger: HTMLElement): void {
   track('lead_form_open', { intent, source })
   if (typeof dialog.showModal === 'function') dialog.showModal()
   else dialog.setAttribute('open', '')
-  window.setTimeout(() => document.getElementById('lead-name')?.focus(), 30)
+  // Focus the first field now, not on a timer: a delayed focus could land after the
+  // visitor had moved to another field and send what they typed into the name field.
+  document.getElementById('lead-name')?.focus()
 }
 
 function closeLead(): void {

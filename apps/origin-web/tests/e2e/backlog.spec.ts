@@ -35,3 +35,19 @@ test('rate-limited contact keeps the form and entered details available', async 
   await expect(page.locator('#lead-success')).not.toBeVisible()
   expect(calls).toBe(1)
 })
+
+test('opening the contact dialog never moves focus away from a field the visitor is already in', async ({ page }) => {
+  // A delayed focus call used to land on the name field after the visitor (or a test)
+  // had moved on, so typed text went into the wrong field. The fake clock fires any
+  // pending timers on cue instead of relying on load.
+  await page.clock.install()
+  await page.goto('/')
+  await page.clock.pauseAt(Date.now() + 60_000)
+  await page.locator('[data-open-lead]').first().click()
+  await page.locator('#lead-email').focus()
+  await page.clock.runFor(1000)
+  await expect(page.locator('#lead-email')).toBeFocused()
+  await page.keyboard.insertText('visitor@example.test')
+  await expect(page.locator('#lead-email')).toHaveValue('visitor@example.test')
+  await expect(page.locator('#lead-name')).toHaveValue('')
+})

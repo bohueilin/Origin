@@ -184,14 +184,16 @@ test('/verify bundled reference check completes VALID → tampered → VOID → 
   await expect(example).toHaveAttribute('aria-pressed', 'true')
   await expect(page.getByLabel('Artifact JSON')).toContainText('SYNTHETIC SANDBOX')
   await page.getByRole('button', { name: 'Verify', exact: true }).click()
-  await expect(page.getByRole('status').filter({ hasText: 'VALID' })).toContainText('code 0')
+  await expect(page.getByRole('status').locator('.vfy-verdict b')).toHaveText(/^VALID$/)
+  await expect(page.getByRole('status').locator('.vfy-verdict')).toContainText('code 0')
   await page.getByLabel('Tamper one field (see it void)').check()
   await page.getByRole('button', { name: 'Verify', exact: true }).click()
   await expect(page.getByRole('status').filter({ hasText: 'VOID' })).toContainText('code 3')
   await page.getByRole('button', { name: 'Reset selected example' }).click()
   await expect(page.getByLabel('Tamper one field (see it void)')).not.toBeChecked()
   await page.getByRole('button', { name: 'Verify', exact: true }).click()
-  await expect(page.getByRole('status').filter({ hasText: 'VALID' })).toContainText('code 0')
+  await expect(page.getByRole('status').locator('.vfy-verdict b')).toHaveText(/^VALID$/)
+  await expect(page.getByRole('status').locator('.vfy-verdict')).toContainText('code 0')
 })
 
 test('/verify clears selected-example state after a manual edit', async ({ page }) => {
@@ -450,4 +452,199 @@ test('wave 1: /security grades the Least-privilege preset, not the oracle, and c
   await expect(log).toContainText("1 stricter than the oracle (Origin's answer key), 0 looser")
   await expect(log).toContainText('re-checked in this tab')
   await expect(log).not.toContainText('independently re-verified')
+})
+
+// ── Wave 2: evidence record and verifier ────────────────────────────────────
+// A 1.1.0 record states its result and /verify replays it. The /reference-check link
+// carries the record in its fragment, and the published TR-A002 trace loads byte for byte.
+// The order is structure, digest, signature, freshness, replay: a decision edited without
+// re-signing stops at the digest, and only a record re-signed with another key reaches
+// the replay.
+
+const logPill = (page: Page, text: string) => page.locator('.vfy-log li').filter({ hasText: text }).locator('.vfy-pill')
+
+// The /verify action-run example, edited, re-digested and signed with a new key by the
+// shipped builder and signer: what anyone can do with a record.
+async function resignedExample(edit: (record: Record<string, any>) => void) {
+  const { makeExample } = await import('../../src/verify/examples.mjs')
+  const { generateSigningKey } = await import('@origin/verifier-core/sigil')
+  const { actionRunEvidenceDigest, signActionRunEvidence } = await import('@origin/verifier-core/action-run-evidence')
+  const record = structuredClone(await makeExample('action-run')) as Record<string, any>
+  edit(record)
+  record.signature = null
+  record.evidence_digest = actionRunEvidenceDigest(record)
+  return signActionRunEvidence(record as Parameters<typeof signActionRunEvidence>[0], await generateSigningKey(), {
+    keyId: 'another-signer', keyEpoch: 1, issuer: 'another-signer', signedAt: record.issued_at,
+  })
+}
+
+async function verifyPasted(page: Page, record: unknown) {
+  await page.goto('/verify')
+  await page.getByLabel('Artifact JSON', { exact: true }).fill(JSON.stringify(record, null, 2))
+  await page.getByRole('button', { name: 'Verify', exact: true }).click()
+}
+
+test('wave 2: the reference-check link carries its record to /verify in the fragment', async ({ page }) => {
+  await page.goto('/reference-check')
+  await page.getByRole('button', { name: 'Run the reference check', exact: true }).click()
+  const link = page.getByRole('link', { name: /^Re-verify it on \/verify/ })
+  await expect(link).toHaveAttribute('href', /^\/verify#a=[A-Za-z0-9_-]{1000,8000}$/)
+  await expect(page.locator('.rc-actions + .rc-hint')).toHaveText("The /verify link carries this record. It travels in the link's fragment, which the browser does not send to Origin's server; the analytics tag on /verify is set not to report it.")
+  await link.click()
+  const box = page.getByLabel('Artifact JSON', { exact: true })
+  await expect(box).toHaveValue(/"schema_version": "1\.1\.0"/)
+  await expect(page.getByText('Loaded from a shared link. Nothing was uploaded — the artifact travelled in the URL fragment.')).toBeVisible()
+  // Read once, then dropped from the address bar.
+  expect(new URL(page.url()).hash).toBe('')
+
+  const verify = page.getByRole('button', { name: 'Verify', exact: true })
+  const verdict = page.getByRole('status').locator('.vfy-verdict')
+  await verify.click()
+  await expect(verdict.locator('b')).toHaveText(/^UNTRUSTED$/)
+  await expect(verdict.locator('.vfy-verdict__scope')).toHaveText('signed by the key inside the record; VALID needs a published issuer key')
+  const stated = page.locator('.vfy-stated--reproduced')
+  await expect(stated).toContainText('Stated in this record and reproduced in this tab:')
+  await expect(stated).toContainText(/\b\d+ of 12 synthetic decisions match the oracle/)
+
+  // A decision edited without re-signing stops at the digest, and no count is shown.
+  await page.getByLabel('Tamper one field (see it void)').check()
+  await expect(page.getByText(/^Tampered: changed the stated decision for sup-01 from \w+ to \w+ without re-signing\./)).toBeVisible()
+  await verify.click()
+  await expect(verdict.locator('b')).toHaveText(/^VOID$/)
+  await expect(verdict.locator('.vfy-verdict__scope')).toHaveCount(0)
+  await expect(logPill(page, 'the unsigned envelope content-address does not recompute')).toHaveText('void')
+  await expect(page.locator('.vfy-stated')).toHaveCount(0)
+  await expect(page.locator('.vfy-result')).not.toContainText(/\bof 12\b/)
+})
+
+test('wave 2: a decision flipped and re-signed with another key is VOID with the replay mismatch named', async ({ page }) => {
+  await verifyPasted(page, await resignedExample((record) => { record.evaluation.decisions[1].decision = 'deny' }))
+  await expect(page.getByRole('status').locator('.vfy-verdict b')).toHaveText(/^VOID$/)
+  const result = page.locator('.vfy-result')
+  await expect(result).toContainText('Action/Run Evidence is void: its stated result does not reproduce under this verifier.')
+  await expect(page.locator('.vfy-stated--mismatch')).toHaveText('The stated result does not reproduce: sup-02 states deny, the replay gives allow; the decision rows do not match source.oracle_verdict_digest.')
+  // The record is intact and signed; only its stated result is false.
+  await expect(logPill(page, 'the unsigned envelope content-address recomputes')).toHaveText('pass')
+  await expect(logPill(page, 'the signed Action/Run statement matches this envelope')).toHaveText('pass')
+  await expect(logPill(page, 'sup-02 states deny; the replay gives allow')).toHaveText('void')
+  await expect(result).not.toContainText(/\bof 12\b/)
+})
+
+test('wave 2: a record naming a battery this verifier does not ship is VOID with no counts', async ({ page }) => {
+  await verifyPasted(page, await resignedExample((record) => { record.evaluation.battery.version = 'support-gym-v9' }))
+  await expect(page.getByRole('status').locator('.vfy-verdict b')).toHaveText(/^VOID$/)
+  const result = page.locator('.vfy-result')
+  await expect(result).toContainText('Action/Run Evidence is void: this verifier cannot reproduce its stated result.')
+  await expect(page.locator('.vfy-stated--unavailable')).toHaveText('This record names support support-gym-v9, which this verifier does not ship; its stated result cannot be reproduced.')
+  await expect(logPill(page, 'not replayed: this verifier ships support support-gym-v1, iam iam-gym-v1; the record names support support-gym-v9')).toHaveText('void')
+  await expect(result).not.toContainText(/\bof 12\b/)
+})
+
+test('wave 2: /verify loads the published TR-A002 trace byte for byte; a tamper voids it with code 2 and unticking restores VALID', async ({ page }) => {
+  const published = await (await page.request.get('/proof/tr-a002.json')).text()
+  await page.goto('/verify')
+  const load = page.getByRole('button', { name: 'Load the published TR-A002 trace', exact: true })
+  await expect(load).toHaveAttribute('aria-pressed', 'false')
+  await load.click()
+  await expect(load).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.vfy-examples button[aria-pressed="true"]')).toHaveCount(0)
+  const box = page.getByLabel('Artifact JSON', { exact: true })
+  await expect(box).toHaveValue(published)
+  await expect(page.locator('.vfy-note').filter({ hasText: 'Loaded /proof/tr-a002.json' })).toHaveText('Loaded /proof/tr-a002.json from this site, byte for byte. TR-A002 is a machine-emitted record of a scripted scenario: no agent, policy gate, proxy, approver or sandbox ran.')
+
+  const verify = page.getByRole('button', { name: 'Verify', exact: true })
+  const verdict = page.getByRole('status').locator('.vfy-verdict')
+  const log = page.locator('.vfy-log')
+  await verify.click()
+  await expect(verdict.locator('b')).toHaveText(/^VALID$/)
+  await expect(verdict).toContainText('code 0')
+  await expect(verdict.locator('.vfy-verdict__scope')).toHaveText('unsigned format: VALID means the hash chain re-derives; anyone can make one')
+  await expect(log).toContainText('artifact is TR-A002; this name sits outside the chain')
+  await expect(log).toContainText('these top-level fields are outside the chain and are not checked: type, emitted_by, label, scenario, agent, policy, risk_owner, proxy_tool, hash_spec; changing them does not break it')
+
+  const tamper = page.getByLabel('Tamper one field (see it void)')
+  await tamper.check()
+  await expect(page.locator('.vfy-note').filter({ hasText: 'Tampered:' })).toHaveText("Tampered: changed event 1's refund amount $480 → $481 without re-sealing the chain. Verify to see it void; untick to restore the original.")
+  await verify.click()
+  await expect(verdict.locator('b')).toHaveText(/^VOID$/)
+  await expect(verdict).toContainText('code 2')
+  await expect(verdict.locator('.vfy-verdict__scope')).toHaveCount(0)
+  await expect(log.locator('.vfy-pill--bad')).toHaveCount(1)
+  await expect(logPill(page, 'chain break — event 1 event_hash')).toHaveText('void')
+
+  await tamper.uncheck()
+  await expect(page.locator('.vfy-note').filter({ hasText: 'Restored the untampered original.' })).toBeVisible()
+  await expect(box).toHaveValue(published)
+  await verify.click()
+  await expect(verdict.locator('b')).toHaveText(/^VALID$/)
+  await expect(verdict).toContainText('code 0')
+})
+
+test('wave 2: a failed TR-A002 load verifies nothing', async ({ page }) => {
+  await page.route('**/proof/tr-a002.json', (route) => route.fulfill({ status: 404, body: '' }))
+  await page.goto('/verify')
+  await page.getByRole('button', { name: 'Load the published TR-A002 trace', exact: true }).click()
+  const verdict = page.getByRole('status').locator('.vfy-verdict')
+  await expect(verdict.locator('b')).toHaveText('NOT VERIFIABLE')
+  await expect(verdict).toContainText('could not load /proof/tr-a002.json (HTTP 404); nothing was verified')
+  await expect(page.getByLabel('Artifact JSON', { exact: true })).toHaveValue('')
+})
+
+test('wave 2: analytics on a /verify#a= link is configured without the fragment and never sends it', async ({ page }) => {
+  // Hits are answered here and never reach the analytics host. Where gtag.js cannot load
+  // (a blocked or offline third-party host), the dataLayer check below is the one that runs.
+  const hits: string[] = []
+  await page.route('**/g/collect**', async (route) => {
+    hits.push(`${route.request().url()}\n${route.request().postData() ?? ''}`)
+    await route.fulfill({ status: 204, body: '' })
+  })
+  await page.goto('/reference-check')
+  await page.getByRole('button', { name: 'Run the reference check', exact: true }).click()
+  const href = await page.getByRole('link', { name: /^Re-verify it on \/verify/ }).getAttribute('href')
+  const fragment = href!.replace(/^\/verify#a=/, '')
+  expect(fragment.length).toBeGreaterThan(1000)
+
+  // What each request sends: its URL without the fragment, and its body.
+  const sent: string[] = []
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    url.hash = ''
+    sent.push(`${url.href}\n${request.postData() ?? ''}`)
+  })
+  await page.goto(href!)
+  await expect(page.getByLabel('Artifact JSON', { exact: true })).toHaveValue(/"schema_version": "1\.1\.0"/)
+  const pageLocations = await page.evaluate(() => {
+    const layer = (window as unknown as { dataLayer?: ArrayLike<unknown>[] }).dataLayer ?? []
+    return Array.from(layer).flatMap((entry) => (entry?.[0] === 'config' ? [(entry[2] as { page_location?: string } | undefined)?.page_location ?? null] : []))
+  })
+  expect(pageLocations).toEqual([new URL('/verify', page.url()).href])
+  // Best effort, not the gate: the page drops the fragment from the address bar before gtag.js
+  // runs, so these pass with or without page_location set, and see nothing where gtag.js is
+  // blocked. The dataLayer check above is the one that fails if the fragment would be sent.
+  await page.waitForTimeout(1500)
+  const probe = fragment.slice(0, 64)
+  expect(hits.filter((hit) => hit.includes(probe) || hit.includes('#a=') || hit.includes('%23a%3D'))).toEqual([])
+  expect(sent.filter((wire) => wire.includes(probe))).toEqual([])
+})
+
+test('wave 2: /verify names its formats and verdict codes without JavaScript', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  try {
+    await page.goto(`${baseURL}/verify`)
+    const summary = page.locator('#verify-root > .onpage-static')
+    await expect(summary).toBeVisible()
+    await expect(summary.locator('li > b')).toHaveText(['Action/Run Evidence', 'Origin Attestation', 'Crucible credential', 'ScoreReceipt', 'Episode trace', 'Merkle inclusion proof'])
+    await expect(summary.locator('li').first()).toContainText('VALID needs a published issuer key; Origin has not published one.')
+    await expect(summary).toContainText('The interactive verifier needs JavaScript. Nothing you paste or open is uploaded or stored.')
+  } finally {
+    await context.close()
+  }
+})
+
+test('wave 2: with JavaScript, the /verify app replaces the static summary', async ({ page }) => {
+  await page.goto('/verify')
+  await expect(page.getByRole('button', { name: 'Verify', exact: true })).toBeVisible()
+  await expect(page.locator('.onpage-static')).toHaveCount(0)
+  await expect(page.locator('.vfy-detection summary')).toHaveText('Which artifacts can I verify? See formats, checks, and verdict codes.')
 })

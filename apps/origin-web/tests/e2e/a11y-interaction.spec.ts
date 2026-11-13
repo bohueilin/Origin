@@ -158,3 +158,19 @@ for (const width of [320, 1440]) {
     await context.close()
   })
 }
+
+// ── Wave 2: evidence record and verifier ────────────────────────────────────
+// The stated-result block a 1.1.0 record shows, reproduced and then greyed outside its window.
+test('wave 2: verify passes axe on a 1.1.0 stated result, reproduced and outside its window', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-20T00:00:00.000Z'))
+  await page.goto('/verify')
+  await press(page, page.getByRole('button', { name: 'Signed browser policy evaluation (untrusted)', exact: true }))
+  await expect(page.getByLabel('Artifact JSON', { exact: true })).toHaveValue(/"schema_version": "1\.1\.0"/)
+  await press(page, page.getByRole('button', { name: 'Verify', exact: true }))
+  await expect(page.locator('.vfy-stated--reproduced')).toBeVisible()
+  await expectNoSeriousViolations(page, '/verify after a reproduced 1.1.0 result')
+  await page.clock.setFixedTime(new Date('2026-12-21T00:00:00.000Z'))
+  await press(page, page.getByRole('button', { name: 'Verify', exact: true }))
+  await expect(page.locator('.vfy-stated--outside')).toBeVisible()
+  await expectNoSeriousViolations(page, '/verify after a 1.1.0 result outside its window')
+})

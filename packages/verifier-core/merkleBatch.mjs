@@ -126,5 +126,5 @@ export function verifyReceiptInBatch({ beneficiary, receipt }, proof, root) {
   const leaf = receiptLeaf({ beneficiary, receipt })
   if (leaf !== proof.leaf) return { ok: false, reason: 'leaf does not match the receipt+beneficiary (content or beneficiary altered)' }
   if (!verifyInclusion(leaf, proof.proof, root, proof.count)) return { ok: false, reason: 'inclusion proof does not reconstruct the batch root' }
-  return { ok: true, reason: 'receipt is provably included in the signed batch' }
+  return { ok: true, reason: 'receipt folds to the batch root' }
 }

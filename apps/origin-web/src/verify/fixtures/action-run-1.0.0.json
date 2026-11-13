@@ -1,0 +1,123 @@
+{
+  "authorization": {
+    "approval_id": null,
+    "approved_by": null,
+    "expires_at": null,
+    "nonce_digest": null,
+    "reason_codes": [
+      "synthetic_policy_only_no_execution_authority"
+    ],
+    "verdict": "deny"
+  },
+  "completeness": {
+    "coverage": "complete",
+    "covered_ids_digest": "d4e3352c10e585e9542a9c05f34ee56811714691259652f23b4d57e1bf2459b1",
+    "duplicates": [],
+    "expected_count": 12,
+    "freshness": {
+      "max_age_ms": 86400000,
+      "observed_at": "2026-11-13T07:16:46.858Z",
+      "status": "fresh"
+    },
+    "observed_count": 12,
+    "omissions": []
+  },
+  "evidence_id": "8579eeab-8bcc-491f-b866-3fc71ea626ad",
+  "execution_mode": "simulated",
+  "identity": {
+    "on_behalf_of": null,
+    "principal_id": "user-declared-agent-configuration",
+    "tenant_id": null,
+    "workload_id": "origin-reference-check"
+  },
+  "issued_at": "2026-11-13T07:16:46.858Z",
+  "outcome_attestation": {
+    "attested_at": null,
+    "attester": "none",
+    "statement_digest": null,
+    "status": "not_attempted"
+  },
+  "proposal": {
+    "action_type": "synthetic_reference_check_policy_evaluation",
+    "input_digest": "1a4338d85c7bb5fddbcc7842ada6124489937b5907e7a9b0a60e9fb3e9b87176",
+    "proposed_effect": {
+      "kind": "synthetic_reference_check_policy_evaluation",
+      "named_agent_contacted": false,
+      "named_agent_executed": false,
+      "policy_evaluated_locally": true,
+      "policy_only": true,
+      "scenario": "support",
+      "selected_battery_task_ids": [
+        "sup-01",
+        "sup-02",
+        "sup-03",
+        "sup-04",
+        "sup-05",
+        "sup-06",
+        "sup-07",
+        "sup-08",
+        "sup-09",
+        "sup-10",
+        "sup-11",
+        "sup-12"
+      ],
+      "synthetic_battery": "Origin synthetic support policy battery",
+      "unexpected_observed_ids": []
+    }
+  },
+  "provider_evidence": {
+    "provider": null,
+    "readback_at": null,
+    "readback_digest": null,
+    "receipt_digest": null
+  },
+  "schema_version": "1.0.0",
+  "source": {
+    "audit_row_digest": null,
+    "oracle_verdict_digest": "bf3c47b3b7a160a12a5d9a784f5cc247bc9315d355baab9300f0e6065f166e96",
+    "trace_id": null
+  },
+  "subject": {
+    "action_id": "8579eeab-8bcc-491f-b866-3fc71ea626ad:selected-policy",
+    "adapter_version": null,
+    "environment_digest": "b2b3c5a571e7925a7c9fa229e21a8caabfe4f524ac3a2ba0badc870faa6c9435",
+    "evaluator_version": "support-reward-v1",
+    "model_digest": "65dc71008eec8f91179c59852962dee178ce35ee1ea0851c18b5eb709419c133",
+    "policy_digest": "6d9bc6f4bd49bc584745cbef88752f28ee5b1b3dcea0a2b7a32b9d196eedc583",
+    "run_id": "8579eeab-8bcc-491f-b866-3fc71ea626ad:policy-evaluation",
+    "tools_digest": "9ae891620a0b0ba8d73bc29ecddbdaa0196baf7b7aed7b8ea1026e0854e05952",
+    "verifier_version": "support-oracle-v1"
+  },
+  "evidence_digest": "ba52d0fccdeedcc20f6255fbd87fc377e28e4f72a8b67de3bf2fc969f11c25d5",
+  "signature": {
+    "key_id": "origin-browser-session",
+    "key_epoch": 1,
+    "sigil": {
+      "sigil_schema_version": "1.0.0",
+      "issuer": "origin-reference-check-session",
+      "kind": "origin.action-run-evidence",
+      "alg": "ES256",
+      "payload": {
+        "artifact_type": "origin.action-run-evidence",
+        "schema_version": "1.0.0",
+        "evidence_digest": "ba52d0fccdeedcc20f6255fbd87fc377e28e4f72a8b67de3bf2fc969f11c25d5",
+        "key_id": "origin-browser-session",
+        "key_epoch": 1
+      },
+      "payload_digest": "4b40d947a97c776a3288e2602334f99c141885264791bf08cdb8f71d1fa15ab5",
+      "pubkey_jwk": {
+        "key_ops": [
+          "verify"
+        ],
+        "ext": true,
+        "kty": "EC",
+        "x": "noFTfaie-PjApBMZYYEyiUBQa38GPY787KcynwTpU7g",
+        "y": "Imv1M2efMzgA713WiCNj4NXFr9p__W9l0NKhdPnLYmg",
+        "crv": "P-256"
+      },
+      "thumbprint": "6c6b6cfd006ea4b8bcc1129effe11081b5d2b79261f6adf540fd49b34a438289",
+      "signature": "pkmV0gYlnZ8orMeAp3RcJuFFa7XknYR8ISoCqhn34MUm+BlUyL+aBwQsy3D57wAt1sgHPig2Lam9URp+YGHPKA==",
+      "signed_at": "2026-11-13T07:16:46.858Z"
+    }
+  }
+}

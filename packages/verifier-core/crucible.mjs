@@ -72,7 +72,7 @@ export function verifyCredential({ credential, liveConfig, envBundleDigest, vers
   // 1 — the Sigil recomputes → no field was altered.
   const { credential_digest, ...rest } = credential
   if (sha256(canonical(rest)) !== credential_digest) return bad(3, 'credential_digest (Sigil) mismatch — a field was tampered')
-  ok('credential_digest (Sigil) recomputes — nothing was altered')
+  ok('credential_digest recomputes — the fields match the digest')
 
   // 2 — config binding: recompute config_digest from the LIVE config; any drift → VOID.
   if (liveConfig) {

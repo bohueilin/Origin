@@ -57,6 +57,7 @@ function typedVerdict() {
       complete: false,
       fresh: false,
     },
+    clock: null,
   }
 }
 
@@ -71,8 +72,9 @@ function executionVerified(evidence) {
 export async function verifyActionRunEvidence(evidence, options = {}) {
   const verdict = typedVerdict()
   try {
-    const pure = validateActionRunEvidence(evidence, { now: options.now })
+    const pure = validateActionRunEvidence(evidence, { now: options.now, simulatedMaxAgeCapMs: options.simulatedMaxAgeCapMs })
     verdict.failures.push(...pure.failures)
+    verdict.clock = pure.clock
     verdict.dimensions.structure = pure.dimensions.structure
     verdict.dimensions.semantics = pure.dimensions.semantics
     verdict.dimensions.integrity = pure.dimensions.integrity
@@ -80,7 +82,10 @@ export async function verifyActionRunEvidence(evidence, options = {}) {
     verdict.dimensions.provider_bound = pure.dimensions.provider_bound
     verdict.dimensions.complete = pure.dimensions.completeness
     verdict.dimensions.fresh = pure.dimensions.freshness
-    if (!pure.ok) return verdict
+    // Structure, semantics and integrity all hold only when every remaining failure is a clock
+    // failure. Such a record still gets its statement and signature checked; it stays not fresh.
+    const wellFormed = pure.dimensions.structure && pure.dimensions.semantics && pure.dimensions.integrity
+    if (!pure.ok && !wellFormed) return verdict
 
     const signature = evidence.signature
     if (!signature || typeof signature !== 'object' || !validKeyMetadata(signature.key_id, signature.key_epoch) || !signature.sigil) {

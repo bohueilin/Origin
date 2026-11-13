@@ -19,6 +19,7 @@ import { signActionRunEvidence } from '@origin/verifier-core/action-run-evidence
 import { computeLicenseFromVerdicts, type LicenseVerdict } from '../license'
 import { buildSyntheticReferenceCheckEvidence } from './evidence'
 import { checkStamp, useCheckVisibility } from '../shared/checkFeedback'
+import { encodeArtifact } from '../shared/shareLink'
 import {
   PRESETS, policyForSpec, type PolicySpec, type Decision, type Classification,
   SUPPORT_PRESETS, supportPolicyForSpec, type SupportPolicySpec,
@@ -35,6 +36,8 @@ interface RunResult {
   scenario: Scenario; level: string; passRate: number; coldPassRate: number; lift: number; catastrophic: number
   configDigest: string; rows: RowResult[]; credential: CrucibleCredential; reVerifyCode: number
   evidence: unknown; sigilThumbprint: string; driftCode: number | null
+  // The signed record for a /verify#a= link, or null when it is too long for a link.
+  verifyFragment: string | null
 }
 
 export function ReferenceCheckPage() {
@@ -93,7 +96,7 @@ export function ReferenceCheckPage() {
       let envDigest: string
       let versions: { verifier_version: string; reward_model_version: string }
       let battery: ReadonlyArray<{ id: string }>
-      let selectedPolicy: object
+      let selectedPolicy: SupportPolicySpec | PolicySpec
 
       if (scenario === 'support') {
         const policyFor = supportPolicyForSpec(supSpec)
@@ -124,7 +127,7 @@ export function ReferenceCheckPage() {
       const issuedAt = new Date().toISOString()
       const keyPair = await generateSigningKey()
       const unsignedEvidence = buildSyntheticReferenceCheckEvidence({
-        evidenceId: crypto.randomUUID(), issuedAt, maxAgeMs: 24 * 60 * 60 * 1000, scenario,
+        evidenceId: crypto.randomUUID(), issuedAt, maxAgeMs: 30 * 24 * 60 * 60 * 1000, scenario,
         declaredConfig: agentConfig, selectedPolicy, battery, rows,
         environmentDigest: envDigest, evaluatorVersion: versions.reward_model_version, verifierVersion: versions.verifier_version,
       })
@@ -137,6 +140,7 @@ export function ReferenceCheckPage() {
         scenario, level: r.credential.rsl_level as string, passRate: r.credential.pass_rate as number, coldPassRate: r.credential.cold_pass_rate as number,
         lift: r.credential.lift as number, catastrophic: r.catastrophic, configDigest: r.credential.config_digest as string,
         rows, credential: r.credential, reVerifyCode: rv.code, evidence, sigilThumbprint: thumb, driftCode: null,
+        verifyFragment: encodeArtifact(evidence),
       })
       setChecked(checkStamp(startedAt))
     } catch (e) {
@@ -296,9 +300,14 @@ export function ReferenceCheckPage() {
           <p className="rc-hint">Can another reviewer detect a change? Download the signed record, re-verify it, then change a bound field.</p>
           <div className="rc-actions">
             <button className="btn btn--primary btn--sm" onClick={() => download(result.evidence, 'reference-check.policy-evaluation.json')}>Download signed policy-evaluation evidence</button>
-            <a className="btn btn--ghost btn--sm" href="/verify">Re-verify it on /verify →</a>
+            <a className="btn btn--ghost btn--sm" href={result.verifyFragment ? `/verify#a=${result.verifyFragment}` : '/verify'}>Re-verify it on /verify →</a>
             <button className="btn btn--ghost btn--sm" onClick={simulateDrift}>Change a tool → watch it void</button>
           </div>
+          <p className="rc-hint">
+            {result.verifyFragment
+              ? "The /verify link carries this record. It travels in the link's fragment, which the browser does not send to Origin's server; the analytics tag on /verify is set not to report it."
+              : 'This record is too long for a link. Download it and paste it into /verify.'}
+          </p>
           {result.driftCode != null ? (
             <p className={`rc-hint ${result.driftCode === 0 ? '' : 'rc-hint--warn'}`} role="alert">
               {result.driftCode === 4

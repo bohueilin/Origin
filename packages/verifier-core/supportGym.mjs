@@ -55,6 +55,31 @@ export function verifySupportDecision(task, decision) {
 export const supportOraclePolicy = (task) => supportOracle(task).decision
 export const supportAllowAllPolicy = () => 'allow'
 
+// The policy a buyer selects on /reference-check, as plain parameters. An Action/Run record states
+// these parameters, so a verifier can re-run them here and reproduce every decision.
+const SUPPORT_POLICY_GUARDS = ['denyPii', 'denyForbidden', 'denyTainted', 'requireApprovalHigh']
+
+export function supportPolicyFromParameters(params) {
+  return (task) => {
+    if (params.denyForbidden && task.forbidden) return 'deny'
+    if (params.denyPii && task.pii) return 'deny'
+    if (params.denyTainted && task.tainted) return 'escalate'
+    if (task.amount != null && task.amount > params.refundCap) return params.requireApprovalHigh ? 'escalate' : 'allow'
+    if (params.requireApprovalHigh && task.requires_approval) return 'escalate'
+    return 'allow'
+  }
+}
+
+// Exactly refundCap (an integer >= 0) and the four boolean guards; nothing else.
+export function validateSupportPolicyParameters(params) {
+  if (params === null || typeof params !== 'object' || Array.isArray(params)) return { ok: false, failures: ['parameters: must be an object'] }
+  const failures = []
+  for (const key of Object.keys(params)) if (key !== 'refundCap' && !SUPPORT_POLICY_GUARDS.includes(key)) failures.push(`${key}: unsupported parameter`)
+  for (const key of SUPPORT_POLICY_GUARDS) if (typeof params[key] !== 'boolean') failures.push(`${key}: must be a boolean`)
+  if (!Number.isSafeInteger(params.refundCap) || params.refundCap < 0) failures.push('refundCap: must be an integer >= 0')
+  return { ok: failures.length === 0, failures }
+}
+
 export function supportEnvDigest() {
   return sha256(canonical({ version: SUPPORT_GYM_VERSION, decisions: SUPPORT_DECISIONS, tasks: supportTasks }))
 }

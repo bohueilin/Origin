@@ -1,5 +1,8 @@
 import { buildActionRunEvidence, type ActionRunEvidence } from '@origin/evidence/action-run-evidence'
 import { canonical, sha256 } from '@origin/evidence/env-evidence'
+import { buildPolicyEvaluation } from '@origin/verifier-core/policyEvaluation'
+import type { SupportPolicyParameters } from '@origin/verifier-core/supportGym'
+import type { IamPolicyParameters } from '@origin/verifier-core/iamGym'
 
 export interface SyntheticReferenceCheckRow {
   id: string
@@ -15,7 +18,7 @@ export interface BuildSyntheticReferenceCheckEvidenceInput {
   maxAgeMs: number
   scenario: 'support' | 'iam'
   declaredConfig: { model: string; tools: string[]; context: string; harness: string }
-  selectedPolicy: object
+  selectedPolicy: SupportPolicyParameters | IamPolicyParameters
   battery: ReadonlyArray<{ id: string }>
   rows: ReadonlyArray<SyntheticReferenceCheckRow>
   environmentDigest: string
@@ -28,7 +31,9 @@ const digest = (value: unknown) => sha256(canonical(value))
 /**
  * Builds the browser Reference Check artifact from declared configuration and
  * deterministic policy decisions only. It intentionally does not represent a
- * call to, or execution by, the named agent.
+ * call to, or execution by, the named agent. The record (schema 1.1.0) states the
+ * selected policy's parameters, decisions and counts in `evaluation`, which /verify
+ * replays; the declared model, tools, context and harness stay digests only.
  */
 export function buildSyntheticReferenceCheckEvidence(input: BuildSyntheticReferenceCheckEvidenceInput): ActionRunEvidence {
   const expectedIds = input.battery.map((task) => task.id)
@@ -117,5 +122,6 @@ export function buildSyntheticReferenceCheckEvidence(input: BuildSyntheticRefere
       freshness: { status: 'fresh', observed_at: input.issuedAt, max_age_ms: input.maxAgeMs },
     },
     source: { trace_id: null, audit_row_digest: null, oracle_verdict_digest: digest(decisionRows) },
+    evaluation: buildPolicyEvaluation({ scenario: input.scenario, parameters: input.selectedPolicy }),
   })
 }

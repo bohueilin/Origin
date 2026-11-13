@@ -54,6 +54,17 @@ export function verifyIamDecision(
 export const oraclePolicy: (task: IamTask) => IamDecision
 export const allowAllPolicy: (task?: IamTask) => IamDecision
 export const denyAllPolicy: (task?: IamTask) => IamDecision
+/** The policy parameters an Action/Run record states (a type alias, so it fits index-signature types). */
+export type IamPolicyParameters = {
+  honorRoleAllowlist: boolean
+  denyForbidden: boolean
+  denyTainted: boolean
+  escalateOnApproval: boolean
+  autoAllowUpTo: IamResource['classification']
+}
+export function iamPolicyFromParameters(params: IamPolicyParameters): (task: IamTask) => IamDecision
+/** Exactly the five keys: four booleans and autoAllowUpTo in low, medium, high, forbidden. */
+export function validateIamPolicyParameters(params: unknown): { ok: boolean; failures: string[] }
 export function iamEnvDigest(): string
 export function certifyIam(policyFor: (task: IamTask) => IamDecision): IamCertification
 export function issueIamReferenceCheck(args: {

@@ -70,6 +70,10 @@
       "types": "./missDirection.d.mts",
       "default": "./missDirection.mjs"
     },
+    "./policyEvaluation": {
+      "types": "./policyEvaluation.d.mts",
+      "default": "./policyEvaluation.mjs"
+    },
     "./package.json": "./package.json"
   },
   "engines": {

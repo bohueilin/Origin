@@ -2,16 +2,16 @@
 // inspired by the "Worksite" fleet-metrics concept (see docs/PRIOR_ART.md). Worksite's three
 // metrics — fleet utilization, peak-simultaneous activity, collision events — reward a trained
 // RL coordinator. Ours turn the SAME metrics into a DETERMINISTIC, signed operations SLA: a
-// fleet earns an RSL-style readiness credential only if it clears utilization / fulfilment /
-// zero-collision targets under Origin's oracle across a multi-wave shift, and that credential
-// re-verifies offline on /verify. No learned/VLA result is claimed — the metrics are computed
-// deterministically from the verified run, not a trained model.
-import { buildWarehouseScene, simulate, type SimResult } from './warehouseSim'
+// multi-wave shift gets an RSL-style tier from Origin's oracle against synthetic utilization,
+// fulfilment and collision-event targets, for this seeded shift only and with no operating
+// authority, and the signed record re-verifies offline on /verify. No learned/VLA result is
+// claimed — the metrics are computed deterministically from the verified run, not a trained model.
+import { buildWarehouseScene, simulate, formatCollisionEvents, type SimResult } from './warehouseSim'
 
 export interface FleetMetrics {
   fleet_utilization: number // share of active agent×tick slots spent MOVING (Worksite's def)
   peak_simultaneous: number // max robots moving in a single tick (parallelism)
-  collision_events: number // 0 — the safety invariant of the verified coordinator
+  collision_events: number // measured: counted from the run's frames (countCollisionEvents)
   orders_fulfilled: number
   orders_total: number
   fulfilment_rate: number
@@ -47,7 +47,7 @@ export function fleetMetrics(result: SimResult): FleetMetrics {
   return {
     fleet_utilization: activeSlots ? round4(actingSlots / activeSlots) : 0,
     peak_simultaneous: peak,
-    collision_events: result.score.collisions, // 0 by construction
+    collision_events: result.score.collisions, // measured from the frames
     orders_fulfilled: result.score.orders_fulfilled,
     orders_total: result.score.orders_total,
     fulfilment_rate: result.score.orders_total ? round4(result.score.orders_fulfilled / result.score.orders_total) : 0,
@@ -144,8 +144,8 @@ export interface OpsCredential {
   digest_input: unknown // canonical object to hash into a signed credential (bound on /verify)
 }
 
-// The deterministic operations-SLA verifier — the oracle for a whole shift. A catastrophic
-// safety event (a refused wave or any collision) hard-caps the level; ops targets set the rest.
+// The deterministic operations-SLA verifier — the oracle for a whole shift. A counted collision
+// event or a refused wave caps the level; ops targets set the rest.
 export function verifyOperations(shift: ShiftResult, targets: OpsTargets = DEFAULT_TARGETS): OpsCredential {
   const t = shift.totals
   let passed: boolean
@@ -155,7 +155,7 @@ export function verifyOperations(shift: ShiftResult, targets: OpsTargets = DEFAU
   if (t.collision_events > targets.max_collisions) {
     passed = false
     level = 'L0'
-    reason = `${t.collision_events} collision event(s) — a safety violation hard-caps the fleet at L0.`
+    reason = `${t.collision_events} collision event(s) counted: the shift fails its targets at tier L0.`
   } else if (t.verdicts.refuse > 0) {
     passed = false
     level = 'L1'
@@ -163,15 +163,15 @@ export function verifyOperations(shift: ShiftResult, targets: OpsTargets = DEFAU
   } else if (t.fulfilment_rate < targets.min_fulfilment) {
     passed = false
     level = 'L2'
-    reason = `Safe (0 collisions) but fulfilment ${pct(t.fulfilment_rate)} < target ${pct(targets.min_fulfilment)} — a human coordinator is required.`
+    reason = `No collision event counted, but fulfilment ${pct(t.fulfilment_rate)} < target ${pct(targets.min_fulfilment)} — a human coordinator is required.`
   } else if (t.avg_utilization < targets.min_utilization) {
     passed = false
     level = 'L2'
-    reason = `Safe and orders met, but fleet utilization ${pct(t.avg_utilization)} < target ${pct(targets.min_utilization)} — under-utilized.`
+    reason = `No collision event counted and orders met, but fleet utilization ${pct(t.avg_utilization)} < target ${pct(targets.min_utilization)} — under-utilized.`
   } else {
     passed = true
     level = t.avg_utilization >= 0.7 ? 'L4' : 'L3'
-    reason = `Cleared every target — 0 collisions, ${pct(t.fulfilment_rate)} fulfilment, ${pct(t.avg_utilization)} utilization across ${t.waves} waves. Reproducible under this verifier.`
+    reason = `Cleared every target — ${formatCollisionEvents(t.collision_events)}, ${pct(t.fulfilment_rate)} fulfilment, ${pct(t.avg_utilization)} utilization across ${t.waves} waves. Reproducible under this verifier.`
   }
 
   return {

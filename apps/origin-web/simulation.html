@@ -17,7 +17,7 @@
     <title>Verified warehouse simulation — watch a plan execute | Origin</title>
     <meta
       name="description"
-      content="Watch warehouse robots execute an oracle-verified plan in 2D and 3D, collision-free by construction. The run drops an attestation you re-verify offline."
+      content="Watch warehouse robots follow an oracle-verified grid plan in 2D and 3D, in a seeded synthetic simulation. Collision events are counted from the frames. Sign the run and re-verify the record offline."
     />
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:type" content="website" />
@@ -28,12 +28,12 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Verified warehouse simulation — watch a plan execute | Origin" />
-    <meta name="twitter:description" content="Watch warehouse robots execute an oracle-verified plan in 2D and 3D, collision-free by construction. The run drops an attestation you re-verify offline." />
+    <meta name="twitter:description" content="Watch warehouse robots follow an oracle-verified grid plan in 2D and 3D, in a seeded synthetic simulation. Collision events are counted from the frames. Sign the run and re-verify the record offline." />
     <meta name="twitter:image" content="https://originphysicalai.com/og/simulation.jpg" />
     <link rel="canonical" href="https://originphysicalai.com/simulation" />
     <meta name="theme-color" content="#f8f7f4" />
     <meta property="og:title" content="Verified warehouse simulation — Origin" />
-    <meta property="og:description" content="Robots execute an oracle-verified plan in 2D and 3D, collision-free and people-first. The run drops a signed attestation you re-verify offline." />
+    <meta property="og:description" content="Robots follow an oracle-verified grid plan in 2D and 3D in a seeded synthetic simulation; collision events are counted. Sign the run and re-verify the record offline." />
 
     <link rel="icon" type="image/png" href="/favicon-2026-09-28.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon-2026-09-28.svg" />
@@ -77,6 +77,11 @@
       .sim-thumb { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; }
       .sim-note { font-size: var(--fs-14); color: var(--ink-soft); line-height: 1.65; max-inline-size: 75ch; margin: 0; }
       .sim-note b { color: var(--ink); }
+      .section.labs-read { padding: 48px 0 80px; }
+      .labs-read h2 { font-size: clamp(24px, 2.5vw, 34px); font-weight: 600; line-height: 1.16; letter-spacing: -.035em; margin: 0 0 14px; }
+      .labs-read p { max-width: 75ch; font-size: var(--fs-15); line-height: 1.7; color: var(--ink-soft); margin: 0 0 12px; }
+      .labs-read p b { color: var(--ink); }
+      @media (max-width: 680px) { .section.labs-read { padding-top: 28px; } }
     </style>
   <link rel="stylesheet" href="/simulation-workspace.css" />
 </head>
@@ -110,13 +115,11 @@
     <main id="main">
       <section class="section sim-editorial-hero" aria-labelledby="sim-title">
         <div class="shell">
-          <p class="kicker">One evidence spine, two actors · the physical actor</p>
+          <p class="kicker">Origin Labs · seeded warehouse simulation</p>
           <h1 id="sim-title">Watch a verified plan execute.</h1>
           <p class="section__lede">Watch a deterministic plan play out in a seeded warehouse simulation. Inspect paths, constraints and the finish / escalate / refuse verdict, then export a signed record for offline verification. This is a synthetic model of operations; no physical robot is connected.</p>
           <p class="mono-note" style="margin-top: 14px;">
-            Everything runs <b>client-side</b> and is seeded + replayable. Robots follow the oracle-verified plan — <b>no learned-policy result is
-            claimed</b>. A verdict means "reproducible under this verifier," never "safe." Synthetic
-            layout. An <a href="/labs">Origin Labs</a> experiment: the same evidence contract in a bounded simulation; the agent reference check is the product. Signed records re-verify in the <a href="/verify">offline verifier</a>.
+            An <a href="/labs">Origin Labs</a> experiment, not the product: the product is the <a href="/reference-check">agent reference check</a>. Everything runs <b>client-side</b>, seeded and replayable, on a synthetic layout. Robots follow the oracle-verified plan; <b>no learned-policy result is claimed</b>. A verdict means "reproducible under this verifier," never "safe." Signed records re-verify in the <a href="/verify">offline verifier</a>.
           </p>
         </div>
       </section>
@@ -124,6 +127,13 @@
       <section class="section section--tint" aria-label="Warehouse simulation">
         <div class="shell">
           <div id="sim-root"></div>
+        </div>
+      </section>
+
+      <section class="section labs-read" aria-labelledby="sim-read-title">
+        <div class="shell">
+          <h2 id="sim-read-title">How to read the result</h2>
+          <p><b>What runs.</b> 2 to 6 robots on a fixed 14 × 12 grid with four shelf columns. Each robot's route comes from the deterministic oracle. A wait-only coordinator holds a robot when its next cell is taken by a robot still on its route or is, now or on the next tick, the human marker's cell. It does not re-plan or keep robots out of a finished robot's parked cell, and the human marker follows a fixed loop without yielding. New layout draws new orders, not new shelving.</p><p><b>Verdicts.</b> Finish: every order delivered and no collision event counted. Escalate: the coordinator deadlocks, the oracle escalates an order, or a collision event is counted. Refuse: an order needs a restricted cell; this scene has none.</p><p><b>Collision events.</b> Two robots in one cell, including a finished robot parked in its cell; a robot in the human marker's cell; or two of them swapping cells in one tick. A pair that stays together for several ticks counts once.</p><p><b>Limits.</b> Grid hops, not motion: no speeds, footprints, sensing or real facility.</p>
         </div>
       </section>
     </main>

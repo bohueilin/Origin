@@ -376,9 +376,11 @@ export function ReferenceCheckPage() {
 
       {/* Book */}
       <div className="rc-card rc-card--cta">
-        <p className="rc-step">Need an authorized evaluation beyond this browser demo?</p>
+        <p className="rc-step">Need more than this browser demo?</p>
         <p className="rc-hint">This page only evaluates a selected policy against Origin’s synthetic battery. A design-partner evidence review can scope whether any authorized evaluation of an actual agent is appropriate.</p>
-        <div className="rc-actions"><a className="btn btn--ghost" href="/#contact" data-analytics="refcheck_book_click">Book an Agent Evidence Review</a></div>
+        <p className="rc-hint">An Agent Evidence Review starts from one action your agent would take, as you describe it. Send nothing confidential: no data agreement is in place yet. You receive a short written report naming the cases your reviewer would need to see and the evidence still missing. No record of your agent's decisions can be produced today; any record attached is a browser reference check of a selected example policy and rates UNTRUSTED. <span style={{ whiteSpace: 'nowrap' }}>45-minute</span> review session · no charge.</p>
+        <p className="rc-hint">Or email <a href="mailto:bohueilin@originphysicalai.com?subject=Agent%20Evidence%20Review" style={{ overflowWrap: 'anywhere' }}>bohueilin@originphysicalai.com</a>. We reply within 2 working days.</p>
+        <div className="rc-actions"><a className="btn btn--ghost" href="/#offer" data-analytics="refcheck_book_click">Book an Agent Evidence Review</a></div>
       </div>
     </div>
   )

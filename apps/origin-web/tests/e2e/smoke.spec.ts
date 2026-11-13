@@ -910,3 +910,47 @@ test('wave 4a: home sub-heading, #problem comparison and the fold at 375x812', a
   const primaryBottom = await page.locator('.hero__actions .btn--primary').evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY)
   expect(primaryBottom).toBeLessThanOrEqual(812)
 })
+
+// ── Wave 4b: offer terms, contact lines and copy control ──
+// The /reference-check Book card states the offer and a mailto line (no copy control, so the
+// verdict stays the page's only status) and books from the home #offer section. The home
+// lead dialog links the privacy policy and makes no storage claim.
+
+test('wave 4b: the /reference-check Book card states the offer, a mailto line and books from /#offer', async ({ page }) => {
+  await page.goto('/reference-check')
+  await runReferenceCheck(page)
+  await expect(page.getByRole('status')).toContainText('synthetic decisions match the oracle')
+  const card = page.locator('.rc-card--cta')
+  await expect(card.locator('.rc-step')).toHaveText('Need more than this browser demo?')
+  const lines = card.locator('.rc-hint')
+  await expect(lines).toHaveCount(3)
+  await expect(lines.nth(1)).toHaveText("An Agent Evidence Review starts from one action your agent would take, as you describe it. Send nothing confidential: no data agreement is in place yet. You receive a short written report naming the cases your reviewer would need to see and the evidence still missing. No record of your agent's decisions can be produced today; any record attached is a browser reference check of a selected example policy and rates UNTRUSTED. 45-minute review session · no charge.")
+  await expect(lines.nth(2)).toHaveText('Or email bohueilin@originphysicalai.com. We reply within 2 working days.')
+  await expect(lines.nth(2).getByRole('link', { name: 'bohueilin@originphysicalai.com' })).toHaveAttribute('href', 'mailto:bohueilin@originphysicalai.com?subject=Agent%20Evidence%20Review')
+  await expect(card.locator('button, [data-copy]')).toHaveCount(0)
+  await expect(page.getByRole('status')).toHaveCount(1)
+  const book = card.getByRole('link', { name: 'Book an Agent Evidence Review', exact: true })
+  await expect(book).toHaveAttribute('href', '/#offer')
+  await book.click()
+  await expect(page).toHaveURL(/\/#offer$/)
+  await expect(page.locator('#offer')).toHaveCount(1)
+})
+
+test('wave 4b: the home lead dialog links the privacy policy and makes no storage claim', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('#offer').getByRole('button', { name: 'Book an Agent Evidence Review' }).click()
+  const dialog = page.locator('#lead-modal')
+  await expect(page.locator('#lead-name')).toBeFocused()
+  const note = dialog.locator('.modal__note')
+  await expect(note).toHaveText('Sent over TLS to Origin; see the privacy policy. No spam.')
+  await expect(dialog).not.toContainText('stored with our database provider')
+  const privacy = note.getByRole('link', { name: 'privacy policy' })
+  await expect(privacy).toHaveAttribute('href', '/legal/privacy-policy.html')
+  expect((await page.request.get('/legal/privacy-policy.html')).status()).toBe(200)
+  // The link is the dialog's last control: Tab wraps from it to the first one.
+  await privacy.focus()
+  await page.keyboard.press('Tab')
+  await expect(dialog.locator('.modal__close')).toBeFocused()
+  await page.keyboard.press('Shift+Tab')
+  await expect(privacy).toBeFocused()
+})

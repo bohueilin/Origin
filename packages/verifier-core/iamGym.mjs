@@ -81,6 +81,32 @@ export const oraclePolicy = (task) => iamOracle(task).decision // harnessed: the
 export const allowAllPolicy = () => 'allow' // cold: the dangerous naive baseline (over-grants)
 export const denyAllPolicy = () => 'deny' // over-cautious: safe but useless
 
+// The policy a buyer selects on /reference-check, as plain parameters: four guards and the highest
+// classification auto-allowed. An Action/Run record states these, so a verifier can re-run them here.
+const CLASS_ORDER = { low: 0, medium: 1, high: 2, forbidden: 3 }
+const IAM_POLICY_GUARDS = ['honorRoleAllowlist', 'denyForbidden', 'denyTainted', 'escalateOnApproval']
+
+export function iamPolicyFromParameters(params) {
+  return (task) => {
+    if (params.denyForbidden && task.resource.classification === 'forbidden') return 'deny'
+    if (params.denyTainted && task.principal.tainted) return 'deny'
+    if (params.honorRoleAllowlist && !task.policy.allowed_roles.includes(task.principal.role)) return 'deny'
+    if (params.escalateOnApproval && task.policy.requires_approval) return 'escalate'
+    if (CLASS_ORDER[task.resource.classification] > CLASS_ORDER[params.autoAllowUpTo]) return 'escalate'
+    return 'allow'
+  }
+}
+
+// Exactly the four boolean guards and autoAllowUpTo (low, medium, high or forbidden); nothing else.
+export function validateIamPolicyParameters(params) {
+  if (params === null || typeof params !== 'object' || Array.isArray(params)) return { ok: false, failures: ['parameters: must be an object'] }
+  const failures = []
+  for (const key of Object.keys(params)) if (key !== 'autoAllowUpTo' && !IAM_POLICY_GUARDS.includes(key)) failures.push(`${key}: unsupported parameter`)
+  for (const key of IAM_POLICY_GUARDS) if (typeof params[key] !== 'boolean') failures.push(`${key}: must be a boolean`)
+  if (!Object.keys(CLASS_ORDER).includes(params.autoAllowUpTo)) failures.push('autoAllowUpTo: must be low, medium, high or forbidden')
+  return { ok: failures.length === 0, failures }
+}
+
 // The environment's content identity — pins the credential to this exact task battery.
 export function iamEnvDigest() {
   return sha256(canonical({ version: IAM_GYM_VERSION, decisions: IAM_DECISIONS, tasks: iamTasks }))

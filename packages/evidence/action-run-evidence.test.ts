@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
+  ACTION_RUN_SCHEMA_VERSION,
+  ACTION_RUN_SCHEMA_VERSIONS,
   actionRunEvidenceDigest,
   buildActionRunEvidence,
   validateActionRunEvidence,
@@ -137,4 +139,155 @@ describe('Action/Run Evidence', () => {
       expect(() => buildActionRunEvidence(candidate)).toThrow(TypeError)
     },
   )
+})
+
+const DAY_MS = 24 * 60 * 60 * 1000
+const evaluation = {
+  battery: { id: 'fixture-battery', version: 'fixture-battery-v1' },
+  oracle_version: 'fixture-verifier-v1',
+  policy_parameters: { refundCap: 100, denyPii: true },
+  decisions: [{ id: 'task-1', decision: 'allow', expected: 'allow' }, { id: 'task-2', decision: 'allow', expected: 'deny' }],
+  summary: { matched: 1, total: 2, over_grants: 1, misses: 0 },
+}
+const ENVELOPE_1_0_0_KEYS = [
+  'schema_version', 'evidence_id', 'issued_at', 'execution_mode', 'identity', 'subject', 'proposal', 'authorization',
+  'outcome_attestation', 'provider_evidence', 'completeness', 'source', 'evidence_digest', 'signature',
+]
+// Re-seals a hand-edited record so that only the edit under test can fail.
+const reseal = (value: Record<string, unknown>) => ({ ...value, evidence_digest: actionRunEvidenceDigest(value) })
+const withWindow = (maxAgeMs: number, extra: Record<string, unknown> = {}) => buildActionRunEvidence({
+  ...input, ...extra, completeness: { ...input.completeness, freshness: { ...input.completeness.freshness, max_age_ms: maxAgeMs } },
+})
+const after = (ms: number) => new Date(Date.parse(input.issued_at) + ms).toISOString()
+
+describe('Action/Run Evidence schema versions', () => {
+  it('builds 1.1.0 with an evaluation block and 1.0.0 without one', () => {
+    expect(ACTION_RUN_SCHEMA_VERSION).toBe('1.1.0')
+    expect(ACTION_RUN_SCHEMA_VERSIONS).toEqual(['1.0.0', '1.1.0'])
+    const current = buildActionRunEvidence({ ...input, evaluation })
+    expect(current.schema_version).toBe('1.1.0')
+    expect(current.evaluation).toEqual(evaluation)
+    expect(validateActionRunEvidence(current).ok).toBe(true)
+    const legacy = buildActionRunEvidence(input)
+    expect(legacy.schema_version).toBe('1.0.0')
+    expect('evaluation' in legacy).toBe(false)
+  })
+
+  it('accepts the exact 1.0.0 key set and rejects a 1.0.0 record that carries an evaluation block', () => {
+    const legacy = buildActionRunEvidence(input)
+    expect(Object.keys(legacy).sort()).toEqual([...ENVELOPE_1_0_0_KEYS].sort())
+    expect(validateActionRunEvidence(legacy).ok).toBe(true)
+    const smuggled = validateActionRunEvidence(reseal({ ...legacy, evaluation }))
+    expect(smuggled.ok).toBe(false)
+    expect(smuggled.failures).toContain('evidence.evaluation: unsupported field')
+  })
+
+  it('rejects a 1.1.0 record without a non-null evaluation block', () => {
+    const current = buildActionRunEvidence({ ...input, evaluation })
+    const { evaluation: _dropped, ...withoutBlock } = current
+    expect(validateActionRunEvidence(reseal(withoutBlock)).ok).toBe(false)
+    expect(validateActionRunEvidence(reseal({ ...current, evaluation: null })).ok).toBe(false)
+    expect(() => buildActionRunEvidence({ ...input, evaluation: null as never })).toThrow(TypeError)
+  })
+
+  it.each([
+    ['a missing block key', (block: typeof evaluation) => { const { summary: _s, ...rest } = block; return rest }],
+    ['an extra block key', (block: typeof evaluation) => ({ ...block, not_tested: ['x'] })],
+    ['a missing battery key', (block: typeof evaluation) => ({ ...block, battery: { id: block.battery.id } })],
+    ['an extra battery key', (block: typeof evaluation) => ({ ...block, battery: { ...block.battery, extra: 'x' } })],
+    ['a missing row key', (block: typeof evaluation) => ({ ...block, decisions: [{ id: 'task-1', decision: 'allow' }] })],
+    ['an extra row key', (block: typeof evaluation) => ({ ...block, decisions: [{ ...block.decisions[0], reason: 'free text' }] })],
+    ['a missing summary key', (block: typeof evaluation) => ({ ...block, summary: { matched: 1, total: 2, over_grants: 1 } })],
+    ['an extra summary key', (block: typeof evaluation) => ({ ...block, summary: { ...block.summary, passed_ids: ['task-1'] } })],
+    ['a negative summary count', (block: typeof evaluation) => ({ ...block, summary: { ...block.summary, misses: -1 } })],
+    ['non-object policy parameters', (block: typeof evaluation) => ({ ...block, policy_parameters: ['refundCap'] })],
+  ])('rejects 1.1.0 with %s', (_name, edit) => {
+    const current = buildActionRunEvidence({ ...input, evaluation })
+    expect(validateActionRunEvidence(reseal({ ...current, evaluation: edit(structuredClone(evaluation)) })).ok).toBe(false)
+  })
+
+  it('rejects an unknown schema version', () => {
+    const current = buildActionRunEvidence({ ...input, evaluation })
+    const verdict = validateActionRunEvidence(reseal({ ...current, schema_version: '1.2.0' }))
+    expect(verdict.ok).toBe(false)
+    expect(verdict.dimensions.structure).toBe(false)
+  })
+})
+
+describe('Action/Run Evidence against the clock', () => {
+  it('fails a record dated more than 5 minutes after now and allows up to 5 minutes of skew', () => {
+    const built = buildActionRunEvidence(input)
+    const skewed = validateActionRunEvidence(built, { now: after(-5 * 60 * 1000) })
+    expect(skewed).toMatchObject({ ok: true, clock: null })
+    const future = validateActionRunEvidence(built, { now: after(-5 * 60 * 1000 - 1) })
+    expect(future).toMatchObject({ ok: false, clock: 'future' })
+    expect(future.failures).toEqual(['freshness: observed_at is more than 5 minutes after now'])
+    expect(future.dimensions).toMatchObject({ structure: true, semantics: true, integrity: true, freshness: false })
+  })
+
+  it('reports a record 31 days after issue with a 30-day window as stale while structure and semantics hold', () => {
+    const built = withWindow(30 * DAY_MS)
+    expect(validateActionRunEvidence(built, { now: after(30 * DAY_MS) })).toMatchObject({ ok: true, clock: null })
+    const stale = validateActionRunEvidence(built, { now: after(31 * DAY_MS) })
+    expect(stale).toMatchObject({ ok: false, clock: 'stale' })
+    expect(stale.failures).toEqual(['freshness: declared fresh but evaluates stale'])
+    expect(stale.dimensions).toMatchObject({ structure: true, semantics: true, integrity: true, freshness: false })
+  })
+
+  it('caps the window a simulated record declares only when the caller passes the cap', () => {
+    const tenYears = withWindow(3650 * DAY_MS)
+    const now = after(31 * DAY_MS)
+    expect(validateActionRunEvidence(tenYears, { now })).toMatchObject({ ok: true, clock: null })
+    const capped = validateActionRunEvidence(tenYears, { now, simulatedMaxAgeCapMs: 30 * DAY_MS })
+    expect(capped).toMatchObject({ ok: false, clock: 'over_cap' })
+    expect(capped.dimensions).toMatchObject({ structure: true, semantics: true, integrity: true, freshness: false })
+    expect(validateActionRunEvidence(tenYears, { now: after(29 * DAY_MS), simulatedMaxAgeCapMs: 30 * DAY_MS })).toMatchObject({ ok: true, clock: null })
+    // Past the declared window itself, the record is stale, not over the cap.
+    expect(validateActionRunEvidence(withWindow(31 * DAY_MS), { now: after(32 * DAY_MS), simulatedMaxAgeCapMs: 30 * DAY_MS }).clock).toBe('stale')
+  })
+
+  it('does not cap a record that is not simulated, and fails closed on a malformed cap', () => {
+    const shadow = withWindow(3650 * DAY_MS, {
+      execution_mode: 'shadow', authorization: { ...input.authorization, verdict: 'deny' },
+      outcome_attestation: { status: 'not_attempted', attester: 'none', attested_at: null, statement_digest: null },
+    })
+    expect(validateActionRunEvidence(shadow, { now: after(31 * DAY_MS), simulatedMaxAgeCapMs: 30 * DAY_MS })).toMatchObject({ ok: true, clock: null })
+    const malformed = validateActionRunEvidence(buildActionRunEvidence(input), { now: after(60_000), simulatedMaxAgeCapMs: 0 })
+    expect(malformed).toMatchObject({ ok: false, clock: null })
+    expect(malformed.dimensions.structure).toBe(false)
+  })
+
+  it('keeps a malformed freshness field structural, with no clock value', () => {
+    const built = buildActionRunEvidence(input)
+    const malformed = reseal({ ...built, completeness: { ...built.completeness, freshness: { ...built.completeness.freshness, observed_at: '12 September 2026' } } })
+    const verdict = validateActionRunEvidence(malformed, { now: after(60_000) })
+    expect(verdict).toMatchObject({ ok: false, clock: null })
+    expect(verdict.dimensions).toMatchObject({ structure: false, semantics: false, integrity: true })
+  })
+
+  it('keeps a record that declares itself stale while it is fresh a semantic failure', () => {
+    const built = buildActionRunEvidence(input)
+    const contradictory = reseal({ ...built, completeness: { ...built.completeness, freshness: { ...built.completeness.freshness, status: 'stale' } } })
+    const verdict = validateActionRunEvidence(contradictory, { now: after(60_000) })
+    expect(verdict).toMatchObject({ ok: false, clock: null })
+    expect(verdict.dimensions.structure).toBe(false)
+  })
+})
+
+describe('Action/Run Evidence issue date', () => {
+  it('fails a 1.1.0 record whose issued_at is not the observed_at its window runs from, as structure', () => {
+    const current = buildActionRunEvidence({ ...input, evaluation })
+    for (const issued_at of ['2099-01-01T00:00:00.000Z', '2001-01-01T00:00:00.000Z']) {
+      const verdict = validateActionRunEvidence(reseal({ ...current, issued_at }), { now: after(60_000) })
+      expect(verdict).toMatchObject({ ok: false, clock: null, failures: ['issued_at: must equal completeness.freshness.observed_at'] })
+      expect(verdict.dimensions).toMatchObject({ structure: false, semantics: false, integrity: true })
+    }
+    expect(() => buildActionRunEvidence({ ...input, evaluation, issued_at: after(1) })).toThrow(TypeError)
+  })
+
+  it('leaves 1.0.0 records, and 1.1.0 records that declare no window, as they were', () => {
+    expect(validateActionRunEvidence(buildActionRunEvidence({ ...input, issued_at: after(1) })).ok).toBe(true)
+    const noWindow = { ...input.completeness, freshness: { status: 'unknown', observed_at: null, max_age_ms: null } }
+    expect(validateActionRunEvidence(buildActionRunEvidence({ ...input, evaluation, issued_at: after(1), completeness: noWindow })).ok).toBe(true)
+  })
 })

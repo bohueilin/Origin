@@ -17,11 +17,22 @@ import { buildActionRunEvidence } from '@origin/evidence/action-run-evidence'
 import { signActionRunEvidence } from '@origin/verifier-core/action-run-evidence'
 import { mintCredential } from '@origin/verifier-core/crucible'
 import { batchReceipts } from '@origin/verifier-core/merkleBatch'
+import { buildPolicyEvaluation, verdictRows } from '@origin/verifier-core/policyEvaluation'
+import { SUPPORT_VERSIONS, supportEnvDigest, supportTasks } from '@origin/verifier-core/supportGym'
 
 export const exampleKinds = ['reference', 'action-run', 'sigil', 'credential', 'receipt', 'trace', 'inclusion', 'factory']
 
 const DEMO_ENV_DIGEST = sha256('synthetic-demo-env-bundle')
 const DEMO_VERSIONS = { verifier_version: 'demo-verifier-1.0.0', reward_model_version: 'demo-reward-1.0.0' }
+const digest = (value) => sha256(canonical(value))
+
+// The action-run example is the record /reference-check makes (src/reference-check/evidence.ts)
+// for its default support configuration and the Permissive preset (SUPPORT_PRESETS.permissive in
+// src/certify/policySpec.ts), with the page's 30-day window. reference-check/evidence.test.ts
+// checks that the two stay equal.
+const PERMISSIVE_SUPPORT_POLICY = { refundCap: 100000, denyPii: false, denyForbidden: false, denyTainted: false, requireApprovalHigh: false }
+const DECLARED_SUPPORT_CONFIG = { model: 'support-agent-v1', tools: ['refunds', 'crm.write', 'email.send'], context: 'support-policy@1', harness: 'my-harness@1' }
+const ACTION_RUN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 
 function demoTrace() {
   return chainEpisode(
@@ -43,37 +54,54 @@ function demoTrace() {
   )
 }
 
-/** Mint one synthetic example of the given kind. Async because the Sigil is signed live. */
-export async function makeExample(kind) {
+/**
+ * Mint one synthetic example of the given kind. Async because the Sigil is signed live.
+ * `issuedAt` pins the action-run record's issue time; it defaults to now.
+ */
+export async function makeExample(kind, { issuedAt } = {}) {
   switch (kind) {
     case 'action-run': {
-      const issuedAt = '2026-09-12T00:00:00.000Z'
-      const input = { scenario: 'support', selected_policy: 'least-privilege', ordered_battery_ids: ['demo-support-1'] }
+      // Schema 1.1.0: the record states its result (4 of 12, 6 over-grants, 2 misses), which /verify replays.
+      const issued = issuedAt ?? new Date().toISOString()
+      const id = 'synthetic-browser-policy-evaluation'
+      const ids = supportTasks.map((task) => task.id)
+      const evaluation = buildPolicyEvaluation({ scenario: 'support', parameters: PERMISSIVE_SUPPORT_POLICY })
+      const envDigest = supportEnvDigest()
       const evidence = buildActionRunEvidence({
-        evidence_id: 'synthetic-browser-policy-evaluation', issued_at: issuedAt, execution_mode: 'simulated',
+        evidence_id: id, issued_at: issued, execution_mode: 'simulated',
         identity: { principal_id: 'user-declared-agent-configuration', tenant_id: null, workload_id: 'origin-reference-check', on_behalf_of: null },
         subject: {
-          run_id: 'synthetic-browser-policy-evaluation:policy-evaluation', action_id: 'synthetic-browser-policy-evaluation:selected-policy',
-          model_digest: sha256(canonical({ model: 'declared-demo-agent' })), tools_digest: sha256(canonical(['demo.tool'])),
-          policy_digest: sha256(canonical({ mode: 'least-privilege' })), environment_digest: DEMO_ENV_DIGEST,
-          evaluator_version: 'synthetic-demo-oracle@1', verifier_version: 'synthetic-demo-verifier@1', adapter_version: null,
+          run_id: `${id}:policy-evaluation`, action_id: `${id}:selected-policy`,
+          model_digest: digest({ model: DECLARED_SUPPORT_CONFIG.model }), tools_digest: digest(DECLARED_SUPPORT_CONFIG.tools),
+          policy_digest: digest(PERMISSIVE_SUPPORT_POLICY), environment_digest: envDigest,
+          evaluator_version: SUPPORT_VERSIONS.reward_model_version, verifier_version: SUPPORT_VERSIONS.verifier_version, adapter_version: null,
         },
         proposal: {
           action_type: 'synthetic_reference_check_policy_evaluation',
-          proposed_effect: { kind: 'synthetic_reference_check_policy_evaluation', named_agent_contacted: false, policy_evaluated_locally: true },
-          input_digest: sha256(canonical(input)),
+          proposed_effect: {
+            kind: 'synthetic_reference_check_policy_evaluation', policy_only: true, scenario: 'support',
+            synthetic_battery: 'Origin synthetic support policy battery',
+            named_agent_contacted: false, named_agent_executed: false, policy_evaluated_locally: true,
+            selected_battery_task_ids: ids, unexpected_observed_ids: [],
+          },
+          input_digest: digest({
+            scenario: 'support', declared_config: DECLARED_SUPPORT_CONFIG, selected_policy: PERMISSIVE_SUPPORT_POLICY,
+            ordered_battery_ids: ids, environment_digest: envDigest,
+            evaluator_version: SUPPORT_VERSIONS.reward_model_version, verifier_version: SUPPORT_VERSIONS.verifier_version,
+          }),
         },
         authorization: { verdict: 'deny', reason_codes: ['synthetic_policy_only_no_execution_authority'], approval_id: null, approved_by: null, nonce_digest: null, expires_at: null },
         outcome_attestation: { status: 'not_attempted', attester: 'none', attested_at: null, statement_digest: null },
         provider_evidence: { provider: null, receipt_digest: null, readback_digest: null, readback_at: null },
         completeness: {
-          coverage: 'complete', expected_count: 1, observed_count: 1, covered_ids_digest: sha256(canonical(['demo-support-1'])), omissions: [], duplicates: [],
-          freshness: { status: 'fresh', observed_at: issuedAt, max_age_ms: 24 * 60 * 60 * 1000 },
+          coverage: 'complete', expected_count: ids.length, observed_count: ids.length, covered_ids_digest: digest([...ids].sort()), omissions: [], duplicates: [],
+          freshness: { status: 'fresh', observed_at: issued, max_age_ms: ACTION_RUN_MAX_AGE_MS },
         },
-        source: { trace_id: null, audit_row_digest: null, oracle_verdict_digest: sha256(canonical([{ id: 'demo-support-1', selected_policy_decision: 'allow', oracle_decision: 'allow' }])) },
+        source: { trace_id: null, audit_row_digest: null, oracle_verdict_digest: digest(verdictRows(evaluation)) },
+        evaluation,
       })
       return signActionRunEvidence(evidence, await generateSigningKey(), {
-        keyId: 'origin-browser-session', keyEpoch: 1, issuer: 'origin-reference-check-session', signedAt: issuedAt,
+        keyId: 'origin-browser-session', keyEpoch: 1, issuer: 'origin-reference-check-session', signedAt: issued,
       })
     }
     case 'reference': {

@@ -18,7 +18,7 @@
         ad_personalization: 'denied',
         analytics_storage: 'denied'
       });
-      gtag('config', 'G-75QBVCL212', { anonymize_ip: true });
+      gtag('config', 'G-75QBVCL212', { anonymize_ip: true, page_location: location.origin + location.pathname + location.search });
     </script>
 
     <title>Verify a credential — offline, in your browser | Origin</title>
@@ -131,7 +131,7 @@
           <p class="kicker">Evidence verification in your browser</p>
           <h1 id="verify-title">Evidence you can check for yourself.</h1>
           <p class="section__lede">Paste an Origin artifact or start with a synthetic example. Recompute its digests, inspect its signature, and see what the result does — and does not — establish.</p>
-          <p class="product-hero__scope">Everything you paste stays in this tab. Nothing is uploaded or stored. A valid integrity check is not a claim of safety, a trusted identity, or confirmed execution. See <a href="/reference-check-vs-runtime">what runs today and what is only proposed</a>.</p>
+          <p class="product-hero__scope">Everything you paste or open stays in this tab. Nothing is uploaded or stored. A valid integrity check is not a claim of safety, a trusted identity, or confirmed execution. See <a href="/reference-check-vs-runtime">what runs today and what is only proposed</a>.</p>
         </div>
       </section>
 
@@ -139,6 +139,7 @@
       <section class="section section--tint" aria-label="Paste and verify an artifact">
         <div class="shell">
           <div id="verify-root">
+          <details open class="onpage-static"><summary>Which artifacts can I verify? See formats, checks, and verdict codes.</summary><ul><li><b>Action/Run Evidence</b>: UNTRUSTED when intact but signed by a key Origin has not published, which covers every record made in a browser today. VOID when the digest, signature, coverage, freshness window or result replay fails, or when this verifier cannot replay the stated result. VALID needs a published issuer key; Origin has not published one. Even VALID would not mean the execution was verified: execution_verified is a separate field. No numeric code.</li><li><b>Origin Attestation</b>: 0 valid · 1 payload tampered · 2 signature invalid · 3 wrong signer · 4 malformed</li><li><b>Crucible credential</b> (unsigned): 0 valid · 3 tamper · 4 drift → VOID</li><li><b>ScoreReceipt</b> (unsigned): 0 self-consistent · 3 tampered</li><li><b>Episode trace</b> (unsigned): 0 intact · 2 chain tamper · VOID with no code when a published-TR-A002 check other than the chain fails</li><li><b>Merkle inclusion proof</b>: included / not included</li></ul><p>The interactive verifier needs JavaScript. Nothing you paste or open is uploaded or stored.</p></details>
           <div class="skel" aria-hidden="true">
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>

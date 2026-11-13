@@ -44,7 +44,7 @@ async function verifiedExample(page: Page) {
   await page.goto('/verify')
   await page.getByRole('button', { name: 'Synthetic sandbox reference check', exact: true }).click()
   await page.getByRole('button', { name: 'Verify', exact: true }).click()
-  await expect(page.getByRole('status').filter({ hasText: 'VALID' })).toBeVisible()
+  await expect(page.getByRole('status').locator('.vfy-verdict b')).toHaveText(/^VALID$/)
 }
 
 test('verify removes its prior verdict when artifact bytes change', async ({ page }) => {
@@ -106,4 +106,62 @@ test('clip reports a returned ratify decision without presenting it as a blocked
   await page.getByRole('button', { name: 'Run latency comparison', exact: true }).click()
   await expect(page.locator('.clip__lane--cb')).toContainText(/RATIFY/)
   await expect(page.locator('.clip__lane--cb')).not.toContainText(/BLOCKED/)
+})
+
+// ── Wave 2: evidence record and verifier ────────────────────────────────────
+// /verify checks freshness against this device's clock. A record past its window is VOID
+// for freshness only: its digest and signature lines still pass, and a 1.1.0 record's
+// replayed counts show under the outside-its-window label.
+
+const logPill = (page: Page, text: string) => page.locator('.vfy-log li').filter({ hasText: text }).locator('.vfy-pill')
+
+test('wave 2: a 1.1.0 record 31 days after issue is VOID for freshness; its digest and signature still check', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-20T00:00:00.000Z'))
+  await page.goto('/verify')
+  await page.getByRole('button', { name: 'Signed browser policy evaluation (untrusted)', exact: true }).click()
+  await expect(page.getByLabel('Artifact JSON', { exact: true })).toHaveValue(/"schema_version": "1\.1\.0"/)
+  const verify = page.getByRole('button', { name: 'Verify', exact: true })
+  const verdict = page.getByRole('status').locator('.vfy-verdict b')
+  await verify.click()
+  await expect(verdict).toHaveText(/^UNTRUSTED$/)
+  await expect(logPill(page, "made 2026-11-20T00:00:00.000Z; the 30-day window ends 2026-12-20T00:00:00.000Z; checked against this device's clock")).toHaveText('pass')
+
+  await page.clock.setFixedTime(new Date('2026-12-21T00:00:00.000Z'))
+  await verify.click()
+  await expect(verdict).toHaveText(/^VOID$/)
+  await expect(page.locator('.vfy-result')).toContainText('Action/Run Evidence is void: its 30-day freshness window ended 2026-12-20T00:00:00.000Z. The digest and signature still check.')
+  await expect(logPill(page, "the 30-day window ended 2026-12-20T00:00:00.000Z by this device's clock")).toHaveText('void')
+  await expect(logPill(page, 'the unsigned envelope content-address recomputes')).toHaveText('pass')
+  await expect(logPill(page, 'the signed Action/Run statement matches this envelope')).toHaveText('pass')
+  const stated = page.locator('.vfy-stated--outside')
+  await expect(stated).toContainText('Stated in this record (outside its freshness window):')
+  await expect(stated).toContainText("4 of 12 synthetic decisions match the oracle (Origin's answer key)")
+})
+
+test('wave 2: a 1.0.0 record states no result, is UNTRUSTED inside its 24-hour window and VOID for freshness after it', async ({ page }) => {
+  const { readFileSync } = await import('node:fs')
+  const fixture = readFileSync(new URL('../../src/verify/fixtures/action-run-1.0.0.json', import.meta.url), 'utf8')
+  const { issued_at: issued, completeness } = JSON.parse(fixture) as { issued_at: string; completeness: { freshness: { observed_at: string; max_age_ms: number } } }
+  expect(completeness.freshness.max_age_ms).toBe(24 * 60 * 60 * 1000)
+  const end = new Date(Date.parse(completeness.freshness.observed_at) + completeness.freshness.max_age_ms).toISOString()
+  const notStated = 'Result: not stated in this record. Records made before this format was added carry only digests of their decisions. Run the reference check again for a readable result.'
+
+  await page.clock.setFixedTime(new Date(Date.parse(issued) + 60_000))
+  await page.goto('/verify')
+  await page.getByLabel('Artifact JSON', { exact: true }).fill(fixture)
+  const verify = page.getByRole('button', { name: 'Verify', exact: true })
+  const verdict = page.getByRole('status').locator('.vfy-verdict b')
+  await verify.click()
+  await expect(verdict).toHaveText(/^UNTRUSTED$/)
+  await expect(page.locator('.vfy-stated--absent')).toHaveText(notStated)
+  await expect(page.locator('.vfy-result')).toContainText('Intact under this verifier; no result was replayed (this record states none).')
+  await expect(logPill(page, `the 24-hour window ends ${end}`)).toHaveText('pass')
+
+  await page.clock.setFixedTime(new Date(Date.parse(issued) + 25 * 60 * 60 * 1000))
+  await verify.click()
+  await expect(verdict).toHaveText(/^VOID$/)
+  await expect(page.locator('.vfy-result')).toContainText(`Action/Run Evidence is void: its 24-hour freshness window ended ${end}. The digest and signature still check.`)
+  await expect(logPill(page, 'the unsigned envelope content-address recomputes')).toHaveText('pass')
+  await expect(logPill(page, 'the signed Action/Run statement matches this envelope')).toHaveText('pass')
+  await expect(page.locator('.vfy-stated--absent')).toHaveText(notStated)
 })

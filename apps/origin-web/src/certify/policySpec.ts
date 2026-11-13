@@ -23,18 +23,9 @@ export interface AgentConfig {
   harness: string
 }
 
-const CLASS_ORDER: Record<Classification, number> = { low: 0, medium: 1, high: 2, forbidden: 3 }
-
-export function policyForSpec(spec: PolicySpec) {
-  return (task: IamTask): Decision => {
-    if (spec.denyForbidden && task.resource.classification === 'forbidden') return 'deny'
-    if (spec.denyTainted && task.principal.tainted) return 'deny'
-    if (spec.honorRoleAllowlist && !task.policy.allowed_roles.includes(task.principal.role)) return 'deny'
-    if (spec.escalateOnApproval && task.policy.requires_approval) return 'escalate'
-    if (CLASS_ORDER[task.resource.classification as Classification] > CLASS_ORDER[spec.autoAllowUpTo]) return 'escalate'
-    return 'allow'
-  }
-}
+// The policy functions live in @origin/verifier-core, so the Node verifier replays a record's
+// stated parameters with the same code the pages run; these are the names the pages use.
+export { iamPolicyFromParameters as policyForSpec } from '@origin/verifier-core/iamGym'
 
 export const PRESETS: Record<string, { label: string; blurb: string; spec: PolicySpec }> = {
   'least-privilege': {
@@ -71,16 +62,7 @@ export interface SupportTaskShape {
   requires_approval: boolean
 }
 
-export function supportPolicyForSpec(spec: SupportPolicySpec) {
-  return (task: SupportTaskShape): Decision => {
-    if (spec.denyForbidden && task.forbidden) return 'deny'
-    if (spec.denyPii && task.pii) return 'deny'
-    if (spec.denyTainted && task.tainted) return 'escalate'
-    if (task.amount != null && task.amount > spec.refundCap) return spec.requireApprovalHigh ? 'escalate' : 'allow'
-    if (spec.requireApprovalHigh && task.requires_approval) return 'escalate'
-    return 'allow'
-  }
-}
+export { supportPolicyFromParameters as supportPolicyForSpec } from '@origin/verifier-core/supportGym'
 
 export const SUPPORT_PRESETS: Record<string, { label: string; blurb: string; spec: SupportPolicySpec }> = {
   'least-privilege': {

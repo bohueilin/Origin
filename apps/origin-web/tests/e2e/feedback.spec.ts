@@ -134,3 +134,90 @@ for (const method of ['generateKey', 'sign'] as const) {
     await expect(page.getByRole('button', { name: /Download signed/ })).toHaveCount(0)
   })
 }
+
+// ── Wave 2: evidence record and verifier ────────────────────────────────────
+// /verify opens a .json file from its button or a drop, reads it in the tab and uploads
+// nothing. The beforeEach above already fails every request off this host and to /api/.
+
+// Every request the page makes, as sent: its path, and its URL without the fragment plus its body.
+function recordRequests(page: import('@playwright/test').Page) {
+  const sent: Array<{ path: string; wire: string }> = []
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    url.hash = ''
+    sent.push({ path: url.pathname, wire: `${url.href}\n${request.postData() ?? ''}` })
+  })
+  return sent
+}
+
+test('wave 2: /verify opens a downloaded reference-check record from a file, shows its stated result first and sends nothing', async ({ page }) => {
+  await page.goto('/reference-check')
+  await page.getByRole('button', { name: 'Run the reference check', exact: true }).click()
+  const downloading = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Download signed policy-evaluation evidence' }).click()
+  const download = await downloading
+  const { readFile } = await import('node:fs/promises')
+  const bytes = await readFile((await download.path())!)
+  const record = JSON.parse(bytes.toString('utf8'))
+  expect(record.schema_version).toBe('1.1.0')
+
+  const sent = recordRequests(page)
+  await page.goto('/verify')
+  const name = download.suggestedFilename()
+  await page.getByLabel('Open a .json file').setInputFiles({ name, mimeType: 'application/json', buffer: bytes })
+  await expect(page.locator('.vfy-note').filter({ hasText: 'Opened' })).toHaveText(`Opened ${name} (${bytes.length.toLocaleString('en-US')} bytes) in this tab; nothing was uploaded.`)
+  await expect(page.getByLabel('Artifact JSON', { exact: true })).toHaveValue(bytes.toString('utf8'))
+  await page.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(page.getByRole('status').locator('.vfy-verdict b')).toHaveText(/^UNTRUSTED$/)
+  const stated = page.locator('.vfy-stated--reproduced')
+  await expect(stated).toContainText('Stated in this record and reproduced in this tab:')
+  await expect(stated).toContainText(/\b\d+ of 12 synthetic decisions match the oracle/)
+  // The stated result comes first, above the headline and the integrity lines.
+  const tops = await page.locator('.vfy-result').evaluate((result) =>
+    ['.vfy-stated', '.section__lede', '.vfy-log'].map((selector) => result.querySelector(selector)!.getBoundingClientRect().top))
+  expect(tops[0]).toBeLessThan(tops[1])
+  expect(tops[1]).toBeLessThan(tops[2])
+
+  expect(sent.filter((request) => request.path.startsWith('/api/'))).toEqual([])
+  for (const value of [record.evidence_id, record.evidence_digest]) expect(sent.filter((request) => request.wire.includes(value))).toEqual([])
+})
+
+test('wave 2: /verify refuses a file that is not JSON or is over 256 KB, and verifies nothing', async ({ page }) => {
+  const sent = recordRequests(page)
+  await page.goto('/verify')
+  const open = page.getByLabel('Open a .json file')
+  const verdict = page.getByRole('status').locator('.vfy-verdict')
+  await open.setInputFiles({ name: 'notes.txt', mimeType: 'text/plain', buffer: Buffer.from('wave-two-file-probe') })
+  await expect(verdict.locator('b')).toHaveText('NOT VERIFIABLE')
+  await expect(verdict).toContainText('notes.txt is not a .json file; open or paste JSON')
+  await open.setInputFiles({ name: 'large.json', mimeType: 'application/json', buffer: Buffer.alloc(256 * 1024 + 1, ' ') })
+  await expect(verdict.locator('b')).toHaveText('NOT VERIFIABLE')
+  await expect(verdict).toContainText('large.json is 257 KB; the limit is 256 KB')
+  await expect(page.getByLabel('Artifact JSON', { exact: true })).toHaveValue('')
+  await expect(page.getByRole('button', { name: 'Verify', exact: true })).toBeDisabled()
+  expect(sent.filter((request) => request.path.startsWith('/api/'))).toEqual([])
+  expect(sent.filter((request) => request.wire.includes('wave-two-file-probe'))).toEqual([])
+})
+
+test('wave 2: /verify reads a .json file dropped on the editor', async ({ page }) => {
+  const published = await (await page.request.get('/proof/tr-a002.json')).text()
+  const sent = recordRequests(page)
+  await page.goto('/verify')
+  const dataTransfer = await page.evaluateHandle((text) => {
+    const transfer = new DataTransfer()
+    transfer.items.add(new File([text], 'tr-a002.json', { type: 'application/json' }))
+    return transfer
+  }, published)
+  const editor = page.locator('.vfy-editor')
+  await editor.dispatchEvent('dragover', { dataTransfer })
+  await expect(editor).toHaveClass(/\bis-dropping\b/)
+  await editor.dispatchEvent('drop', { dataTransfer })
+  await expect(editor).not.toHaveClass(/\bis-dropping\b/)
+  await expect(page.getByLabel('Artifact JSON', { exact: true })).toHaveValue(published)
+  await expect(page.locator('.vfy-note').filter({ hasText: 'Opened' })).toHaveText(`Opened tr-a002.json (${Buffer.byteLength(published).toLocaleString('en-US')} bytes) in this tab; nothing was uploaded.`)
+  await page.getByRole('button', { name: 'Verify', exact: true }).click()
+  await expect(page.getByRole('status').locator('.vfy-verdict b')).toHaveText(/^VALID$/)
+  const finalDigest = JSON.parse(published).final_digest as string
+  expect(sent.filter((request) => request.path.startsWith('/api/'))).toEqual([])
+  expect(sent.filter((request) => request.wire.includes(finalDigest))).toEqual([])
+})

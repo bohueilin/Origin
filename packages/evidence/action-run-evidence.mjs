@@ -1,6 +1,8 @@
 import { canonical, sha256 } from './env-evidence.mjs'
 
-export const ACTION_RUN_SCHEMA_VERSION = '1.0.0'
+export const ACTION_RUN_SCHEMA_VERSION = '1.1.0'
+// 1.0.0 records carry no evaluation block; 1.1.0 records must carry one. Both still verify.
+export const ACTION_RUN_SCHEMA_VERSIONS = Object.freeze(['1.0.0', '1.1.0'])
 export const EXECUTION_MODES = Object.freeze(['simulated', 'authorized_fixture', 'sandbox', 'customer_replay', 'shadow', 'live'])
 export const OUTCOME_STATUSES = Object.freeze(['not_attempted', 'simulated', 'claimed', 'provider_confirmed', 'independently_verified', 'failed', 'unknown'])
 
@@ -11,6 +13,10 @@ const ATTESTERS = new Set(['none', 'origin', 'provider', 'independent_verifier']
 const COVERAGE = new Set(['complete', 'partial', 'unknown'])
 const FRESHNESS = new Set(['fresh', 'stale', 'unknown'])
 const NULLABLE_SECRET_DIGEST_PATHS = new Set(['evidence.authorization.nonce_digest'])
+const ENVELOPE_KEYS = ['schema_version', 'evidence_id', 'issued_at', 'execution_mode', 'identity', 'subject', 'proposal', 'authorization', 'outcome_attestation', 'provider_evidence', 'completeness', 'source', 'evidence_digest', 'signature']
+const SUMMARY_KEYS = ['matched', 'total', 'over_grants', 'misses']
+// A record dated up to this far after the verifier's clock is allowed for clock skew.
+const FUTURE_SKEW_MS = 5 * 60 * 1000
 
 const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
 const isPlainRecord = (value) => isRecord(value) && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null)
@@ -126,7 +132,33 @@ function validateOutcome(evidence, failures) {
   if (outcome.status === 'claimed' && !['origin', 'provider'].includes(outcome.attester)) failures.push('claimed outcome requires origin or provider attester')
 }
 
-function validateCompleteness(completeness, now, failures) {
+// Shape only: which battery, oracle and decisions are valid is the replay's question, not this
+// package's, so no battery knowledge lives here.
+function validateEvaluation(evaluation, failures) {
+  exactKeys(evaluation, 'evaluation', ['battery', 'oracle_version', 'policy_parameters', 'decisions', 'summary'], failures)
+  const battery = requireRecord(evaluation.battery, 'evaluation.battery', failures)
+  if (battery) {
+    exactKeys(battery, 'evaluation.battery', ['id', 'version'], failures)
+    add(failures, nonEmptyString(battery.id) && nonEmptyString(battery.version), 'evaluation.battery: requires id and version strings')
+  }
+  add(failures, nonEmptyString(evaluation.oracle_version), 'evaluation.oracle_version: required non-empty string')
+  add(failures, isPlainRecord(evaluation.policy_parameters), 'evaluation.policy_parameters: required plain object')
+  add(failures, Array.isArray(evaluation.decisions), 'evaluation.decisions: must be an array')
+  for (const row of Array.isArray(evaluation.decisions) ? evaluation.decisions : []) {
+    if (isPlainRecord(row)) exactKeys(row, 'evaluation.decisions[]', ['id', 'decision', 'expected'], failures)
+    add(failures, isPlainRecord(row) && nonEmptyString(row.id) && nonEmptyString(row.decision) && nonEmptyString(row.expected), 'evaluation.decisions: invalid entry')
+  }
+  const summary = requireRecord(evaluation.summary, 'evaluation.summary', failures)
+  if (summary) {
+    exactKeys(summary, 'evaluation.summary', SUMMARY_KEYS, failures)
+    add(failures, SUMMARY_KEYS.every((key) => count(summary[key])), 'evaluation.summary: counts must be non-negative integers')
+  }
+}
+
+// Returns the clock failure, if any, instead of pushing it: a record that fails only against
+// the clock (past its window, dated in the future, or past the cap for simulated records) is
+// still well formed, so its structure and signature can be checked and reported.
+function validateCompleteness(completeness, now, capMs, failures) {
   exactKeys(completeness, 'completeness', ['coverage', 'expected_count', 'observed_count', 'covered_ids_digest', 'omissions', 'duplicates', 'freshness'], failures)
   add(failures, COVERAGE.has(completeness.coverage), 'completeness.coverage: unsupported status')
   add(failures, completeness.expected_count === null || count(completeness.expected_count), 'completeness.expected_count: must be null or non-negative integer')
@@ -146,7 +178,7 @@ function validateCompleteness(completeness, now, failures) {
   if (completeness.coverage === 'unknown' && completeness.expected_count !== null) failures.push('completeness: unknown coverage must not claim expected count')
 
   const fresh = requireRecord(completeness.freshness, 'completeness.freshness', failures)
-  if (!fresh) return
+  if (!fresh) return null
   exactKeys(fresh, 'completeness.freshness', ['status', 'observed_at', 'max_age_ms'], failures)
   add(failures, FRESHNESS.has(fresh.status), 'freshness.status: unsupported status')
   add(failures, fresh.observed_at === null || timestamp(fresh.observed_at), 'freshness.observed_at: invalid timestamp')
@@ -157,10 +189,20 @@ function validateCompleteness(completeness, now, failures) {
     const nowMs = typeof now === 'string' ? Date.parse(now) : now instanceof Date ? now.getTime() : Number(now)
     if (!Number.isFinite(nowMs)) failures.push('options.now: must be a valid timestamp')
     else {
-      const actual = nowMs <= Date.parse(fresh.observed_at) + fresh.max_age_ms ? 'fresh' : 'stale'
-      if (actual !== fresh.status) failures.push(`freshness: declared ${fresh.status} but evaluates ${actual}`)
+      const observedMs = Date.parse(fresh.observed_at)
+      if (observedMs - nowMs > FUTURE_SKEW_MS) return { clock: 'future', failure: 'freshness: observed_at is more than 5 minutes after now' }
+      const windowMs = capMs === undefined ? fresh.max_age_ms : Math.min(fresh.max_age_ms, capMs)
+      const actual = nowMs <= observedMs + windowMs ? 'fresh' : 'stale'
+      if (actual === fresh.status) return null
+      const failure = `freshness: declared ${fresh.status} but evaluates ${actual}`
+      // A record that declares itself stale while it is fresh contradicts itself: that is not
+      // a clock failure, so it stays a semantic failure.
+      if (actual === 'fresh') failures.push(failure)
+      else if (nowMs > observedMs + fresh.max_age_ms) return { clock: 'stale', failure }
+      else return { clock: 'over_cap', failure: `${failure} under the ${capMs} ms cap for simulated records` }
     }
   }
+  return null
 }
 
 export function actionRunEvidenceDigest(value) {
@@ -173,10 +215,15 @@ export function actionRunEvidenceDigest(value) {
 export function validateActionRunEvidence(value, options = {}) {
   const failures = []
   const dimensions = { structure: false, semantics: false, integrity: false, authorization_valid: false, provider_bound: false, completeness: false, freshness: false }
+  let clock = null
   try {
-    if (!isPlainRecord(value)) return { ok: false, failures: ['evidence: must be a plain object'], dimensions }
+    if (!isPlainRecord(value)) return { ok: false, failures: ['evidence: must be a plain object'], dimensions, clock }
+    const capMs = options.simulatedMaxAgeCapMs
+    const validCap = Number.isSafeInteger(capMs) && capMs > 0
+    if (capMs !== undefined && !validCap) failures.push('options.simulatedMaxAgeCapMs: must be a strictly positive integer')
     scanJson(value, 'evidence', failures)
-    exactKeys(value, 'evidence', ['schema_version', 'evidence_id', 'issued_at', 'execution_mode', 'identity', 'subject', 'proposal', 'authorization', 'outcome_attestation', 'provider_evidence', 'completeness', 'source', 'evidence_digest', 'signature'], failures)
+    const legacy = value.schema_version === '1.0.0'
+    exactKeys(value, 'evidence', legacy ? ENVELOPE_KEYS : [...ENVELOPE_KEYS, 'evaluation'], failures)
     const identity = requireRecord(value.identity, 'identity', failures)
     const subject = requireRecord(value.subject, 'subject', failures)
     const proposal = requireRecord(value.proposal, 'proposal', failures)
@@ -185,9 +232,17 @@ export function validateActionRunEvidence(value, options = {}) {
     const provider = requireRecord(value.provider_evidence, 'provider_evidence', failures)
     const completeness = requireRecord(value.completeness, 'completeness', failures)
     const source = requireRecord(value.source, 'source', failures)
-    add(failures, value.schema_version === ACTION_RUN_SCHEMA_VERSION, `schema_version: expected ${ACTION_RUN_SCHEMA_VERSION}`)
+    add(failures, ACTION_RUN_SCHEMA_VERSIONS.includes(value.schema_version), `schema_version: expected one of ${ACTION_RUN_SCHEMA_VERSIONS.join(', ')}`)
+    if (!legacy) {
+      const evaluation = requireRecord(value.evaluation, 'evaluation', failures)
+      if (evaluation) validateEvaluation(evaluation, failures)
+    }
     add(failures, nonEmptyString(value.evidence_id), 'evidence_id: required non-empty string')
     add(failures, timestamp(value.issued_at), 'issued_at: invalid ISO UTC timestamp')
+    // A 1.1.0 record's window runs from observed_at, and its date is issued_at: they must be one time.
+    const fresh = isPlainRecord(completeness?.freshness) ? completeness.freshness : null
+    if (!legacy && fresh && fresh.max_age_ms !== null && value.issued_at !== fresh.observed_at)
+      failures.push('issued_at: must equal completeness.freshness.observed_at')
     add(failures, EXECUTION_MODES.includes(value.execution_mode), 'execution_mode: unsupported mode')
     if (value.signature !== null) {
       const signature = requireRecord(value.signature, 'signature', failures)
@@ -222,24 +277,34 @@ export function validateActionRunEvidence(value, options = {}) {
       exactKeys(source, 'source', ['trace_id', 'audit_row_digest', 'oracle_verdict_digest'], failures)
       add(failures, nullableString(source.trace_id) && (source.audit_row_digest === null || digest(source.audit_row_digest)) && (source.oracle_verdict_digest === null || digest(source.oracle_verdict_digest)), 'source: invalid trace/oracle binding')
     }
-    if (completeness) validateCompleteness(completeness, options.now, failures)
+    // The cap bounds the window a simulated record may declare for itself.
+    const simulatedCapMs = validCap && value.execution_mode === 'simulated' ? capMs : undefined
+    const clockFailure = completeness ? validateCompleteness(completeness, options.now, simulatedCapMs, failures) : null
     dimensions.structure = failures.length === 0
     dimensions.semantics = failures.length === 0
+    if (clockFailure) {
+      clock = clockFailure.clock
+      failures.push(clockFailure.failure)
+    }
     if (digest(value.evidence_digest)) {
       dimensions.integrity = actionRunEvidenceDigest(value) === value.evidence_digest
       if (!dimensions.integrity) failures.push('evidence_digest: does not match the unsigned envelope')
     } else failures.push('evidence_digest: must be a SHA-256 digest')
     dimensions.completeness = !!completeness && completeness.coverage === 'complete' && failures.every((failure) => !failure.startsWith('completeness'))
-    dimensions.freshness = !!completeness?.freshness && completeness.freshness.status === 'fresh' && failures.every((failure) => !failure.startsWith('freshness'))
+    dimensions.freshness = !!completeness?.freshness && completeness.freshness.status === 'fresh' && clock === null && failures.every((failure) => !failure.startsWith('freshness'))
   } catch {
     failures.push('evidence: malformed attacker-controlled input')
+    dimensions.structure = false
+    dimensions.semantics = false
   }
-  return { ok: failures.length === 0, failures, dimensions }
+  return { ok: failures.length === 0, failures, dimensions, clock }
 }
 
+// Stamps 1.1.0 when the input carries an evaluation block and 1.0.0 when it does not.
 export function buildActionRunEvidence(input) {
   try {
-    const cloned = JSON.parse(canonical({ ...input, schema_version: ACTION_RUN_SCHEMA_VERSION }))
+    const schemaVersion = input?.evaluation === undefined ? '1.0.0' : ACTION_RUN_SCHEMA_VERSION
+    const cloned = JSON.parse(canonical({ ...input, schema_version: schemaVersion }))
     const evidence = { ...cloned, evidence_digest: '', signature: null }
     evidence.evidence_digest = actionRunEvidenceDigest(evidence)
     const verdict = validateActionRunEvidence(evidence)

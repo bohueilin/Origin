@@ -97,12 +97,27 @@
 .product-workspace .vfy-result .workspace-empty { border: 0; padding: 0; background: transparent; }
 .product-workspace .vfy-examples { padding: 20px; background: var(--paper-3); border-radius: 16px; gap: 8px; }
 .product-workspace .vfy-examples > span { flex-basis: 100%; margin-bottom: 6px; }
-.product-workspace .vfy-examples .btn { background: var(--paper-2); border-color: #c7d0be; padding: 9px 12px; font-size: 12px; }
-.product-workspace .vfy-examples .btn[aria-pressed="true"] { background: var(--signal); border-color: var(--signal); color: var(--paper-2); }
+.product-workspace :is(.vfy-examples, .vfy-published) .btn { background: var(--paper-2); border-color: #c7d0be; padding: 9px 12px; font-size: 12px; }
+.product-workspace :is(.vfy-examples, .vfy-published) .btn[aria-pressed="true"] { background: var(--signal); border-color: var(--signal); color: var(--paper-2); }
 .product-workspace .vfy-toggle { font-size: 13px; line-height: 1.5; min-height: 40px; }
 .product-workspace .vfy-pin { margin-top: 18px; }
 .product-workspace .vfy-pin summary { margin-bottom: 10px; }
 .product-workspace .vfy-detection .card { padding: 0; background: transparent; border: 0; box-shadow: none; }
+/* /verify: the published trace, a .json file (button or drop), the format scope and the stated result. */
+.product-workspace .vfy-published { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 12px; padding-inline: 20px; }
+.product-workspace .vfy-published > span { font-size: var(--fs-13); color: var(--ink-soft); font-weight: 600; }
+.product-workspace .vfy-editor { border-radius: 16px; outline: 2px dashed transparent; outline-offset: 8px; }
+.product-workspace .vfy-editor.is-dropping { outline-color: var(--signal); }
+.product-workspace .vfy-open { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 12px; font-size: var(--fs-13); color: var(--ink-soft); }
+.product-workspace .vfy-file { position: relative; cursor: pointer; }
+.product-workspace .vfy-file input { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.product-workspace .vfy-file:focus-within { outline: 2px solid var(--signal); outline-offset: 2px; }
+.product-workspace .vfy-verdict__scope { flex-basis: 100%; font-size: var(--fs-13); line-height: 1.5; }
+.product-workspace .vfy-stated { margin-top: 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-2); font-size: var(--fs-14); line-height: 1.6; color: var(--ink); overflow-wrap: anywhere; }
+.product-workspace .vfy-stated p { margin: 0; }
+.product-workspace .vfy-stated p + p { margin-top: 8px; color: var(--ink-soft); }
+.product-workspace :is(.vfy-stated--outside, .vfy-stated--absent) { color: var(--ink-soft); background: transparent; border-style: dashed; }
+.product-workspace :is(.vfy-stated--mismatch, .vfy-stated--unavailable) { color: var(--danger); background: var(--status-fail-surface); border-color: currentColor; }
 
 /* Evidence engines and the analyzer share one set of panels and output styles. */
 .sec-grid.product-workspace { gap: 24px; }
@@ -397,6 +412,7 @@ body.product-route--proving-ground { overflow-x: clip; }
   .product-workspace .rc-actions > .btn { width: 100%; }
   .product-workspace .vfy-examples { padding: 15px; }
   .product-workspace .vfy-examples .btn { flex-grow: 1; }
+  .product-workspace .vfy-published { padding-inline: 15px; }
   .product-workspace .vfy-workbench { gap: 20px; }
   .product-workspace .vfy-input { min-height: 240px; }
   .product-workspace .vfy-result { padding: 16px; }

@@ -10,17 +10,18 @@
 //     next Verify shows the artifact void — the visceral proof
 //
 // Honesty rails: a green verdict means "reproducible under this verifier" —
-// never "safe" or "correct". Client-side only: nothing pasted here is uploaded,
-// and nothing is persisted (no cookies, no localStorage).
+// never "safe" or "correct". Client-side only: nothing pasted or opened here is
+// uploaded, and nothing is persisted (no cookies, no browser storage).
 // =============================================================================
 import { useRef, useState } from 'react'
 import '../shared/product-workspace.css'
 import { decodeArtifact } from '../shared/shareLink'
 import { KIND_LABELS, parseArtifact, detectArtifact, verifyArtifact, tamperArtifact } from './detect.mjs'
-import type { ReportLine, ReportTone, VerifyReport } from './detect.mjs'
+import type { ReportLine, ReportResult, ReportTone, VerifyReport } from './detect.mjs'
 import { makeExample } from './examples.mjs'
 import type { ExampleKind } from './examples.mjs'
 import { checkStamp, useCheckVisibility } from '../shared/checkFeedback'
+import { loadPublishedTrace } from '../shared/publishedTrace'
 
 const EXAMPLES: Array<{ kind: ExampleKind; label: string }> = [
   { kind: 'reference', label: 'Synthetic sandbox reference check' },
@@ -34,6 +35,9 @@ const EXAMPLES: Array<{ kind: ExampleKind; label: string }> = [
 ]
 
 const liveKeyExamples = new Set<ExampleKind>(['sigil', 'factory'])
+
+// An opened file is read in this tab only; a larger one is refused before it is read.
+const MAX_FILE_BYTES = 256 * 1024
 
 function Pill({ tone }: { tone: ReportTone }) {
   const txt = tone === 'ok' ? 'pass' : tone === 'bad' ? 'void' : 'note'
@@ -53,6 +57,16 @@ function Log({ lines }: { lines: ReportLine[] }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+// The stated result, shown above the headline and log. A count appears only once the replay reproduced it.
+function StatedResult({ result }: { result: ReportResult }) {
+  return (
+    <div className={`vfy-stated vfy-stated--${result.status}`}>
+      <p>{result.label ? <><b>{result.label}</b>{' '}</> : null}{result.text}</p>
+      {result.notTested ? <p>{result.notTested}</p> : null}
+    </div>
   )
 }
 
@@ -80,8 +94,8 @@ function DetectionTable() {
             <tr>
               <td><b>Action/Run Evidence</b></td>
               <td><code>schema_version</code> + <code>execution_mode</code> + <code>evidence_digest</code></td>
-              <td><code>verifyActionRunEvidence</code> — validate the envelope, re-derive its digest, verify the signed statement, and check coverage/freshness</td>
-              <td>VALID with a trusted issuer pin and intact complete/fresh semantics; execution_verified remains a separate field. Unpinned browser policy evidence renders UNTRUSTED.</td>
+              <td><code>verifyActionRunEvidence</code> — validate the envelope, re-derive its digest, verify the signed statement, check coverage and freshness against this device's clock, and replay the stated result</td>
+              <td>UNTRUSTED when intact but signed by a key Origin has not published, which covers every record made in a browser today. VOID when the digest, signature, coverage, freshness window or result replay fails, or when this verifier cannot replay the stated result. VALID needs a published issuer key; Origin has not published one. Even VALID would not mean the execution was verified: execution_verified is a separate field. No numeric code.</td>
             </tr>
             <tr>
               <td><b>Origin Attestation</b></td>
@@ -105,7 +119,7 @@ function DetectionTable() {
               <td><b>Episode trace</b></td>
               <td><code>events[]</code> + <code>final_digest</code></td>
               <td><code>verifyChain</code> — re-derive every hash link + the sealing event</td>
-              <td>0 intact · 2 chain tamper</td>
+              <td>0 intact · 2 chain tamper · VOID with no code when a published-TR-A002 check other than the chain fails</td>
             </tr>
             <tr>
               <td><b>Merkle inclusion proof</b></td>
@@ -132,12 +146,17 @@ function sharedFromUrl(): { text: string; notes: string[]; error: string | null 
   const hash = typeof window === 'undefined' ? '' : window.location.hash
   const fragment = hash.startsWith('#a=') ? hash.slice(3) : ''
   if (!fragment) return { text: '', notes: [], error: null }
+  // Read once, then dropped from the address bar; it never reached a server either way.
+  window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
   const artifact = decodeArtifact(fragment)
-  if (artifact === null) {
+  // Indenting a very deeply nested value can exhaust the stack; such a link counts as undecodable.
+  let text: string
+  try { text = artifact === null ? '' : JSON.stringify(artifact, null, 2) } catch { text = '' }
+  if (!text) {
     return { text: '', notes: [], error: 'That shared link could not be decoded. Paste the artifact itself below.' }
   }
   return {
-    text: JSON.stringify(artifact, null, 2),
+    text,
     notes: ['Loaded from a shared link. Nothing was uploaded — the artifact travelled in the URL fragment.'],
     error: null,
   }
@@ -153,7 +172,8 @@ export function VerifyPage() {
   const [notes, setNotes] = useState<string[]>(SHARED.notes)
   const [tampered, setTampered] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [selectedExample, setSelectedExample] = useState<ExampleKind | null>(null)
+  const [selectedExample, setSelectedExample] = useState<ExampleKind | 'tr-a002' | null>(null)
+  const [dropping, setDropping] = useState(false)
   const pristineRef = useRef<string | null>(null)
   const inputRevision = useRef(0)
   const verdictRef = useRef<HTMLDivElement>(null)
@@ -195,9 +215,11 @@ export function VerifyPage() {
       pristineRef.current = pristine
       setSelectedExample(kind)
       setTampered(false)
-      const provenance = liveKeyExamples.has(kind)
-        ? 'signed in this tab with a new key, from synthetic checked-in inputs; the dates inside are fixed sample values, not the signing time'
-        : 'generated from synthetic checked-in inputs; any dates inside are fixed sample values'
+      const provenance = kind === 'action-run'
+        ? 'signed in this tab just now with a new key, from synthetic checked-in inputs; its issued and observed times are when you loaded it'
+        : liveKeyExamples.has(kind)
+          ? 'signed in this tab with a new key, from synthetic checked-in inputs; the dates inside are fixed sample values, not the signing time'
+          : 'generated from synthetic checked-in inputs; any dates inside are fixed sample values'
       reset(pristine, [`Loaded a synthetic sandbox ${KIND_LABELS[detected]}, ${provenance} — labeled synthetic in its fields.`])
     } catch (e) {
       if (revision === inputRevision.current) {
@@ -206,6 +228,47 @@ export function VerifyPage() {
       }
     } finally {
       setBusy(false)
+    }
+  }
+
+  // The published TR-A002 file, byte for byte. A failed load verifies nothing (NOT VERIFIABLE, never VALID).
+  const loadPublished = async () => {
+    invalidateReport()
+    const revision = inputRevision.current
+    setBusy(true)
+    try {
+      const { text: published } = await loadPublishedTrace()
+      if (revision !== inputRevision.current) return
+      pristineRef.current = published
+      setSelectedExample('tr-a002')
+      setTampered(false)
+      reset(published, ['Loaded /proof/tr-a002.json from this site, byte for byte. TR-A002 is a machine-emitted record of a scripted scenario: no agent, policy gate, proxy, approver or sandbox ran.'])
+    } catch (e) {
+      if (revision === inputRevision.current) {
+        setError(`could not load /proof/tr-a002.json (${e instanceof Error ? e.message : String(e)}); nothing was verified`)
+        setFeedback(count => count + 1)
+      }
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  // A .json file from the file button or the drop zone, read in this tab and never uploaded.
+  const openFile = async (file: File) => {
+    invalidateReport()
+    const revision = inputRevision.current
+    const refuse = (message: string) => { setError(message); setFeedback(count => count + 1) }
+    if (!/\.json$/i.test(file.name) && file.type !== 'application/json') return refuse(`${file.name} is not a .json file; open or paste JSON`)
+    if (file.size > MAX_FILE_BYTES) return refuse(`${file.name} is ${Math.ceil(file.size / 1024)} KB; the limit is 256 KB`)
+    try {
+      const opened = await file.text()
+      if (revision !== inputRevision.current) return
+      pristineRef.current = null
+      setTampered(false)
+      setSelectedExample(null)
+      reset(opened, [`Opened ${file.name} (${file.size.toLocaleString('en-US')} bytes) in this tab; nothing was uploaded.`])
+    } catch (e) {
+      if (revision === inputRevision.current) refuse(`${file.name} could not be read (${e instanceof Error ? e.message : String(e)})`)
     }
   }
 
@@ -245,7 +308,8 @@ export function VerifyPage() {
       }
       setError(null)
       const pin = thumbprint.trim()
-      const nextReport = await verifyArtifact(parsed.value, pin ? { expectedThumbprint: pin } : {})
+      // The device clock decides freshness; no issuer key is registered here.
+      const nextReport = await verifyArtifact(parsed.value, { now: new Date().toISOString(), ...(pin ? { expectedThumbprint: pin } : {}) })
       if (revision === inputRevision.current) {
         setReport(nextReport)
         setChecked(checkStamp(startedAt))
@@ -280,7 +344,7 @@ export function VerifyPage() {
   return (
     <div className="vfy-grid product-workspace">
       <ol className="workspace-steps" aria-label="Verification workflow">
-        <li><span>01</span><div><b>Bring an artifact</b>Paste JSON or load an example</div></li>
+        <li><span>01</span><div><b>Bring an artifact</b>Paste or open JSON, or load an example</div></li>
         <li><span>02</span><div><b>Check its integrity</b>Inspect the verdict and its scope</div></li>
         <li><span>03</span><div><b>Challenge the result</b>Change one field, then re-verify</div></li>
       </ol>
@@ -288,7 +352,7 @@ export function VerifyPage() {
         <div className="workspace-heading">
           <p className="workspace-eyebrow">Evidence verifier · runs locally</p>
           <h2>Put the evidence to the test.</h2>
-          <p className="section__lede">Start with a synthetic example or paste your own artifact. A signature, a trusted issuer, and a confirmed execution each mean something different. The result explains what this artifact establishes.</p>
+          <p className="section__lede">Start with a synthetic example, paste your own artifact, or open a .json file. A signature, a trusted issuer, and a confirmed execution each mean something different. The result explains what this artifact establishes.</p>
         </div>
         <div className="vfy-examples">
           <span id="vfy-examples-label">Load a synthetic example:</span>
@@ -299,8 +363,25 @@ export function VerifyPage() {
             </button>
           ))}
         </div>
+        <div className="vfy-published">
+          <span id="vfy-published-label">Published evidence:</span>
+          <button className="btn btn--ghost btn--sm" onClick={() => void loadPublished()} disabled={busy}
+            aria-describedby="vfy-published-label" aria-pressed={selectedExample === 'tr-a002'}>
+            Load the published TR-A002 trace
+          </button>
+        </div>
         <div className="vfy-workbench">
-          <div className="vfy-editor">
+          <div className={`vfy-editor${dropping ? ' is-dropping' : ''}`}
+            onDragOver={(e) => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); setDropping(true) } }}
+            onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDropping(false) }}
+            onDrop={(e) => {
+              const file = e.dataTransfer.files[0]
+              setDropping(false)
+              if (!file) return
+              e.preventDefault()
+              // A drop during a load or a verify wins: openFile discards that run's result.
+              void openFile(file)
+            }}>
             <div className="field">
               <label htmlFor="vfy-artifact">Artifact JSON</label>
               <textarea id="vfy-artifact" className="vfy-input" rows={14} spellCheck={false} autoComplete="off"
@@ -315,7 +396,19 @@ export function VerifyPage() {
                   pristineRef.current = null
                 }} />
             </div>
-            <p className="vfy-note" id="vfy-hint">Nothing you paste is uploaded or stored. Verification runs entirely in this tab.</p>
+            <div className="vfy-open">
+              <label className="btn btn--ghost btn--sm vfy-file">
+                <input type="file" accept=".json,application/json" disabled={busy}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    e.target.value = ''
+                    if (file) void openFile(file)
+                  }} />
+                Open a .json file
+              </label>
+              <span>or drop a .json file here</span>
+            </div>
+            <p className="vfy-note" id="vfy-hint">Nothing you paste or open is uploaded or stored. Verification runs entirely in this tab.</p>
             <div className="field vfy-pin">
               <label htmlFor="vfy-thumbprint">Pin issuer thumbprint (optional — Origin Attestations only)</label>
               <input id="vfy-thumbprint" type="text" spellCheck={false} autoComplete="off"
@@ -338,7 +431,7 @@ export function VerifyPage() {
             {!report && !error ? (
               <div className="workspace-empty">
                 <b>{text.trim() ? 'Ready to inspect.' : 'Your result starts here.'}</b>
-                <p>{text.trim() ? 'Select Verify to check the current artifact. Editing the JSON or signer pin clears the previous verdict.' : 'Load an example or paste JSON, then select Verify. You will see the checks, their outcome, and the limits of that outcome.'}</p>
+                <p>{text.trim() ? 'Select Verify to check the current artifact. Editing the JSON or signer pin clears the previous verdict.' : 'Load an example or paste JSON (or open a .json file), then select Verify. You will see the checks, their outcome, and the limits of that outcome.'}</p>
               </div>
             ) : null}
             {notes.map((n, i) => <p className="vfy-note" key={i}>{n}</p>)}
@@ -353,6 +446,7 @@ export function VerifyPage() {
                   <div className={`vfy-verdict vfy-verdict--${verdictTone}`}>
                     <b>{report.verdict}</b>
                     <span>{KIND_LABELS[report.kind]}{report.code != null ? ` · code ${report.code}` : ''}</span>
+                    {report.formatScope ? <span className="vfy-verdict__scope">{report.formatScope}</span> : null}
                   </div>
                 ) : null}
               </div>
@@ -360,6 +454,7 @@ export function VerifyPage() {
             </div>
             {report ? (
               <>
+                {report.result ? <StatedResult result={report.result} /> : null}
                 <p className="section__lede" style={{ marginTop: 16 }}>{report.headline}</p>
                 <Log lines={report.lines} />
                 <p className="vfy-note"><b>What this establishes:</b> {report.scope}</p>

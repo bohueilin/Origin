@@ -493,6 +493,57 @@ const LAUNCH_CONTRACTS = [
       [/signed just now with an in-session key/, 'example dates read as the signing time (they are fixed sample values)'],
     ],
   },
+  // Wave 2: evidence record and verifier. /verify and /reference-check store nothing (the
+  // record travels in the link's fragment), /verify checks freshness against the device
+  // clock, and a recomputed digest or a folded proof is described as no more than that.
+  // The three package files are read raw, comments included. New objects only.
+  {
+    file: 'apps/origin-web/src/verify/VerifyPage.tsx',
+    forbid: [
+      [/\b(localStorage|sessionStorage|indexedDB|document\.cookie|caches\.open)\b/, 'browser storage on /verify (the page says nothing is stored)'],
+    ],
+    require: [
+      [/now:\s*new Date\(\)/, 'the device clock passed to the verifier'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/reference-check/ReferenceCheckPage.tsx',
+    forbid: [
+      [/\b(localStorage|sessionStorage|indexedDB|document\.cookie|caches\.open)\b/, 'browser storage on /reference-check (the record travels in the /verify link\'s fragment)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/verify/detect.mjs',
+    forbid: [
+      [/freshness window is currently valid/, 'a freshness line that does not say which clock it was checked against'],
+      [/INTEGRITY PASS/, 'an integrity pass shown as the verdict'],
+      [/provably included/i, '"provably included" for a proof that folds to an unsigned root'],
+      [/no field was altered after sealing/, 'an unsigned receipt described as unaltered (anyone can recompute its digest)'],
+      [/any post-hoc edit is tamper-evident/, 'an unscoped tamper claim for an unsigned receipt (an edit with a recomputed digest passes)'],
+    ],
+    require: [
+      [/this device.{1,2}s clock/, 'the freshness lines naming the clock they were checked against'],
+    ],
+  },
+  {
+    file: 'packages/verifier-core/merkleBatch.mjs',
+    forbid: [
+      [/\bprovably\b/i, '"provably" for a receipt that folds to the batch root'],
+    ],
+  },
+  {
+    file: 'packages/verifier-core/crucible.mjs',
+    forbid: [
+      [/nothing was altered/, 'an unsigned credential described as unaltered (anyone can recompute its digest)'],
+    ],
+  },
+  {
+    // NOT_TESTED is display text, and honesty-lint does not scan bare @origin/* imports.
+    file: 'packages/verifier-core/policyEvaluation.mjs',
+    forbid: [
+      [/\b(safe|secure|certif)/i, 'safety, security or certification wording in the replay module'],
+    ],
+  },
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

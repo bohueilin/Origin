@@ -1,7 +1,7 @@
-// The /simulation surface — the physical "actor" of "one evidence spine, two actors":
-// autonomous robots execute an oracle-VERIFIED plan on a warehouse floor, in 2D and 3D,
-// collision-free and people-first, and the whole run drops a signed Sigil you re-verify on
-// /verify. Clean-room (see docs/PRIOR_ART.md); Origin's own deterministic oracle is the judge.
+// The /simulation surface, an Origin Labs experiment: robots follow an oracle-VERIFIED plan
+// on a seeded synthetic warehouse floor, in 2D and 3D; collision events are counted from the
+// frames, and the run can be signed as a Sigil you re-verify on /verify. Clean-room (see
+// docs/PRIOR_ART.md); Origin's own deterministic oracle is the judge.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildWarehouseScene, simulate, type SimResult, type SimScene } from './warehouseSim'
 import { Warehouse2DRenderer } from './render2d'
@@ -154,7 +154,7 @@ export function SimulationPage() {
         </div>
         <div className="sim-scores">
           <div><b>{result.score.orders_fulfilled}/{result.score.orders_total}</b><span>orders fulfilled</span></div>
-          <div><b>{result.score.collisions}</b><span>collisions (invariant)</span></div>
+          <div><b>{result.score.collisions}</b><span>collision events (counted)</span></div>
           <div><b>{result.score.human_yields}</b><span>yields to human</span></div>
           <div><b>{result.score.robot_yields}</b><span>robot–robot yields</span></div>
           <div><b>{result.score.steps}</b><span>ticks · t={result.frames[frameIdx]?.t ?? 0}</span></div>
@@ -178,10 +178,14 @@ export function SimulationPage() {
         </div>
         <p className="sim-note">
           The robots follow the <b>oracle-verified</b> plan (Origin’s deterministic <code>bfsOracle</code>,
-          finish/escalate/refuse) and a deterministic coordinator keeps every executed step collision-free
-          and people-first — so a whole run is <b>reproducible under this verifier</b> and drops a signed
-          Sigil you can re-check offline. We claim <b>no learned-policy result</b>: this visualizes a
-          verified plan executing, not a trained model. Synthetic layout; seeded + replayable.
+          finish/escalate/refuse). A deterministic wait-only coordinator holds a robot when its next cell
+          is taken by a robot still on its route or is, now or on the next tick, the human marker’s cell.
+          It does not re-plan or keep robots out of a finished robot’s parked cell, and the human marker
+          does not yield. Collision events are counted from the frames: two robots in one cell (a
+          finished robot parked in its cell counts), a robot in the human marker’s cell, or two of them
+          swapping cells in one tick. The whole run is <b>reproducible under this verifier</b> and can be
+          signed as a Sigil you re-check offline. We claim <b>no learned-policy result</b>: this
+          visualizes a verified plan executing, not a trained model. Synthetic layout; seeded + replayable.
         </p>
       </div>
     </div>

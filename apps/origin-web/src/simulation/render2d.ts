@@ -1,6 +1,6 @@
 // render2d — a clean canvas renderer for the warehouse sim. Pure 2D, no deps. Draws the
 // floor grid, pod-rack shelves, exclusion zones, each robot's faint verified path, the
-// robots (carrying state + colour), the human (people-first), and the outbound docks.
+// robots (carrying state + colour), the human marker, and the outbound docks.
 // Origin design tokens. One draw call per animation frame; the sim is the source of truth.
 import type { SimScene, SimResult, SimFrame } from './warehouseSim'
 
@@ -133,7 +133,7 @@ export class Warehouse2DRenderer {
       ctx.fillText(def.sku.split('-')[0], X, Y)
     }
 
-    // human (people-first)
+    // human marker
     const hx = cx(frame.human) + cell / 2
     const hy = cy(frame.human) + cell / 2
     ctx.beginPath()

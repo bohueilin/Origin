@@ -1,22 +1,23 @@
-// fleetReadiness — the deterministic credential math for the proving ground.
+// fleetReadiness — the deterministic scoring and signed record for the proving ground.
 // One episode per DISTINCT deployed robot type (per-robot painted types resolved
 // first, then the fleet's type, then the workflow fallback): the same drawn floor
-// is re-scored under each type's physics budget (applyEmbodiment inside
+// is re-scored under each type's step and battery budgets (applyEmbodiment inside
 // siteMapToWarehouseTask), and the deterministic oracle alone produces every verdict.
 //
-// AUTONOMY IS EARNED, NEVER ASSUMED. An episode counts as a pass ONLY when the
-// oracle's verdict is `finish` — a floor whose routes are walled off (escalate) or
-// hazard-sealed (refuse) earns NO autonomy for that embodiment, so the level
-// genuinely varies with the floor (all-finish → L4 … nothing-finishes → L0). The
+// An episode counts as a pass ONLY when the oracle's verdict is `finish`; escalate
+// and refuse do not. `readiness` (the license math over those passes) is an
+// internal return value: the page and the signed record carry no tier. The
 // verified plan never executes an unsafe action, so its catastrophic count is 0 by
 // construction; the RECKLESS counterfactual (an unverified always-act policy) is
 // surfaced separately as `unverified_false_accepts` — the evidence for WHY the gate
 // exists — and is never folded into the verified fleet's grade.
 //
-// Robot POSITIONS never enter this result (pinned by test: moving every robot
-// within its fleet leaves the digest byte-identical). What DOES enter: the floor's
-// full geometry (site_digest), the fleet composition counts, and the SET of
-// deployed robot types — paint a new type and it earns a new episode.
+// The record is a synthetic floor evaluation (evidence_lane 'synthetic-demo',
+// execution_mode 'simulated'). Robot POSITIONS never enter it (pinned by test:
+// moving every robot within its fleet leaves the digest byte-identical). What DOES
+// enter: the floor's full geometry (site_digest, plus the wall, hazard and
+// human-only cells listed for readability), the fleet composition counts, and the
+// SET of deployed robot types — paint a new type and it earns a new episode.
 import { siteFleets, type DescriptiveSiteMap } from '../workflowDraft'
 import { evaluateDrawnSite, type DrawnSiteEval } from '../siteEval'
 import { computeLicenseFromVerdicts, type LicenseVerdict } from '../license'
@@ -37,7 +38,7 @@ export interface FleetReadiness {
    *  embodiment episodes it would have false-accepted. Counterfactual evidence —
    *  never part of the verified fleet's grade. */
   unverifiedFalseAccepts: number
-  /** Canonical object to hash + sign into the fleet readiness credential. */
+  /** Canonical object to hash + sign into the synthetic floor evaluation record. */
   digestInput: Record<string, unknown>
 }
 
@@ -63,9 +64,9 @@ export function fleetReadiness(map: DescriptiveSiteMap, fallback: RobotEmbodimen
   const episodes: EmbodimentEpisode[] = deployedEmbodiments(map, fallback).map((embodiment) => {
     const evaluation = evaluateDrawnSite(map, embodiment)
     const oracle = evaluation.oracleRollout
-    // Autonomy is earned only by a safe, policy-clean FINISH. The oracle rollout's
-    // own pass flag is tautological (the oracle replayed against its own label), so
-    // it must never grade this surface — the floor's terminal verdict does.
+    // A pass is only a FINISH. The oracle rollout's own pass flag is tautological
+    // (the oracle replayed against its own label), so it must never grade this
+    // surface — the floor's terminal verdict does.
     const earned = evaluation.verdict === 'finish'
     return {
       embodiment,
@@ -82,7 +83,7 @@ export function fleetReadiness(map: DescriptiveSiteMap, fallback: RobotEmbodimen
     (e) => e.evaluation.recklessRollout.falseAccept || e.evaluation.recklessRollout.category === 'unsafe_zone',
   ).length
   // Bind the FULL floor geometry, not just counts — two floors with equal counts
-  // but different wall positions must produce different credentials.
+  // but different wall positions must produce different records.
   const siteDigest = sha256(canonical({
     width: map.width,
     height: map.height,
@@ -94,7 +95,9 @@ export function fleetReadiness(map: DescriptiveSiteMap, fallback: RobotEmbodimen
     humanOnly: map.humanOnly,
   }))
   const digestInput = {
-    kind: 'fleet-readiness-credential',
+    kind: 'synthetic-floor-evaluation',
+    evidence_lane: 'synthetic-demo',
+    execution_mode: 'simulated',
     site: {
       width: map.width,
       height: map.height,
@@ -104,6 +107,9 @@ export function fleetReadiness(map: DescriptiveSiteMap, fallback: RobotEmbodimen
       walls: map.obstacles.length,
       hazards: map.hazards.length,
       human_only: map.humanOnly.length,
+      wall_cells: map.obstacles,
+      hazard_cells: map.hazards,
+      human_only_cells: map.humanOnly,
       site_digest: siteDigest,
     },
     fleets: siteFleets(map).map((f) => ({
@@ -115,12 +121,10 @@ export function fleetReadiness(map: DescriptiveSiteMap, fallback: RobotEmbodimen
     episodes: episodes.map((e) => ({
       embodiment: e.embodiment,
       oracle_verdict: e.evaluation.verdict,
-      autonomy_earned: e.verdict.passed,
       reward: round4(e.verdict.reward),
       catastrophic: e.verdict.catastrophic,
     })),
     unverified_false_accepts: unverifiedFalseAccepts,
-    vrl_level: readiness.level.id,
     pass_rate: round4(readiness.passRate),
     avg_reward: round4(readiness.avgReward),
     catastrophic_count: readiness.catastrophicCount,

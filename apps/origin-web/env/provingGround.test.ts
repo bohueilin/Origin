@@ -1,8 +1,9 @@
-// Pins the proving-ground credential math AFTER the adversarial-review fixes:
-// autonomy is EARNED only by a finish verdict (the level varies with the floor —
-// never a constant), robot POSITIONS are descriptive, painted robot TYPES earn
-// episodes, the full floor geometry is bound into the credential, the reckless
-// counterfactual is surfaced but never graded, and catastrophic hard-caps.
+// Pins the proving-ground evaluation math AFTER the adversarial-review fixes: the
+// internal level that fleetReadiness returns rises only on finish verdicts (it varies
+// with the floor — never a constant; the page and the signed synthetic floor evaluation
+// do not show it), robot POSITIONS are descriptive, painted robot TYPES earn episodes,
+// the full floor geometry is bound into the signed record, the reckless counterfactual
+// is surfaced but never graded, and a catastrophic episode caps the internal level.
 import { describe, expect, it } from 'vitest'
 import { canonical } from '@origin/evidence/env-evidence'
 import { starterUnderstanding } from '../src/proving-ground/starterFloor'

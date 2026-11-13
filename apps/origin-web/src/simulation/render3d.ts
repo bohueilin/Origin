@@ -1,5 +1,5 @@
 // render3d — a Three.js view of the SAME deterministic sim frames. Warehouse floor, pod-rack
-// shelves, outbound docks, robot bots (colour + carried pod), and the human (people-first),
+// shelves, outbound docks, robot bots (colour + carried pod), and the human marker,
 // with a gentle drag-to-orbit camera. Three.js is MIT (installed via npm; see PRIOR_ART.md).
 // The 2D and 3D views are two renderings of one verified run — the sim is the source of truth.
 import * as THREE from 'three'

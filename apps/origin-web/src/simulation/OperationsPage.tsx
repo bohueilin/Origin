@@ -1,12 +1,12 @@
 // The /operations surface — a VERIFIED fleet-operations console. Clean-room from the Worksite
-// fleet-metrics concept (see docs/PRIOR_ART.md): utilization, peak-simultaneous, collision
-// events "like a real ops dashboard" — but here they are a DETERMINISTIC, signed SLA. Run a
-// multi-wave shift; the oracle scores every wave against synthetic targets. Signed
+// fleet-metrics concept (see docs/PRIOR_ART.md): utilization, peak-simultaneous and collision
+// events, laid out like an operations dashboard, but here they are a DETERMINISTIC, signed
+// SLA. Run a multi-wave shift; the oracle scores every wave against synthetic targets. Signed
 // evidence records those outcomes and re-verifies on /verify without granting operating authority.
 // No learned/VLA result is claimed — the metrics are computed from the verified run.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { runShift, verifyOperations, DEFAULT_TARGETS } from './opsMetrics'
-import { buildWarehouseScene, simulate } from './warehouseSim'
+import { buildWarehouseScene, simulate, formatCollisionEvents } from './warehouseSim'
 import { Warehouse2DRenderer } from './render2d'
 import { signSigil, generateSigningKey, keyThumbprint } from '@origin/verifier-core/sigil'
 import { canonical, sha256 } from '@origin/evidence/env-evidence'
@@ -131,7 +131,7 @@ export function OperationsPage() {
           <p className="ops-verdict__title"><b>{cred.passed ? 'Synthetic shift targets met' : 'Synthetic shift targets not met'}</b></p>
           <p>Tier {cred.rsl_level} on this seeded simulated shift only; no deployment permission.</p>
         </div>
-        <p>{t.orders_fulfilled}/{t.orders_total} orders fulfilled · {Math.round(t.avg_utilization * 100)}% utilization · {t.collision_events} collision events.</p>
+        <p>{t.orders_fulfilled}/{t.orders_total} orders fulfilled · {Math.round(t.avg_utilization * 100)}% utilization · {formatCollisionEvents(t.collision_events)}.</p>
       </div>
 
       {/* Metric tiles */}
@@ -162,7 +162,7 @@ export function OperationsPage() {
             {playing ? 'Pause playback' : 'Play'}
           </button>
           <canvas ref={canvasRef} className="ops-canvas" role="img" aria-label={`Wave ${wave.wave} playback`} aria-describedby="ops-caption" />
-          <p id="ops-caption" className="ops-caption">Wave {wave.wave} · {wave.verdict} · {Math.round(wave.metrics.fleet_utilization * 100)}% utilization · 0 collisions</p>
+          <p id="ops-caption" className="ops-caption">Wave {wave.wave} · {wave.verdict} · {Math.round(wave.metrics.fleet_utilization * 100)}% utilization · {formatCollisionEvents(wave.metrics.collision_events)}</p>
         </div>
       </div>
 

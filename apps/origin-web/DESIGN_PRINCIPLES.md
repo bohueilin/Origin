@@ -47,6 +47,12 @@ high-consequence agents — plus investors reading over their shoulder. Assume a
   `.hero__status` assertions in the first test) and by the `index.html` launch contract in
   `scripts/honesty-lint.mjs`, and **must stay visible in the hero** — treat it typographically,
   never by moving or softening it.
+- **A date on the site records when something happened. It changes only when that thing happens
+  again.** No date is stamped by hand. The home gates strip and the `/trust` scoreboard refresh
+  only through an owner-dispatched release, which re-runs the gates and stamps the deployed copy of
+  `public/trust/gates-summary.json` with its commit (nothing is committed back). A local
+  `make gates-all` rewrites that file, so follow it with
+  `git restore apps/origin-web/public/trust/gates-summary.json`.
 
 ## Type
 - **One system stack, no web font.** `--font-sans` and `--font-display` are the same stack:

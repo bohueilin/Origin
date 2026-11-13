@@ -89,8 +89,8 @@
             <article class="labs-card" data-lab="01">
               <span class="labs-card__kicker">Physical actor · mixed robot fleet</span>
               <h3>Robot proving ground</h3>
-              <p>Paint your own floor (walls, hazards, human-only zones) and place a <b>simulated mixed fleet</b> (humanoid, AMR, quadruped, arm, drone). Watch it in 2D + 3D; the oracle scores one episode per robot type and reports a <b>synthetic tier under this fixed verifier</b>, which you can sign in your browser; it grants no deployment permission.</p>
-              <p class="labs-verifier">Domain verifier: <b>the deterministic drawn-floor oracle</b> (finish / escalate / refuse; catastrophic hard-caps the tier).</p>
+              <p>Paint your own floor (walls, hazards, human-only zones) and place a <b>simulated mixed fleet</b> (humanoid, AMR, quadruped, arm, drone). Watch it in 2D + 3D; the oracle returns <b>finish, escalate or refuse for each robot type</b> on one route across the floor you draw. Robot types differ only by two budget multipliers. You can sign the result in your browser; it grants no deployment permission.</p>
+              <p class="labs-verifier">Domain verifier: <b>the deterministic drawn-floor oracle</b> (finish / escalate / refuse, once per robot type).</p>
               <div class="labs-card__cta"><a class="btn btn--ghost btn--sm" href="/proving-ground">Enter the proving ground →</a></div>
             </article>
             <article class="labs-card" data-lab="02">
@@ -103,8 +103,8 @@
             <article class="labs-card" data-lab="03">
               <span class="labs-card__kicker">Physical actor · robot plan</span>
               <h3>Verified warehouse</h3>
-              <p>Multi-robot fleet follows the oracle’s BFS-verified plan, avoids a moving human + exclusion zones, and emits a signed attestation. BFS (breadth-first search) finds each robot’s shortest grid route around the shelving. The same oracle refuses an order whose item or drop sits in a hazard or human-only cell, and escalates one with no route inside its step and battery budgets. Rendered in 2D and 3D.</p>
-              <p class="labs-verifier">Domain verifier: <b>a deterministic grid/collision oracle</b> (finish / escalate / refuse).</p>
+              <p>A multi-robot fleet follows the oracle’s BFS-verified routes around the shelving. A deterministic wait-only coordinator holds robots for each other and for a scripted human marker, which does not yield. BFS (breadth-first search) finds each robot’s shortest grid route. Collision events, including with the human marker, are counted from the frames. The run can be signed in your browser. Rendered in 2D and 3D.</p>
+              <p class="labs-verifier">Domain verifier: <b>a deterministic grid oracle</b> (finish / escalate / refuse), with collision events counted from the frames.</p>
               <div class="labs-card__cta"><a class="btn btn--ghost btn--sm" href="/simulation">Open the simulation →</a></div>
             </article>
             <article class="labs-card" data-lab="04">

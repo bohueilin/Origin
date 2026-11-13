@@ -53,8 +53,8 @@ export const BANNED = [
   // llms.txt). Onboarding and procurement copy implies a customer pipeline that does not exist.
   [/\bwe['’]re onboarding\b/i, '"we\'re onboarding" — there are no design partners or customers to onboard today'],
   [/\bno procurement (required|needed)\b/i, '"no procurement required" — procurement is the customer\'s process, not Origin\'s to waive'],
-  // The gates strip reads a LOCAL `make gates-all` run; no CI job writes it.
-  [/\benforced in CI on every push\b/i, '"enforced in CI on every push" — the gates summary is a local run; CI runs its own checks'],
+  // The gates strip and /trust read the summary an owner-dispatched release stamps; a push is not a release.
+  [/\benforced in CI on every push\b/i, '"enforced in CI on every push" — the gates summary refreshes only with an owner-dispatched release; CI runs its own checks'],
   // The tool evaluates a selected policy; it never contacts or executes the named agent.
   [/\bcheck an agent\b/i, '"check an agent" — the reference check evaluates a selected policy, not the agent'],
   // /auth is owner-only (AuthProvider.tsx; insforge.toml disable_signup): nobody is invited.

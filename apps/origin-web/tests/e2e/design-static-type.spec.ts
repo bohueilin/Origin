@@ -10,6 +10,10 @@ const cases: [string, string, number][] = [
   ['/reference-check', '.product-hero__scope', 14],
   ['/legal/privacy-policy.html', 'main p:not(.updated), main li', 14],
   ['/legal/terms-of-service.html', 'main p:not(.updated), main li', 14],
+  // Wave 5: the "How to read the result" sections, named by their heading anchor so each title stays unique.
+  ['/proving-ground#pg-read-title', '.labs-read p', 14],
+  ['/simulation#sim-read-title', '.labs-read p', 14],
+  ['/operations#ops-read-title', '.labs-read p', 14],
 ]
 for (const [route, selector, minimum] of cases) test(`static explanatory copy has readable size and measure: ${route}`, async ({ page }) => {
   await page.route('**/*', request => {

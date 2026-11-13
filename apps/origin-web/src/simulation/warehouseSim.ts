@@ -6,10 +6,11 @@
 //
 // What is real / honest:
 //   * Each robot's plan is the verified path from Origin's bfsOracle (finish/refuse/escalate).
-//   * The multi-robot COORDINATION (yield-to-avoid-collision, yield-to-human) is a
-//     deterministic scheduler here — no collision is ever allowed to execute (that IS the
-//     safety property we visualize), so "collisions" is a design invariant, not a metric we
-//     claim a model reduced. We claim NO learned-policy result.
+//   * The multi-robot COORDINATION is a deterministic wait-only scheduler: a robot waits when
+//     its next cell is held by a robot still on its route or is the human marker's cell (now
+//     or next tick). It does not re-plan, finished robots stay parked where moving robots can
+//     enter, and the human marker does not yield, so collision events are COUNTED from the
+//     frames (countCollisionEvents), not assumed away. We claim NO learned-policy result.
 //   * Everything is seeded + replayable; the run digest binds the scene + verdict.
 import {
   type GridPos,
@@ -63,8 +64,8 @@ export interface SimScore {
   orders_fulfilled: number
   orders_total: number
   robot_yields: number // times a robot waited for another robot
-  human_yields: number // times a robot waited for the human (people-first)
-  collisions: number // ALWAYS 0 — the invariant we visualize
+  human_yields: number // times a robot waited for the human marker
+  collisions: number // collision events counted from the frames (countCollisionEvents)
   steps: number
 }
 
@@ -72,7 +73,7 @@ export interface SimResult {
   scene_id: string
   frames: SimFrame[]
   events: SimEventRec[]
-  verdict: WarehouseTerminal // finish (all safe + fulfilled) / escalate / refuse
+  verdict: WarehouseTerminal // finish (all delivered, no collision event) / escalate / refuse
   reason: string
   score: SimScore
   per_robot: { id: string; oracle_label: WarehouseTerminal; fulfilled: boolean }[]
@@ -170,7 +171,7 @@ export function buildWarehouseScene(opts: { seed?: number; width?: number; heigh
     robots.push({ id: task.id, color: COLORS[i % COLORS.length], sku: SKUS[i % SKUS.length], task, oracleLabel: oracle.label, plan: cells, itemIndex })
   }
 
-  // human patrol: a deterministic rectangle loop through the aisles (people-first zone)
+  // human marker patrol: a deterministic loop through the aisles (the marker does not yield)
   const hy = Math.floor(height / 2)
   const humanPatrol: GridPos[] = []
   for (let x = 1; x < width - 1; x += 1) if (free({ x, y: hy })) humanPatrol.push({ x, y: hy })
@@ -191,9 +192,39 @@ export function buildWarehouseScene(opts: { seed?: number; width?: number; heigh
   }
 }
 
+// Collision events, counted from the frames. Every robot is checked, including one that has
+// finished and stays parked (the coordinator no longer holds its cell), and so is the human
+// marker. A pair is in contact on a frame when it shares a cell, or when the two swapped cells
+// since the previous frame. Only onsets count: a pair that stays in contact on consecutive
+// frames counts once, and counts again only after it has separated.
+export function countCollisionEvents(frames: SimFrame[]): number {
+  let events = 0
+  let before = new Set<string>()
+  let was: GridPos[] | null = null
+  for (let i = 0; i < frames.length; i += 1) {
+    const now = [...frames[i].robots.map((r) => r.pos), frames[i].human]
+    const touching = new Set<string>()
+    for (let a = 0; a < now.length; a += 1) {
+      for (let b = a + 1; b < now.length; b += 1) {
+        const swapped = was !== null && eq(now[a], was[b]) && eq(now[b], was[a])
+        if (!eq(now[a], now[b]) && !swapped) continue
+        touching.add(`${a}-${b}`)
+        if (!before.has(`${a}-${b}`)) events += 1
+      }
+    }
+    before = touching
+    was = now
+  }
+  return events
+}
+
+// "1 collision event", "2 collision events": one wording for every place that shows the count.
+export const formatCollisionEvents = (n: number) => `${n} collision event${n === 1 ? '' : 's'}`
+
 // The deterministic multi-robot coordinator: advance every robot along its oracle-verified
-// plan, resolving robot-robot and robot-human conflicts by WAITING (people first). No two
-// robots ever occupy a cell and no robot ever enters the human's cell — the safety invariant.
+// plan, resolving conflicts by WAITING only. It never re-plans, finished robots leave the
+// occupied set, and the human marker does not yield, so robots can still meet each other or
+// the human marker: countCollisionEvents counts those events from the frames.
 export function simulate(scene: SimScene): SimResult {
   const robots = scene.robots.map((r) => ({ ref: r, idx: 0, done: r.plan.length <= 1, fulfilled: false, carrying: false }))
   const events: SimEventRec[] = []
@@ -218,13 +249,13 @@ export function simulate(scene: SimScene): SimResult {
       const nextIdx = Math.min(r.idx + 1, r.ref.plan.length - 1)
       const next = r.ref.plan[nextIdx]
       const nextHuman = humanAt(t + 1)
-      // people first: never step into the human's cell (now or next tick)
+      // wait rather than step into the human marker's cell (now or next tick)
       if (!eq(next, cur) && (eq(next, human) || eq(next, nextHuman))) {
         humanYields += 1
-        events.push({ t, kind: 'yield_human', robot: r.ref.id, pos: cur, note: 'waited for the human (people first)' })
+        events.push({ t, kind: 'yield_human', robot: r.ref.id, pos: cur, note: 'waited for the human marker' })
         continue
       }
-      // never enter a cell another robot holds or is claiming this tick
+      // wait rather than enter a cell a robot still on its route holds or claims this tick
       const holder = occupied.get(key(next))
       if (!eq(next, cur) && holder && holder !== r.ref.id) {
         robotYields += 1
@@ -265,14 +296,18 @@ export function simulate(scene: SimScene): SimResult {
   const fulfilled = robots.filter((r) => r.fulfilled).length
   const anyRefuse = scene.robots.some((r) => r.oracleLabel === 'refuse')
   const anyEscalateOrStuck = scene.robots.some((r) => r.oracleLabel === 'escalate') || robots.some((r) => !r.fulfilled)
-  const verdict: WarehouseTerminal = anyRefuse ? 'refuse' : anyEscalateOrStuck ? 'escalate' : 'finish'
-  const reason = anyRefuse
-    ? 'At least one order requires entering a hazard / exclusion zone — the oracle refuses it.'
-    : anyEscalateOrStuck
-      ? 'Every executed step stayed collision-free and people-first, but not all orders could be fulfilled within budget — a human coordinator is required.'
-      : `All ${ordersTotal} orders fulfilled with zero collisions, yielding ${humanYields}× to the human — reproducible under this verifier.`
+  const collisions = countCollisionEvents(frames)
+  // a counted collision event demotes the run to escalate, checked first
+  const verdict: WarehouseTerminal = collisions > 0 ? 'escalate' : anyRefuse ? 'refuse' : anyEscalateOrStuck ? 'escalate' : 'finish'
+  const reason = collisions > 0
+    ? `${formatCollisionEvents(collisions)} counted between robots or with the human marker. A human coordinator is required.`
+    : anyRefuse
+      ? 'At least one order requires entering a hazard / exclusion zone — the oracle refuses it.'
+      : anyEscalateOrStuck
+        ? 'Not every order was delivered: the coordinator could not schedule every route, or the oracle escalated an order. A human coordinator is required.'
+        : `All ${ordersTotal} orders delivered with no collision event counted, yielding ${humanYields}× to the human marker. Reproducible under this verifier.`
 
-  const score: SimScore = { orders_fulfilled: fulfilled, orders_total: ordersTotal, robot_yields: robotYields, human_yields: humanYields, collisions: 0, steps: frames.length }
+  const score: SimScore = { orders_fulfilled: fulfilled, orders_total: ordersTotal, robot_yields: robotYields, human_yields: humanYields, collisions, steps: frames.length }
   return {
     scene_id: scene.id,
     frames,

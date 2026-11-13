@@ -84,6 +84,11 @@
       .ops-thumb { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; }
       .ops-note { font-size: var(--fs-14); color: var(--ink-soft); line-height: 1.65; max-inline-size: 75ch; margin: 0; }
       .ops-note b { color: var(--ink); }
+      .section.labs-read { padding: 48px 0 80px; }
+      .labs-read h2 { font-size: clamp(24px, 2.5vw, 34px); font-weight: 600; line-height: 1.16; letter-spacing: -.035em; margin: 0 0 14px; }
+      .labs-read p { max-width: 75ch; font-size: var(--fs-15); line-height: 1.7; color: var(--ink-soft); margin: 0 0 12px; }
+      .labs-read p b { color: var(--ink); }
+      @media (max-width: 680px) { .section.labs-read { padding-top: 28px; } }
     </style>
   <link rel="stylesheet" href="/simulation-workspace.css" />
 </head>
@@ -117,18 +122,16 @@
     <main id="main">
       <section class="section sim-editorial-hero" aria-labelledby="ops-title">
         <div class="shell">
-          <p class="kicker">One evidence spine · the operations console</p>
+          <p class="kicker">Origin Labs · synthetic fleet-operations experiment</p>
           <h1 id="ops-title">Compare the fleet. Understand the tradeoffs.</h1>
           <p class="section__lede">
-            Run a robot fleet across a full shift and watch it like a real operations dashboard —
+            Run a robot fleet across a full shift and watch it like an operations dashboard —
             <b>fleet utilization</b>, <b>peak-simultaneous</b> activity, <b>throughput</b>, and
             <b>collision events</b>. Origin’s deterministic oracle scores every wave against the displayed synthetic targets.
             Sign the resulting evidence for offline re-verification; it grants no operating authority.
           </p>
           <p class="mono-note" style="margin-top: 14px;">
-            Every metric is computed <b>deterministically</b> from the oracle-verified run — <b>no
-            learned-coordinator result is claimed</b>. A verdict means "reproducible under this
-            verifier," never "safe." Seeded + replayable; synthetic layouts. An <a href="/labs">Origin Labs</a> experiment: the same evidence contract in a bounded simulation; the agent reference check is the product. Signed records re-verify in the <a href="/verify">offline verifier</a>.
+            An <a href="/labs">Origin Labs</a> experiment, not the product: the product is the <a href="/reference-check">agent reference check</a>. Every metric is computed <b>deterministically</b> from the oracle-verified run; <b>no learned-coordinator result is claimed</b>. A verdict means "reproducible under this verifier," never "safe." Seeded and replayable; synthetic layouts. Signed records re-verify in the <a href="/verify">offline verifier</a>.
           </p>
         </div>
       </section>
@@ -136,6 +139,13 @@
       <section class="section section--tint" aria-label="Fleet operations console">
         <div class="shell">
           <div id="ops-root"></div>
+        </div>
+      </section>
+
+      <section class="section labs-read" aria-labelledby="ops-read-title">
+        <div class="shell">
+          <h2 id="ops-read-title">How to read the result</h2>
+          <p><b>What runs.</b> A shift of 3 to 8 waves with 2 to 6 robots. Each wave is one warehouse-simulation run with its own seed.</p><p><b>Targets</b>, synthetic and set by Origin: utilization at least 50%, fulfilment at least 95%, no collision event. Collision events are counted as on the warehouse simulation, including a finished robot parked in its cell.</p><p><b>Tier.</b> L0 if any collision event is counted; L1 if a wave needs an order the oracle refuses; L2 if a target is missed; L3 if every target is met; L4 if utilization is also at least 70%. The tier describes this seeded shift only and grants no operating authority.</p><p><b>Metrics.</b> Utilization is the share of active robot-ticks in which a robot moved; peak simultaneous is the most robots moving in one tick; throughput is orders delivered per 100 ticks.</p><p><b>Limits.</b> No order arrivals, charging or travel-time variation.</p>
         </div>
       </section>
     </main>

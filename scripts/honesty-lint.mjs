@@ -610,6 +610,64 @@ const LAUNCH_CONTRACTS = [
       [/authorized evaluation beyond this browser demo/i, 'an evaluation offer in the Book card heading (the review delivers a written report)'],
     ],
   },
+  // Wave 5: Labs. /simulation and /operations count collision events from the frames, the
+  // proving ground shows no tier and signs a synthetic floor evaluation, and each Labs page
+  // calls itself an Origin Labs experiment, not the product. New objects only.
+  {
+    file: 'apps/origin-web/simulation.html',
+    forbid: [
+      [/collision-free/i, 'a collision-free claim (collision events are counted from the frames)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/simulation/SimulationPage.tsx',
+    forbid: [
+      [/collision-free|collisions \(invariant\)/i, 'collisions shown as an invariant (collision events are counted from the frames)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/simulation/warehouseSim.ts',
+    forbid: [
+      [/collision-free|zero collisions|collisions:\s*0\b/, 'a fixed zero collision count (collision events are counted from the frames)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/simulation/OperationsPage.tsx',
+    forbid: [
+      [/·\s*0 collisions/, 'a hard-coded zero in the wave caption (it shows the counted collision events)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/proving-ground/ProvingGroundPage.tsx',
+    forbid: [
+      [/[Ss]ynthetic tier/, 'a tier on the proving ground (the page shows none)'],
+      [/fleet-readiness-credential/, 'the old record kind (the record is a synthetic floor evaluation)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/proving-ground/fleetReadiness.ts',
+    forbid: [
+      [/autonomy_earned|vrl_level|fleet-readiness-credential/, 'a tier, an autonomy field or the old kind in the signed floor record'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/labs.html',
+    forbid: [
+      [/exclusion zones|hard-caps the tier|synthetic tier/i, 'exclusion zones the warehouse scene lacks, or a proving-ground tier'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/operations.html',
+    forbid: [
+      [/like a real operations dashboard/i, 'the synthetic console described as a real operations dashboard'],
+    ],
+  },
+  ...['apps/origin-web/proving-ground.html', 'apps/origin-web/simulation.html', 'apps/origin-web/operations.html'].map((file) => ({
+    file,
+    require: [
+      [/Origin\s+Labs\s+experiment,\s+not the product/i, 'the scope note naming the page an Origin Labs experiment, not the product'],
+    ],
+  })),
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

@@ -87,6 +87,13 @@
 .product-workspace .rc-verdict b { font-size: 34px; }
 .product-workspace .rc-verdict__meta { flex-basis: 100%; font-size: var(--fs-14); }
 .product-workspace .rc-card--cta { background: var(--paper-3); }
+/* Four workflow steps, one per panel; a tagged proposal; the table legend; the baseline comparison. */
+.rc-grid > .workspace-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.product-workspace .rc-hint code { overflow-wrap: anywhere; }
+.product-workspace .rc-proposed { padding-left: 12px; border-left: 2px dashed var(--line); }
+.product-workspace .rc-legend { margin-top: 18px; }
+.product-workspace .rc-baseline { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.product-workspace .rc-baseline .rc-hint { flex: 1 1 32ch; margin: 0; }
 
 /* Verification: examples first; an evidence editor and a distinct result pane. */
 .vfy-grid.product-workspace { gap: 24px; }
@@ -398,18 +405,19 @@ body.product-route--proving-ground { overflow-x: clip; }
 @media (max-width: 900px) {
   .rc-grid.product-workspace, .product-workspace .vfy-workbench { grid-template-columns: minmax(0, 1fr); }
   .product-workspace .rc-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rc-grid > .workspace-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .product-workspace .vfy-result { padding: 20px; }
 }
 @media (max-width: 600px) {
   .product-workspace :is(.product-panel, .rc-card, .sec-card, .pg-stage, .pg-results) { border-radius: 18px; padding: 20px; }
   .workspace-intro { padding: 20px; border-radius: 18px; }
-  .workspace-steps { grid-template-columns: 1fr; gap: 12px; }
+  .workspace-steps, .rc-grid > .workspace-steps { grid-template-columns: 1fr; gap: 12px; }
   .workspace-scope { grid-template-columns: 1fr; }
   .workspace-scope > div + div { border-left: 0; border-top: 1px solid var(--line); }
   .workspace-empty { padding: 24px; }
   .product-workspace .rc-fields, .product-workspace .rc-scenarios { grid-template-columns: 1fr; }
   .product-workspace .rc-scn { padding: 18px; }
-  .product-workspace .rc-actions > .btn { width: 100%; }
+  .product-workspace :is(.rc-actions, .rc-baseline) > .btn { width: 100%; }
   .product-workspace .vfy-examples { padding: 15px; }
   .product-workspace .vfy-examples .btn { flex-grow: 1; }
   .product-workspace .vfy-published { padding-inline: 15px; }

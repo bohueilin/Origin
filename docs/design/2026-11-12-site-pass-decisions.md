@@ -57,3 +57,26 @@ The model and tool names a visitor types stay digests only. Miss and over-grant 
   - the `amount_usd` tamper note.
 
 **Release note.** Records downloaded from /reference-check before this release (schema 1.0.0) carry a 24-hour window. /verify now checks it against your clock, so one more than a day old reads VOID for freshness only; its digest and signature lines still pass. Run the reference check again for a record that states its result.
+
+## Wave 3 — reference-check clarity
+
+**Inputs and the record fields that bind them.** Each step on `/reference-check` names who supplies its input and the record field that binds it.
+- **The visitor's typed configuration** is bound as digests: `subject.model_digest`, `subject.tools_digest` and `proposal.input_digest`. The record stores only those digests, as in Wave 2, not the typed text.
+- **The battery and the oracle** are Origin's. They are named by `subject.environment_digest` and `subject.verifier_version`.
+- **The policy settings** are in `evaluation.policy_parameters`, with their digest in `subject.policy_digest`.
+
+Requests and expected answers agreed with a reviewer before a run are described only with the site's existing tag "Proposed — not built". No copy says that a record is co-signed, because nothing co-signs a record today.
+
+**Miss direction.** The IAM "Least-privilege (recommended)" preset is kept.
+- Every miss in the results table says whether the policy answered more strictly or less strictly than the oracle, Origin's answer key.
+- A summary line counts both kinds of miss. Over-grants are counted separately.
+- A legend under the table defines the oracle, the three decisions, "stricter" and "looser", and over-grants.
+- A note says that the record's `authorization.verdict: deny` means the record grants no execution authority.
+
+**Tier labels removed.** The L0–L4 tier label no longer appears in the `/reference-check` result, in the `/security` log or in the home demo's grading panel. Over-grants are counted on their own, and matches elsewhere do not offset them. `src/license.ts` is unchanged. The recordings stay byte-identical. The shot04 recording on `/reference-check` was made before these changes, so it gets one dated line under it, outside its caption: "Recorded 2026-09-28; the page has changed since."
+
+**Other changes:**
+- After a run with the Least-privilege or Moderate preset, "Try the permissive baseline" grades the same requests with every safeguard off, in one click. It keeps the typed configuration and moves focus to the new result. It is not offered for a hand-set policy, so a visitor's own controls are never overwritten.
+- A static summary of what the page evaluates serves readers without JavaScript; the app replaces it when it loads.
+- "Synthetic pilot battery" becomes "Synthetic demo battery", because there is no pilot.
+- The step hints name what each panel binds, and the step 04 hint scopes VOID to an edit made without re-signing.

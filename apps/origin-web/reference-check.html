@@ -100,6 +100,9 @@
       .rc-table td b { color: var(--ink); font-weight: 600; }
       .rc-row--cat td { background: #fbe9e6; }
       .rc-row--miss td { background: #fbf6e6; }
+      /* The no-JavaScript summary in #refcheck-root is paragraphs, not the list .onpage-static was written for. */
+      #refcheck-root > .onpage-static { padding-left: 0; }
+      #refcheck-root > .onpage-static p + p { margin-top: 10px; }
     </style>
   </head>
 
@@ -142,6 +145,7 @@
       <section class="section section--tint" aria-label="Reference check">
         <div class="shell">
           <div id="refcheck-root">
+          <div class="onpage-static"><p><b>What it evaluates.</b> A selected policy, set with a preset or five controls, against one of two synthetic scenarios: a customer-support agent (refunds, CRM, email, personal data, bank changes) or IAM least-privilege access. Each scenario has 12 fixed requests; Origin wrote them and the answer key (the oracle).</p><p><b>How results read.</b> The oracle marks each request allow, escalate or deny. Escalate means the policy should hand the request to a person to approve; in this demo nothing is held and no one is asked (the proposed runtime design, not built, calls this PAUSE). A row is a match when the policy decides the same and a miss when it is stricter or looser. An over-grant is an allow on a security-critical request that the oracle denies or escalates; over-grants are counted separately from misses.</p><p><b>Evidence and limits.</b> The download states the result and is signed by a key your browser makes for that run, so /verify rates it UNTRUSTED: anyone can make one. No named agent is contacted or executed, and no deployment authority is granted. The interactive check needs JavaScript.</p></div>
           <div class="skel" aria-hidden="true">
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
@@ -163,6 +167,7 @@
             <figcaption class="vband__cap evidence-contract"><b>Recorded 2026-09-28 on originphysicalai.com (57d5ccf), using synthetic demo data.</b> 12 of 12 selected-policy decisions match the deterministic oracle on a synthetic battery; no agent is contacted. Signed policy-evaluation evidence is downloaded with a browser-session key. Adding <code>payments.transfer</code> produces a legacy credential VOID (code 4); the downloaded evidence is unchanged. The file is pasted into /verify and returns UNTRUSTED: intact, but its session signer is unpinned. This is not execution evidence or deployment permission.
               <small>Duration 0:41. Captions and a cursor dot are overlaid; the run is one continuous take. <a href="https://github.com/bohueilin/Origin/blob/main/apps/origin-web/scripts/RECORDINGS.md">Recording method and provenance</a>.</small></figcaption>
           </figure>
+          <p class="vband__cap">Recorded 2026-09-28; the page has changed since.</p>
       </div></section>
     </main>
 

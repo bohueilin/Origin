@@ -7,7 +7,7 @@
 //   2. Merkle batch     — one signed root, O(log N) inclusion proofs, beneficiary-bound
 //   3. Policy chain     — hash-chained versions; decisions bind to the version in force
 //   4. Reference check  — the IAM gym + Crucible: config-bound credential from the
-//                         deterministic oracle; drift → VOID; over-grants cap the readiness level
+//                         deterministic oracle; drift → VOID; over-grants counted apart from misses
 //   5. Over-grant       — the analyzer pointed at an authorization LOG rather than a policy:
 //                         five metrics over a synthetic fleet, and the delegation coupling —
 //                         widen one edge deep in the tree, watch the root's blast radius grow
@@ -389,10 +389,12 @@ function ReferenceCheckPanel() {
       envBundleDigest: iamEnvDigest(),
       versions: IAM_VERSIONS,
     })
+    // The log is composed here, without the readiness tier that r.summary carries.
+    const passed = r.harnessed.verdicts.filter((d) => d.passed).length
     setResult(r)
     setSteps([
       info('gym', `${iamTasks.length} least-privilege access decisions, labeled by the deterministic oracle (never an LLM grading an LLM). The policy under test is the Least-privilege (recommended) preset, not the oracle itself.`),
-      ok('reference check issued', r.summary.replaceAll('\n', ' ')),
+      ok('reference check issued', `${passed} of ${iamTasks.length} synthetic decisions match the oracle · ${r.catastrophic} over-grants · bound to config ${r.credential.config_digest.slice(0, 12)}… — VOID if the model, tools, context, harness or environment change`),
       ...(misses.length > 0
         ? [info('misses', `${stricter} stricter than the oracle (Origin's answer key), ${looser} looser; the row-by-row result is on /reference-check`)]
         : []),

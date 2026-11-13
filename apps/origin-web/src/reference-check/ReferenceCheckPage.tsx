@@ -9,13 +9,14 @@
 // reproducible least-privilege behavior under THIS verifier + THIS config — never "safe". The
 // browser-session signing key proves only that the downloaded envelope was not altered after it
 // was made; it is unpinned and cannot grant deployment authority.
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import '../shared/product-workspace.css'
-import { issueIamReferenceCheck, iamTasks, iamOracle, verifyIamDecision, iamEnvDigest, IAM_VERSIONS } from '@origin/verifier-core/iamGym'
-import { issueSupportReferenceCheck, supportTasks, supportOracle, verifySupportDecision, supportEnvDigest, SUPPORT_VERSIONS } from '@origin/verifier-core/supportGym'
+import { issueIamReferenceCheck, iamTasks, iamOracle, verifyIamDecision, iamEnvDigest, IAM_VERSIONS, IAM_GYM_VERSION } from '@origin/verifier-core/iamGym'
+import { issueSupportReferenceCheck, supportTasks, supportOracle, verifySupportDecision, supportEnvDigest, SUPPORT_VERSIONS, SUPPORT_GYM_VERSION } from '@origin/verifier-core/supportGym'
 import { verifyCredential, type CrucibleCredential } from '@origin/verifier-core/crucible'
 import { generateSigningKey, keyThumbprint } from '@origin/verifier-core/sigil'
 import { signActionRunEvidence } from '@origin/verifier-core/action-run-evidence'
+import { missDirection } from '@origin/verifier-core/missDirection'
 import { computeLicenseFromVerdicts, type LicenseVerdict } from '../license'
 import { buildSyntheticReferenceCheckEvidence } from './evidence'
 import { checkStamp, useCheckVisibility } from '../shared/checkFeedback'
@@ -32,10 +33,13 @@ const computeLevel = (verdicts: LicenseVerdict[]) => computeLicenseFromVerdicts(
 const short = (s: string) => (s ? `${s.slice(0, 10)}…` : '')
 
 interface RowResult { id: string; label: string; sub: string; yours: Decision; oracle: Decision; passed: boolean; catastrophic: boolean }
+// A miss is a row that is neither a match nor an over-grant; its direction is against the oracle.
+const isMiss = (r: RowResult) => !r.passed && !r.catastrophic
+const stricter = (r: RowResult) => missDirection(r.yours, r.oracle) === 'stricter'
 interface RunResult {
-  scenario: Scenario; level: string; passRate: number; coldPassRate: number; lift: number; catastrophic: number
-  configDigest: string; rows: RowResult[]; credential: CrucibleCredential; reVerifyCode: number
-  evidence: unknown; sigilThumbprint: string; driftCode: number | null
+  scenario: Scenario; coldPassRate: number; lift: number; catastrophic: number
+  rows: RowResult[]; credential: CrucibleCredential; reVerifyCode: number
+  evidence: unknown; inputDigest: string; sigilThumbprint: string; driftCode: number | null
   // The signed record for a /verify#a= link, or null when it is too long for a link.
   verifyFragment: string | null
 }
@@ -51,8 +55,15 @@ export function ReferenceCheckPage() {
   const [error, setError] = useState<string | null>(null)
   const inputRevision = useRef(0)
   const verdictRef = useRef<HTMLDivElement>(null)
+  // Only a permissive-baseline run moves focus to its result: that button leaves with the old one.
+  const focusResult = useRef(false)
   const [checked, setChecked] = useState<ReturnType<typeof checkStamp> | null>(null)
   useCheckVisibility(checked, verdictRef)
+  useEffect(() => {
+    if (!checked || !focusResult.current) return
+    focusResult.current = false
+    verdictRef.current?.focus()
+  }, [checked])
 
   const invalidateResult = () => {
     inputRevision.current += 1
@@ -78,16 +89,24 @@ export function ReferenceCheckPage() {
       ? { model: 'support-agent-v1', tools: 'refunds, crm.write, email.send', context: 'support-policy@1', harness: 'my-harness@1' }
       : { model: 'iam-agent-v1', tools: 'iam.decide, data.read', context: 'system-prompt@1', harness: 'my-harness@1' })
   }
-  const applyPreset = (key: string) => {
-    invalidateResult()
+  const selectPreset = (key: string) => {
     setPresetKey(key)
     if (scenario === 'support' && SUPPORT_PRESETS[key]) setSupSpec(SUPPORT_PRESETS[key].spec)
     if (scenario === 'iam' && PRESETS[key]) setIamSpec(PRESETS[key].spec)
   }
+  const applyPreset = (key: string) => {
+    invalidateResult()
+    selectPreset(key)
+  }
 
-  const run = async () => {
+  // `override` grades a policy the render has not committed yet: selecting a preset only
+  // schedules state, so the permissive-baseline click passes the preset's spec here.
+  const run = async (override?: { support: SupportPolicySpec; iam: PolicySpec }) => {
+    const supportSpec = override?.support ?? supSpec
+    const accessSpec = override?.iam ?? iamSpec
     const startedAt = performance.now()
     const revision = inputRevision.current
+    focusResult.current = override !== undefined
     setBusy(true); setError(null)
     setChecked(null); setResult(null)
     try {
@@ -99,7 +118,7 @@ export function ReferenceCheckPage() {
       let selectedPolicy: SupportPolicySpec | PolicySpec
 
       if (scenario === 'support') {
-        const policyFor = supportPolicyForSpec(supSpec)
+        const policyFor = supportPolicyForSpec(supportSpec)
         rows = supportTasks.map((task: { id: string; action: string; amount: number | null; pii: boolean; forbidden: boolean; tainted: boolean; requires_approval: boolean }) => {
           const yours = policyFor(task) as Decision
           const flags = [task.pii && 'PII', task.forbidden && 'destructive', task.tainted && 'fraud-flagged', task.requires_approval && 'approval', task.amount != null && `$${task.amount}`].filter(Boolean).join(' · ')
@@ -109,9 +128,9 @@ export function ReferenceCheckPage() {
         r = issueSupportReferenceCheck({ agentConfig, policyFor, computeLevel, issuedAt: null })
         envDigest = supportEnvDigest(); versions = SUPPORT_VERSIONS
         battery = supportTasks
-        selectedPolicy = supSpec
+        selectedPolicy = supportSpec
       } else {
-        const policyFor = policyForSpec(iamSpec)
+        const policyFor = policyForSpec(accessSpec)
         rows = iamTasks.map((task) => {
           const yours = policyFor(task)
           const v = verifyIamDecision(task, yours)
@@ -120,7 +139,7 @@ export function ReferenceCheckPage() {
         r = issueIamReferenceCheck({ agentConfig, policyFor, computeLevel, issuedAt: null })
         envDigest = iamEnvDigest(); versions = IAM_VERSIONS
         battery = iamTasks
-        selectedPolicy = iamSpec
+        selectedPolicy = accessSpec
       }
 
       const rv = verifyCredential({ credential: r.credential, liveConfig: agentConfig, envBundleDigest: envDigest, versions })
@@ -137,9 +156,9 @@ export function ReferenceCheckPage() {
       const thumb = await keyThumbprint(evidence.signature.sigil.pubkey_jwk)
       if (revision !== inputRevision.current) return
       setResult({
-        scenario, level: r.credential.rsl_level as string, passRate: r.credential.pass_rate as number, coldPassRate: r.credential.cold_pass_rate as number,
-        lift: r.credential.lift as number, catastrophic: r.catastrophic, configDigest: r.credential.config_digest as string,
-        rows, credential: r.credential, reVerifyCode: rv.code, evidence, sigilThumbprint: thumb, driftCode: null,
+        scenario, coldPassRate: r.credential.cold_pass_rate as number,
+        lift: r.credential.lift as number, catastrophic: r.catastrophic,
+        rows, credential: r.credential, reVerifyCode: rv.code, evidence, inputDigest: evidence.proposal.input_digest, sigilThumbprint: thumb, driftCode: null,
         verifyFragment: encodeArtifact(evidence),
       })
       setChecked(checkStamp(startedAt))
@@ -160,6 +179,13 @@ export function ReferenceCheckPage() {
     setResult({ ...result, driftCode: rv.code })
   }
 
+  // Grades the same requests with every safeguard off; the declared configuration is kept.
+  // run() clears the shown result itself, and no run is in flight while this button shows.
+  const tryPermissiveBaseline = () => {
+    selectPreset('permissive')
+    void run({ support: SUPPORT_PRESETS.permissive.spec, iam: PRESETS.permissive.spec })
+  }
+
   const download = (obj: unknown, name: string) => {
     const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -178,13 +204,16 @@ export function ReferenceCheckPage() {
     permissive: 'All safeguards off. Compare the same battery with an unbounded policy.',
   }
   const taskCount = scenario === 'support' ? supportTasks.length : iamTasks.length
+  const misses = result ? result.rows.filter(isMiss) : []
+  const stricterCount = misses.filter(stricter).length
 
   return (
     <div className="rc-grid product-workspace" onChangeCapture={invalidateResult}>
       <ol className="workspace-steps" aria-label="Reference-check workflow">
-        <li><span>01</span><div><b>Declare the inputs</b>Scenario, configuration, policy</div></li>
-        <li><span>02</span><div><b>Inspect the decisions</b>Matches, misses, over-grants</div></li>
-        <li><span>03</span><div><b>Check the evidence</b>Download, tamper, re-verify</div></li>
+        <li><span>01</span><div><b>Declare the inputs</b>Scenario and configuration</div></li>
+        <li><span>02</span><div><b>Select the policy</b>Preset or controls</div></li>
+        <li><span>03</span><div><b>Inspect the decisions</b>Matches, misses, over-grants</div></li>
+        <li><span>04</span><div><b>Keep the evidence</b>Download, re-verify, change a tool</div></li>
       </ol>
       {/* Scenario switch */}
       <div className="rc-scenarios">
@@ -198,9 +227,10 @@ export function ReferenceCheckPage() {
 
       {/* 1 · agent */}
       <div className="rc-card rc-config">
-        <p className="rc-step">01 · Declared configuration</p>
+        <p className="rc-step">01 · Declared configuration · bound by digest, not observed</p>
         <h2>What inputs are you declaring?</h2>
-        <p className="rc-hint">Use the defaults or enter configuration identifiers. These values bind the evidence to this declaration; they do not connect a live agent.</p>
+        <p className="rc-hint">Use the defaults or type configuration identifiers. The record binds them as digests: <code>subject.model_digest</code> (model), <code>subject.tools_digest</code> (tools, in the order typed) and <code>proposal.input_digest</code> (all four fields with the policy, the request ids and the versions). It does not store what you typed, but a digest of a common name can be matched by guessing, so do not type anything private. Nothing here connects to, inspects or runs an agent.</p>
+        <p className="rc-hint rc-proposed"><b>Proposed — not built:</b> your team's policy file and repository commit, bound instead of typed labels.</p>
         <div className="rc-fields">
           <label className="rc-field"><span>Model</span><input value={agent.model} onChange={(e) => setAgent({ ...agent, model: e.target.value })} /></label>
           <label className="rc-field"><span>Tools (comma-separated)</span><input value={agent.tools} onChange={(e) => setAgent({ ...agent, tools: e.target.value })} /></label>
@@ -211,11 +241,12 @@ export function ReferenceCheckPage() {
 
       {/* 2 · policy */}
       <div className="rc-card rc-policy">
-        <p className="rc-step">02 · Selected policy</p>
+        <p className="rc-step">02 · Selected policy · the rules under test</p>
         <h2>Which decisions should the policy allow?</h2>
         <p className="rc-hint">
-          Compare a preset or tune the controls. The fixed battery tests {taskCount} proposed {scenario === 'support' ? 'support actions' : 'access decisions'} against the same deterministic oracle.
+          Compare a preset or tune the controls. The fixed battery is {taskCount} synthetic {scenario === 'support' ? 'support' : 'access'} requests written by Origin (<code>{scenario === 'support' ? SUPPORT_GYM_VERSION : IAM_GYM_VERSION}</code>), bound in <code>subject.environment_digest</code>. The expected answers come from Origin's answer key, named by <code>subject.verifier_version</code> (<code>{(scenario === 'support' ? SUPPORT_VERSIONS : IAM_VERSIONS).verifier_version}</code>); the record lists each answer in <code>evaluation.decisions</code> but does not hash the oracle's code. You cannot edit either here. The record carries these settings in <code>evaluation.policy_parameters</code> and their digest in <code>subject.policy_digest</code>. A record is only as strong as its requests.
         </p>
+        <p className="rc-hint rc-proposed"><b>Proposed — not built:</b> requests and expected answers agreed with your reviewer before a run, plus held-out requests.</p>
         <div className="rc-presets">
           {Object.entries(presets).map(([key, p]) => (
             <button key={key} type="button" aria-pressed={presetKey === key} className={`rc-preset${presetKey === key ? ' is-on' : ''}`} onClick={() => applyPreset(key)}>
@@ -249,7 +280,7 @@ export function ReferenceCheckPage() {
           </div>
         )}
         <div className="rc-actions">
-          <button className="btn btn--primary" onClick={run} disabled={busy} aria-busy={busy}>{busy ? 'Running the check…' : 'Run the reference check'}</button>
+          <button className="btn btn--primary" onClick={() => run()} disabled={busy} aria-busy={busy}>{busy ? 'Running the check…' : 'Run the reference check'}</button>
         </div>
         {error ? <p className="rc-error" role="alert">Error: {error}</p> : null}
       </div>
@@ -259,16 +290,22 @@ export function ReferenceCheckPage() {
         <div className="rc-card rc-output">
           <p className="rc-step">03 · Evaluation result</p>
           <h2>Where did the policy match the oracle?</h2>
-          <div ref={verdictRef} className="check-feedback">
+          <div ref={verdictRef} className="check-feedback" tabIndex={-1}>
           <div className={`rc-verdict ${verdictClass}`} role="status" aria-live="polite">
             <b>{result.rows.filter((r) => r.passed).length} of {result.rows.length}</b>
             <span>synthetic decisions match the oracle</span>
-            <span className="rc-verdict__meta">unbounded baseline {Math.round(result.coldPassRate * 100)}% · lift +{Math.round(result.lift * 100)}% · config {short(result.configDigest)} · tier label {result.level} on this synthetic battery only — it grants no autonomy or deployment permission</span>
+            <span className="rc-verdict__meta">unbounded baseline {Math.round(result.coldPassRate * 100)}% · lift +{Math.round(result.lift * 100)}% · input_digest {short(result.inputDigest)} · synthetic battery only; grants no autonomy or deployment permission</span>
           </div>
           {checked && <p className="rc-checked">Checked {checked.time} · {checked.elapsedMs} ms</p>}
           </div>
+          {misses.length + result.catastrophic > 0 ? (
+            <p className="rc-hint">Misses: {stricterCount} stricter than the oracle, {misses.length - stricterCount} looser. Over-grants, counted separately: {result.catastrophic}.</p>
+          ) : null}
+          {misses.length > 0 && stricterCount === misses.length && result.catastrophic === 0 ? (
+            <p className="rc-hint">Every miss here is stricter than the oracle: the policy escalated a request the oracle allows, or refused one the oracle allows or escalates. None is looser.</p>
+          ) : null}
           {result.catastrophic > 0 ? (
-            <p className="rc-hint rc-hint--warn"><b>{result.catastrophic} catastrophic over-grant{result.catastrophic > 1 ? 's' : ''}</b> — {result.scenario === 'iam' ? 'your policy allowed an access request the oracle denies or escalates (forbidden resource, tainted principal or high-sensitivity resource)' : 'your policy allowed a request the oracle denies or escalates (personal data, destructive, fraud-flagged or approval-gated)'}. A single catastrophic over-grant caps the level: the right to act can’t be averaged back.</p>
+            <p className="rc-hint rc-hint--warn"><b>{result.catastrophic} catastrophic over-grant{result.catastrophic > 1 ? 's' : ''}</b> — {result.scenario === 'iam' ? 'your policy allowed an access request the oracle denies or escalates (forbidden resource, tainted principal or high-sensitivity resource)' : 'your policy allowed a request the oracle denies or escalates (personal data, destructive, fraud-flagged or approval-gated)'}. Matches on other requests do not offset an over-grant.</p>
           ) : (
             <p className="rc-hint">No catastrophic over-grants in this fixed battery — the legacy configuration-bound credential re-verified locally{result.reVerifyCode === 0 ? ' (code 0)' : ` (code ${result.reVerifyCode})`}. This is not evidence that the named agent executed.</p>
           )}
@@ -288,16 +325,20 @@ export function ReferenceCheckPage() {
                 {result.rows.map((r) => (
                   <tr key={r.id} className={r.catastrophic ? 'rc-row--cat' : r.passed ? '' : 'rc-row--miss'}>
                     <td><b>{r.label}</b></td><td>{r.sub}</td><td>{r.yours}</td><td>{r.oracle}</td>
-                    <td>{r.catastrophic ? '⛔ over-grant' : r.passed ? '✓ match' : '△ miss'}</td>
+                    <td>{r.catastrophic ? '⛔ over-grant' : r.passed ? '✓ match' : stricter(r) ? '△ miss (stricter)' : '△ miss (looser)'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          <div className="rc-legend">
+            <p className="rc-hint"><b>Reading the table.</b> Oracle: Origin's fixed answer key for these {result.rows.length} requests. <b>allow</b>: the request may proceed · <b>deny</b>: refused · <b>escalate</b>: the policy should hand the request to a person to approve; in this demo nothing is held and no one is asked (the proposed runtime design, not built, calls this PAUSE). A miss is <b>stricter</b> when the policy answers more strictly than the oracle (allow, then escalate, then deny) and <b>looser</b> when it answers less strictly. An over-grant is an allow on a security-critical request that the oracle denies or escalates; over-grants are counted separately from misses.</p>
+            <p className="rc-hint">In the downloaded record, <code>authorization.verdict: deny</code> means the record grants no execution authority. It is not the policy's result.</p>
+          </div>
 
           {/* 4 · evidence + drift */}
           <p className="rc-step" style={{ marginTop: 26 }}>04 · Keep the evidence</p>
-          <p className="rc-hint">Can another reviewer detect a change? Download the signed record, re-verify it, then change a bound field.</p>
+          <p className="rc-hint">Download the signed record and re-verify it: an edit made without re-signing shows as VOID. Then change a tool to see the legacy configuration-bound credential void (code 4).</p>
           <div className="rc-actions">
             <button className="btn btn--primary btn--sm" onClick={() => download(result.evidence, 'reference-check.policy-evaluation.json')}>Download signed policy-evaluation evidence</button>
             <a className="btn btn--ghost btn--sm" href={result.verifyFragment ? `/verify#a=${result.verifyFragment}` : '/verify'}>Re-verify it on /verify →</a>
@@ -316,8 +357,14 @@ export function ReferenceCheckPage() {
             </p>
           ) : null}
           <p className="rc-hint">
-            This browser-generated synthetic demo credential is an Action/Run envelope signed with a browser-session key (thumbprint <code>{short(result.sigilThumbprint)}</code>) for tamper evidence only. Paste it into <a href="/verify">/verify</a>: it correctly renders <b>UNTRUSTED</b> because this ephemeral key is not issuer-pinned, and <b>not attempted</b> because no named agent ran and no provider confirmed an effect. An edit made without re-signing shows as VOID; the labels in the signature block (issuer, kind, thumbprint, signed_at) are not signed. Synthetic pilot battery; real design-partner evidence stays blocked until authorized.
+            This browser-generated synthetic demo credential is an Action/Run envelope signed with a browser-session key (thumbprint <code>{short(result.sigilThumbprint)}</code>) for tamper evidence only. Open it in <a href="/verify">/verify</a> with the link above, or paste the downloaded file: it renders <b>UNTRUSTED</b> because this key was made in your browser and is not issuer-pinned, and <b>not attempted</b> because no named agent ran and no provider confirmed an effect. An edit made without re-signing shows as VOID; the labels in the signature block (issuer, kind, thumbprint, signed_at) are not signed. Synthetic demo battery; real design-partner evidence stays blocked until authorized.
           </p>
+          {presetKey === 'least-privilege' || presetKey === 'moderate' ? (
+            <div className="rc-baseline">
+              <button type="button" className="btn btn--ghost btn--sm" onClick={tryPermissiveBaseline}>Try the permissive baseline</button>
+              <p className="rc-hint">Runs the same {result.rows.length} requests with every safeguard off, so you can compare its over-grants with this result.</p>
+            </div>
+          ) : null}
         </div>
       ) : (
         <div className="workspace-empty rc-empty">

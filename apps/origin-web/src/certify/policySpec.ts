@@ -40,7 +40,7 @@ export const PRESETS: Record<string, { label: string; blurb: string; spec: Polic
   },
   permissive: {
     label: 'Permissive (the dangerous baseline)',
-    blurb: 'Guards off — the naive over-granting agent. Expect catastrophic over-grants and a capped level.',
+    blurb: 'Guards off — the naive over-granting agent. Expect catastrophic over-grants.',
     spec: { honorRoleAllowlist: false, denyForbidden: false, denyTainted: false, escalateOnApproval: false, autoAllowUpTo: 'forbidden' },
   },
 }
@@ -77,7 +77,7 @@ export const SUPPORT_PRESETS: Record<string, { label: string; blurb: string; spe
   },
   permissive: {
     label: 'Permissive (the dangerous baseline)',
-    blurb: 'Guards off — the naive agent discloses PII, changes bank details, and deletes accounts. Expect catastrophic over-grants and a capped level.',
+    blurb: 'Guards off — the naive agent discloses PII, changes bank details, and deletes accounts. Expect catastrophic over-grants.',
     spec: { refundCap: 100000, denyPii: false, denyForbidden: false, denyTainted: false, requireApprovalHigh: false },
   },
 }

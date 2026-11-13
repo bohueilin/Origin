@@ -196,8 +196,8 @@ export function VerifyPage() {
       setSelectedExample(kind)
       setTampered(false)
       const provenance = liveKeyExamples.has(kind)
-        ? 'signed just now with an in-session key from synthetic checked-in inputs'
-        : 'generated from synthetic checked-in inputs'
+        ? 'signed in this tab with a new key, from synthetic checked-in inputs; the dates inside are fixed sample values, not the signing time'
+        : 'generated from synthetic checked-in inputs; any dates inside are fixed sample values'
       reset(pristine, [`Loaded a synthetic sandbox ${KIND_LABELS[detected]}, ${provenance} — labeled synthetic in its fields.`])
     } catch (e) {
       if (revision === inputRevision.current) {

@@ -5,11 +5,11 @@
 > Current boundary: browser-local synthetic evaluation, session-signed and unpinned evidence, execution not attempted. A valid demo signature does not establish trusted Origin issuance, customer deployment, production readiness, or certification. Runtime enforcement and a controlled tool-call proxy remain proposed pilot architecture, not deployed general capabilities.
 
 ## Implemented public workflow
-1. Bind the model, tools, policy, budget, and scenario battery into the evaluation configuration.
+1. Bind the declared model, tools, context and harness, the selected policy, and the scenario battery into the evaluation record.
 2. Challenge deterministic policy logic with synthetic tasks.
 3. Grade the decisions with the deterministic oracle.
 4. Produce a configuration-bound, browser-session-signed demo artifact.
-5. Reverify supported artifact checks offline. Changing a bound field produces a configuration-drift failure (VOID).
+5. Reverify supported artifact checks offline. On /reference-check, adding a tool voids the legacy configuration-bound credential (VOID, code 4); in the downloaded record, an edit made without re-signing shows as VOID.
 
 The public demo does not execute production actions, connect a customer's agent to a live tool-call proxy, or establish trusted issuer identity. Artifact integrity, policy evaluation, and release authority are separate questions.
 
@@ -25,13 +25,13 @@ Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace pr
 
 ## Evidence ladder
 - TR-A001: authored specimen of the evidence-package format. Illustrative, not a machine-emitted run. See /proof#tr-a001.
-- TR-A002: machine-emitted sandbox trace, available now. Twelve events with a re-verifiable SHA-256 chain; final digest ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32. Download /proof/tr-a002.json and recheck with npm run proof:verify. No live money, customer data, performance claim, or reviewer acceptance. See /proof#tr-a002.
+- TR-A002: machine-emitted trace of a scripted scenario, available now. Twelve scripted events with a re-verifiable SHA-256 chain; final digest ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32. Download /proof/tr-a002.json and recheck that file with node scripts/verify-tr-a002.mjs tr-a002.json in the apps/origin-web folder of the public repository, or paste it into /verify. No agent, policy gate, proxy, approver or sandbox ran. No live money, customer data, performance claim, or reviewer acceptance. See /proof#tr-a002.
 - TR-A003: first external design-partner trace, not earned yet. No data is published for it.
 
 ## Evidence boundaries
 “Tamper-evident” means the relevant integrity check can detect alteration under its bindings. It does not establish universal safety or correctness. “Review-ready” means a reviewer can inspect the evidence; it does not mean a reviewer has accepted it. Origin is decision-support and evidence infrastructure, not production SaaS, legal advice, or compliance certification.
 
-Keep authored specimens, machine-emitted sandbox traces, synthetic evaluations, generated counterfactuals, authorized fixtures, and approved real customer evidence distinct. Real customer readiness remains blocked until separately authorized evidence passes the relevant checks.
+Keep authored specimens, machine-emitted traces of scripted scenarios, synthetic evaluations, generated counterfactuals, authorized fixtures, and approved real customer evidence distinct. Real customer readiness remains blocked until separately authorized evidence passes the relevant checks.
 
 ## Labs
 Labs demonstrates aspects of a common evidence contract in bounded simulations: robot proving ground, warehouse simulation, fleet operations, a mock-vault credential broker, and a sample-floor Foundry workflow. These are research demonstrations, not production products, robot deployment, or robot certification.

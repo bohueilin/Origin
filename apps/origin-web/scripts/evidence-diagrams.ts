@@ -31,16 +31,16 @@ function lines(value: string, max: number): string[] {
   while (value.length > max) { let cut = value.lastIndexOf('.', max); if (cut < 4) cut = value.lastIndexOf('_', max); cut = cut < 4 ? max : cut + 1; out.push(value.slice(0, cut)); value = value.slice(cut) }
   return [...out, value]
 }
-const lane = ['Machine-emitted · one simulated,', 'sandboxed workflow ·', 'not a customer deployment']
+const lane = ['Machine-emitted · one scripted', 'scenario, marked sandbox-only ·', 'not a customer deployment']
 const svgStart = (kind: string, layout: string, width: number, height: number, title: string, description: string) => `<svg class="diagram-${layout}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="${kind}-${layout}-title ${kind}-${layout}-desc"><title id="${kind}-${layout}-title">${title}</title><desc id="${kind}-${layout}-desc">${description}</desc>`
 
 export function renderTraceDiagram(trace: Trace, summary: Summary): string {
   validateTrace(trace, summary)
   const draw = (mobile: boolean) => {
     const positions = trace.events.map((_, i) => mobile ? { x: 8, y: 102 + i * 238, w: 244, h: 188 } : { x: 18 + (i < 6 ? i : 11 - i) * 182, y: i < 6 ? 95 : 370, w: 172, h: 180 })
-    let svg = svgStart('trace', mobile ? 'mobile' : 'desktop', mobile ? 260 : 1120, mobile ? 102 + trace.event_count * 238 : 620, 'TR-A002: twelve events in the verified hash chain', 'One simulated sandbox workflow. Links show the previous event hash. A solid marker identifies the executed sandbox side effect; held and denied events are labeled.')
-    svg += mobile ? lane.map((l, i) => text(8, 20 + i * 17, l, 'diagram-lane', 12)).join('') : text(18, 25, 'Machine-emitted · one simulated, sandboxed workflow · not a customer deployment', 'diagram-lane', 12)
-    svg += text(mobile ? 8 : 18, mobile ? 80 : 53, '● Executed sandbox side effect', 'diagram-lane', 12)
+    let svg = svgStart('trace', mobile ? 'mobile' : 'desktop', mobile ? 260 : 1120, mobile ? 102 + trace.event_count * 238 : 620, 'TR-A002: twelve events in the verified hash chain', 'One scripted scenario, marked sandbox-only. Links show the previous event hash. A solid marker identifies the event marked as an executed side effect (scripted); held and denied events are labeled.')
+    svg += mobile ? lane.map((l, i) => text(8, 20 + i * 17, l, 'diagram-lane', 12)).join('') : text(18, 25, 'Machine-emitted · one scripted scenario, marked sandbox-only · not a customer deployment', 'diagram-lane', 12)
+    svg += text(mobile ? 8 : 18, mobile ? 80 : 53, '● Marked executed (scripted)', 'diagram-lane', 12)
     trace.events.forEach((e, i) => {
       const p = positions[i], held = /held|blocked/.test(e.action) || e.verdict === 'deny'
       const state = e.action === 'evidence.digest_sealed' ? 'seal' : e.verdict === 'deny' ? 'block' : e.verdict === 'approved' ? 'ok' : e.verdict === 'require_approval' || e.action === 'approval.requested' ? 'held' : 'plan'
@@ -64,7 +64,7 @@ export function renderTraceDiagram(trace: Trace, summary: Summary): string {
     })
     return svg + '</svg>'
   }
-  const list = trace.events.map(e => `<li id="trace-ev-${e.seq}">Event ${e.seq}: ${escape(e.action)}; tool ${escape(e.tool || 'none')}; verdict ${escape(e.verdict || 'none')}; sandbox side effect ${e.side_effect?.executed ? 'executed' : 'not executed'}. Hash ${e.event_hash}; previous ${e.prev_hash}.</li>`).join('')
+  const list = trace.events.map(e => `<li id="trace-ev-${e.seq}">Event ${e.seq}: ${escape(e.action)}; tool ${escape(e.tool || 'none')}; verdict ${escape(e.verdict || 'none')}; side effect ${e.side_effect?.executed ? 'marked executed (scripted)' : 'not marked executed'}. Hash ${e.event_hash}; previous ${e.prev_hash}.</li>`).join('')
   return `<figure class="evidence-diagram" data-diagram="trace"><div class="diagram-scroll" tabindex="0" role="group" aria-label="TR-A002 hash chain; scroll horizontally at intermediate widths">${draw(false)}${draw(true)}</div><ol class="sr-only">${list}</ol><figcaption>Computed from <a href="/proof/tr-a002.json">/proof/tr-a002.json</a>. Re-verify the chain yourself: <code>${escape(summary.verify_command)}</code>. Link labels show the preceding event’s hash; the final node shows the seal.<span data-trace-block hidden></span></figcaption><div class="trace-controls"><button type="button" class="btn btn--ghost" data-trace-step hidden aria-pressed="false">Step through the chain</button><p role="status" aria-live="polite" data-trace-detail></p></div></figure>`
 }
 

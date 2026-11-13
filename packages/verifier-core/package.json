@@ -66,6 +66,10 @@
       "types": "./mcp-adapter.d.mts",
       "default": "./mcp-adapter.mjs"
     },
+    "./missDirection": {
+      "types": "./missDirection.d.mts",
+      "default": "./missDirection.mjs"
+    },
     "./package.json": "./package.json"
   },
   "engines": {

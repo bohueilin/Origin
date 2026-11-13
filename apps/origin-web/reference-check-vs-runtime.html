@@ -79,12 +79,12 @@
       <section class="editorial-hero"><div class="shell"><div class="editorial-hero__grid diagram-hero"><div>
         <p class="kicker">Technical explainer · source-backed</p>
         <h1>Reference check vs runtime enforcement</h1>
-        <p class="section__lede"><b>Origin is the evidence layer for AI agents:</b> a working prototype for agent-platform, security, trust, and infrastructure teams, currently seeking design partners. It tests proposed actions with deterministic verifiers, separates capability from permission, and produces evidence that can be independently rechecked.</p>
+        <p class="section__lede"><b>Origin is the evidence layer for AI agents:</b> a working prototype for agent-platform, security, trust, and infrastructure teams, currently seeking design partners. Its browser reference check grades a selected policy against fixed synthetic requests with deterministic code, separates capability from permission, and produces a record a reviewer can re-check in their own browser.</p>
         <p class="mono-note">Model proposes. Environment verifies. Gate decides. Trace proves. Capability is not permission.</p>
         </div></div><!-- ORIGIN:POSTURE -->
         <nav class="editorial-jumps" aria-label="On this page"><a href="#reference-check"><span>01</span>Implemented today</a><a href="#runtime-enforcement"><span>02</span>Proposed architecture</a><a href="#boundaries"><span>03</span>Trust boundaries</a><a href="#provenance"><span>04</span>Evidence provenance</a></nav>
         <div class="mode-grid">
-          <article class="mode-card" id="reference-check"><span class="status">Implemented today</span><h2>Synthetic pre-access reference check</h2><p>The checked-in browser flow runs synthetic support and IAM task batteries against deterministic policy logic before production access. It produces synthetic, session-signed, unpinned evidence; execution is not attempted. Changing a bound tool or configuration makes verification fail. A valid demo signature does not establish trusted Origin issuance.</p><p><a href="/reference-check">Run the synthetic reference check →</a></p></article>
+          <article class="mode-card" id="reference-check"><span class="status">Implemented today</span><h2>Synthetic pre-access reference check</h2><p>The checked-in browser flow runs synthetic support and IAM task batteries against deterministic policy logic before production access. It produces synthetic, session-signed, unpinned evidence; execution is not attempted. On /reference-check, adding a tool voids the legacy configuration-bound credential (code 4); in the downloaded record, an edit made without re-signing shows as VOID. A valid demo signature does not establish trusted Origin issuance.</p><p><a href="/reference-check">Run the synthetic reference check →</a></p></article>
           <article class="mode-card" id="runtime-enforcement"><span class="status status--future">Proposed architecture</span><h2>Runtime enforcement through a controlled proxy</h2><p>The broader design places a deterministic gate between an agent proposal and a consequential side effect. The gate would evaluate permission, scope, policy, budget, and approval requirements; only an allowed action would reach a controlled executor. This page does not claim that architecture is generally available or deployed for customers.</p><p><a href="/trust">Inspect the trust model →</a></p></article>
         </div>
       </div></section>
@@ -99,9 +99,9 @@
       </div></section>
       <section class="section editorial-section" aria-labelledby="provenance"><div class="shell">
         <h2 id="provenance">Evidence provenance and limitations</h2>
-        <p>Origin keeps four checked-in categories distinct: machine-emitted sandbox evidence, authored examples, synthetic evaluations, and authorized fixtures. None is presented here as external customer evidence, production adoption, certification, or reviewer acceptance.</p>
+        <p>Origin keeps four checked-in categories distinct: machine-emitted traces of scripted scenarios, authored examples, synthetic evaluations, and authorized fixtures. None is presented here as external customer evidence, production adoption, certification, or reviewer acceptance.</p>
         <ul class="evidence-list">
-          <li><a href="/proof#tr-a002">TR-A002</a> is a machine-emitted sandbox trace whose SHA-256 chain can be recomputed.</li>
+          <li><a href="/proof#tr-a002">TR-A002</a> is a machine-emitted trace of a scripted scenario whose SHA-256 chain can be recomputed.</li>
           <li><a href="/verify">/verify</a> recomputes supported artifact digests, signatures, bindings, chains, and inclusion proofs offline in the browser.</li>
           <li><a href="/proof">The evidence ladder</a> labels authored and machine-emitted artifacts separately.</li>
           <li>The implemented reference check uses synthetic task distributions. The runtime gate and controlled-proxy flow above remain proposed architecture, not evidence of a customer deployment.</li>

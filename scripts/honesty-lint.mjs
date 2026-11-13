@@ -358,6 +358,141 @@ const LAUNCH_CONTRACTS = [
       [/unpinned/i, 'the unpinned signer boundary'],
     ],
   },
+  // Wave 1: claims corrections. TR-A002 is a machine-emitted trace of a scripted scenario:
+  // the generator writes `sandbox: true` into each event, but no agent, gate, proxy,
+  // approver or sandbox ran. A browser-session signature catches an edit made without
+  // re-signing, not every edit. New objects only; the ones above stay untouched.
+  {
+    file: 'apps/origin-web/proof.html',
+    forbid: [
+      [/This one is not authored/i, 'TR-A002 described as not authored (its scenario is scripted)'],
+      [/through\s+the\s+runtime/i, 'TR-A002 described as run through the runtime'],
+      [/a real control moment/i, 'a scripted block described as a real control moment'],
+      [/The proxy blocked it/i, 'a scripted block described as a proxy action'],
+      [/Human approver grants/i, 'a scripted approval described as a human grant'],
+      [/single byte changed/i, 'an any-byte claim (whitespace and the top-level description are outside the chain)'],
+      [/Change any byte of any event/i, 'an any-byte claim (whitespace and the top-level description are outside the chain)'],
+      [/tamper any field/i, 'an any-field claim (the top-level description is outside the chain)'],
+      [/not hand-written|not authored by hand/i, 'TR-A002 described as not hand-written (its scenario is scripted)'],
+      [/\bproves\b/i, '"proves" for what a scripted trace shows'],
+      [/sandbox trace|plumbing in sandbox|sandboxed (?:scenario|workflow|agent action)|Available · sandbox/i, 'wording that says or implies a sandbox ran'],
+      [/Edit any field of any event and it exits/i, 'an unscoped edit claim (an edit with recomputed hashes is caught only by the published final digest)'],
+      [/download the JSON and run\s+npm run proof:verify/i, 'npm run proof:verify given as the check for a download (it checks the repository copy)'],
+    ],
+    require: [
+      [/scripted\s+scenario/i, 'the scripted-scenario scope of TR-A002'],
+      [/outside\s+the\s+chain/i, 'the limit that the top-level description is outside the chain'],
+    ],
+  },
+  {
+    // The trace diagram the Vite plugin renders into /proof at build time.
+    file: 'apps/origin-web/scripts/evidence-diagrams.ts',
+    forbid: [
+      [/sandboxed/i, 'sandboxed wording in the trace diagram (no sandbox ran)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/reference-check-vs-runtime.html',
+    forbid: [
+      [/sandbox evidence/i, 'machine-emitted sandbox evidence (no sandbox ran)'],
+      [/independently rechecked/i, 'independent re-checking (the check is Origin\'s own verifier)'],
+      [/Changing a bound tool or configuration makes verification fail/i, 'an unscoped drift claim (code 4 applies to the legacy credential)'],
+    ],
+    require: [
+      [/machine-emitted\s+trace\s+of\s+a\s+scripted\s+scenario/i, 'TR-A002 named as a machine-emitted trace of a scripted scenario'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/index.html',
+    forbid: [
+      [/sandbox trace|plumbing in sandbox|sandboxed (?:scenario|workflow|agent action)|Available · sandbox/i, 'wording that says or implies a sandbox ran'],
+      [/independently checkable/i, 'independent checking (the check is Origin\'s own verifier)'],
+      [/Unpinned browser signers stay UNTRUSTED/i, 'a blanket UNTRUSTED claim (the Labs records verify VALID)'],
+      [/inspect the oracle record/i, 'an oracle record the proving ground does not issue'],
+      [/Change one bound field and the verifier returns/i, 'an unscoped VOID claim in demo panel 5 (a re-signed edit reads UNTRUSTED)'],
+      [/escalate\s+to\s+a\s+named\s+human/i, 'a named human approver (the proposed PAUSE is not built)'],
+      [/independently verifiable/i, 'independent verification in the head meta'],
+    ],
+    require: [
+      [/\bscripted\b/i, 'the scripted scope of TR-A002'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/home/enhance.ts',
+    forbid: [
+      [/change one bound field and it returns VOID/i, 'an unscoped VOID claim in the panel 5 caption (a re-signed edit reads UNTRUSTED)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/verify.html',
+    forbid: [
+      [/Independent evidence verification/i, 'independent verification (the check is Origin\'s own verifier)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/reference-check.html',
+    forbid: [
+      [/check independently/i, 'independent checking (the check is Origin\'s own verifier)'],
+      [/for tamper detection/i, 'an unscoped tamper claim (a session signature catches an edit made without re-signing)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/brief.html',
+    forbid: [
+      [/policy,\s*budget,\s*and\s+scenario battery/i, 'a budget the configuration does not bind'],
+    ],
+    require: [
+      [/scripted/i, 'the scripted scope of TR-A002'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/public/llms.txt',
+    forbid: [
+      [/policy,\s*budget,\s*and\s+scenario battery/i, 'a budget the configuration does not bind'],
+      [/Changing a bound field produces a configuration-drift failure/i, 'an unscoped drift claim (code 4 applies to the legacy credential)'],
+      [/machine-emitted sandbox traces?/i, 'wording that says or implies a sandbox ran'],
+      [/recheck with npm run proof:verify/i, 'npm run proof:verify given as the check for a download (it checks the repository copy)'],
+    ],
+    require: [
+      [/scripted/i, 'the scripted scope of TR-A002'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/public/rsi/rsi_dashboard.html',
+    forbid: [
+      [/now has the contract for a design-partner pilot/i, 'a pilot-readiness claim (there is no design partner or pilot)'],
+      [/Customer-owned floor plans/i, 'Origin-owned synthetic floors labeled as customer-owned'],
+      [/ready for design-partner intake/i, 'a pilot-readiness claim (there is no design partner or pilot)'],
+      // Case-sensitive: the lowercase "commercial-safe" rights descriptions stay.
+      [/COMMERCIAL-SAFE SYNTHETIC/, 'the procedural lane named by a rights class instead of its source'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/reference-check/ReferenceCheckPage.tsx',
+    forbid: [
+      [/Tampering any field makes it VOID/i, 'an any-field VOID claim (the signature-block labels are not signed)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/security/SecurityPage.tsx',
+    forbid: [
+      [/independently re-verified/i, 'independent re-verification (the issuing page re-checks itself)'],
+      [/policyFor:\s*oraclePolicy\b/, 'the panel grading the answer key against itself'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/components/ReflectAlign.tsx',
+    forbid: [
+      [/stored separately in your account/i, 'a customer account the site does not offer'],
+      [/Checking your account/i, 'a customer account the site does not offer'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/src/verify/VerifyPage.tsx',
+    forbid: [
+      [/signed just now with an in-session key/, 'example dates read as the signing time (they are fixed sample values)'],
+    ],
+  },
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

@@ -17,7 +17,7 @@ Unified monorepo merging the source projects.
 - **Never commit `.env*`** except `.env.example` (`.gitignore` covers `.env*`).
 
 ## Layout
-- `apps/origin-web` — the LIVE site (Cloudflare Pages). Byte-preserve its HTML/og/robots/sitemap/insforge.toml.
+- `apps/origin-web` — the LIVE site (Cloudflare Pages). Byte-preserve canonical URLs, `og:url`, JSON-LD URLs, OG images, `public/legal/*` text, `robots.txt`, `sitemap.xml`, `insforge.toml`, and dated evidence under `public/trust/` and `public/proof/`, unless the task names explicit owner approval. Named HTML body edits are allowed.
 - `apps/janus` — Janus (formerly Passport; agent credential broker) + Autonomy Trace Console (eval gym).
 - `apps/chronos-ui` — Chronos front-end (React 18 + Tailwind).
 - `services/{cobra,chronos}` — Python (`uv`), each isolated with its own venv.

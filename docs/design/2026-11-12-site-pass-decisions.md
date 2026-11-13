@@ -143,3 +143,47 @@ Any fee is a later decision.
 **Lead dialog.** The dialog's note no longer says leads are stored with a database provider. It now reads "Sent over TLS to Origin; see the privacy policy. No spam.", with a link to the privacy policy.
 
 **Before release.** Before the release that ships this wave, the owner sends one test message to the address from an outside account and confirms that it arrives. No page claims tested delivery.
+
+**Wave 4b, as built and approved.** The owner approved the merged Wave 4b pages as built, including nine points the review raised:
+- The `/trust` and `/proof` copy control has the link colour and weight 600, with an underline only on hover, matching the home control so the address link and the button read as two things.
+- The home `#offer` section and the lead dialog do not repeat "send nothing confidential"; `/trust`, `/proof` and the `/reference-check` Book card do.
+- Without JavaScript, `#offer` offers "Or email …" after the brief link.
+- The full stop follows the copy button.
+- The Book card keeps its earlier hint beside the new summary.
+- The `/proof` offer summary has no label.
+- `llms.txt` and `/brief` keep their wording for now.
+- The dialog's privacy link opens in the same tab.
+- The copy handler stays delegated.
+
+Two fixes made after the review were also approved:
+- the home copy button keeps its width while its label changes, so a second tap lands on it;
+- the analytics test now checks every `dataLayer` entry after the page settles.
+
+## Wave 5 — Labs
+
+**Collision events are counted.** `/simulation` and `/operations` count collision events from the frames: the first tick at which a pair meets each of these conditions:
+- two robots share a cell, including a finished robot that stays parked;
+- two robots swap cells;
+- a robot and the human marker share a cell;
+- a robot and the human marker swap cells.
+
+A pair that stays together counts once, and counts again only after it has separated. The count is shown as measured.
+- **`/simulation`:** a counted event moves the run to ESCALATE. The default run counts one event, a robot and the human marker swapping cells, so it reads ESCALATE.
+- **`/operations`:** a shift with a counted event fails its targets at tier L0. The default shift counts none.
+- **Page descriptions:** they no longer say "collision-free".
+- **Share images:** they are unchanged, so their eyebrows no longer match the new Labs kickers.
+
+**Proving ground.**
+- **Tier label:** the page no longer shows a tier label, and the result still grants no deployment permission.
+- **The signed record:** it is renamed from `fleet-readiness-credential` to `synthetic-floor-evaluation`. It drops `autonomy_earned` and the tier field and gains `evidence_lane: synthetic-demo` and `execution_mode: simulated`. It also lists the wall, hazard and human-only cells (`site.wall_cells`, `site.hazard_cells`, `site.human_only_cells`) for readability; the site digest already binds the floor, and robot positions are never added. The template floor's pinned digest moves by design; its verdicts do not. Records downloaded earlier still verify.
+- **Reading guide:** a static "How to read the result" section uses one scorer name, "the oracle", and one set of verbs: finish, refuse and escalate.
+- **Hero:** the scope note is shorter.
+
+**Labs pages.**
+- **Kickers:** each Labs page's kicker names it as an Origin Labs experiment, and its scope note says it is not the product.
+- **Reading guides:** `/simulation` and `/operations` each gain a static "How to read the result" section.
+- **`/labs` cards:** the proving-ground card drops the tier wording, and the warehouse card describes only what the scene does.
+
+## Wave 6 — the dating rule
+
+`apps/origin-web/DESIGN_PRINCIPLES.md` gains a rule: a date on the site records when something happened, and it changes only when that thing happens again. No date is stamped by hand. The home gates strip and the `/trust` scoreboard refresh only through a release the owner dispatches, which re-runs the gates and stamps the deployed copy of the gates summary; nothing is committed back.

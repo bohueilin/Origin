@@ -544,6 +544,22 @@ const LAUNCH_CONTRACTS = [
       [/\b(safe|secure|certif)/i, 'safety, security or certification wording in the replay module'],
     ],
   },
+  // Wave 3: reference-check clarity. The result names no readiness tier and counts over-grants
+  // apart from misses; step 04 scopes VOID to an edit made without re-signing; the battery is a
+  // demo battery, since there is no pilot. New objects only.
+  {
+    file: 'apps/origin-web/src/reference-check/ReferenceCheckPage.tsx',
+    forbid: [
+      [/Synthetic pilot battery/, 'a pilot battery (there is no pilot; the battery is the synthetic demo battery)'],
+      [/detect a change/i, 'an unscoped change-detection claim (a session signature shows an edit made without re-signing)'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/index.html',
+    forbid: [
+      [/caps the result at\s+L0/i, 'a readiness tier in demo panel 3 (the reference check shows no tier; over-grants are counted on their own)'],
+    ],
+  },
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

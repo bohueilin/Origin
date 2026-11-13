@@ -1,6 +1,6 @@
 // Regression gate for the proving-ground template: presentation changes to the
 // floor editor must never move the oracle. The template floor, its fleet
-// composition and the fleet-readiness digest for the unchanged template are
+// composition and the signed record's digest for the unchanged template are
 // pinned here, so a design pass that touches scoring fails loudly.
 import { describe, expect, it } from 'vitest'
 import { canonical, sha256 } from '@origin/evidence/env-evidence'
@@ -9,8 +9,12 @@ import { starterUnderstanding } from './starterFloor'
 import { deployedEmbodiments, fleetReadiness } from './fleetReadiness'
 import { floorCounts } from './floorCounts'
 
-// Captured on main at f0d0e55, before the 2026-10-24 P0 editor redesign.
-const TEMPLATE_DIGEST = '4b1482e306c268dcb6252cc7543cf22d2de13db1c498b530e76166c003c20857'
+// Re-pinned in Wave 5 of the site pass (docs/design/2026-11-12-site-pass-decisions.md):
+// the record schema changed (kind synthetic-floor-evaluation, evidence_lane and
+// execution_mode added, the wall, hazard and human-only cells listed in site, no
+// tier or autonomy field). The floor, fleets, verdicts and counts asserted here are
+// unchanged. First captured on main at f0d0e55, before the 2026-10-24 P0 editor redesign.
+const TEMPLATE_DIGEST = 'c19c22192851d19024a7c93c4947b8047de6a62d0ce56ea0e6972fd5bffd8d9f'
 
 describe('proving-ground template floor', () => {
   const draft = starterUnderstanding()

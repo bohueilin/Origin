@@ -66,6 +66,11 @@
       .pg-evidence { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
       .pg-thumb { font-size: 12px; color: var(--ink-soft); font-family: ui-monospace, monospace; }
       @media (max-width: 720px) { .pg-episode__meta { margin-left: 20px; } }
+      .section.labs-read { padding: 48px 0; }
+      .labs-read h2 { font-size: clamp(24px, 2.5vw, 34px); font-weight: 600; line-height: 1.16; letter-spacing: -.035em; margin: 0 0 14px; }
+      .labs-read p { max-width: 75ch; font-size: var(--fs-15); line-height: 1.7; color: var(--ink-soft); margin: 0 0 12px; }
+      .labs-read p b { color: var(--ink); }
+      @media (max-width: 680px) { .section.labs-read { padding-top: 32px; } }
     </style>
   </head>
 
@@ -99,11 +104,11 @@
       <section class="section product-hero pg-hero" aria-labelledby="pg-title">
         <div class="shell pg-hero__grid">
           <div class="pg-hero__copy">
-          <p class="kicker">Physical AI · simulation lab</p>
+          <p class="kicker">Origin Labs · synthetic floor experiment</p>
           <h1 id="pg-title"><span>Draw a floor.</span> <span>Test a fleet.</span> <span>Inspect the evidence.</span></h1>
           <p class="section__lede">A small world for a consequential question. Draw the floor, watch a mixed fleet, and inspect the oracle’s result.</p>
           <a class="btn btn--primary" href="#floor-editor">Draw the floor <span aria-hidden="true">↓</span></a>
-          <p class="product-hero__scope">A synthetic simulation, with no physical robot connected. Geometry and robot types determine the result; playback is descriptive. This grants no real-world operating authority or safety certification. An <a href="/labs">Origin Labs</a> experiment: the same evidence contract in a bounded simulation; the agent reference check is the product. Signed records re-verify in the <a href="/verify">offline verifier</a>.</p>
+          <p class="product-hero__scope">An <a href="/labs">Origin Labs</a> experiment, not the product: the product is the <a href="/reference-check">agent reference check</a>. This is a synthetic grid simulation with no physical robot connected. Geometry and robot types determine the result; playback is descriptive. It grants no real-world operating authority or safety certification. Signed records re-verify in the <a href="/verify">offline verifier</a>.</p>
           </div>
           <figure class="pg-hero__image">
             <img src="/brand/proving-floor-800-2026-09-28.webp" srcset="/brand/proving-floor-small.webp 640w, /brand/proving-floor-800-2026-09-28.webp 800w, /brand/proving-floor.webp 1200w" sizes="(max-width: 720px) 100vw, 48vw" width="1200" height="800" alt="An imagined miniature warehouse with sage-green robot models and a planned route" fetchpriority="high" />
@@ -115,6 +120,13 @@
       <section class="section section--tint" id="floor-editor" aria-label="Robot proving ground console">
         <div class="shell">
           <div id="pg-root"></div>
+        </div>
+      </section>
+
+      <section class="section labs-read" aria-labelledby="pg-read-title">
+        <div class="shell">
+          <h2 id="pg-read-title">How to read the result</h2>
+          <p><b>What is scored.</b> One lane on the floor you draw: the route from the start, which is not drawn on the grid, to the first item and then the first drop, on a grid of 4 to 12 cells a side with four-way moves.</p><p><b>Verdicts.</b> Finish: a route avoids walls, hazards and human-only cells within the robot type's step and battery budgets. Refuse: the only routes that fit the budgets cross a hazard or human-only cell. Escalate: walls block every route, or none fits the budgets.</p><p><b>Robot types.</b> The oracle scores each robot type on the floor once, in its own episode, including the type of a fleet with no robots. Types differ only by their step and battery budgets, so they usually share a verdict.</p><p><b>Limits.</b> Where robots stand, the other items and drops, and the descriptive notes do not change the verdicts. No physics, sensing or real facility is represented.</p>
         </div>
       </section>
     </main>

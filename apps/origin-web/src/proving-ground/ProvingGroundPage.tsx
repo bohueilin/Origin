@@ -49,12 +49,11 @@ export function ProvingGroundPage() {
   const embodiment = snapshot?.embodiment ?? draft.embodiment
   const domain = snapshot?.domain ?? draft.domain
 
-  const { episodes, readiness, unverifiedFalseAccepts, digestInput } = useMemo(
+  const { episodes, unverifiedFalseAccepts, digestInput } = useMemo(
     () => fleetReadiness(siteMap, embodiment),
     [siteMap, embodiment],
   )
   const finished = episodes.filter(e => e.evaluation.verdict === 'finish').length
-  const level = readiness.level
   const inputDigest = sha256(canonical(digestInput))
   // A signature is displayed only beside the exact evaluated input it seals,
   // including when the visitor edits the floor while Web Crypto is still busy.
@@ -67,13 +66,13 @@ export function ProvingGroundPage() {
     requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' }))
   }
 
-  const signCredential = async () => {
+  const signEvaluation = async () => {
     setSigning(true)
     setSignError(null)
     try {
       const payload = { ...digestInput, receipt_digest: sha256(canonical(digestInput)) }
       const kp = await generateSigningKey()
-      const s = await signSigil(payload, kp, { issuer: 'origin-proving-ground', kind: 'fleet-readiness-credential' })
+      const s = await signSigil(payload, kp, { issuer: 'origin-proving-ground', kind: 'synthetic-floor-evaluation' })
       setSigil({ thumb: await keyThumbprint(s.pubkey_jwk), obj: s, inputDigest })
     } catch (e) {
       setSignError(e instanceof Error ? e.message : String(e))
@@ -88,7 +87,7 @@ export function ProvingGroundPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'fleet-readiness.sigil.json'
+    a.download = 'synthetic-floor-evaluation.sigil.json'
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -160,20 +159,20 @@ export function ProvingGroundPage() {
             <p className="pg-verdict__line">
               <b>{finished} of {episodes.length} synthetic robot-type evaluations finish under the fixed oracle.</b>
             </p>
-            <p className="pg-verdict__perm">Synthetic tier {level.id} under this fixed verifier; no deployment permission.</p>
+            <p className="pg-verdict__perm">This result grants no deployment permission.</p>
             <p className="pg-verdict__scope">The outcomes describe this exact synthetic floor. Simulation evidence is not real-world validation or robot certification.</p>
           </div>
         </div>
 
         <div className="pg-evidence">
           {!sigil
-            ? <button className="btn btn--primary btn--sm" onClick={signCredential} disabled={signing || (!frozen && !snapshot)} aria-busy={signing}>
+            ? <button className="btn btn--primary btn--sm" onClick={signEvaluation} disabled={signing || (!frozen && !snapshot)} aria-busy={signing}>
                 {signing ? 'Signing this floor…' : 'Sign synthetic floor evidence'}
               </button>
             : <>
                 <button className="btn btn--ghost btn--sm" onClick={download}>Download signed floor evidence</button>
                 <a className="btn btn--ghost btn--sm" href="/verify">Re-verify it on /verify →</a>
-                <span className="pg-thumb">signed · synthetic tier {level.id} · key {sigil.thumb.slice(0, 10)}…</span>
+                <span className="pg-thumb">signed · synthetic floor evidence · key {sigil.thumb.slice(0, 10)}…</span>
               </>}
         </div>
         {signError && <p className="rc-error" role="alert">Could not sign this floor: {signError}</p>}

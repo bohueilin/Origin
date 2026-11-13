@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const ROUTES = ['/', '/verify', '/reference-check', '/over-grant', '/security', '/proving-ground', '/operations', '/simulation']
+const ROUTES = ['/', '/verify', '/reference-check', '/over-grant', '/security', '/proving-ground', '/operations', '/simulation', '/proof', '/reference-check-vs-runtime']
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/*', route => {

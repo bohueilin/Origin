@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const ENHANCED_ROUTES = ['/', '/trust', '/labs', '/brief', '/verify', '/over-grant', '/security', '/reference-check', '/simulation', '/operations', '/proving-ground']
+const ENHANCED_ROUTES = ['/', '/trust', '/labs', '/brief', '/verify', '/over-grant', '/security', '/reference-check', '/simulation', '/operations', '/proving-ground', '/proof', '/reference-check-vs-runtime']
 
 async function localOnly(page: Page) {
   await page.route('**/*', (route) => {
@@ -52,11 +52,14 @@ test('mobile navigation remains usable when JavaScript is unavailable', async ({
     await expect(page.locator('h1')).toBeVisible()
     await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
-    for (const route of [...ENHANCED_ROUTES, '/proof', '/reference-check-vs-runtime']) {
+    for (const route of ENHANCED_ROUTES) {
       await page.goto(`${baseURL}${route}`)
       const emptyRoots = page.locator('#sim-root, #pg-root, #ops-root')
       for (const root of await emptyRoots.all()) expect(await root.evaluate(el => el.getBoundingClientRect().height), route).toBeLessThan(100)
       await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
+      // Wave 4a: these two pages hid the burger without JavaScript before they loaded the
+      // nav script, so they keep hiding it (the other routes need a shared CSS fix).
+      if (route === '/proof' || route === '/reference-check-vs-runtime') await expect(page.getByRole('button', { name: 'Open menu' }), route).toBeHidden()
     }
   } finally {
     await context.close()

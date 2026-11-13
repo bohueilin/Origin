@@ -31,7 +31,7 @@ test('home presents one implemented product and one primary path', async ({ page
 
   await expect(page.locator('h1')).toHaveCount(1)
   await expect(page.locator('h1')).toHaveText(HERO)
-  await expect(page.getByText('Evidence for agent decisions', { exact: true })).toBeVisible()
+  await expect(page.getByText('For teams whose AI agent is waiting in security review', { exact: true })).toBeVisible()
   // The hero's maturity boundary and buyer line were merged into one .hero__status line
   // when the hero was cut from seven text blocks to four; the boundary itself is
   // unchanged in substance and must stay visible in the hero, so keep pinning it.
@@ -41,7 +41,7 @@ test('home presents one implemented product and one primary path', async ({ page
 
   await openPrimaryNav(page)
   const nav = page.getByRole('navigation', { name: 'Primary' })
-  for (const label of ['Product', 'Demo', 'Proving Ground', 'Evidence', 'Trust', 'Run reference check']) {
+  for (const label of ['Product', 'Demo', 'Labs: Proving Ground', 'Evidence', 'Trust', 'Run reference check']) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible()
   }
   await expect(nav.getByRole('link', { name: /Foundry|Sign in/i })).toHaveCount(0)
@@ -60,12 +60,12 @@ test('primary navigation is consistent across public product and Labs routes', a
     await page.goto(route)
     await openPrimaryNav(page)
     const nav = page.getByRole('navigation', { name: 'Primary' })
-    for (const label of ['Product', 'Demo', 'Proving Ground', 'Evidence', 'Trust', 'Run reference check']) {
+    for (const label of ['Product', 'Demo', 'Labs: Proving Ground', 'Evidence', 'Trust', 'Run reference check']) {
       await expect(nav.getByRole('link', { name: label, exact: true }), route).toBeVisible()
     }
     await expect(nav.getByRole('link', { name: /Foundry|Sign in/i }), route).toHaveCount(0)
-    await expect(nav.getByRole('link', { name: 'Proving Ground', exact: true })).toHaveAttribute('href', '/proving-ground')
-    if (route === '/proving-ground') await expect(nav.getByRole('link', { name: 'Proving Ground', exact: true })).toHaveAttribute('aria-current', 'page')
+    await expect(nav.getByRole('link', { name: 'Labs: Proving Ground', exact: true })).toHaveAttribute('href', '/proving-ground')
+    if (route === '/proving-ground') await expect(nav.getByRole('link', { name: 'Labs: Proving Ground', exact: true })).toHaveAttribute('aria-current', 'page')
   }
 })
 
@@ -327,3 +327,64 @@ test('no retired recording is linked, and the VALID scope line survives', async 
   await page.goto('/')
   await expect(page.locator('.cin-footnote', { hasText: 'not signer identity' })).toHaveCount(1)
 })
+
+// ── Wave 4a: home, explainer, navigation and /trust ──
+
+// The /trust scoreboard must keep every result readable on a phone: no result cell
+// may collapse below 12 characters, and neither the page nor the table may scroll
+// sideways. At 700px a result beside the name column would get under 30 characters,
+// so it takes its own line instead. The suite names and details match the length of
+// the longest entries in a real snapshot.
+function longGatesFixture() {
+  return {
+    ...gatesFixture(true),
+    suites: [
+      { name: 'ts:origin-web (+evidence+verifier-core globs)', result: 'PASS', detail: 'Tests  806 passed (806)' },
+      { name: 'ev:proof:verify', result: 'PASS', detail: 'ALL CHECKS PASSED — TR-A002 hash chain verified (12 events, digest ca1' },
+      { name: 'honesty-lint', result: 'PASS', detail: 'honesty-lint: clean — 21 served pages (prose + meta/title) + 176 React' },
+      { name: 'py:chronos', result: 'PASS', detail: '411 passed, 5 skipped' },
+    ],
+  }
+}
+
+for (const { minCh, ...viewport } of [{ width: 375, height: 812, minCh: 12 }, { width: 430, height: 932, minCh: 12 }, { width: 700, height: 900, minCh: 30 }]) {
+  test(`wave 4a: the trust scoreboard keeps every result at least ${minCh}ch wide at ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await page.route('**/trust/gates-summary.json', (route) => route.fulfill({ json: longGatesFixture() }))
+    await page.goto('/trust')
+    const board = page.locator('#gates-scoreboard')
+    await expect(board).toContainText('local run of make gates-all at ' + GATES_SHA)
+    // Each result is the smallest element showing its detail text; its content box is
+    // measured against minCh "0" glyphs in that element's own font.
+    const cells: { text: string; width: number; minWidth: number }[] = []
+    for (const { name, detail } of longGatesFixture().suites) {
+      // The suite name is set in bold so a stacked result never reads as another name.
+      await expect(board.getByText(name, { exact: true }), name).toHaveCSS('font-weight', '600')
+      const result = board.getByText(detail, { exact: true })
+      await expect(result).toHaveCount(1)
+      cells.push(await result.evaluate((el, [text, n]) => {
+        const style = getComputedStyle(el)
+        const width = el.getBoundingClientRect().width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+        const probe = document.createElement('span')
+        probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap'
+        probe.textContent = '0'.repeat(n)
+        el.appendChild(probe)
+        const minWidth = probe.getBoundingClientRect().width
+        probe.remove()
+        return { text, width, minWidth }
+      }, [detail, minCh] as const))
+    }
+    for (const cell of cells) expect(cell.width, cell.text).toBeGreaterThanOrEqual(cell.minWidth)
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
+    expect(overflow).toBeLessThanOrEqual(1)
+    // The table fits the scoreboard's content box, so it needs no sideways scroll region
+    // or tab stop.
+    const spill = await board.evaluate((el) => {
+      const style = getComputedStyle(el)
+      const contentWidth = el.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+      return el.querySelector('table')!.getBoundingClientRect().width - contentWidth
+    })
+    expect(spill).toBeLessThanOrEqual(1)
+    await expect(board.getByRole('region')).toHaveCount(0)
+  })
+}

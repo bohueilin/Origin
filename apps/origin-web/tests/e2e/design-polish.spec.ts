@@ -28,7 +28,7 @@ test('expanded desktop navigation fits at the tablet breakpoint', async ({ page 
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/')
     const nav = page.getByRole('navigation', { name: 'Primary' })
-    await expect(nav.getByRole('link', { name: 'Proving Ground', exact: true })).toBeVisible()
+    await expect(nav.getByRole('link', { name: 'Labs: Proving Ground', exact: true })).toBeVisible()
     const layout = await nav.evaluate((element) => {
       const links = [...element.querySelectorAll('a')].map((link) => link.getBoundingClientRect())
       const brand = document.querySelector('.site-header .brand')!.getBoundingClientRect()

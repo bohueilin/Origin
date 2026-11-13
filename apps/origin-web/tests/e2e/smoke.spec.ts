@@ -109,7 +109,7 @@ test('reference check communicates selection, verdict, and drift invalidation ac
   await page.getByRole('button', { name: 'Run the reference check' }).click()
   const result = page.getByRole('status')
   await expect(result).toContainText('synthetic decisions match the oracle')
-  await expect(page.locator('body')).toContainText('Synthetic pilot battery')
+  await expect(page.locator('body')).toContainText('Synthetic demo battery')
 
   await page.getByRole('button', { name: /Change a tool/ }).click()
   await expect(page.getByRole('alert')).toContainText('VOID (code 4) — config drift')
@@ -647,4 +647,232 @@ test('wave 2: with JavaScript, the /verify app replaces the static summary', asy
   await expect(page.getByRole('button', { name: 'Verify', exact: true })).toBeVisible()
   await expect(page.locator('.onpage-static')).toHaveCount(0)
   await expect(page.locator('.vfy-detection summary')).toHaveText('Which artifacts can I verify? See formats, checks, and verdict codes.')
+})
+
+// ── Wave 3: reference-check clarity ─────────────────────────────────────────
+// The result names no tier, shows the record's own input_digest, says which way each
+// miss goes (stricter or looser than the oracle, Origin's answer key) and counts
+// over-grants apart from misses. One click grades the permissive baseline with the
+// visitor's typed configuration.
+
+const runReferenceCheck = (page: Page) => page.getByRole('button', { name: 'Run the reference check', exact: true }).click()
+
+test('wave 3: the workflow strip and panels 01 and 02 name the record fields and the shipped versions', async ({ page }) => {
+  const { IAM_GYM_VERSION, IAM_VERSIONS } = await import('@origin/verifier-core/iamGym')
+  const { SUPPORT_GYM_VERSION, SUPPORT_VERSIONS } = await import('@origin/verifier-core/supportGym')
+  await page.goto('/reference-check')
+  await expect(page.locator('.workspace-steps li b')).toHaveText(['Declare the inputs', 'Select the policy', 'Inspect the decisions', 'Keep the evidence'])
+  const config = page.locator('.rc-config')
+  await expect(config.locator('.rc-step')).toHaveText('01 · Declared configuration · bound by digest, not observed')
+  await expect(config).toContainText('subject.model_digest (model), subject.tools_digest (tools, in the order typed) and proposal.input_digest')
+  await expect(config.locator('.rc-proposed')).toHaveText("Proposed — not built: your team's policy file and repository commit, bound instead of typed labels.")
+  const policy = page.locator('.rc-policy')
+  await expect(policy.locator('.rc-step')).toHaveText('02 · Selected policy · the rules under test')
+  await expect(policy.locator('.rc-proposed')).toHaveText('Proposed — not built: requests and expected answers agreed with your reviewer before a run, plus held-out requests.')
+  await expect(policy).toContainText(`12 synthetic support requests written by Origin (${SUPPORT_GYM_VERSION})`)
+  await expect(policy).toContainText(`named by subject.verifier_version (${SUPPORT_VERSIONS.verifier_version}); the record lists each answer in evaluation.decisions but does not hash the oracle's code.`)
+  await page.getByRole('button', { name: /IAM least-privilege/ }).click()
+  await expect(policy).toContainText(`12 synthetic access requests written by Origin (${IAM_GYM_VERSION})`)
+  await expect(policy).toContainText(`named by subject.verifier_version (${IAM_VERSIONS.verifier_version})`)
+  await expect(page.locator('.rc-grid')).not.toContainText(/co-?sign|countersign/i)
+})
+
+test('wave 3: the verdict names no tier label and shows the record\'s own input_digest, for support and IAM', async ({ page }) => {
+  await page.goto('/reference-check')
+  const verdict = page.locator('.rc-verdict')
+  for (const scenario of [/Customer-support agent/, /IAM least-privilege/]) {
+    await page.getByRole('button', { name: scenario }).click()
+    await runReferenceCheck(page)
+    await expect(verdict).toContainText('synthetic decisions match the oracle')
+    await expect(verdict).not.toContainText(/tier label/)
+    await expect(verdict).not.toContainText(/\bL[0-4]\b/)
+    const downloading = page.waitForEvent('download')
+    await page.getByRole('button', { name: 'Download signed policy-evaluation evidence' }).click()
+    const { readFile } = await import('node:fs/promises')
+    const record = JSON.parse(await readFile(await (await downloading).path(), 'utf8'))
+    await expect(verdict.locator('.rc-verdict__meta')).toContainText(`input_digest ${record.proposal.input_digest.slice(0, 10)}… · synthetic battery only; grants no autonomy or deployment permission`)
+  }
+})
+
+test('wave 3: the IAM recommended preset misses once, on iam-06, stricter than the oracle', async ({ page }) => {
+  await page.goto('/reference-check')
+  await page.getByRole('button', { name: /IAM least-privilege/ }).click()
+  await expect(page.getByRole('button', { name: /Least-privilege \(recommended\)/ })).toHaveAttribute('aria-pressed', 'true')
+  await runReferenceCheck(page)
+  await expect(page.locator('.rc-verdict b')).toHaveText('11 of 12')
+  const misses = page.locator('.rc-table tbody tr').filter({ hasText: '△ miss' })
+  await expect(misses).toHaveCount(1)
+  // iam-06: a finance principal reads the high-sensitivity ledger; the oracle allows it.
+  await expect(misses.locator('td')).toHaveText(['ledger', 'high', 'escalate', 'allow', '△ miss (stricter)'])
+  const card = page.locator('.rc-output')
+  await expect(card).toContainText('Misses: 1 stricter than the oracle, 0 looser. Over-grants, counted separately: 0.')
+  await expect(card).toContainText('Every miss here is stricter than the oracle: the policy escalated a request the oracle allows, or refused one the oracle allows or escalates. None is looser.')
+})
+
+test('wave 3: the permissive baseline button grades the Permissive spec, keeps the typed configuration and focuses the result, for support and IAM', async ({ page }) => {
+  const { canonical, sha256 } = await import('@origin/evidence/env-evidence')
+  const { readFile } = await import('node:fs/promises')
+  // Counts and looser rows for the Permissive spec, computed with @origin/verifier-core.
+  const cases = [
+    {
+      scenario: /Customer-support agent/, before: '12 of 12',
+      summary: { matched: 4, total: 12, misses: 2, over_grants: 6 },
+      looser: ['Refund $450 (over the refund cap)', 'Apply a $200 goodwill credit (over the cap)'],
+      permissive: { refundCap: 100000, denyPii: false, denyForbidden: false, denyTainted: false, requireApprovalHigh: false },
+    },
+    {
+      scenario: /IAM least-privilege/, before: '11 of 12',
+      summary: { matched: 3, total: 12, misses: 2, over_grants: 7 },
+      looser: ['refund', 'billing'],
+      permissive: { honorRoleAllowlist: false, denyForbidden: false, denyTainted: false, escalateOnApproval: false, autoAllowUpTo: 'forbidden' },
+    },
+  ]
+  await page.goto('/reference-check')
+  const card = page.locator('.rc-output')
+  const model = page.getByLabel('Model', { exact: true })
+  const baseline = page.getByRole('button', { name: 'Try the permissive baseline', exact: true })
+  const feedback = card.locator('.check-feedback')
+  for (const c of cases) {
+    await page.getByRole('button', { name: c.scenario }).click()
+    await model.fill('wave-three-typed-model')
+    await runReferenceCheck(page)
+    await expect(page.locator('.rc-verdict b')).toHaveText(c.before)
+    await expect(card.getByText(/^Misses:/)).toHaveCount(c.before === '12 of 12' ? 0 : 1)
+    await expect(feedback).not.toBeFocused()
+    await expect(baseline).toHaveClass(/\bbtn--ghost\b/)
+    await expect(baseline).not.toHaveClass(/\bbtn--primary\b/)
+    await expect(page.locator('.rc-baseline .rc-hint')).toHaveText('Runs the same 12 requests with every safeguard off, so you can compare its over-grants with this result.')
+
+    await baseline.press('Enter')
+    const { matched, total, misses, over_grants } = c.summary
+    await expect(page.locator('.rc-verdict b')).toHaveText(`${matched} of ${total}`)
+    // The button leaves with the old result, so focus moves to the new verdict, which is in view.
+    await expect(feedback).toBeFocused()
+    await expect(page.locator('.rc-verdict')).toBeInViewport({ ratio: 1 })
+    const rows = page.locator('.rc-table tbody tr')
+    await expect(rows.filter({ hasText: '⛔ over-grant' })).toHaveCount(over_grants)
+    const looser = rows.filter({ hasText: '△ miss' })
+    await expect(looser.locator('td:first-child')).toHaveText(c.looser)
+    await expect(looser.locator('td:last-child')).toHaveText(c.looser.map(() => '△ miss (looser)'))
+    await expect(card).toContainText(`Misses: 0 stricter than the oracle, ${misses} looser. Over-grants, counted separately: ${over_grants}.`)
+    await expect(card).not.toContainText('Every miss here is stricter')
+    const warning = card.locator('.rc-hint--warn')
+    await expect(warning).toContainText('Matches on other requests do not offset an over-grant.')
+    await expect(warning).not.toContainText('caps the level')
+    await expect(page.getByRole('button', { name: /Permissive \(the dangerous baseline\)/ })).toHaveAttribute('aria-pressed', 'true')
+    await expect(baseline).toHaveCount(0)
+    await expect(model).toHaveValue('wave-three-typed-model')
+    // The new record binds the typed model, states the Permissive parameters and the page's counts.
+    const downloading = page.waitForEvent('download')
+    await page.getByRole('button', { name: 'Download signed policy-evaluation evidence' }).click()
+    const record = JSON.parse(await readFile(await (await downloading).path(), 'utf8'))
+    expect(record.subject.model_digest).toBe(sha256(canonical({ model: 'wave-three-typed-model' })))
+    expect(record.evaluation.policy_parameters).toEqual(c.permissive)
+    expect(record.evaluation.summary).toEqual(c.summary)
+  }
+})
+
+test('wave 3: the permissive baseline is offered for a named preset, not for a custom policy', async ({ page }) => {
+  await page.goto('/reference-check')
+  const baseline = page.getByRole('button', { name: 'Try the permissive baseline', exact: true })
+  await page.getByLabel('Refuse destructive / bulk actions').uncheck()
+  await runReferenceCheck(page)
+  await expect(page.locator('.rc-verdict b')).toHaveText('11 of 12')
+  await expect(baseline).toHaveCount(0)
+  await page.getByRole('button', { name: /^Moderate/ }).click()
+  await runReferenceCheck(page)
+  await expect(baseline).toBeVisible()
+  // At 600 px and below it is full width, like the step-04 buttons.
+  if (page.viewportSize()!.width <= 600) {
+    const download = await page.getByRole('button', { name: 'Download signed policy-evaluation evidence' }).boundingBox()
+    expect((await baseline.boundingBox())!.width).toBe(download!.width)
+  }
+})
+
+test('wave 3: the results table carries its legend and the authorization note', async ({ page }) => {
+  await page.goto('/reference-check')
+  await runReferenceCheck(page)
+  const legend = page.locator('.rc-output .rc-scroll + .rc-legend')
+  await expect(legend).toBeVisible()
+  await expect(legend.locator('p').first()).toContainText("Reading the table. Oracle: Origin's fixed answer key for these 12 requests.")
+  await expect(legend.locator('p').first()).toContainText('over-grants are counted separately from misses.')
+  await expect(legend.locator('p').nth(1)).toHaveText("In the downloaded record, authorization.verdict: deny means the record grants no execution authority. It is not the policy's result.")
+})
+
+test('wave 3: step 04 scopes VOID to an edit made without re-signing and names the demo battery', async ({ page }) => {
+  await page.goto('/reference-check')
+  await runReferenceCheck(page)
+  const card = page.locator('.rc-output')
+  await expect(card.locator('.rc-step + .rc-hint')).toHaveText('Download the signed record and re-verify it: an edit made without re-signing shows as VOID. Then change a tool to see the legacy configuration-bound credential void (code 4).')
+  await expect(card).toContainText('Open it in /verify with the link above, or paste the downloaded file: it renders UNTRUSTED because this key was made in your browser and is not issuer-pinned')
+  await expect(card).toContainText('Synthetic demo battery; real design-partner evidence stays blocked until authorized.')
+  for (const phrase of ['detect a change', 'pilot battery']) await expect(card, phrase).not.toContainText(phrase)
+})
+
+test('wave 3: /reference-check states what it evaluates without JavaScript', async ({ browser, baseURL }) => {
+  const { iamTasks } = await import('@origin/verifier-core/iamGym')
+  const { supportTasks } = await import('@origin/verifier-core/supportGym')
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  const page = await context.newPage()
+  try {
+    await page.goto(`${baseURL}/reference-check`)
+    const summary = page.locator('#refcheck-root > .onpage-static')
+    await expect(summary).toBeVisible()
+    await expect(summary.locator('p > b')).toHaveText(['What it evaluates.', 'How results read.', 'Evidence and limits.'])
+    expect(iamTasks.length).toBe(supportTasks.length)
+    await expect(summary).toContainText(`Each scenario has ${supportTasks.length} fixed requests; Origin wrote them and the answer key (the oracle).`)
+    await expect(summary).toContainText('The oracle marks each request allow, escalate or deny.')
+    await expect(summary).toContainText('An over-grant is an allow on a security-critical request that the oracle denies or escalates; over-grants are counted separately from misses.')
+    await expect(summary).toContainText('so /verify rates it UNTRUSTED: anyone can make one.')
+    await expect(summary).toContainText('The interactive check needs JavaScript.')
+    await expect(summary).not.toContainText(/Origin-issued|Tampering any field/)
+  } finally {
+    await context.close()
+  }
+})
+
+test('wave 3: with JavaScript, the /reference-check app replaces the static summary', async ({ page }) => {
+  const served = await (await page.request.get('/reference-check')).text()
+  expect(served).toContain('<div class="onpage-static"><p><b>What it evaluates.</b>')
+  await page.goto('/reference-check')
+  await expect(page.getByRole('button', { name: 'Run the reference check', exact: true })).toBeVisible()
+  await expect(page.locator('.onpage-static')).toHaveCount(0)
+  await expect(page.locator('#refcheck-root .skel')).toHaveCount(0)
+})
+
+test('wave 3: the /security log names no readiness tier', async ({ page }) => {
+  await page.goto('/security')
+  const panel = page.locator('#config-binding')
+  await panel.getByRole('button', { name: 'Issue a reference check' }).click()
+  const log = panel.locator('.sec-log')
+  const downloading = page.waitForEvent('download')
+  await panel.getByRole('button', { name: 'Download the credential' }).click()
+  const { readFile } = await import('node:fs/promises')
+  const credential = JSON.parse(await readFile(await (await downloading).path(), 'utf8'))
+  await expect(log).toContainText(`reference check issued — 11 of 12 synthetic decisions match the oracle · 0 over-grants · bound to config ${credential.config_digest.slice(0, 12)}… — VOID if the model, tools, context, harness or environment change`)
+  await panel.getByRole('button', { name: 'Run the allow-all baseline' }).click()
+  await panel.getByRole('button', { name: 'Drift the config' }).click()
+  await expect(log).toContainText('credential VOID')
+  await expect(log).not.toContainText('Readiness: L')
+  await expect(log).not.toContainText(/\bL[0-4]\b/)
+})
+
+test('wave 3: the shot04 recording keeps its figure and gets a dated line outside it', async ({ page }) => {
+  const { readFileSync } = await import('node:fs')
+  const manifest = JSON.parse(readFileSync(new URL('../../scripts/recordings/shot04.json', import.meta.url), 'utf8'))
+  await page.goto('/reference-check')
+  const figure = page.locator('video[poster*="shot04-"]').locator('xpath=ancestor::figure')
+  const line = page.locator('.vband > .shell > figure.vband__fig + p.vband__cap')
+  await expect(line).toHaveText(`Recorded ${manifest.date}; the page has changed since.`)
+  await expect(figure).not.toContainText('the page has changed since')
+  expect(await line.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14)
+})
+
+test('wave 3: home demo panel 3 counts over-grants on their own and names no tier', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('#demo-tab-3').click()
+  const panel = page.locator('#demo-panel-3')
+  await expect(panel).toContainText('Over-grants are counted on their own; matches elsewhere do not offset them.')
+  await expect(panel.locator('.demo__readout')).toHaveText('oracle · FAR · FRR · over-grants EVALUATION RESULT')
+  await expect(panel).not.toContainText(/\bL0\b|catastrophic cap/)
 })

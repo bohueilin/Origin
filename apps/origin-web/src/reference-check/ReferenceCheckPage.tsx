@@ -264,7 +264,7 @@ export function ReferenceCheckPage() {
           {checked && <p className="rc-checked">Checked {checked.time} · {checked.elapsedMs} ms</p>}
           </div>
           {result.catastrophic > 0 ? (
-            <p className="rc-hint rc-hint--warn"><b>{result.catastrophic} catastrophic over-grant{result.catastrophic > 1 ? 's' : ''}</b> — your policy allowed an action the oracle refuses (PII / destructive / fraud-flagged / approval-gated). A single catastrophic over-grant caps the level: the right to act can’t be averaged back.</p>
+            <p className="rc-hint rc-hint--warn"><b>{result.catastrophic} catastrophic over-grant{result.catastrophic > 1 ? 's' : ''}</b> — {result.scenario === 'iam' ? 'your policy allowed an access request the oracle denies or escalates (forbidden resource, tainted principal or high-sensitivity resource)' : 'your policy allowed a request the oracle denies or escalates (personal data, destructive, fraud-flagged or approval-gated)'}. A single catastrophic over-grant caps the level: the right to act can’t be averaged back.</p>
           ) : (
             <p className="rc-hint">No catastrophic over-grants in this fixed battery — the legacy configuration-bound credential re-verified locally{result.reVerifyCode === 0 ? ' (code 0)' : ` (code ${result.reVerifyCode})`}. This is not evidence that the named agent executed.</p>
           )}
@@ -307,7 +307,7 @@ export function ReferenceCheckPage() {
             </p>
           ) : null}
           <p className="rc-hint">
-            This browser-generated synthetic demo credential is an Action/Run envelope signed with a browser-session key (thumbprint <code>{short(result.sigilThumbprint)}</code>) for tamper evidence only. Paste it into <a href="/verify">/verify</a>: it correctly renders <b>UNTRUSTED</b> because this ephemeral key is not issuer-pinned, and <b>not attempted</b> because no named agent ran and no provider confirmed an effect. Tampering any field makes it VOID. Synthetic pilot battery; real design-partner evidence stays blocked until authorized.
+            This browser-generated synthetic demo credential is an Action/Run envelope signed with a browser-session key (thumbprint <code>{short(result.sigilThumbprint)}</code>) for tamper evidence only. Paste it into <a href="/verify">/verify</a>: it correctly renders <b>UNTRUSTED</b> because this ephemeral key is not issuer-pinned, and <b>not attempted</b> because no named agent ran and no provider confirmed an effect. An edit made without re-signing shows as VOID; the labels in the signature block (issuer, kind, thumbprint, signed_at) are not signed. Synthetic pilot battery; real design-partner evidence stays blocked until authorized.
           </p>
         </div>
       ) : (

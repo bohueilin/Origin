@@ -25,7 +25,7 @@
     <title>Origin — Move AI forward. With evidence.</title>
     <meta
       name="description"
-      content="Explore working prototypes for AI evidence review: deterministic policy checks, independently verifiable artifacts, and bounded Physical AI simulations."
+      content="Explore working prototypes for AI evidence review: deterministic policy checks, browser-checkable records, and bounded Physical AI labs."
     />
     <link rel="canonical" href="https://originphysicalai.com/" />
     <meta name="theme-color" content="#f8f7f4" />
@@ -38,13 +38,13 @@
     <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://originphysicalai.com/" />
     <meta property="og:title" content="Origin — Move AI forward. With evidence." />
-    <meta property="og:description" content="Explore working prototypes for AI evidence review: deterministic policy checks, independently verifiable artifacts, and bounded Physical AI simulations." />
+    <meta property="og:description" content="Explore working prototypes for AI evidence review: deterministic policy checks, browser-checkable records, and bounded Physical AI labs." />
     <meta property="og:image" content="https://originphysicalai.com/og-cover.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Origin — Move AI forward. With evidence." />
-    <meta name="twitter:description" content="Explore working prototypes for AI evidence review: deterministic policy checks, independently verifiable artifacts, and bounded Physical AI simulations." />
+    <meta name="twitter:description" content="Explore working prototypes for AI evidence review: deterministic policy checks, browser-checkable records, and bounded Physical AI labs." />
     <meta name="twitter:image" content="https://originphysicalai.com/og-cover.jpg" />
 
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
@@ -154,7 +154,7 @@
           <a href="/proving-ground">
             <span class="lab-index__meta">02 / Physical AI lab</span>
             <h2>Build an experiment.</h2>
-            <p>Draw a synthetic floor, explore a mixed fleet, and inspect the oracle record.</p>
+            <p>Draw a synthetic floor, explore a mixed fleet, and inspect the oracle’s verdicts.</p>
             <span class="lab-index__action">Enter Proving Ground <span aria-hidden="true">↗</span></span>
           </a>
           <a href="/verify">
@@ -194,10 +194,10 @@
             </div>
             <div class="demo__screen">
               <div class="demo__panel is-on" data-demo-panel="1" role="tabpanel" tabindex="0" id="demo-panel-1" aria-labelledby="demo-tab-1"><p class="demo__question">What inputs were declared?</p><h3><span class="demo__tag demo__tag--n">Bind</span> Declared inputs are bound</h3><p>Declared model, tool set, selected policy, and scenario battery are pinned into a single <b>input digest</b>. This binds the local policy evaluation; it does not prove that the named agent was inspected or run.</p><p class="demo__readout demo__readout--plan"><b>input</b> · declared model + tools + policy + battery <span class="rd-state">DIGEST BOUND</span></p></div>
-              <div class="demo__panel" data-demo-panel="2" role="tabpanel" tabindex="0" id="demo-panel-2" aria-labelledby="demo-tab-2" hidden><p class="demo__question">Which decisions were tested?</p><h3><span class="demo__tag demo__tag--plan">Challenge</span> A deterministic battery runs</h3><p>The same scenarios every time: actions that must be <b>allowed</b>, actions that must be <b>denied</b>, and actions that must <b>escalate</b> to a named human.</p><p class="demo__readout demo__readout--plan"><b>battery</b> · allow · deny · escalate <span class="rd-state">DETERMINISTIC</span></p></div>
+              <div class="demo__panel" data-demo-panel="2" role="tabpanel" tabindex="0" id="demo-panel-2" aria-labelledby="demo-tab-2" hidden><p class="demo__question">Which decisions were tested?</p><h3><span class="demo__tag demo__tag--plan">Challenge</span> A deterministic battery runs</h3><p>The same scenarios every time: actions that must be <b>allowed</b>, actions that must be <b>denied</b>, and actions that must <b>escalate</b>, meaning the policy should hand them to a person to approve; in this demo nothing is held and no one is asked.</p><p class="demo__readout demo__readout--plan"><b>battery</b> · allow · deny · escalate <span class="rd-state">DETERMINISTIC</span></p></div>
               <div class="demo__panel" data-demo-panel="3" role="tabpanel" tabindex="0" id="demo-panel-3" aria-labelledby="demo-tab-3" hidden><p class="demo__question">Where did the policy disagree with the oracle?</p><h3><span class="demo__tag demo__tag--held">Grade</span> The oracle grades it</h3><p>False accepts, false rejects, and catastrophic failures produce scored outcomes under the fixed oracle. A catastrophic over-grant caps the result at <b>L0</b> no matter how well everything else scored.</p><p class="demo__readout demo__readout--held"><b>oracle</b> · FAR · FRR · catastrophic cap <span class="rd-state">EVALUATION RESULT</span></p></div>
               <div class="demo__panel" data-demo-panel="4" role="tabpanel" tabindex="0" id="demo-panel-4" aria-labelledby="demo-tab-4" hidden><p class="demo__question">What does the artifact actually attest?</p><h3><span class="demo__tag demo__tag--ok">Attest</span> Browser demo evidence is issued</h3><p>The browser signs a synthetic Action/Run envelope over the local policy evaluation. It records <b>not attempted</b>: no named agent was contacted or executed, and no provider effect was confirmed.</p><p class="demo__readout demo__readout--ok"><b>envelope</b> · bound to declared input · synthetic <span class="rd-state">SIGNED</span></p></div>
-              <div class="demo__panel" data-demo-panel="5" role="tabpanel" tabindex="0" id="demo-panel-5" aria-labelledby="demo-tab-5" hidden><p class="demo__question">Can a reviewer detect a change?</p><h3><span class="demo__tag demo__tag--ok">Reverify</span> Offline UNTRUSTED, until tampered</h3><p>A reviewer re-verifies browser evidence offline and gets <b>UNTRUSTED</b>: its session signer is unpinned and it does not represent execution. Change one bound field and the verifier returns <b>VOID</b>.</p><p class="demo__readout demo__readout--held"><b>verify</b> · intact browser evidence <span class="rd-state">UNTRUSTED</span></p><p class="demo__readout demo__readout--block"><b>verify</b> · one bound field changed <span class="rd-state">VOID</span></p><div class="cta-row" style="margin-top:16px"><a class="btn btn--ghost btn--sm" href="/reference-check" data-analytics="demo_reference_check_link">Run the reference check</a><a class="btn btn--ghost btn--sm" href="/verify" data-analytics="demo_verify_link">Verify evidence</a></div></div>
+              <div class="demo__panel" data-demo-panel="5" role="tabpanel" tabindex="0" id="demo-panel-5" aria-labelledby="demo-tab-5" hidden><p class="demo__question">What can a reviewer re-check?</p><h3><span class="demo__tag demo__tag--ok">Reverify</span> Offline UNTRUSTED; VOID if edited without re-signing</h3><p>A reviewer re-verifies browser evidence offline and gets <b>UNTRUSTED</b>: its session signer is unpinned and it does not represent execution. An edit made without re-signing returns <b>VOID</b>; an edited copy re-signed with a new browser key still reads UNTRUSTED.</p><p class="demo__readout demo__readout--held"><b>verify</b> · intact browser evidence <span class="rd-state">UNTRUSTED</span></p><p class="demo__readout demo__readout--block"><b>verify</b> · one field edited without re-signing <span class="rd-state">VOID</span></p><div class="cta-row" style="margin-top:16px"><a class="btn btn--ghost btn--sm" href="/reference-check" data-analytics="demo_reference_check_link">Run the reference check</a><a class="btn btn--ghost btn--sm" href="/verify" data-analytics="demo_verify_link">Verify evidence</a></div></div>
             </div>
             <div class="demo__bar">
               <button type="button" class="btn btn--ghost btn--sm" data-demo-play aria-pressed="false">&#9654; Play</button>
@@ -216,7 +216,7 @@
           <div class="cin-principles">
             <article><span>01</span><div><h3>Make the review specific.</h3><p>Bind declared tools, policy and scenario inputs to the result, so a reviewer knows exactly what was evaluated.</p></div></article>
             <article><span>02</span><div><h3>Make the limits visible.</h3><p>Show allowed, denied and escalated cases. Keep synthetic results distinct from customer evidence and deployment authority.</p></div></article>
-            <article><span>03</span><div><h3>Make it independently checkable.</h3><p>Export an artifact that a reviewer can inspect and re-verify. A changed bound field invalidates its integrity.</p></div></article>
+            <article><span>03</span><div><h3>Make it checkable in the reviewer's browser.</h3><p>Export a record a reviewer can inspect and re-check in their own browser. An edit made without re-signing shows as VOID.</p></div></article>
           </div>
         </div>
       </section>
@@ -225,7 +225,7 @@
         <div class="shell">
           <div class="cin-section-head"><div><p class="kicker">03 / The evidence</p><h2 id="evidence-title">Trust grows from<br>what you can verify.</h2></div><p class="section__lede">Inspect the record, its source and its limits. Each evidence level says what has been earned—and what is still ahead.</p></div>
           <div class="cin-evidence-list" aria-label="Proof-status ladder">
-            <a href="/proof#tr-a002"><span class="cin-status">Available · sandbox</span><h3>Follow a machine-emitted trace.</h3><p>TR-A002 · 12 events, a real SHA-256 hash chain and an offline re-verification command.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
+            <a href="/proof#tr-a002"><span class="cin-status">Available · scripted</span><h3>Follow a machine-emitted trace.</h3><p>TR-A002 · 12 scripted events, a real SHA-256 hash chain and an offline re-verification command.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
             <a href="/proof#tr-a001"><span class="cin-status">Available · authored</span><h3>Understand the evidence format.</h3><p>TR-A001 · an authored specimen showing the record a reviewer could receive.</p><span class="cin-arrow" aria-hidden="true">↗</span></a>
             <div class="cin-evidence-pending"><span class="cin-status cin-status--pending">Not earned yet</span><h3>A real customer's workflow.</h3><p>TR-A003 · external design-partner evidence has not been collected. No customer validation is claimed.</p></div>
           </div>
@@ -242,10 +242,10 @@
 
       <section class="section cin-trust" id="trust" data-investor-section aria-labelledby="trust-title">
         <div class="shell"><div class="cin-section-head"><div><p class="kicker">05 / Built around the reviewer</p><h2 id="trust-title">Evidence, with<br>the boundaries included.</h2></div><p class="section__lede">Capability, permission, execution and verification are different questions. A useful record keeps them separate.</p></div>
-          <div class="cin-trust-grid"><article><span class="cin-icon" aria-hidden="true">⌘</span><h3>Deterministic evaluation</h3><p>A defined oracle grades the policy against a synthetic battery. Never an LLM grading another LLM.</p></article><article><span class="cin-icon" aria-hidden="true">◈</span><h3>Visible provenance</h3><p>Authored, synthetic, machine-emitted and customer-owned evidence stay distinct. Unpinned browser signers stay UNTRUSTED.</p></article><article><span class="cin-icon" aria-hidden="true">↗</span><h3>Your authority to decide</h3><p>The artifact supports review. It does not certify an agent, confirm an external effect or approve a deployment.</p></article></div>
+          <div class="cin-trust-grid"><article><span class="cin-icon" aria-hidden="true">⌘</span><h3>Deterministic evaluation</h3><p>A defined oracle grades the policy against a synthetic battery. Never an LLM grading another LLM.</p></article><article><span class="cin-icon" aria-hidden="true">◈</span><h3>Visible provenance</h3><p>Authored, synthetic, machine-emitted and customer-owned evidence stay distinct. Browser-signed policy evidence stays UNTRUSTED.</p></article><article><span class="cin-icon" aria-hidden="true">↗</span><h3>Your authority to decide</h3><p>The artifact supports review. It does not certify an agent, confirm an external effect or approve a deployment.</p></article></div>
           <h3 class="trust__not-h" id="not">What Origin is not.</h3>
           <div class="notgrid">
-            <article class="card"><h4>Not yet validated by a customer</h4><p>No design partner, no pilot, no paying user &mdash; today. Everything shown here is authored, synthetic, or machine-emitted in a sandbox; none of it is customer-owned. If a real workflow from a real reviewer is earned, it will appear on <a href="/proof">/proof</a>, labelled as plainly as everything else.</p></article>
+            <article class="card"><h4>Not yet validated by a customer</h4><p>No design partner, no pilot, no paying user &mdash; today. Everything shown here is authored, synthetic, or machine-emitted from a scripted scenario; none of it is customer-owned. If a real workflow from a real reviewer is earned, it will appear on <a href="/proof">/proof</a>, labelled as plainly as everything else.</p></article>
             <article class="card"><h4>Not production SaaS</h4><p>A working prototype on synthetic sandbox evidence. Customer-specific execution requires separately agreed work.</p></article>
             <article class="card"><h4>Not a compliance certification</h4><p>Origin's checks produce evidence for your reviewer; your gate decides. The public demo's evidence is session-signed and unpinned, so it is not Origin-issued. Nothing here certifies anything.</p></article>
             <article class="card"><h4>Not &ldquo;safe&rdquo; or &ldquo;correct&rdquo;</h4><p>A green result means the check reproduces under this verifier: integrity and determinism, never &ldquo;safe&rdquo; or &ldquo;correct&rdquo;. That is the whole claim.</p></article>

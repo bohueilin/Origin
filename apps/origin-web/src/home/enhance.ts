@@ -423,7 +423,7 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
     'A deterministic battery exercises allow, deny, and escalate.',
     'The fixed oracle scores false accepts, false rejects, and catastrophic failures.',
     'The browser signs a synthetic envelope over the local policy evaluation.',
-    'Offline it verifies UNTRUSTED; change one bound field and it returns VOID.',
+    'Offline it verifies UNTRUSTED; an edit made without re-signing returns VOID.',
   ]
   demo.classList.add('is-enhanced')
   const N = panels.length

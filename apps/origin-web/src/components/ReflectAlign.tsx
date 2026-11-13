@@ -1000,8 +1000,8 @@ export function ReflectAlign({
               </div>
               <span className="smp-sync-note">
                 {planStore === 'account' && '🔒 Synced to your account — your templates are private to you and load on any device.'}
-                {planStore === 'device' && 'Saved in this browser only. Plans saved while signed in are stored separately in your account.'}
-                {planStore === 'pending' && 'Checking your account — saving is paused until we know where your templates belong.'}
+                {planStore === 'device' && 'Saved in this browser only. There are no customer accounts, so the plan is not stored anywhere else.'}
+                {planStore === 'pending' && 'Checking sign-in — saving is paused for a moment.'}
               </span>
               <p className="smp-plans-notice" role="status">{planNotice}</p>
             </div>

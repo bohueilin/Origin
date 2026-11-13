@@ -6,13 +6,13 @@
     <title>Evidence traces, the honest ladder, Origin</title>
     <meta
       name="description"
-      content="Origin publishes evidence in rungs and never dresses one up as another: TR-A001 an authored specimen, TR-A002 a machine-emitted, re-verifiable hash chain."
+      content="Origin publishes evidence in rungs and never dresses one up as another: TR-A001 an authored specimen, TR-A002 a machine-emitted, re-verifiable hash chain of a scripted scenario."
     />
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:title" content="Evidence traces — the honest ladder — Origin" />
-    <meta name="twitter:description" content="Origin publishes evidence in rungs and never dresses one up as another: TR-A001 an authored specimen, TR-A002 a machine-emitted, re-verifiable hash chain." />
+    <meta name="twitter:description" content="Origin publishes evidence in rungs and never dresses one up as another: TR-A001 an authored specimen, TR-A002 a machine-emitted, re-verifiable hash chain of a scripted scenario." />
     <meta name="twitter:image" content="https://originphysicalai.com/og/proof.jpg" />
     <link rel="canonical" href="https://originphysicalai.com/proof" />
     <meta name="theme-color" content="#f8f7f4" />
@@ -20,7 +20,7 @@
     <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://originphysicalai.com/proof" />
     <meta property="og:title" content="Evidence traces — the honest ladder — Origin" />
-    <meta property="og:description" content="Evidence in rungs, never dressed up as another. TR-A001 an authored specimen; TR-A002 a machine-emitted trace with a re-verifiable SHA-256 chain." />
+    <meta property="og:description" content="Evidence in rungs, never dressed up as another. TR-A001 an authored specimen; TR-A002 a machine-emitted trace of a scripted scenario with a re-verifiable SHA-256 chain." />
     <meta property="og:image" content="https://originphysicalai.com/og/proof.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="/favicon-2026-09-28.png" />
@@ -187,27 +187,27 @@
         <p class="kicker">Evidence / The public record</p>
         <h1 id="proof-title">Evidence traces, the honest ladder.</h1>
         <p class="proof__lede">Start with the artifact. Check how it was produced, what its chain establishes, and where its authority ends.</p>
-        <p class="editorial-caption">TR-A002 is a machine-emitted sandbox trace. TR-A001 is an authored format specimen. An external design-partner trace has not been earned yet.</p>
-        <div class="editorial-actions"><a class="btn btn--primary" href="/proof/tr-a002.json" download>Download the sandbox trace</a><a class="btn btn--ghost" href="#tr-a002">Inspect TR-A002</a></div>
+        <p class="editorial-caption">TR-A002 is a machine-emitted trace of a scripted scenario. TR-A001 is an authored format specimen. An external design-partner trace has not been earned yet.</p>
+        <div class="editorial-actions"><a class="btn btn--primary" href="/proof/tr-a002.json" download>Download the TR-A002 trace</a><a class="btn btn--ghost" href="#tr-a002">Inspect TR-A002</a></div>
       </div></div><!-- ORIGIN:TRACE --></section>
       <!-- Proof-status ladder — scannable in five seconds -->
       <div class="proofladder" aria-label="Proof-status ladder">
         <p class="proofladder__cap">Proof status</p>
         <div class="proofladder__row"><span class="proofladder__id">TR-A001</span><span class="proofladder__label">Authored specimen, shows the evidence-package format. <a href="#tr-a001" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></span><span class="proofladder__status proofladder__status--ok">Available</span></div>
-        <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted sandbox trace, real, re-verifiable SHA-256 hash chain. <a href="#tr-a002" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></span><span class="proofladder__status proofladder__status--ok">Available</span></div>
+        <div class="proofladder__row"><span class="proofladder__id">TR-A002</span><span class="proofladder__label">Machine-emitted from a scripted scenario: a real, re-verifiable SHA-256 hash chain. <a href="#tr-a002" style="color:var(--signal-ink);text-decoration:underline">See it ↓</a></span><span class="proofladder__status proofladder__status--ok">Available</span></div>
         <div class="proofladder__row"><span class="proofladder__id">TR-A003</span><span class="proofladder__label">First external design-partner trace.</span><span class="proofladder__status proofladder__status--pending">Not earned yet</span></div>
       </div>
 
       <!-- Why TR-A002 matters — executive, non-technical, 10-second read -->
       <div class="tr2why">
-        <p class="tr2why__lead"><b>Why TR-A002 matters, in ten seconds:</b> it proves the Origin trace engine can emit a deterministic, tamper-evident sandbox evidence chain that anyone can re-check. It does <b>not</b> prove production readiness or customer approval.</p>
+        <p class="tr2why__lead"><b>Why TR-A002 matters, in ten seconds:</b> a script wrote this file and computed a SHA-256 chain over its twelve events, so anyone can re-check it: an edit to any event breaks the chain or changes the final digest published below. The events themselves are a scripted scenario: no agent, policy gate, proxy, approver or sandbox ran. It does <b>not</b> show production readiness or customer approval.</p>
         <div class="tr2why__grid">
-          <div class="tr2why__tile"><p class="tr2why__q">Is the trace generated by code?</p><p class="tr2why__a">Yes, emitted by <code>scripts/generate-tr-a002.mjs</code>, not hand-written.</p></div>
-          <div class="tr2why__tile"><p class="tr2why__q">Can the chain be independently checked?</p><p class="tr2why__a">Yes, download the JSON and run <code>npm run proof:verify</code>.</p></div>
-          <div class="tr2why__tile"><p class="tr2why__q">Does it capture a real control moment?</p><p class="tr2why__a">Yes, an above-cap action needs approval; an over-scope retry is blocked and recorded.</p></div>
+          <div class="tr2why__tile"><p class="tr2why__q">Is the file generated by code?</p><p class="tr2why__a">Yes. <code>scripts/generate-tr-a002.mjs</code> writes the file and computes every hash. The twelve events are typed into that script.</p></div>
+          <div class="tr2why__tile"><p class="tr2why__q">Can the chain be independently checked?</p><p class="tr2why__a">Yes. Download the JSON and run <code>node scripts/verify-tr-a002.mjs tr-a002.json</code> in the public repository's <code>apps/origin-web</code> folder, or paste it into <a href="/verify">/verify</a>.</p></div>
+          <div class="tr2why__tile"><p class="tr2why__q">Does it record a real control decision?</p><p class="tr2why__a">No. It narrates one: an above-cap refund held for approval, and an over-scope retry denied and blocked. No gate or proxy made those decisions; the script lists them.</p></div>
           <div class="tr2why__tile tr2why__tile--no"><p class="tr2why__q">What does it not prove?</p><p class="tr2why__a">Customer deployment, production readiness, compliance, reviewer acceptance, or revenue.</p></div>
         </div>
-        <p class="mono-note" style="margin-top:14px">Plumbing proof is not customer proof. TR-A002 proves the trace engine works; it is not a customer deployment, performance claim, or reviewer acceptance.</p>
+        <p class="mono-note" style="margin-top:14px">Plumbing evidence is not customer evidence. TR-A002 shows that the chain format and its verifier work; it is not a customer deployment, a performance claim, or reviewer acceptance.</p>
       </div>
 
       <!-- ═══════════ The ladder — three rungs ═══════════ -->
@@ -228,8 +228,8 @@
           <article class="rung rung--now">
             <span class="rung__badge rung__badge--now">Available now</span>
             <span class="rung__id">TR-A002</span>
-            <h3>Machine-emitted sandbox agent trace</h3>
-            <p>Emitted by Origin's trace engine over a sandboxed agent action, 12 events on a <b>real SHA-256 hash chain</b> you can re-verify. Sandbox only; no live money, no customer data.</p>
+            <h3>Machine-emitted trace of a scripted scenario</h3>
+            <p>Written by Origin's emitter script: twelve scripted events on a <b>real SHA-256 hash chain</b> you can re-verify. No agent, policy gate, proxy, approver or sandbox ran; no live money, no customer data.</p>
             <div class="rung__foot"><a class="rung__link" href="#tr-a002">See the trace ↓</a></div>
           </article>
 
@@ -268,7 +268,7 @@
               <li><b>Not a performance claim</b>: no throughput, latency, reliability, or any measured metric.</li>
               <li><b>No reviewer-acceptance claim</b>, it is review-ready decision-support, not reviewer-accepted or certified.</li>
               <li><b>TR-A001 is authored (illustrative), not a machine-emitted run</b>, the scenario, timestamps, and digest are written to the schema, not recorded from a live agent.</li>
-              <li>TR-A001 is authored, not machine-emitted. The machine-emitted sandbox trace is <a href="#tr-a002" style="text-decoration:underline">TR-A002</a>, now available; the first external design-partner trace is TR-A003, forthcoming when earned.</li>
+              <li>TR-A001 is authored, not machine-emitted. The machine-emitted trace of a scripted scenario is <a href="#tr-a002" style="text-decoration:underline">TR-A002</a>, now available; the first external design-partner trace is TR-A003, forthcoming when earned.</li>
             </ul>
           </div>
         </div>
@@ -276,24 +276,31 @@
       </section>
 
       <!-- ═══════════ TR-A002 — machine-emitted sandbox trace ═══════════ -->
-      <section id="tr-a002" aria-label="TR-A002 — machine-emitted sandbox trace">
+      <section id="tr-a002" aria-label="TR-A002 — machine-emitted trace of a scripted scenario">
         <p class="kicker">TR-A002 · available now</p>
-        <h2>Machine-emitted sandbox trace, a real hash chain you can re-verify.</h2>
+        <h2>Machine-emitted trace of a scripted scenario, a real hash chain you can re-verify.</h2>
         <p class="proof__sub">
-          This one is not authored. Origin's trace emitter runs the same payments-ops workflow through
-          the runtime, proposal, policy verdict, proxy hold, human approval, sandbox execution, a
-          blocked over-scope retry, and commits every event to a SHA-256 hash chain. The published
-          file below is the emitter's exact output; the verify command re-derives the chain and fails
-          if a single byte changed.
+          The events are scripted; the chain is computed. <code>scripts/generate-tr-a002.mjs</code>
+          lists the same payments-ops scenario as twelve events (proposal, policy verdict, proxy hold,
+          human approval, sandbox execution, a blocked over-scope retry) and commits each one to a
+          SHA-256 hash chain. No agent, policy gate, proxy, approver or sandbox ran. The published
+          file below is the script's exact output. The verify command re-derives the chain and fails
+          if an event no longer matches its hash, or if <code>final_digest</code> or
+          <code>log_digest</code> stops matching; a chain recomputed after an edit ends in a different
+          final digest from the one published here. The file's top-level description (its type,
+          emitter, label, scenario, agent, policy text, risk owner, proxy tool and hash spec) sits
+          outside the chain and is not checked.
         </p>
 
         <div class="tr2-exec">
-          <p><b>TR-A002 is a machine-emitted sandbox trace.</b> The Origin trace emitter produces
-          proposal → policy verdict → proxy hold → approval → sandbox execution → blocked over-scope
-          retry → a sealed hash-chain digest, as a real, re-verifiable SHA-256 chain over 12 events.
+          <p><b>TR-A002 is a machine-emitted record of a scripted scenario.</b> The emitter script writes
+          proposal, policy verdict, proxy hold, approval, sandbox execution, blocked over-scope retry
+          and a sealed digest as twelve events on a real, re-verifiable SHA-256 chain.
           <span class="tr2-not">It is <b>not</b> a customer deployment, <b>not</b> production SaaS,
-          and <b>not</b> a performance claim. No live money moves, the <span class="mono">payments.refund</span>
-          side effect executes in a sandbox only.</span></p>
+          and <b>not</b> a performance claim. Nothing executed and no money moved: the sandbox execution
+          is a scripted event, not a call to a sandbox. The file's own label says the refund
+          “executes in a sandbox only”; the file is kept byte for byte, so read that phrase as part of
+          the scripted scenario.</span></p>
         </div>
 
         <div class="tr2-digest">
@@ -312,27 +319,27 @@
 
         <p class="proof__sub" style="margin-top:22px"><b>The 12 events, in order.</b></p>
         <ol class="tr2-flow" aria-label="TR-A002 event sequence">
-          <li class="is-plan" data-seq="1"><span class="ev__s sr-only">Plan</span><span class="ev__a">proposal.created</span><span class="ev__d">Agent proposes a $480.00 refund on <span class="mono">order_8842</span>.</span></li>
-          <li class="is-plan" data-seq="2"><span class="ev__s sr-only">Plan</span><span class="ev__a">policy.evaluated</span><span class="ev__d">Checked against refund-cap-v0.3: $480 is over the $250 auto-cap, within the $500 ceiling.</span></li>
-          <li class="is-held" data-seq="3"><span class="ev__s sr-only">Held</span><span class="ev__a">verdict.require_approval</span><span class="ev__d">Verdict: require human approval. Risk owner: payments-on-call.</span></li>
-          <li class="is-held" data-seq="4"><span class="ev__s sr-only">Held</span><span class="ev__a">proxy.held</span><span class="ev__d">Side effect held at the proxy, <span class="mono">payments.refund</span> not dispatched.</span></li>
-          <li class="is-held" data-seq="5"><span class="ev__s sr-only">Held</span><span class="ev__a">approval.requested</span><span class="ev__d">Approval requested from payments-on-call with the verdict and side-effect scope.</span></li>
-          <li class="is-ok" data-seq="6"><span class="ev__s sr-only">Verified</span><span class="ev__a">approval.granted</span><span class="ev__d">Human approver grants the $480.00 refund.</span></li>
-          <li class="is-ok" data-seq="7"><span class="ev__s sr-only">Verified</span><span class="ev__a">proxy.executed_sandbox</span><span class="ev__d">Executed in sandbox, simulated refund, no live money moved.</span></li>
-          <li class="is-ok" data-seq="8"><span class="ev__s sr-only">Verified</span><span class="ev__a">action.recorded</span><span class="ev__d">Recorded to the audit chain with approver, verdict, and scope.</span></li>
-          <li class="is-plan" data-seq="9"><span class="ev__s sr-only">Plan</span><span class="ev__a">retry.proposed_over_scope</span><span class="ev__d">Agent proposes a second refund of $920.00, above the $500 ceiling.</span></li>
-          <li class="is-block" data-seq="10"><span class="ev__s sr-only">Blocked</span><span class="ev__a">verdict.deny_or_block</span><span class="ev__d">Verdict: deny, $920 exceeds the approved scope.</span></li>
-          <li class="is-block" data-seq="11"><span class="ev__s sr-only">Blocked</span><span class="ev__a">proxy.blocked</span><span class="ev__d">Side effect <b>BLOCKED</b> at the proxy, the over-scope refund is never dispatched. The block is recorded.</span></li>
+          <li class="is-plan" data-seq="1"><span class="ev__s sr-only">Plan</span><span class="ev__a">proposal.created</span><span class="ev__d">Scripted proposal: a $480.00 refund on <span class="mono">order_8842</span>.</span></li>
+          <li class="is-plan" data-seq="2"><span class="ev__s sr-only">Plan</span><span class="ev__a">policy.evaluated</span><span class="ev__d">Scripted policy step: $480 is over the $250 auto-cap and within the $500 ceiling. No rule engine ran.</span></li>
+          <li class="is-held" data-seq="3"><span class="ev__s sr-only">Held</span><span class="ev__a">verdict.require_approval</span><span class="ev__d">Scripted verdict: require human approval. Risk owner: payments-on-call.</span></li>
+          <li class="is-held" data-seq="4"><span class="ev__s sr-only">Held</span><span class="ev__a">proxy.held</span><span class="ev__d">Scripted hold: the event marks <span class="mono">payments.refund</span> as held and not dispatched.</span></li>
+          <li class="is-held" data-seq="5"><span class="ev__s sr-only">Held</span><span class="ev__a">approval.requested</span><span class="ev__d">Scripted request for approval from payments-on-call, with the verdict and side-effect scope.</span></li>
+          <li class="is-ok" data-seq="6"><span class="ev__s sr-only">Approved (scripted)</span><span class="ev__a">approval.granted</span><span class="ev__d">Scripted approval: the event records payments-on-call granting the $480.00 refund. No person approved anything.</span></li>
+          <li class="is-ok" data-seq="7"><span class="ev__s sr-only">Executed (scripted)</span><span class="ev__a">proxy.executed_sandbox</span><span class="ev__d">Scripted execution: the event marks the refund as executed in a sandbox. No sandbox call was made and no money moved.</span></li>
+          <li class="is-ok" data-seq="8"><span class="ev__s sr-only">Recorded (scripted)</span><span class="ev__a">action.recorded</span><span class="ev__d">The script records approver, verdict and scope in this event.</span></li>
+          <li class="is-plan" data-seq="9"><span class="ev__s sr-only">Plan</span><span class="ev__a">retry.proposed_over_scope</span><span class="ev__d">Scripted retry: a second refund of $920.00, above the $500 ceiling.</span></li>
+          <li class="is-block" data-seq="10"><span class="ev__s sr-only">Blocked</span><span class="ev__a">verdict.deny_or_block</span><span class="ev__d">Scripted verdict: deny. $920 exceeds the approved scope.</span></li>
+          <li class="is-block" data-seq="11"><span class="ev__s sr-only">Blocked</span><span class="ev__a">proxy.blocked</span><span class="ev__d">Scripted block: the event marks the over-scope refund as blocked and never dispatched.</span></li>
           <li class="is-seal" data-seq="12"><span class="ev__s sr-only">Sealed</span><span class="ev__a">evidence.digest_sealed</span><span class="ev__d">Hash chain over the preceding 11 events is committed to the final digest.</span></li>
         </ol>
 
         <div class="blockline" role="note" style="margin-top:20px">
-          <p class="blockline__t">Event 11 is the one that matters: the agent tried to exceed its scope. <b>The proxy blocked it, and the block itself is in the chain.</b></p>
+          <p class="blockline__t">Event 11 is the one to inspect: the scripted agent exceeds its scope and the scripted proxy blocks it. <b>The block is an event in the chain: editing it breaks verification or changes the final digest.</b></p>
         </div>
 
         <div class="spec-json" style="margin-top:22px">
           <h3>Emitter output, verbatim excerpt (first + sealing event)</h3>
-          <pre tabindex="0"><code>// machine-emitted — public/proof/tr-a002.json (12 events; excerpt)
+          <pre tabindex="0"><code>// machine-emitted from a scripted scenario — public/proof/tr-a002.json (12 events; excerpt)
 {
   "seq": 1, "event_id": "evt_001",
   "ts": "2026-07-04T17:00:00.000Z",
@@ -343,7 +350,7 @@
   "prev_hash": "0000…0000",
   "event_hash": "8fa159f391851f662390bcd4f43d7aa3b47c5634bae8e5fd887c93b424e0c57b"
 }
-// … events 2–11 (policy → held → approval → sandbox exec → over-scope → blocked) …
+// … events 2–11 (scripted: policy → held → approval → sandbox exec → over-scope → blocked) …
 {
   "seq": 12, "event_id": "evt_012",
   "action": "evidence.digest_sealed", "actor": "origin-recorder",
@@ -364,7 +371,7 @@
             <p class="tr2-verify__lbl">Verify this artifact yourself</p>
             <button type="button" class="tr2-verify__copy" data-copy="npm run proof:verify" aria-label="Copy the verify command">Copy command</button>
           </div>
-          <p class="tr2-verify__plain" style="font-weight:400;opacity:0.85;margin:0 0 10px;">No install needed, paste the downloaded JSON into <a href="/verify" style="color:var(--signal-ink);font-weight:600">/verify</a> and it re-checks offline in your browser (green = reproducible; tamper any field &rarr; VOID). Or clone the public repo <a href="https://github.com/bohueilin/Origin" style="color:var(--signal-ink);font-weight:600">github.com/bohueilin/Origin</a> and run:</p>
+          <p class="tr2-verify__plain" style="font-weight:400;opacity:0.85;margin:0 0 10px;">No install needed, paste the downloaded JSON into <a href="/verify" style="color:var(--signal-ink);font-weight:600">/verify</a> and it re-checks offline in your browser (green = the chain re-derives; an event edited without recomputing the hashes returns VOID; the file's top-level description, its type, label, policy text and other descriptive fields, is outside the chain). Or clone the public repo <a href="https://github.com/bohueilin/Origin" style="color:var(--signal-ink);font-weight:600">github.com/bohueilin/Origin</a> and run:</p>
           <pre tabindex="0"><span class="tr2-verify__c"># in the repo — re-derive the hash chain of the published JSON</span>
 npm run proof:verify
 <span class="tr2-verify__c"># → PASS every event hash + prev_hash link verifies · digest recomputes</span>
@@ -380,27 +387,28 @@ node scripts/verify-tr-a002.mjs tr-a002.json
             </div>
             <p class="tr2-verify__plain" role="status" aria-live="polite" data-tamper-out></p>
           </div>
-          <p class="tr2-verify__cap">The verifier recomputes every event hash from its own bytes and checks the links. Edit any field of any event and it exits non-zero, that is what "tamper-evident" means here. This demonstrates tamper-evident trace plumbing in sandbox, not production security. The in-page re-check runs the same verifyChain that /verify uses; it demonstrates tamper evidence on a sandbox trace, not production security.</p>
-          <p class="tr2-verify__plain"><b>In plain English:</b> the published JSON commits each event to the next one, and the final digest commits the entire run. Change any byte of any event and re-verification fails.</p>
+          <p class="tr2-verify__cap">The verifier recomputes every event hash from its own bytes and checks the links. Edit any field of any event without recomputing the hashes and it exits non-zero; recompute them and the final digest no longer matches the one published on this page. That is what "tamper-evident" means here. This demonstrates tamper-evident trace plumbing on a scripted scenario, not production security. The in-page re-check runs the same verifyChain that /verify uses; it demonstrates tamper evidence on a scripted trace, not production security.</p>
+          <p class="tr2-verify__plain"><b>In plain English:</b> the published JSON commits each event to the next one, and the final digest commits all twelve events. Change any value in any event and re-verification fails, unless every later hash is recomputed; then the final digest no longer matches the one published on this page. Whitespace and the file's top-level description are not covered.</p>
         </div>
 
         <div class="proof__pair" style="margin-top:24px">
           <div class="proof__card proof__card--yes">
             <h3>What TR-A002 shows</h3>
             <ul>
-              <li>Origin's trace engine emitting a <b>real, tamper-evident</b> record of an agent workflow, not authored by hand.</li>
-              <li>The full loop as machine events: proposal, policy verdict, proxy hold, human approval, sandbox execution.</li>
-              <li>A <b>blocked over-scope retry</b>, recorded, the approval covered one action, not standing authority.</li>
+              <li>A script-written, <b>tamper-evident</b> record of a scripted agent workflow: the hashes are computed, the events are typed into the script.</li>
+              <li>The full loop as a scripted event sequence: proposal, policy verdict, proxy hold, human approval, sandbox execution.</li>
+              <li>A scripted, <b>blocked over-scope retry</b>, showing how the format records that one approval covered one action, not standing authority.</li>
               <li>A SHA-256 hash chain whose digest you can <b>re-verify independently</b> with the published file.</li>
             </ul>
           </div>
           <div class="proof__card proof__card--no">
             <h3>What TR-A002 does not show</h3>
             <ul>
+              <li><b>Not a run</b>: no agent, policy gate, proxy, approver or sandbox executed. The events are scripted.</li>
               <li><b>Not a customer deployment</b>, inputs are simulated; no customer site, data, or money.</li>
-              <li><b>Not live money</b>, the <span class="mono">payments.refund</span> side effect executes in a sandbox only.</li>
+              <li><b>Not live money</b>: no refund call was made, in a sandbox or anywhere else.</li>
               <li><b>Not a performance claim</b>: timestamps are deterministic pseudo-timestamps, not a latency measurement.</li>
-              <li><b>Not reviewer acceptance or compliance certification</b>, it proves the trace engine works, nothing about a real reviewer's decision.</li>
+              <li><b>Not reviewer acceptance or compliance certification</b>: it shows that the chain format and verifier work, nothing about a real reviewer's decision.</li>
             </ul>
           </div>
         </div>
@@ -416,9 +424,9 @@ node scripts/verify-tr-a002.mjs tr-a002.json
         </p>
         <p class="proof__sub">
           A single high-consequence action, a payments-ops agent proposing a refund above its
-          auto-cap, worked through Origin's runtime semantics: the policy verdict, the controlled
+          auto-cap, worked through the proposed runtime design (not built): the policy verdict, the controlled
           tool-call proxy, the human approval, a blocked over-scope action, and the audit-chain
-          digest. TR-A002 above follows the same refund scenario through the trace emitter: same scenario, different provenance.
+          digest. TR-A002 above writes the same scripted scenario as a computed hash chain: same scenario, computed hashes.
         </p>
 
         <dl class="spec">

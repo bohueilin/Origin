@@ -61,7 +61,7 @@ test.describe('the published trace is progressively interactive', () => {
       await step.click()
       await expect(detail).toContainText(`Event ${event.seq}: ${event.action}`)
       await expect(page.locator(`.tr2-flow li[data-seq="${event.seq}"]`)).toHaveClass(/is-current/)
-      if (event.seq === 11) await expect(figure.locator('[data-trace-block]')).toHaveText('Event 11 is the one that matters: the agent tried to exceed its scope. The proxy blocked it, and the block itself is in the chain.')
+      if (event.seq === 11) await expect(figure.locator('[data-trace-block]')).toHaveText('Event 11 is the one to inspect: the scripted agent exceeds its scope and the scripted proxy blocks it. The block is an event in the chain: editing it breaks verification or changes the final digest.')
     }
     await expect(step).toHaveText('Reset')
     await figure.locator('svg:visible [data-trace-node="12"]').click()

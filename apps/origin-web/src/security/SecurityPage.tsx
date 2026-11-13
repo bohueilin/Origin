@@ -39,13 +39,14 @@ import {
 import type { PolicyVersion } from '@origin/verifier-core/proofCarryingPolicy'
 import {
   issueIamReferenceCheck,
-  oraclePolicy,
+  verifyIamDecision,
   allowAllPolicy,
   iamEnvDigest,
   iamTasks,
   IAM_VERSIONS,
 } from '@origin/verifier-core/iamGym'
 import type { IamReferenceCheck } from '@origin/verifier-core/iamGym'
+import { missDirection } from '@origin/verifier-core/missDirection'
 import { verifyCredential } from '@origin/verifier-core/crucible'
 import {
   generateCorpus,
@@ -58,6 +59,7 @@ import {
 } from '@origin/verifier-core/overGrant'
 import type { OverGrantCorpus } from '@origin/verifier-core/overGrant'
 import { computeLicenseFromVerdicts } from '../license'
+import { PRESETS, policyForSpec } from '../certify/policySpec'
 import { shareUrl } from '../shared/shareLink'
 import type { LicenseVerdict } from '../license'
 
@@ -365,12 +367,22 @@ function ReferenceCheckPanel() {
   }
 
   const runHarnessed = () => {
+    // Grade the recommended preset, not the oracle's own answers.
+    const policyFor = policyForSpec(PRESETS['least-privilege'].spec)
     const r = issueIamReferenceCheck({
       agentConfig: AGENT_CONFIG,
-      policyFor: oraclePolicy,
+      policyFor,
       computeLevel,
       issuedAt: '2026-07-06',
     })
+    // Each miss and its direction against the oracle; over-grants are not counted as misses.
+    const misses = iamTasks.flatMap((task) => {
+      const decision = policyFor(task)
+      const check = verifyIamDecision(task, decision)
+      return check.passed || check.catastrophic ? [] : [missDirection(decision, check.expected)]
+    })
+    const stricter = misses.filter((d) => d === 'stricter').length
+    const looser = misses.filter((d) => d === 'looser').length
     const v = verifyCredential({
       credential: r.credential,
       liveConfig: AGENT_CONFIG,
@@ -379,10 +391,13 @@ function ReferenceCheckPanel() {
     })
     setResult(r)
     setSteps([
-      info('gym', `${iamTasks.length} least-privilege access decisions, labeled by the deterministic oracle — never an LLM grading an LLM`),
+      info('gym', `${iamTasks.length} least-privilege access decisions, labeled by the deterministic oracle (never an LLM grading an LLM). The policy under test is the Least-privilege (recommended) preset, not the oracle itself.`),
       ok('reference check issued', r.summary.replaceAll('\n', ' ')),
+      ...(misses.length > 0
+        ? [info('misses', `${stricter} stricter than the oracle (Origin's answer key), ${looser} looser; the row-by-row result is on /reference-check`)]
+        : []),
       v.code === 0
-        ? ok('independently re-verified', 'the credential re-checks against the live config + pinned env/verifier (code 0)')
+        ? ok('re-checked in this tab', 'the page that issued the credential re-checks it against the declared config and the pinned battery and verifier versions (code 0); a self-check')
         : bad('re-verify', `code ${v.code}: ${v.checks[v.checks.length - 1]?.[1] ?? 'failed'}`),
     ])
   }

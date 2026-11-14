@@ -15,7 +15,7 @@ import { fleetReadiness } from './fleetReadiness'
 import { FloorCountStrip } from './FloorCountStrip'
 import { EMBODIMENT_CODE } from '../environmentPlan'
 import type { FloorPlanSnapshot } from '../floorPlanStore'
-import type { FrozenWorkflow } from '../workflowDraft'
+import { freezeWorkflow, type FrozenWorkflow } from '../workflowDraft'
 import { signSigil, generateSigningKey, keyThumbprint } from '@origin/verifier-core/sigil'
 import { canonical, sha256 } from '@origin/evidence/env-evidence'
 
@@ -121,6 +121,12 @@ export function ProvingGroundPage() {
           The deterministic oracle scores the floor's geometry and robot types; move every robot and the
           verdicts below stay byte-identical.
         </p>
+      </div>
+
+      {/* The step order is draw, watch, inspect, so the primary action follows the playback. */}
+      <div className="pg-inspect">
+        <button className="btn primary hero-action" onClick={() => approve(freezeWorkflow({ ...draft, ...snapshot }))}>Inspect the result</button>
+        <span className="trust-note">The deterministic oracle scores geometry and robot types. No real robot executes.</span>
       </div>
 
       {/* 3 · Terminal outcomes under the fixed synthetic verifier */}

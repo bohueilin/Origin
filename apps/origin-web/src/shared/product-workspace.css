@@ -408,6 +408,30 @@ body.product-route--proving-ground { overflow-x: clip; }
 .pg-wrap.product-workspace .pg-type-where { font-size: 14px; line-height: 1.5; color: var(--ink); }
 .pg-wrap.product-workspace .pg-type-note { font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
 .pg-wrap.product-workspace .pg-types-inputs { margin: 0 0 14px; padding: 10px 12px; border-left: 3px solid var(--signal); border-radius: 0 8px 8px 0; background: var(--paper-3); font-size: 15px; line-height: 1.6; color: var(--ink); }
+
+/* The primary action follows the playback (draw, watch, inspect). */
+.pg-wrap.product-workspace .pg-inspect { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+
+/* From 1024px the build panel spans the editor card: fleet cards beside the tools, and
+   the floor header, legend and readout docked beside the grid, so no column is left
+   half empty. The type panel follows it, as in the markup. A phone stays stacked. */
+@media (min-width: 1024px) {
+  .pg-wrap.product-workspace .align-grid { grid-template-columns: minmax(0, 1fr); }
+  .pg-wrap.product-workspace .smp-controls { display: grid; grid-template: auto auto auto 1fr / minmax(0, 1fr) minmax(0, 1fr); column-gap: 20px; }
+  .pg-wrap.product-workspace .smp-controls > * { grid-column: 2; }
+  .pg-wrap.product-workspace .smp-controls > .smp-fleets { grid-column: 1; grid-row: 1 / -1; }
+  .pg-wrap.product-workspace .pg-floor { display: grid; column-gap: 24px; grid-template: "head head" "grid legend" "grid readout" "grid ." 1fr / max-content minmax(0, 1fr); }
+  .pg-wrap.product-workspace .pg-floor > .floor-head { grid-area: head; }
+  .pg-wrap.product-workspace .pg-floor > .grid-legend { grid-area: legend; }
+  .pg-wrap.product-workspace .pg-floor > .site-grid-scroll { grid-area: grid; }
+  .pg-wrap.product-workspace .pg-floor > .grid-readout-row { grid-area: readout; margin-top: 0; }
+  .pg-wrap.product-workspace .pg-types { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .pg-wrap.product-workspace .pg-types-panel > :is(.pg-types-inputs, .field, .field-hint) { max-width: 75ch; }
+}
+/* Once the docked column is wide enough, the floor header joins it. */
+@media (min-width: 1100px) {
+  .pg-wrap.product-workspace .pg-floor { grid-template-areas: "grid head" "grid legend" "grid readout" "grid ."; }
+}
 @media (max-width: 720px) {
   /* On a phone the bar is one state line plus the floor total, so the grid keeps
      most of the screen; the dropped words stay for screen readers. */

@@ -14,8 +14,10 @@ import { siteFleets } from '../workflowDraft'
 import { planMultiAgent, type MultiAgentPlan } from '../multiAgent'
 import type { GridPos } from '../warehouse'
 import type { RobotEmbodiment, PhysicalDomain } from '../environmentPlan'
+// One colour per fleet, shared with the editor and the 2D playback.
+import { FLEET_COLORS, FLEET_COLORS_HEX } from '../proving-ground/fleetPalette'
+import './floorPlayback.css'
 
-const FLEET_COLORS = [0x2f6df6, 0x0f9d6e, 0xb97400, 0x7c3aed, 0xdb2777, 0x0891b2]
 const TICK_SECONDS = 0.78
 const CARGO = 0xc79a5b
 const RACK_H = 5.6 // high-bay racking height in cells (≈ a tall warehouse aisle)
@@ -35,8 +37,10 @@ const CARGO_GEO = new THREE.BoxGeometry(0.42, 0.4, 0.42)
 
 function robotModel(emb: RobotEmbodiment, color: number): Built {
   const g = new THREE.Group()
-  const body = new THREE.MeshStandardMaterial({ color, roughness: 0.42, metalness: 0.25 })
-  const dark = new THREE.MeshStandardMaterial({ color: 0x1b2330, roughness: 0.6, metalness: 0.3 })
+  // Matte and outside the scene's filmic tone curve, which crushed the dark fleet palette to
+  // near-black, so each fleet reads as its legend swatch.
+  const body = new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0, toneMapped: false })
+  const dark = new THREE.MeshStandardMaterial({ color: 0x272d26, roughness: 0.6, metalness: 0.3 })
   const tyre = new THREE.MeshStandardMaterial({ color: 0x0c1118, roughness: 0.8 })
   const cargoMat = new THREE.MeshStandardMaterial({ color: CARGO, roughness: 0.78 })
   const rotors: THREE.Mesh[] = [], wheels: THREE.Mesh[] = [], legs: THREE.Mesh[] = []
@@ -168,7 +172,7 @@ function robotModel(emb: RobotEmbodiment, color: number): Built {
   } else { // amr (default)
     const shell = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.24, 0.76), body)
     shell.position.y = 0.2; shell.castShadow = true; shell.receiveShadow = true; g.add(shell)
-    const deck = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 0.6), dark)
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 0.6), body) // the face a high camera sees
     deck.position.y = 0.35; g.add(deck)
     const eye = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.1, 0.05), new THREE.MeshStandardMaterial({ color: 0x0b1220 }))
     eye.position.set(0, 0.24, 0.38); g.add(eye)
@@ -216,14 +220,14 @@ function obstacleProp(domain: PhysicalDomain): THREE.Group {
   if (domain === 'hospital') {
     box(0.86, 2.3, 0.7, M(0xeef3f7, 0.6), 0, 1.15, 0)                 // white cabinet body
     for (const ly of [0.6, 1.2, 1.8]) box(0.82, 0.05, 0.66, M(0xc3cdd6, 0.5, 0.4), 0, ly, 0)
-    ;[0x2f9e8f, 0x2f6df6, 0xd98324].forEach((c, i) =>               // colored supply totes
+    ;[0x4e5b48, 0x8a5800, 0x272d26].forEach((c, i) =>               // supply totes: ink-soft, ochre, ink
       box(0.22, 0.18, 0.5, M(c, 0.7), -0.26 + i * 0.26, 0.72, 0.05))
     box(0.3, 0.08, 0.02, M(0xd23b3b), 0, 2.0, 0.36)                  // red cross
     box(0.08, 0.3, 0.02, M(0xd23b3b), 0, 2.0, 0.36)
   } else if (domain === 'lab') {
     box(0.9, 0.95, 0.7, M(0x2b3038, 0.5, 0.3), 0, 0.48, 0)           // dark bench cabinet
     box(0.92, 0.06, 0.72, M(0x9aa3b0, 0.3, 0.6), 0, 0.98, 0)         // steel worktop
-    const glass = new THREE.MeshStandardMaterial({ color: 0xbfe3ec, roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.38 })
+    const glass = new THREE.MeshStandardMaterial({ color: 0xdfe4d8, roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.38 })
     box(0.9, 1.3, 0.5, glass, 0, 1.7, -0.05)                         // fume-hood glass
     box(0.9, 0.1, 0.7, M(0x3a4048, 0.4, 0.5), 0, 2.4, 0)            // hood top
     for (const sx of [-0.2, 0.2]) {                                  // glassware
@@ -242,7 +246,7 @@ function obstacleProp(domain: PhysicalDomain): THREE.Group {
     box(0.86, 0.08, 0.7, M(0x946b3f, 0.8), 0, 2.02, 0)
   } else {
     // warehouse / logistics — high-bay racking (the original tall warehouse aisle)
-    const upMat = M(0xe3741f, 0.55, 0.2), beamMat = M(0x1f3a8a, 0.5, 0.2), palMat = M(0xb9905a, 0.85)
+    const upMat = M(0xe3741f, 0.55, 0.2), beamMat = M(0x272d26, 0.5, 0.2), palMat = M(0xb9905a, 0.85)
     const upGeo = new THREE.BoxGeometry(0.08, RACK_H, 0.08)
     const beamGeo = new THREE.BoxGeometry(0.86, 0.07, 0.07), palGeo = new THREE.BoxGeometry(0.7, 0.34, 0.7)
     for (const sx of [-0.42, 0.42]) for (const sz of [-0.42, 0.42]) {
@@ -351,7 +355,7 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     sun.shadow.camera.top = d; sun.shadow.camera.bottom = -d
     sun.shadow.camera.near = 0.5; sun.shadow.camera.far = maxDim * 5
     scene.add(sun)
-    const fill = new THREE.DirectionalLight(0xcdd8ff, 0.3)
+    const fill = new THREE.DirectionalLight(0xf2efe8, 0.3)
     fill.position.set(-W * 0.6, maxDim, -H * 0.5); scene.add(fill)
 
     // floor: concrete pad + a larger ground for depth
@@ -400,7 +404,7 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     if (flatItems.length === 0) { flatItems = [siteMap.item]; flatDrops = [siteMap.drop]; flatDropFleet = [0] }
     const cargoMat = new THREE.MeshStandardMaterial({ color: CARGO, roughness: 0.78 })
     const palletMat = new THREE.MeshStandardMaterial({ color: 0x8a6a43, roughness: 0.9 })
-    const padMat = (fi: number) => new THREE.MeshStandardMaterial({ color: FLEET_COLORS[fi % FLEET_COLORS.length], roughness: 1, transparent: true, opacity: 0.3 })
+    const padMat = (fi: number) => new THREE.MeshStandardMaterial({ color: FLEET_COLORS_HEX[fi % FLEET_COLORS_HEX.length], roughness: 1, transparent: true, opacity: 0.3 })
     const itemBoxes: { mesh: THREE.Mesh; pickTick: number }[] = []
     flatItems.forEach((it, i) => {
       const pallet = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.1, 0.6), palletMat)
@@ -450,7 +454,7 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
       const perRobot = siteMap.robotTypes?.[`${home.x},${home.y}`]
       const useEmb = perRobot ?? fleetEmbs[fi] ?? (emb === 'other' ? CYCLE[r.index % CYCLE.length] : emb)
       botEmb.push(useEmb)
-      const built = robotModel(useEmb, FLEET_COLORS[fi % FLEET_COLORS.length])
+      const built = robotModel(useEmb, FLEET_COLORS_HEX[fi % FLEET_COLORS_HEX.length])
       const s = r.start ?? { x: 0, y: 0 }
       built.group.position.set(wx(s.x), built.fly, wz(s.y))
       scene.add(built.group)
@@ -597,6 +601,9 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
         <span className="pg3d-prog-txt" ref={progTxtRef}>starting…</span>
       </div>
       <div className="pg3d-legend">
+        {fleetEmbs.map((_, fi) => (
+          <span key={fi}><i style={{ background: FLEET_COLORS[fi % FLEET_COLORS.length] }} /> Fleet {fi + 1}</span>
+        ))}
         <span><i className="lg-box" /> cargo</span>
         <span><i className="lg-rack" /> {DOMAIN_STRUCT_LABEL[domain] ?? 'structure'}</span>
         <span><i className="lg-haz" /> hazard</span>

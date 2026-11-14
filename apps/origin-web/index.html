@@ -50,7 +50,7 @@
     <!-- Fonts: preconnect + swap; a system stack paints instantly so text is never blocked -->
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=245b8c7f" />
+    <link rel="stylesheet" href="/home.css?v=54a3dc77" />
     <link rel="stylesheet" href="/cinematic.css?v=afce41a0" />
     <style>
       /* Pass 2 Phase 2: explanatory figures in #demo. Static by design: no animation, no
@@ -145,6 +145,19 @@
         .cin-demo .demo__panel > * { grid-column: 1; }
         .cin-demo .demo__panel > .panelfig { grid-column: 2; grid-row: 1 / -1; margin: 0; }
         .panelfig__cells { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      }
+      /* Phones: the walkthrough's locked height is its tallest stage's (Reverify, then Grade), and
+         the space under a shorter stage is the difference. So these rules shrink what Reverify
+         has most of: a readout's label and text share lines (balanced, so no break lands inside
+         "over-grants") while its state keeps a line of its own; the first /verify checks and the
+         UNTRUSTED outcome each fit on one line; padding and gaps are tighter. No text, type size
+         or line height changes, and the two links keep their 44 px height. */
+      @media (max-width: 640px) {
+        .cin-demo .demo__readout { display: block; padding: 12px 14px; text-wrap: balance; }
+        .panelfig { padding: 14px 12px; }
+        .panelfig__checks { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+        .panelfig__outcome { gap: 8px; margin-top: 6px; padding: 8px 10px; }
+        .cin-demo .demo__panel .cta-row { gap: 8px; }
       }
 
       .demo-boundary { margin: 20px 0 0; padding: 14px 18px; border: 1px solid var(--line-2); border-left: 3px solid var(--signal); border-radius: 12px; font-size: var(--fs-15); line-height: 1.6; color: var(--ink-soft); }

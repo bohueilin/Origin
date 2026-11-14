@@ -36,6 +36,12 @@ interface RowResult { id: string; label: string; sub: string; yours: Decision; o
 // A miss is a row that is neither a match nor an over-grant; its direction is against the oracle.
 const isMiss = (r: RowResult) => !r.passed && !r.catastrophic
 const stricter = (r: RowResult) => missDirection(r.yours, r.oracle) === 'stricter'
+// The ink no-entry mark of the page's static figures (the .mk rules in reference-check.html),
+// in place of the colour emoji, which renders red. The word beside it carries the meaning.
+// Sized in em to the table text, so it stands as tall as the ✓ and △ beside it, on their baseline.
+const OverGrantMark = () => (
+  <span className="mk" aria-hidden="true" style={{ verticalAlign: '-0.05em' }}><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false" style={{ width: '0.75em', height: '0.75em' }}><circle cx="6" cy="6" r="5.5" /><rect x="2.5" y="5" width="7" height="2" rx=".5" /></svg></span>
+)
 interface RunResult {
   scenario: Scenario; coldPassRate: number; lift: number; catastrophic: number
   rows: RowResult[]; credential: CrucibleCredential; reVerifyCode: number
@@ -325,7 +331,7 @@ export function ReferenceCheckPage() {
                 {result.rows.map((r) => (
                   <tr key={r.id} className={r.catastrophic ? 'rc-row--cat' : r.passed ? '' : 'rc-row--miss'}>
                     <td><b>{r.label}</b></td><td>{r.sub}</td><td>{r.yours}</td><td>{r.oracle}</td>
-                    <td>{r.catastrophic ? '⛔ over-grant' : r.passed ? '✓ match' : stricter(r) ? '△ miss (stricter)' : '△ miss (looser)'}</td>
+                    <td>{r.catastrophic ? <><OverGrantMark /> over-grant</> : r.passed ? '✓ match' : stricter(r) ? '△ miss (stricter)' : '△ miss (looser)'}</td>
                   </tr>
                 ))}
               </tbody>

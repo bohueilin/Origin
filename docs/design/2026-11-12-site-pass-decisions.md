@@ -255,3 +255,17 @@ Phase 2 adds static figures, so a visitor who does not click can see what each p
 ## Pass 2, Phase 4 — verification sweep
 
 A sweep of a production build at 1919, 1280, 430 and 375 px checked the seven validation gates across 16 routes. They are the `/trust` scoreboard, the recording captions, the hero spacing, the lab caption, wording drift, every route's heading and frame, and phone overflow. One drift remained: `/foundry`'s "Evidence boundary" still described the flow in the five-beat form ("the environment executes … the deterministic verifier evaluates …"), which the settled decision keeps for the proposed controlled path. It now reads "Within its lane the deterministic environment verifies each plan, the gate decides, and the trace records the result." A "Pass 2, Phase 4" lint block forbids the old sentence.
+
+## Pass 2 follow-up — polish after the outside review
+
+After Release 4, an outside review and a pre-send verification found no false or misleading statement and recommended five follow-ups. All five ship here.
+
+**Blue removed from the shared stylesheet.** `public/home.css` no longer holds any blue. Four rules used `#5f86ff`, two of them as gradients: `.meter__fill`, the `.walk__tab` underline, `.walk__progress-fill` and `.walk__mode.is-active`. They now use solid forest green, and no page renders them. Nine rules used a pale blue border, `#bcccff`, and three a blue ring, `rgba(42,86,232,…)`. They now use the neutral `--line-2` line (a checked box uses `--control-selected-line`) and a forest-green ring. One of these renders on a page: the home walkthrough's "Challenge" tag, whose border is now the neutral line. The stylesheet's version line changes on every page, including the legal pages and `404.html`; that line is approved. Blue set in a page's own inline styles (`/simulation`, `/foundry`) is outside this change.
+
+**The `/reference-check` comparison names its battery.** Under the two preset cards: "Scores above are for the customer-support synthetic battery (support-gym-v1); on the IAM battery (iam-gym-v1), Least-privilege matches 11 of 12 (1 stricter miss) and Permissive matches 3 of 12." The numbers come from the oracle.
+
+**One over-grant mark.** The interactive results table showed over-grants with the ⛔ emoji, which renders red. It now uses the same monochrome ink mark as the static figures, followed by "over-grant". The recordings do not show this table, so they are unaffected.
+
+**The home walkthrough on phones.** The walkthrough keeps one height across its five stages, so Play never shifts the page; on phones the tallest stages are now laid out more tightly. At 375 px the shared height drops from about 1,046 px to about 898 px, and the largest empty space under a shorter stage from about 285 px to about 208 px. No text or type size changed, and wider screens are unchanged.
+
+**`/brief` in print.** In print only, the five-stage figure hides its record-field codes and one caption phrase about them, so its text prints at 10.5 px or more instead of 9 px. The brief still prints on one page at A4 and Letter, and the screen is unchanged.

@@ -145,7 +145,7 @@ test('pass 2 phase 2: the five-stage figure sits between the #demo head and the 
   await expect(stages.nth(1)).toContainText('allow, deny or escalate')
   // The Grade key uses the /reference-check verdict words.
   const verdictWords = source('../../src/reference-check/ReferenceCheckPage.tsx')
-  for (const word of ['✓ match', '△ miss (stricter)', '△ miss (looser)', '⛔ over-grant']) expect(verdictWords).toContain(word)
+  for (const word of ['✓ match', '△ miss (stricter)', '△ miss (looser)', '<OverGrantMark /> over-grant']) expect(verdictWords).toContain(word)
   // The marks are aria-hidden; the over-grant mark is drawn in ink, since the emoji renders red.
   await expect(stages.nth(2).locator('.stagefig__key li')).toHaveText(['✓match', '△miss (stricter)', '△miss (looser)', 'over-grant, counted separately'])
   for (const mark of await stages.nth(2).locator('.stagefig__key .mk').all()) await expect(mark).toHaveAttribute('aria-hidden', 'true')

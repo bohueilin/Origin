@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=245b8c7f" />
+    <link rel="stylesheet" href="/home.css?v=54a3dc77" />
 
     <style>
       .rc-grid { display: grid; gap: 22px; margin-top: 26px; }
@@ -191,6 +191,9 @@
       .rcx-card__note { margin: 12px 0 0; font-size: var(--fs-13); line-height: 1.5; color: var(--ink-soft); }
       .rcx-fig__note { display: block; margin: 12px 0 0; font-size: var(--fs-13); line-height: 1.5; color: var(--ink-soft); }
       .rcx-fig__note code, .rcx-cats code { white-space: nowrap; }
+      /* Which battery the scores above are for, and the IAM battery's scores for the same two presets. */
+      .rcx-fig__battery { max-width: 70ch; margin: 6px 0 0; font-size: var(--fs-13); line-height: 1.5; color: var(--ink-soft); }
+      .rcx-fig__battery code { font: var(--fs-12)/1.45 var(--font-mono); color: var(--ink); white-space: nowrap; }
       .rcx-anat { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
       .rcx-anat > li { min-width: 0; display: grid; gap: 6px; align-content: start; }
       .rcx-anat__lbl { font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--signal-ink); }
@@ -412,6 +415,7 @@
               </div>
             </div>
             <span class="rcx-fig__note">Graded by <code>support-oracle-v1</code> on battery <code>support-gym-v1</code>.</span>
+            <p class="rcx-fig__battery" id="rcx-battery">Scores above are for the customer-support synthetic battery (<code>support-gym-v1</code>); on the IAM battery (<code>iam-gym-v1</code>), Least-privilege matches 11 of 12 (1 stricter miss) and Permissive matches 3 of 12.</p>
           </figure>
 
           <figure class="rcx-fig" id="rcx-row" aria-labelledby="rcx-row-title" aria-describedby="rcx-row-desc">

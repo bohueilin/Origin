@@ -765,7 +765,7 @@ test('wave 3: the permissive baseline button grades the Permissive spec, keeps t
     await expect(feedback).toBeFocused()
     await expect(page.locator('.rc-verdict')).toBeInViewport({ ratio: 1 })
     const rows = page.locator('.rc-table tbody tr')
-    await expect(rows.filter({ hasText: '⛔ over-grant' })).toHaveCount(over_grants)
+    await expect(rows.filter({ hasText: 'over-grant' })).toHaveCount(over_grants)
     const looser = rows.filter({ hasText: '△ miss' })
     await expect(looser.locator('td:first-child')).toHaveText(c.looser)
     await expect(looser.locator('td:last-child')).toHaveText(c.looser.map(() => '△ miss (looser)'))

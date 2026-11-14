@@ -288,7 +288,7 @@
           <span class="scen__badge scen__badge--live">Machine-emitted trace available</span>
           <span class="scen__meta"><code>payments-ops-agent</code> · <code>payments.refund</code> · policy <code>refund-cap-v0.3</code></span>
         </div>
-        <p class="scen__sub">An above-cap refund needs a human; a second refund over the hard ceiling is denied and blocked at the proxy. This mirrors the published machine-emitted <b>sandbox</b> trace TR-A002 (simulated; no live money).</p>
+        <p class="scen__sub">An above-cap refund needs a human; a second refund over the hard ceiling is denied and blocked at the proxy. This mirrors TR-A002, the published machine-emitted trace of a <b>scripted</b> scenario (simulated; no live money).</p>
 
         <div class="ec__grid">
           <!-- Left: proposal queue -->
@@ -358,7 +358,7 @@
                 <p class="blocked__req">payments.refund &nbsp;$920.00 &rarr; order_8842</p>
                 <p class="blocked__why">After the approved refund, the agent proposed a <b>second refund of $920.00</b> — over the <b>$500</b> hard ceiling. Verdict <b>deny</b>. The proxy blocked it; the unauthorized refund never ran. One approval covers one action — it does not widen the agent's standing authority.</p>
                 <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
-                <p class="blocked__link"><a href="/proof#tr-a002">See TR-A002 — the machine-emitted sandbox trace of this exact refund loop &rarr;</a></p>
+                <p class="blocked__link"><a href="/proof#tr-a002">See TR-A002 — the machine-emitted trace of a scripted refund loop &rarr;</a></p>
               </div>
             </section>
 

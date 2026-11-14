@@ -675,6 +675,14 @@ const LAUNCH_CONTRACTS = [
       [/collision-free/i, 'a collision-free claim (the planner checks its own plan for shared and swapped cells)'],
     ],
   },
+  // /app links TR-A002 as a machine-emitted trace of a scripted scenario: no sandbox ran.
+  // \s+ because tags read as spaces ("<b>sandbox</b> trace").
+  {
+    file: 'apps/origin-web/app.html',
+    forbid: [
+      [/sandbox\s+trace/i, 'TR-A002 called a sandbox trace (no sandbox ran)'],
+    ],
+  },
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

@@ -265,9 +265,9 @@ test('pass 2 phase 2: the annotated row is sup-02 under the permissive baseline,
   await expect(fig.locator('.rcx-anat__note').nth(3)).toContainText('Least-privilege escalates it: a match.')
   for (const head of ['Proposed action', 'Selected policy', 'Oracle', 'Verdict']) expect(source('../../src/reference-check/ReferenceCheckPage.tsx')).toContain(`<th scope="col">${head}</th>`)
 
-  // The key uses the verdict words and marks of the result table (over-grant's ⛔ is drawn in ink).
+  // The key uses the verdict words and marks of the result table (over-grant is the same ink mark in both).
   const table = source('../../src/reference-check/ReferenceCheckPage.tsx')
-  for (const word of ["'✓ match'", "'△ miss (stricter)'", "'△ miss (looser)'", "'⛔ over-grant'"]) expect(table).toContain(word)
+  for (const word of ["'✓ match'", "'△ miss (stricter)'", "'△ miss (looser)'", '<OverGrantMark /> over-grant']) expect(table).toContain(word)
   await expect(fig.locator('.rcx-key dt')).toHaveText(['✓match', '△miss (stricter)', '△miss (looser)', 'over-grant'])
   await expect(fig.locator('.rcx-key dt').nth(3).locator('svg')).toHaveCount(1)
   await expect(fig.locator('.rcx-key dd').nth(1)).toHaveText('The policy answers more strictly than the oracle (allow, then escalate, then deny).')
@@ -312,11 +312,13 @@ test('pass 2 phase 2: /brief carries the five-stage figure and still prints on o
   await page.goto('/brief')
   await page.emulateMedia({ media: 'print' })
   await expect(fig).toBeVisible()
-  for (const el of await fig.locator('h2, p, li, code').all()) await expect(el).toBeVisible()
-  // In print the figure keeps the brief's 9 px floor (editorial.css prints steps and boundary at 9 px).
+  for (const el of await fig.locator('h2, p, li').all()) await expect(el).toBeVisible()
+  // Pass 2 follow-up (Argon P2-02): in print the field names are left to the screen, so every
+  // word of the figure prints at 10.5 px or more (it was 9 px).
+  for (const el of await fig.locator('code').all()) await expect(el).toBeHidden()
   const printed = await renderedTextSizes(fig)
   expect(printed.length).toBeGreaterThan(20)
-  expect(printed.filter((s) => s.px < 9)).toEqual([])
+  expect(printed.filter((s) => s.px < 10.5)).toEqual([])
   if (testInfo.project.name === 'desktop-chromium') {
     for (const options of [{ preferCSSPageSize: true }, { format: 'Letter' }, { format: 'A4' }]) {
       const pdf = await page.pdf({ ...options, printBackground: true })

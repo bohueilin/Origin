@@ -219,6 +219,8 @@ check('demo sigil payload carries no licence/readiness level', !('license_level'
 check('sigil detect', detectArtifact(sigil) === 'sigil')
 const sv = await verifyArtifact(sigil)
 check('sigil verify code 0', sv.ok && sv.code === 0 && sv.verdict === 'VALID', sv.headline)
+check('sigil scope names the format beside its codes',
+  sv.scope.endsWith('Origin Attestation codes: 0 valid · 1 payload tampered · 2 signature invalid · 3 wrong signer · 4 malformed.'), sv.scope)
 
 const sigilTampered = tamperArtifact('sigil', sigil)
 const svt = await verifyArtifact(sigilTampered.value)
@@ -239,6 +241,10 @@ const credential = await makeExample('credential')
 check('credential detect', detectArtifact(credential) === 'credential')
 const cv = await verifyArtifact(credential)
 check('credential verify code 0 VALID', cv.ok && cv.code === 0 && cv.verdict === 'VALID', cv.headline)
+check('credential scope names the Crucible battery and the format beside its codes',
+  cv.scope.includes('It does NOT re-run the Crucible battery')
+  && cv.scope.endsWith('Crucible credential codes: 0 valid · 3 tamper · 4 drift → VOID.')
+  && !/certification/i.test(cv.scope), cv.scope)
 
 const credTampered = tamperArtifact('credential', credential)
 const cvt = await verifyArtifact(credTampered.value)
@@ -254,6 +260,12 @@ const receipt = await makeExample('receipt')
 check('receipt detect', detectArtifact(receipt) === 'receipt')
 const rv = await verifyArtifact(receipt)
 check('receipt digest recomputes → code 0 VALID', rv.ok && rv.code === 0)
+const unversioned = structuredClone(receipt)
+delete unversioned.verifier_version
+const ruv = await verifyArtifact(unversioned)
+check('receipt with no verifier_version says so in plain words',
+  ruv.lines.some((line) => line.label === 'bindings' && line.text.endsWith('· verifier (no verifier version stated)'))
+  && !ruv.lines.some((line) => line.text.includes('unpinned')), ruv.lines.map((line) => line.text).join(' | '))
 
 const receiptTampered = tamperArtifact('receipt', receipt)
 const rvt = await verifyArtifact(receiptTampered.value)

@@ -26,6 +26,56 @@
     <link rel="stylesheet" href="/home.css?v=245b8c7f" />
 
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
+    <style>
+      /* Pass 2 Phase 2: the five stages as a static figure, the home #demo figure in the brief's
+         box. No animation, no hover-only content; ink and the one forest-green accent only.
+         It prints on the one page with everything else. */
+      .brief-page figure.brief__flow { margin: 0; }
+      .brief-page .brief-stages__cap { grid-column: 1 / -1; padding: 18px 20px 0; font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
+      .brief-page .brief-stages__cap b { color: var(--ink); font-weight: 600; }
+      .brief-page .brief-stages .brief__step { position: relative; min-width: 0; }
+      .brief-page .brief-stages .brief__step > span:first-of-type { display: block; width: 28px; height: 28px; box-sizing: border-box; border: 1.5px solid var(--signal); border-radius: 50%; background: var(--paper); color: var(--signal-ink); font: 600 var(--fs-12)/25px var(--font-mono); text-align: center; }
+      .brief-page .brief-stages__head { position: absolute; left: -7px; top: 32px; background: var(--paper-3); }
+      .brief-page .brief-stages__head path { fill: none; stroke: var(--ink-soft); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+      .brief-page .brief-stages__fields { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+      .brief-page .brief-stages code { font: var(--fs-12)/1.45 var(--font-mono); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere; }
+      .brief-page .brief-stages__key { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 3px; font-size: var(--fs-13); line-height: 1.45; color: var(--ink); }
+      .brief-page .brief-stages__key li { display: flex; align-items: baseline; gap: 8px; }
+      .brief-page .brief-stages__key b { flex: none; font: 700 var(--fs-12)/1.45 var(--font-mono); letter-spacing: .03em; }
+      .brief-page .brief-stages .mk { display: inline-flex; flex: 0 0 14px; justify-content: center; font-style: normal; font-weight: 700; color: var(--ink); }
+      .brief-page .brief-stages .mk--ok { color: var(--signal-ink); }
+      .brief-page .brief-stages .mk svg { width: 12px; height: 12px; align-self: center; }
+      .brief-page .brief-stages .mk circle { fill: var(--ink); }
+      .brief-page .brief-stages .mk rect { fill: var(--paper-3); }
+      /* Below 1000px the five columns get too narrow for the field names, so the stages stack. */
+      @media screen and (max-width: 999px) {
+        .brief-page .brief__flow { grid-template-columns: 1fr; }
+        .brief-page .brief-stages .brief__step { border-right: 0; border-bottom: 1px solid var(--line-2); padding: 18px 22px; }
+        .brief-page .brief-stages .brief__step:last-child { border-bottom: 0; }
+        .brief-page .brief-stages__head { left: 30px; top: -7px; transform: rotate(90deg); }
+        .brief-page .brief-stages__cap { padding: 18px 22px 0; }
+        .brief-page .brief-stages .brief__step > span:first-of-type { float: left; margin-right: 12px; }
+        .brief-page .brief-stages .brief__step h2 { margin: 0 0 6px; line-height: 28px; }
+        .brief-page .brief-stages .brief__step p { clear: left; }
+        .brief-page .brief-stages__key--inline { display: flex; flex-wrap: wrap; gap: 3px 16px; }
+        .brief-page .brief-stages__key--inline li { gap: 6px; }
+      }
+      @media print {
+        .brief-page .brief-stages__cap { padding: 8px 10px 0; font-size: 9px; line-height: 1.4; }
+        .brief-page .brief-stages .brief__step { padding: 10px 9px; }
+        .brief-page .brief-stages .brief__step > span:first-of-type { float: left; width: 16px; height: 16px; margin-right: 5px; border-width: 1px; font-size: 9px; line-height: 14px; }
+        .brief-page .brief-stages .brief__step h2 { margin: 0 0 4px; line-height: 16px; }
+        .brief-page .brief-stages .brief__step p { clear: left; line-height: 1.4; }
+        .brief-page .brief-stages__head { top: 12px; }
+        .brief-page .brief-stages__fields { gap: 2px; margin-top: 4px; }
+        .brief-page .brief-stages code { font-size: 9px; padding: 0 3px; border-radius: 3px; }
+        .brief-page .brief-stages__key { margin-top: 4px; gap: 0; font-size: 9px; line-height: 1.3; }
+        .brief-page .brief-stages__key li { gap: 4px; }
+        .brief-page .brief-stages__key b { font-size: 9px; }
+        .brief-page .brief-stages .mk { flex-basis: 9px; }
+        .brief-page .brief-stages .mk svg { width: 8px; height: 8px; }
+      }
+    </style>
   </head>
   <body class="editorial brief-page">
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -57,14 +107,15 @@
     </header>
     <main class="brief" id="main">
       <div class="brief__top"><p><b>Origin / One-page brief</b><br />September 2026 (revised November 2026) · Working prototype. Seeking design partners.</p><div class="brief__actions"><button type="button" class="btn btn--ghost btn--sm" onclick="window.print()">Print / Save PDF</button><a class="btn btn--primary btn--sm" href="/#offer">Book an Agent Evidence Review</a></div></div>
-      <div class="brief__intro"><div><p class="kicker">The evidence layer for AI agents</p><h1>A reference check before the right to act.</h1></div><div><p class="brief__lede">Origin binds an agent configuration, challenges a policy with deterministic synthetic tasks, and produces a tamper-evident evidence artifact a reviewer can recheck.</p><p class="brief__boundary">The public demo is browser-local, synthetic, session-signed, and unpinned. Execution is not attempted. Not production SaaS or compliance certification.</p></div></div>
-      <div class="brief__flow" aria-label="The five-stage reference check">
-        <section class="brief__step"><span>01</span><h2>Bind</h2><p>Record the model, tools, policy, and scenario battery.</p></section>
-        <section class="brief__step"><span>02</span><h2>Challenge</h2><p>Exercise the policy against a synthetic task battery.</p></section>
-        <section class="brief__step"><span>03</span><h2>Grade</h2><p>A deterministic oracle evaluates the decisions.</p></section>
-        <section class="brief__step"><span>04</span><h2>Attest</h2><p>Seal the result and configuration in a demo artifact.</p></section>
-        <section class="brief__step"><span>05</span><h2>Reverify</h2><p>Check the artifact offline. A changed bound field returns VOID.</p></section>
-      </div>
+      <div class="brief__intro"><div><p class="kicker">The evidence layer for AI agents</p><h1>A reference check before the right to act.</h1></div><div><p class="brief__lede">Origin binds an agent configuration, challenges a policy with deterministic synthetic tasks, and produces a tamper-evident evidence artifact a reviewer can recheck.</p><p class="brief__boundary">The public demo is browser-local, synthetic, session-signed, and unpinned (signed with a key your browser makes for that run, with no published key it must match). Execution is not attempted. Not production SaaS or compliance certification.</p></div></div>
+      <figure class="brief__flow brief-stages" aria-labelledby="brief-stages-title" aria-describedby="brief-stages-desc">
+        <figcaption class="brief-stages__cap"><b id="brief-stages-title">The reference check in five stages</b> <span id="brief-stages-desc">What each stage does and the record fields involved. The requests are synthetic; your agent is not run.</span></figcaption>
+        <section class="brief__step"><span>01</span><h2>Bind</h2><p>The model and tools you type are kept only as digests. The input digest also covers the policy and the battery.</p><div class="brief-stages__fields"><code>subject.<wbr>model_digest</code><code>subject.<wbr>tools_digest</code><code>proposal.<wbr>input_digest</code></div></section>
+        <section class="brief__step"><svg class="brief-stages__head" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.5 1.5 8.5 6l-5 4.5"/></svg><span>02</span><h2>Challenge</h2><p>12 fixed synthetic requests written by Origin, the same on every run. Each has an expected answer: allow, deny or escalate.</p><div class="brief-stages__fields"><code>subject.<wbr>environment_digest</code></div></section>
+        <section class="brief__step"><svg class="brief-stages__head" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.5 1.5 8.5 6l-5 4.5"/></svg><span>03</span><h2>Grade</h2><p>Deterministic code compares each decision with the oracle, Origin's answer key. Not a model.</p><ul class="brief-stages__key brief-stages__key--inline"><li><i class="mk mk--ok" aria-hidden="true">✓</i>match</li><li><i class="mk" aria-hidden="true">△</i>miss (stricter)</li><li><i class="mk" aria-hidden="true">△</i>miss (looser)</li><li><i class="mk" aria-hidden="true"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="5.5"/><rect x="2.5" y="5" width="7" height="2" rx=".5"/></svg></i>over-grant, counted separately</li></ul><div class="brief-stages__fields"><code>evaluation.<wbr>decisions</code></div></section>
+        <section class="brief__step"><svg class="brief-stages__head" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.5 1.5 8.5 6l-5 4.5"/></svg><span>04</span><h2>Attest</h2><p>Your browser signs the record with a key it makes for that run. Record format 1.1.0 states the result.</p><div class="brief-stages__fields"><code>schema_version 1.1.0</code><code>evaluation</code><code>signature</code></div></section>
+        <section class="brief__step"><svg class="brief-stages__head" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3.5 1.5 8.5 6l-5 4.5"/></svg><span>05</span><h2>Reverify</h2><p>/verify re-runs the grading in the reviewer's browser. Origin has published no signing key, so:</p><ul class="brief-stages__key"><li><b>UNTRUSTED</b>an intact record</li><li><b>VOID</b>an edit made without re-signing</li></ul></section>
+      </figure>
       <div class="brief__grid">
         <section class="brief__card"><h2>For the team facing security review.</h2><p>Agent-platform, security, and infrastructure teams need to make a specific workflow reviewable: the permissions requested, the policy decisions observed, and the limits of the evidence.</p><p><b>First wedge:</b> internal-ops and production-access agent workflows. Capability alone does not establish permission.</p></section>
         <section class="brief__card"><h2>One artifact, explicit boundaries.</h2><ul><li>The configuration and evaluation context are bound to the result.</li><li>The deterministic oracle is the sole grading authority.</li><li>Signature and digest checks establish integrity under their bindings; an unpinned demo signer does not establish trusted Origin issuance.</li><li>A synthetic pass does not establish production readiness.</li></ul></section>

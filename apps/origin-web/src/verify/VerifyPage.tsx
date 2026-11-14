@@ -13,11 +13,14 @@
 // never "safe" or "correct". Client-side only: nothing pasted or opened here is
 // uploaded, and nothing is persisted (no cookies, no browser storage).
 // =============================================================================
-import { useRef, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import '../shared/product-workspace.css'
 import { decodeArtifact } from '../shared/shareLink'
 import { KIND_LABELS, parseArtifact, detectArtifact, verifyArtifact, tamperArtifact } from './detect.mjs'
-import type { ReportLine, ReportResult, ReportTone, VerifyReport } from './detect.mjs'
+import type { ArtifactKind, ReportLine, ReportResult, ReportTone, VerifyReport } from './detect.mjs'
+import { replayPolicyEvaluation } from '@origin/verifier-core/policyEvaluation'
+import type { PolicyEvaluation, PolicyEvaluationReplay, PolicyEvaluationSummary } from '@origin/verifier-core/policyEvaluation'
 import { makeExample } from './examples.mjs'
 import type { ExampleKind } from './examples.mjs'
 import { checkStamp, useCheckVisibility } from '../shared/checkFeedback'
@@ -39,24 +42,116 @@ const liveKeyExamples = new Set<ExampleKind>(['sigil', 'factory'])
 // An opened file is read in this tab only; a larger one is refused before it is read.
 const MAX_FILE_BYTES = 256 * 1024
 
+// Each format as the detection table names it, in its order, with its verdict codes in plain words.
+// The codes are the ones detect.mjs and @origin/verifier-core return; Action/Run and the inclusion proof have none.
+const FORMATS: Array<{ kind: ArtifactKind; name: string; unsigned?: true; what: string; codes: Array<[number, string]> }> = [
+  { kind: 'action_run_evidence', name: 'Action/Run Evidence', what: 'the signed record a reference check downloads. UNTRUSTED when intact, because Origin has not published a signing key; VALID would need one. VOID when a check or the replay of its stated result fails. No numeric code.', codes: [] },
+  { kind: 'sigil', name: 'Origin Attestation', what: 'a payload signed by the key inside it. VALID: intact and signed by that key, which does not say who holds the key. VOID: changed, wrongly signed or malformed.', codes: [[0, 'valid'], [1, 'payload tampered'], [2, 'signature invalid'], [3, 'wrong signer'], [4, 'malformed']] },
+  { kind: 'credential', name: 'Crucible credential', unsigned: true, what: 'the legacy configuration-bound reference check. VALID: its digests recompute, and anyone can make one. VOID: a field changed or a bound configuration drifted.', codes: [[0, 'valid'], [3, 'tamper'], [4, 'drift']] },
+  { kind: 'receipt', name: 'ScoreReceipt', unsigned: true, what: 'a sealed score record. VALID: the sealed digest matches, and anyone can make one. VOID: a field changed after sealing.', codes: [[0, 'self-consistent'], [3, 'tampered']] },
+  { kind: 'trace', name: 'Episode trace', unsigned: true, what: 'a hash-chained event log. VALID: the chain re-derives, and anyone can make one. VOID: a link breaks, or another check on the published TR-A002 trace fails (then with no code).', codes: [[0, 'intact'], [2, 'chain tamper']] },
+  { kind: 'inclusion', name: 'Merkle inclusion proof', what: "shows one receipt sits inside a batch root. VALID: it folds to this root; the root's signer is a separate check. VOID: it does not fold. No numeric code; the log reads included or not included.", codes: [] },
+]
+
+// A code read beside its format, as "Origin Attestation code 1: payload tampered".
+function codeWords(kind: ArtifactKind, code: number) {
+  const format = FORMATS.find((f) => f.kind === kind)
+  const word = format?.codes.find(([n]) => n === code)?.[1]
+  return `${format?.name ?? KIND_LABELS[kind]} code ${code}${word ? `: ${word}` : ''}`
+}
+
+// Joins short phrases so a line breaks only between them, never inside an id or a code.
+const unbroken = (parts: string[], separator = ', ') =>
+  parts.map((part, i) => <Fragment key={i}>{i ? separator : ''}<span className="vfy-nowrap">{part}</span></Fragment>)
+
 function Pill({ tone }: { tone: ReportTone }) {
   const txt = tone === 'ok' ? 'pass' : tone === 'bad' ? 'void' : 'note'
   return <span className={`vfy-pill vfy-pill--${tone}`}>{txt}</span>
 }
 
-function Log({ lines }: { lines: ReportLine[] }) {
+function Log({ lines, kind }: { lines: ReportLine[]; kind: ArtifactKind }) {
   if (lines.length === 0) return null
   return (
     <ul className="vfy-log">
-      {lines.map((l, i) => (
-        <li key={i}>
-          <Pill tone={l.tone} />
-          <span>
-            <b>{l.label}</b> — {l.text}
-          </span>
-        </li>
-      ))}
+      {lines.map((l, i) => {
+        const code = l.label.match(/^code (\d+)$/)
+        return (
+          <li key={i}>
+            <Pill tone={l.tone} />
+            <span>
+              <b>{code ? codeWords(kind, Number(code[1])) : l.label}</b> — {l.text}
+            </span>
+          </li>
+        )
+      })}
     </ul>
+  )
+}
+
+// The record's stated counts beside the replay's, from the verifier's own replay. Set only for a
+// result the replay reproduced (also when shown outside its freshness window).
+type Score = { stated: PolicyEvaluationSummary; rerun: Extract<PolicyEvaluationReplay, { status: 'match' }>['summary']; battery: string; oracle: string }
+
+function scoreOf(report: VerifyReport, record: unknown): Score | null {
+  if (report.result?.status !== 'reproduced' && report.result?.status !== 'outside') return null
+  const replay = replayPolicyEvaluation(record)
+  const { summary, battery, oracle_version } = (record as { evaluation: PolicyEvaluation }).evaluation
+  return replay.status === 'match' ? { stated: summary, rerun: replay.summary, battery: battery.version, oracle: oracle_version } : null
+}
+
+const RATING_WHY: Partial<Record<VerifyReport['verdict'], string>> = {
+  UNTRUSTED: 'Intact, and signed by the key inside the record. Origin has not published a signing key, so anyone can make a record like this.',
+  VOID: "Outside its freshness window by this device's clock. The digest and signature still check.",
+}
+
+// The reproduced result as a scorecard: the counts, the record beside the re-run, and the rating.
+function Scorecard({ result, score, verdict }: { result: ReportResult; score: Score; verdict: VerifyReport['verdict'] }) {
+  const { stated, rerun } = score
+  const stricter = rerun.miss_rows.filter((row) => row.direction === 'stricter').length
+  const rows: Array<[string, ReactNode, ReactNode]> = [
+    ['Matches', `${stated.matched} of ${stated.total}`, `${rerun.matched} of ${rerun.total}`],
+    ['Misses', `${stated.misses}`, <>{rerun.misses}: {unbroken([`${stricter} stricter`, `${rerun.misses - stricter} looser`])}</>],
+    ['Over-grants', `${stated.over_grants}`, `${rerun.over_grants}`],
+  ]
+  return (
+    <div className={`vfy-stated vfy-stated--${result.status} vfy-score`} role="group" aria-labelledby="vfy-score-label">
+      <div className="vfy-score__label" id="vfy-score-label">{result.label}</div>
+      <div className="vfy-score__lead"><b>{rerun.matched} of {rerun.total}</b> synthetic decisions match the oracle (Origin's answer key)</div>
+      <table className="vfy-score__table" aria-label="The record's stated counts beside the re-run in this tab">
+        <thead><tr><td /><th scope="col">Stated in the record</th><th scope="col">Re-run in this tab</th></tr></thead>
+        <tbody>{rows.map(([name, s, r]) => <tr key={name}><th scope="row">{name}</th><td>{s}</td><td>{r}</td></tr>)}</tbody>
+      </table>
+      <div className="vfy-score__ids">
+        {rerun.over_grant_ids.length ? <span>Over-grants: {unbroken(rerun.over_grant_ids)}</span> : null}
+        {rerun.miss_rows.length ? <span>Misses: {unbroken(rerun.miss_rows.map((row) => `${row.id} (${row.direction})`))}</span> : null}
+        <span>{unbroken([`Battery ${score.battery}`, `oracle ${score.oracle}`], ' · ')}</span>
+      </div>
+      <div className="vfy-score__rating"><span>Rating</span> <b>{verdict}</b> {RATING_WHY[verdict] ?? ''}</div>
+      {result.notTested ? <div className="vfy-score__untested">{result.notTested}</div> : null}
+    </div>
+  )
+}
+
+// Plain words for each verdict and each format's codes, shown without a click.
+function VerdictGuide() {
+  return (
+    <section className="product-panel vfy-guide" aria-labelledby="vfy-guide-title">
+      <h2 id="vfy-guide-title">How to read the verdict</h2>
+      <p className="vfy-guide__intro">A code means something only beside its format: code 3 is a wrong signer on an Origin Attestation and a changed field on a ScoreReceipt.</p>
+      <dl className="vfy-guide__verdicts">
+        <div><dt>VALID</dt><dd>Every check for this format passed. The artifact is intact; that says nothing about whether a policy or agent is right.</dd></div>
+        <div><dt>UNTRUSTED</dt><dd>Action/Run Evidence only: intact, but signed by a key Origin has not published.</dd></div>
+        <div><dt>VOID</dt><dd>A check failed, and the log names it. A VOID artifact establishes nothing.</dd></div>
+      </dl>
+      <ul className="vfy-guide__formats">
+        {FORMATS.map((f) => (
+          <li key={f.kind}>
+            <b>{f.name}</b>{f.unsigned ? ' (unsigned)' : ''}: {f.what}
+            {f.codes.length ? <span className="vfy-guide__codes">Codes: {unbroken(f.codes.map(([n, word]) => `${n} ${word}`), ' · ')}</span> : null}
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
@@ -167,7 +262,7 @@ const SHARED = sharedFromUrl()
 export function VerifyPage() {
   const [text, setText] = useState(SHARED.text)
   const [thumbprint, setThumbprint] = useState('')
-  const [report, setReport] = useState<VerifyReport | null>(null)
+  const [report, setReport] = useState<(VerifyReport & { score: Score | null }) | null>(null)
   const [error, setError] = useState<string | null>(SHARED.error)
   const [notes, setNotes] = useState<string[]>(SHARED.notes)
   const [tampered, setTampered] = useState(false)
@@ -311,7 +406,7 @@ export function VerifyPage() {
       // The device clock decides freshness; no issuer key is registered here.
       const nextReport = await verifyArtifact(parsed.value, { now: new Date().toISOString(), ...(pin ? { expectedThumbprint: pin } : {}) })
       if (revision === inputRevision.current) {
-        setReport(nextReport)
+        setReport({ ...nextReport, score: scoreOf(nextReport, parsed.value) })
         setChecked(checkStamp(startedAt))
       }
     } catch (e) {
@@ -445,7 +540,7 @@ export function VerifyPage() {
                 {report && verdictTone ? (
                   <div className={`vfy-verdict vfy-verdict--${verdictTone}`}>
                     <b>{report.verdict}</b>
-                    <span>{KIND_LABELS[report.kind]}{report.code != null ? ` · code ${report.code}` : ''}</span>
+                    <span>{report.code != null ? codeWords(report.kind, report.code) : KIND_LABELS[report.kind]}</span>
                     {report.formatScope ? <span className="vfy-verdict__scope">{report.formatScope}</span> : null}
                   </div>
                 ) : null}
@@ -454,15 +549,17 @@ export function VerifyPage() {
             </div>
             {report ? (
               <>
-                {report.result ? <StatedResult result={report.result} /> : null}
+                {report.result && report.score ? <Scorecard result={report.result} score={report.score} verdict={report.verdict} />
+                  : report.result ? <StatedResult result={report.result} /> : null}
                 <p className="section__lede" style={{ marginTop: 16 }}>{report.headline}</p>
-                <Log lines={report.lines} />
+                <Log lines={report.lines} kind={report.kind} />
                 <p className="vfy-note"><b>What this establishes:</b> {report.scope}</p>
               </>
             ) : null}
           </div>
         </div>
       </article>
+      <VerdictGuide />
       <details className="product-panel vfy-detection workspace-details">
         <summary>Which artifacts can I verify? See formats, checks, and verdict codes.</summary>
         <DetectionTable />

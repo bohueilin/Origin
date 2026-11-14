@@ -26,6 +26,22 @@ describe('/security static experiment index', () => {
     expect(cards).toHaveLength(6)
     expect(items).toHaveLength(cards.length)
     cards.forEach((card, i) => expect(items[i].startsWith(card)).toBe(true))
+    // Pass 2 Phase 2: card 02 claims its receipts are checkable, not provable, alone.
+    expect(cards[1]).toBe('02 · Batch inclusion — Eight receipts. One signature. Each checkable alone.')
+    expect(items.join('\n')).not.toMatch(/provable/i)
+  })
+
+  // Pass 2 Phase 2: each card states its mechanism and bounded claim. security.html repeats
+  // them for readers without JavaScript, except 05, whose prerendered panel carries its own.
+  it('repeats each card\'s mechanism and claim without JavaScript, in page order', () => {
+    const pairs = (markup: string) => [...markup.matchAll(/<dl class="sec-claim">([\s\S]*?)<\/dl>/g)]
+      .map(([, dl]) => [...dl.matchAll(/<dd>([\s\S]*?)<\/dd>/g)].map(([, dd]) => unescape(dd)))
+    const rendered = pairs(page)
+    expect(rendered).toHaveLength(6)
+    expect(pairs(html)).toEqual([...rendered.slice(0, 4), rendered[5]])
+    const at = (text: string) => html.indexOf(text)
+    expect(at('<!-- ORIGIN:DELEGATION -->')).toBeGreaterThan(at('<p>04 · Configuration binding</p>'))
+    expect(at('<!-- ORIGIN:DELEGATION -->')).toBeLessThan(at('<p>06 · Authority analysis</p>'))
   })
 
   it('sits inside #security-root so the mounted app replaces it', () => {

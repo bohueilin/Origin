@@ -78,6 +78,48 @@
       }
       .sec-rsl small { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); }
       .sec-note { font-size: var(--fs-13); color: var(--ink-soft); margin-top: 10px; }
+      /* Each experiment states its mechanism and its bounded claim; 05 adds a fixed
+         before/after reach figure and 06 the held-vs-exercised bar. Ink and one green,
+         nothing moves, text 12px or larger. */
+      .sec-claim { display: grid; gap: 8px; margin: 16px 0 0; max-width: 80ch; }
+      .sec-claim > div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 2px 16px; }
+      .sec-claim dt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; line-height: 1.9; color: var(--ink); }
+      .sec-claim dd { margin: 0; font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
+      .reach-fig { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); }
+      :is(.reach-fig, .og-fig) figcaption { font-size: var(--fs-14); font-weight: 600; line-height: 1.5; color: var(--ink); }
+      .reach-fig__states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 32px; margin-top: 12px; }
+      .reach-fig__head { margin: 0 0 10px; font-size: var(--fs-14); line-height: 1.55; color: var(--ink-soft); }
+      .reach-fig__head b { color: var(--ink); }
+      .reach-fig__nodes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+      .reach-fig__nodes li { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 52px; padding: 5px 6px; border: 1.5px solid var(--line-2); border-radius: 8px; background: var(--paper-2); color: var(--steel); font-family: var(--font-mono); font-size: var(--fs-12); line-height: 1.3; text-align: center; overflow-wrap: break-word; }
+      .reach-fig__nodes li.is-reached { background: var(--ink); border-color: var(--ink); color: #fff; }
+      .reach-fig__nodes li.is-new { background: var(--signal); border: 3px solid var(--ink); color: #fff; font-weight: 700; }
+      .reach-fig__tag { font-family: var(--font-sans); font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+      .reach-fig__key { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 12px 0 0; font-size: var(--fs-13); color: var(--steel); }
+      .reach-fig__key > span { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+      :is(.reach-fig__key, .og-bar__key) i { display: inline-block; flex: none; width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--line-2); background: var(--paper-2); }
+      :is(.reach-fig__key i.is-reached, .og-bar__key i.is-used) { background: var(--ink); border-color: var(--ink); }
+      .reach-fig__key i.is-new { background: var(--signal); border: 3px solid var(--ink); }
+      .og-fig { max-width: 920px; margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--line); }
+      .og-fig__total { margin: 10px 0 8px; font-size: var(--fs-14); color: var(--ink-soft); }
+      .og-fig__total b { font-size: var(--fs-22); color: var(--ink); font-variant-numeric: tabular-nums; }
+      .og-bar { display: flex; height: 28px; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; background: var(--paper-2); }
+      .og-bar__used { background: var(--ink); }
+      .og-bar__key { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 12px 0 0; }
+      .og-bar__key > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+      .og-bar__key dt { display: flex; align-items: center; gap: 8px; font-size: var(--fs-14); color: var(--ink-soft); }
+      .og-bar__key dd { margin: 0; font-size: var(--fs-16); font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .og-bar__key dd b { color: var(--signal-ink); }
+      .sec-static-claim { margin: 0 0 22px; max-width: 80ch; }
+      .sec-static-claim > p { margin: 0; font-weight: 700; color: var(--ink); }
+      .delegation-static + .sec-static-claim { margin-top: 26px; }
+      @media (max-width: 699px) {
+        .sec-claim > div, .reach-fig__states { grid-template-columns: minmax(0, 1fr); }
+        .reach-fig__nodes { gap: 6px; }
+        .reach-fig__nodes li { padding-inline: 2px; }
+        .og-bar__key { display: grid; gap: 6px; }
+        .og-bar__key > div { flex-wrap: nowrap; justify-content: space-between; }
+      }
     </style>
   </head>
 
@@ -127,13 +169,35 @@
           <div id="security-root">
           <ul class="onpage-static" aria-label="Experiments on this page">
             <li>01 · Signature integrity — Flip one byte and it voids.</li>
-            <li>02 · Batch inclusion — Eight receipts. One signature. Each provable alone.</li>
+            <li>02 · Batch inclusion — Eight receipts. One signature. Each checkable alone.</li>
             <li>03 · Policy history — Yesterday's decision, judged by yesterday's policy.</li>
             <li>04 · Configuration binding — Change the configuration. Re-check the evidence.</li>
             <li>05 · Delegated authority — Widen one edge. Watch the root's blast radius move.</li>
             <li>06 · Authority analysis — Inspect the authority that goes unused. Full page: <a href="/over-grant">the over-grant analyzer</a>.</li>
           </ul>
+          <!-- Without JavaScript: each experiment's mechanism and bounded claim, in page order.
+               Experiment 05 is the prerendered panel below, which carries its own. -->
+          <div class="sec-static-claim">
+            <p>01 · Signature integrity</p>
+            <dl class="sec-claim"><div><dt>How it works</dt><dd>A key made in this tab signs the SHA-256 digest of a synthetic receipt. The check recomputes the digest and tests the signature against the public key carried in the attestation.</dd></div><div><dt>What it shows</dt><dd>Changing the receipt without re-signing, corrupting the signature, or signing with a key other than the pinned one (the check is given the expected key's thumbprint) fails. It does not show whose key it is.</dd></div></dl>
+          </div>
+          <div class="sec-static-claim">
+            <p>02 · Batch inclusion</p>
+            <dl class="sec-claim"><div><dt>How it works</dt><dd>Eight synthetic receipts, each hashed with its beneficiary, fold into one Merkle root, and only the root is signed. Receipt #4 is checked with a three-hash inclusion proof.</dd></div><div><dt>What it shows</dt><dd>Changing receipt #4 or its beneficiary breaks the proof, and the check needs none of the other seven receipts. It does not show that what a receipt says is true.</dd></div></dl>
+          </div>
+          <div class="sec-static-claim">
+            <p>03 · Policy history</p>
+            <dl class="sec-claim"><div><dt>How it works</dt><dd>Three policy versions form a hash chain: each records its parent's digest. A $120 payment decision records the digest of v2, the version it ran under.</dd></div><div><dt>What it shows</dt><dd>Rewriting a stored version without re-hashing breaks the chain, and the v2 decision fails a check against v3. Nothing signs the chain here, and the check does not test the decision against the policy's rules.</dd></div></dl>
+          </div>
+          <div class="sec-static-claim">
+            <p>04 · Configuration binding</p>
+            <dl class="sec-claim"><div><dt>How it works</dt><dd>Deterministic code grades the Least-privilege preset's answers to 12 synthetic IAM requests against the oracle, Origin's answer key. The credential records one digest of the declared model, tools, context and harness, and another of the battery.</dd></div><div><dt>What it shows</dt><dd>How many answers match the oracle, and that the credential fails (code 4) once the declared model changes. No agent is contacted or run, and the credential is unsigned.</dd></div></dl>
+          </div>
           <div class="product-workspace delegation-static"><!-- ORIGIN:DELEGATION --></div>
+          <div class="sec-static-claim">
+            <p>06 · Authority analysis</p>
+            <dl class="sec-claim"><div><dt>How it works</dt><dd>Five metrics, each with a stated denominator, over a seeded synthetic fleet (seed 20260818, 400 roots). A second seeded corpus plants widened edges, so detection is scored against known answers.</dd></div><div><dt>What it shows</dt><dd>How much granted authority went unused in the window, and whether every planted edge is found. It describes generated data, not a real fleet, and an unused scope is not by itself one to remove.</dd></div></dl>
+          </div>
           <div class="skel" aria-hidden="true">
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>
             <div class="skel__card"><span class="skel__bar skel__bar--kick"></span><span class="skel__bar skel__bar--head"></span><span class="skel__bar"></span><span class="skel__bar skel__bar--short"></span></div>

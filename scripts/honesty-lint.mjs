@@ -724,6 +724,28 @@ const LAUNCH_CONTRACTS = [
       [/Send\s+nothing\s+confidential:\s+no\s+data\s+agreement\s+is\s+in\s+place\s+yet\./, 'the no-confidential-data line on the offer'],
     ],
   })),
+  // Pass 2, Phase 2
+  // The home boundary strip under the walkthrough and the /proof landing line stay. /security's
+  // card 02 says each receipt is checkable alone: Origin's own check makes no provability claim.
+  // \s+ because tags read as spaces. New objects only.
+  {
+    file: 'apps/origin-web/index.html',
+    require: [
+      [/No\s+design\s+partner,\s+no\s+pilot,\s+no\s+paying\s+user\s+—\s+today\.\s+Everything\s+here\s+is\s+synthetic\s+or\s+scripted/, 'the home boundary strip'],
+    ],
+  },
+  {
+    file: 'apps/origin-web/proof.html',
+    require: [
+      [/The\s+hash\s+chain\s+is\s+real;\s+the\s+story\s+it\s+tells\s+is\s+scripted\./, 'the /proof landing line'],
+    ],
+  },
+  ...['apps/origin-web/security.html', 'apps/origin-web/src/security/SecurityPage.tsx'].map((file) => ({
+    file,
+    forbid: [
+      [/Each\s+provable\s+alone/i, "an affirmative provability claim about Origin's own check"],
+    ],
+  })),
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

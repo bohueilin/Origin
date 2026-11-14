@@ -56,10 +56,10 @@ const firstBad = (lines) => lines.find((line) => line.tone === 'bad')?.text ?? '
 /** Human names for the detected kinds (shared by the UI + selftest output). */
 export const KIND_LABELS = {
   action_run_evidence: 'Action/Run Evidence — signed policy-evaluation envelope',
-  sigil: 'Sigil — portable signed receipt',
+  sigil: 'Origin Attestation — portable signed receipt',
   credential: 'Crucible credential — config-bound reference check',
   receipt: 'ScoreReceipt — sealed score record',
-  trace: 'EpisodeTrace — hash-chained event log',
+  trace: 'Episode trace — hash-chained event log',
   inclusion: 'Merkle inclusion proof — receipt-in-signed-batch',
   unknown: 'Unrecognized artifact',
 }
@@ -313,7 +313,7 @@ async function verifySigilArtifact(sigil, opts) {
     headline: v.ok ? 'Sigil verifies — content intact, signed by the embedded key.' : `Sigil is void — ${v.reason}.`,
     lines,
     scope: v.ok
-      ? 'Integrity + authenticity only: the payload is byte-intact and this key signed it. It does not prove the key belongs to a real-world identity (a PKI/attestation concern), nor that the payload describes a run that actually happened. Codes: 0 valid · 1 payload tampered · 2 signature invalid · 3 wrong signer · 4 malformed.'
+      ? 'Integrity + authenticity only: the payload is byte-intact and this key signed it. It does not prove the key belongs to a real-world identity (a PKI/attestation concern), nor that the payload describes a run that actually happened. Origin Attestation codes: 0 valid · 1 payload tampered · 2 signature invalid · 3 wrong signer · 4 malformed.'
       : voidScope(firstBad(lines)),
   }
 }
@@ -347,7 +347,7 @@ function verifyCredentialArtifact(value) {
         : `Credential is void — ${lastFail ?? 'a check failed'}.`,
     lines,
     scope: v.code === 0
-      ? 'Offline, this recomputes the credential’s own content-address (its Sigil) and the embedded config binding — plus any live bindings you paste alongside it ({ credential, liveConfig, envBundleDigest, versions }). It does NOT re-run the certification battery or prove the original run happened: replaying the run needs the pinned environment bundle + episode traces under env:verify. Codes: 0 valid · 3 tamper · 4 drift → VOID.'
+      ? 'Offline, this recomputes the credential’s own content-address (its Sigil) and the embedded config binding — plus any live bindings you paste alongside it ({ credential, liveConfig, envBundleDigest, versions }). It does NOT re-run the Crucible battery or prove the original run happened: replaying the run needs the pinned environment bundle + episode traces under env:verify. Crucible credential codes: 0 valid · 3 tamper · 4 drift → VOID.'
       : voidScope(firstBad(lines)),
   }
 }
@@ -365,7 +365,7 @@ function verifyReceiptArtifact(receipt) {
       : bad('code 3', `receipt_digest mismatch — sealed ${short(receipt_digest)}, contents now hash to ${short(recomputed)}; a field was tampered after sealing`),
   )
   if (typeof receipt.env_bundle_digest === 'string')
-    lines.push(info('bindings', `bound to env ${short(receipt.env_bundle_digest)} · verifier ${receipt.verifier_version ?? '(unpinned)'}`))
+    lines.push(info('bindings', `bound to env ${short(receipt.env_bundle_digest)} · verifier ${receipt.verifier_version ?? '(no verifier version stated)'}`))
   if (typeof receipt.recorded_actions_digest === 'string')
     lines.push(info('bindings', `bound to the recorded action trace ${short(receipt.recorded_actions_digest)}`))
   return {

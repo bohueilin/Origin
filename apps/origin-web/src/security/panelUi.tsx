@@ -29,7 +29,9 @@ export function Log({ steps, status = false }: { steps: Step[]; status?: boolean
   return status ? <div role="status" aria-live="polite">{log}</div> : log
 }
 
-export function DemoCard(props: { id: string; kicker: string; title: string; lede: string; children: ReactNode }) {
+// `how` names the mechanism and `shows` its bounded claim; security.html repeats both
+// for readers without JavaScript (staticIndex.test.ts keeps the two in step).
+export function DemoCard(props: { id: string; kicker: string; title: string; lede: string; how: string; shows: string; children: ReactNode }) {
   return (
     <article className="card sec-card" id={props.id} aria-labelledby={`${props.id}-title`}>
       <p className="kicker">{props.kicker}</p>
@@ -37,6 +39,10 @@ export function DemoCard(props: { id: string; kicker: string; title: string; led
       <p className="section__lede" style={{ marginTop: 8 }}>
         {props.lede}
       </p>
+      <dl className="sec-claim">
+        <div><dt>How it works</dt><dd>{props.how}</dd></div>
+        <div><dt>What it shows</dt><dd>{props.shows}</dd></div>
+      </dl>
       {props.children}
     </article>
   )

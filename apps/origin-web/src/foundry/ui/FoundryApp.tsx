@@ -753,8 +753,8 @@ export default function FoundryApp() {
       <header className="fdy-hero" style={{ paddingBottom: 0 }}>
         <div className="fdy-hero__eyebrow">Evidence boundary</div>
         <p className="fdy-hero__sub">
-          Model capability can propose; it cannot authorize. The environment executes only within its lane, the deterministic verifier evaluates,
-          the gate decides, and the trace records the result. Simulation evidence does not establish physical-system safety or deployment readiness.
+          Model capability can propose; it cannot authorize. Within its lane the deterministic environment verifies each plan, the gate decides,
+          and the trace records the result. Simulation evidence does not establish physical-system safety or deployment readiness.
         </p>
       </header>
 

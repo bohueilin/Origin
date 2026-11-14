@@ -746,6 +746,16 @@ const LAUNCH_CONTRACTS = [
       [/Each\s+provable\s+alone/i, "an affirmative provability claim about Origin's own check"],
     ],
   })),
+  // Pass 2, Phase 4
+  // /foundry follows the settled four-beat flow (model proposes, environment verifies, gate
+  // decides, trace records), not the five-beat form kept for the proposed controlled path.
+  // \s+ because JSX line breaks read as spaces. New objects only.
+  {
+    file: 'apps/origin-web/src/foundry/ui/FoundryApp.tsx',
+    forbid: [
+      [/environment\s+executes\s+only\s+within\s+its\s+lane/i, 'the five-beat flow stated as the implemented /foundry flow'],
+    ],
+  },
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

@@ -169,7 +169,7 @@ export function MultiRobotSim({
         drop — <strong>one item per trip</strong>, picked (turns to{' '}
         <span className="lbl-finish">✓</span>), carried home, then back for the next.{' '}
         {plan.fullyDeconflicted
-          ? 'Collision-free in time and space.'
+          ? 'No two robots share a cell or swap cells at any step of this plan (checked by the planner).'
           : 'Routed around walls, hazards, and — where the space allows — each other.'}
         {verdictLabel && (
           <> The oracle scores one fixed lane, once per robot type (<span className={`lbl-${verdictLabel}`}>{verdictLabel}</span>).</>

@@ -125,6 +125,39 @@
 .product-workspace .vfy-stated p + p { margin-top: 8px; color: var(--ink-soft); }
 .product-workspace :is(.vfy-stated--outside, .vfy-stated--absent) { color: var(--ink-soft); background: transparent; border-style: dashed; }
 .product-workspace :is(.vfy-stated--mismatch, .vfy-stated--unavailable) { color: var(--danger); background: var(--status-fail-surface); border-color: currentColor; }
+/* /verify: a reproduced result as a scorecard, and the plain-words verdict guide. Static; ink and one green accent. */
+.product-workspace .vfy-score { display: grid; gap: 14px; padding: 18px; overflow-wrap: break-word; }
+.product-workspace .vfy-score__label { font-size: var(--fs-13); font-weight: 600; color: var(--signal-ink); }
+.product-workspace .vfy-score__lead { font-size: var(--fs-14); line-height: 1.5; }
+.product-workspace .vfy-score__lead b { display: block; font-size: 32px; line-height: 1.1; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.product-workspace .vfy-score__table { width: 100%; border-collapse: collapse; font-size: var(--fs-13); line-height: 1.45; font-variant-numeric: tabular-nums; }
+.product-workspace .vfy-score__table :is(th, td) { padding: 8px 8px 8px 0; text-align: left; vertical-align: top; border-top: 1px solid var(--line); }
+.product-workspace .vfy-score__table thead :is(th, td) { padding-top: 0; border-top: 0; font-size: var(--fs-12); font-weight: 600; color: var(--ink-soft); }
+.product-workspace .vfy-score__table thead th:last-child { color: var(--signal-ink); }
+.product-workspace .vfy-score__table tbody th { font-weight: 600; white-space: nowrap; }
+.product-workspace .vfy-score__ids { display: grid; gap: 4px; font-family: var(--font-mono); font-size: var(--fs-12); line-height: 1.6; color: var(--ink-soft); }
+.product-workspace .vfy-score__rating { padding-top: 14px; border-top: 1px solid var(--line); line-height: 1.6; }
+.product-workspace .vfy-score__rating > span { margin-right: 4px; font-size: var(--fs-12); font-weight: 600; color: var(--ink-soft); }
+.product-workspace .vfy-score__rating b { margin-right: 6px; padding: 1px 7px; border: 1px solid currentColor; border-radius: 6px; font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: .04em; }
+.product-workspace .vfy-score__untested { font-size: var(--fs-13); color: var(--ink-soft); }
+/* Greyed outside its freshness window: no accent. */
+.product-workspace .vfy-stated--outside :is(.vfy-score__label, .vfy-score__table thead th:last-child) { color: inherit; }
+.product-workspace .vfy-guide h2 { margin: 0 0 10px; }
+.product-workspace .vfy-guide__intro { max-width: 75ch; margin: 0; font-size: 15px; line-height: 1.65; color: var(--ink-soft); }
+.product-workspace .vfy-guide__verdicts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 28px; margin: 24px 0 0; border-top: 2px solid var(--signal); }
+.product-workspace .vfy-guide__verdicts > div { padding-top: 14px; }
+.product-workspace .vfy-guide__verdicts dt { font-family: var(--font-mono); font-size: var(--fs-13); font-weight: 700; letter-spacing: .04em; color: var(--ink); }
+.product-workspace .vfy-guide__verdicts dd { margin: 6px 0 0; font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
+.product-workspace .vfy-guide__formats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; margin: 24px 0 0; padding: 0; list-style: none; }
+.product-workspace .vfy-guide__formats li { padding: 14px 0; border-top: 1px solid var(--line); font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
+.product-workspace .vfy-guide__formats b { font-weight: 600; color: var(--ink); }
+.product-workspace .vfy-guide__codes { display: block; margin-top: 6px; font-family: var(--font-mono); font-size: var(--fs-12); line-height: 1.6; color: var(--ink); }
+.product-workspace .vfy-nowrap { white-space: nowrap; }
+@media (max-width: 720px) {
+  .product-workspace :is(.vfy-guide__verdicts, .vfy-guide__formats) { grid-template-columns: minmax(0, 1fr); }
+  .product-workspace .vfy-score { padding: 14px; }
+  .product-workspace .vfy-guide__verdicts > div + div { margin-top: 4px; }
+}
 
 /* Evidence engines and the analyzer share one set of panels and output styles. */
 .sec-grid.product-workspace { gap: 24px; }

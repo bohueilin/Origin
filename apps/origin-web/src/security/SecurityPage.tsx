@@ -19,7 +19,7 @@
 // Honesty rails: every verdict is "reproducible under this verifier" — never
 // "safe" or "correct". All payloads below are SYNTHETIC demo artifacts.
 // =============================================================================
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { DEMO_RECEIPT } from './demoReceipt'
 import '../shared/product-workspace.css'
 import { DelegationPanel } from './DelegationPanel'
@@ -50,6 +50,7 @@ import { missDirection } from '@origin/verifier-core/missDirection'
 import { verifyCredential } from '@origin/verifier-core/crucible'
 import {
   generateCorpus,
+  grantUtilization,
   analyzeOverGrant,
   scoreAgainstGroundTruth,
   effectiveScopes,
@@ -144,6 +145,8 @@ function SigilPanel() {
       kicker="01 · Signature integrity"
       title="Flip one byte and it voids."
       lede="Sign a synthetic score receipt with ECDSA P-256 in your browser (Web Crypto — the private key never leaves this page), then verify it offline with only the attestation itself. Then try to cheat."
+      how="A key made in this tab signs the SHA-256 digest of a synthetic receipt. The check recomputes the digest and tests the signature against the public key carried in the attestation."
+      shows="Changing the receipt without re-signing, corrupting the signature, or signing with a key other than the pinned one (the check is given the expected key's thumbprint) fails. It does not show whose key it is."
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={() => void signAndVerify()} disabled={busy}>
@@ -159,7 +162,7 @@ function SigilPanel() {
       <Log steps={steps} />
       <Peek title="Peek at the attestation (JSON)" value={sigil} />
       <p className="sec-note">
-        Integrity + authenticity only: it proves the content is intact and this key signed it — not that the
+        Integrity + authenticity only: it shows the content is intact and this key signed it — not that the
         key belongs to a real-world identity. That binding is a separate PKI/attestation concern.
       </p>
     </DemoCard>
@@ -235,8 +238,10 @@ function MerklePanel() {
     <DemoCard
       id="batches"
       kicker="02 · Batch inclusion"
-      title="Eight receipts. One signature. Each provable alone."
-      lede="Batch eight synthetic receipts into a Merkle tree, sign only the root, then prove one receipt's inclusion without revealing the others. Leaves are beneficiary-bound and domain-separated (leaf: vs node:) against second-preimage games."
+      title="Eight receipts. One signature. Each checkable alone."
+      lede="Batch eight synthetic receipts into a Merkle tree, sign only the root, then show one receipt's inclusion without revealing the others. Leaves are beneficiary-bound and domain-separated (leaf: vs node:) against second-preimage games."
+      how="Eight synthetic receipts, each hashed with its beneficiary, fold into one Merkle root, and only the root is signed. Receipt #4 is checked with a three-hash inclusion proof."
+      shows="Changing receipt #4 or its beneficiary breaks the proof, and the check needs none of the other seven receipts. It does not show that what a receipt says is true."
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={() => void build()}>
@@ -313,6 +318,8 @@ function PolicyPanel() {
       kicker="03 · Policy history"
       title="Yesterday's decision, judged by yesterday's policy."
       lede="A policy is not a mutable blob — it's a hash-chained sequence of versions, and every decision binds to the exact version it ran under. Amend the policy all you like; you can't retroactively make a past decision look compliant."
+      how="Three policy versions form a hash chain: each records its parent's digest. A $120 payment decision records the digest of v2, the version it ran under."
+      shows="Rewriting a stored version without re-hashing breaks the chain, and the v2 decision fails a check against v3. Nothing signs the chain here, and the check does not test the decision against the policy's rules."
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={build}>
@@ -444,6 +451,8 @@ function ReferenceCheckPanel() {
       kicker="04 · Configuration binding"
       title="Change the configuration. Re-check the evidence."
       lede="Evaluate a synthetic policy against the deterministic IAM battery, inspect its config-bound credential, then change the declared model. No named agent is contacted or executed."
+      how={`Deterministic code grades the Least-privilege preset's answers to ${iamTasks.length} synthetic IAM requests against the oracle, Origin's answer key. The credential records one digest of the declared model, tools, context and harness, and another of the battery.`}
+      shows="How many answers match the oracle, and that the credential fails (code 4) once the declared model changes. No agent is contacted or run, and the credential is unsigned."
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={runHarnessed}>
@@ -504,10 +513,17 @@ const OG_ROOTS = 400
 const OG_DEPTH = 4
 const pct1 = (n: number) => `${(n * 100).toFixed(1)}%`
 
-export function OverGrantPanel({ showFullPageLink = false }: { showFullPageLink?: boolean }) {
+// `summary` is for /security, where this panel stands in for /over-grant: it draws the
+// seeded fleet's held-versus-exercised split before any click and links to the full page.
+export function OverGrantPanel({ summary = false }: { summary?: boolean }) {
   const [steps, setSteps] = useState<Step[]>([])
   const [corpus, setCorpus] = useState<OverGrantCorpus | null>(null)
   const [surface, setSurface] = useState<number | null>(null)
+  const held = useMemo(
+    () => (summary ? grantUtilization(generateCorpus({ seed: OG_SEED, roots: OG_ROOTS, depth: OG_DEPTH, violationRate: 0 })) : null),
+    [summary],
+  )
+  const count = (n: number) => n.toLocaleString('en-US')
 
   const analyze = () => {
     // violationRate 0 — every child narrows, which is what a macaroon-model attenuating token does
@@ -615,7 +631,20 @@ export function OverGrantPanel({ showFullPageLink = false }: { showFullPageLink?
       kicker="06 · Authority analysis"
       title="Inspect the authority that goes unused."
       lede="Compare granted and exercised authority across a seeded synthetic fleet. Inspect five metrics with stated denominators, widen one delegation edge, or measure detection against planted ground truth."
+      how={`Five metrics, each with a stated denominator, over a seeded synthetic fleet (seed ${OG_SEED}, ${OG_ROOTS} roots). A second seeded corpus plants widened edges, so detection is scored against known answers.`}
+      shows="How much granted authority went unused in the window, and whether every planted edge is found. It describes generated data, not a real fleet, and an unused scope is not by itself one to remove."
     >
+      {held ? (
+        <figure className="og-fig" aria-labelledby="fleet-held-cap">
+          <figcaption id="fleet-held-cap">Granted scopes held at window start in the synthetic fleet (seed {OG_SEED}, {OG_ROOTS} roots), split by whether they were exercised</figcaption>
+          <p className="og-fig__total"><b>{count(held.scopesGranted)}</b> granted scopes</p>
+          <div className="og-bar" aria-hidden="true"><span className="og-bar__used" style={{ width: pct1(held.fleetGur) }} /></div>
+          <dl className="og-bar__key">
+            <div><dt><i className="is-used" aria-hidden="true" />Exercised in the window</dt><dd>{count(held.scopesExercised)} · {pct1(held.fleetGur)}</dd></div>
+            <div><dt><i aria-hidden="true" />Never exercised</dt><dd><b>{count(held.scopesGranted - held.scopesExercised)} · {pct1(held.overGrantSurface)}</b></dd></div>
+          </dl>
+        </figure>
+      ) : null}
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={analyze}>
           Analyze the fleet
@@ -648,7 +677,7 @@ export function OverGrantPanel({ showFullPageLink = false }: { showFullPageLink?
         <a className="btn btn--ghost btn--sm" href="/trust/over-grant-bench.json">
           The published artifact &rarr;
         </a>
-        {showFullPageLink ? (
+        {summary ? (
           <a className="btn btn--ghost btn--sm" href="/over-grant">
             Open the full analyzer &rarr;
           </a>
@@ -676,7 +705,7 @@ export function SecurityPage() {
       <PolicyPanel />
       <ReferenceCheckPanel />
       <DelegationPanel />
-      <OverGrantPanel showFullPageLink />
+      <OverGrantPanel summary />
     </div>
   )
 }

@@ -467,10 +467,27 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
   let step = 0
   let timer = 0
 
+  // The bar keeps one size while stages change (index.html styles both): the caption sits in a
+  // cell that also holds every stage's caption, hidden and aria-hidden, and the Play button holds
+  // both its labels, so neither the bar's height nor Prev/Next move.
+  if (cap) {
+    const caps = document.createElement('span')
+    caps.className = 'demo__caps'
+    cap.replaceWith(caps)
+    caps.append(...CAPS.map((text, i) => {
+      const sizer = document.createElement('span')
+      sizer.className = 'demo__capsizer'
+      sizer.setAttribute('aria-hidden', 'true')
+      sizer.textContent = `Stage ${i + 1} of ${N} · ${text}`
+      return sizer
+    }), cap)
+  }
+  if (playBtn) playBtn.innerHTML = '<span class="demo__play-label demo__play-label--play">&#9654; Play</span><span class="demo__play-label demo__play-label--pause">&#10073;&#10073; Pause</span>'
+
   const stop = () => {
     if (!timer) return
     window.clearInterval(timer); timer = 0
-    if (playBtn) { playBtn.innerHTML = '&#9654; Play'; playBtn.setAttribute('aria-pressed', 'false') }
+    playBtn?.setAttribute('aria-pressed', 'false')
   }
   // render() is the ONE place tab state changes: selection, roving tabindex,
   // panel visibility (both the class the CSS animates and the `hidden` attribute
@@ -511,7 +528,7 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
   })
   const play = () => {
     if (timer) { stop(); return }
-    if (playBtn) { playBtn.innerHTML = '&#10073;&#10073; Pause'; playBtn.setAttribute('aria-pressed', 'true') }
+    playBtn?.setAttribute('aria-pressed', 'true')
     if (step === N - 1) go(0)
     timer = window.setInterval(() => { if (step >= N - 1) stop(); else go(step + 1) }, 1700)
   }

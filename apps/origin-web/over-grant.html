@@ -78,6 +78,64 @@
       }
       .sec-rsl small { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); }
       .sec-note { font-size: var(--fs-13); color: var(--ink-soft); margin-top: 10px; }
+      /* Static explanatory figures: each experiment's mechanism and bounded claim, the fixed
+         before/after reach figure (05 and the recorded run), and the held-vs-exercised bar.
+         Ink and one green, nothing moves, text 12px or larger. */
+      .sec-claim { display: grid; gap: 8px; margin: 16px 0 0; max-width: 80ch; }
+      .sec-claim > div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 2px 16px; }
+      .sec-claim dt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; line-height: 1.9; color: var(--ink); }
+      .sec-claim dd { margin: 0; font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
+      .reach-fig { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); }
+      :is(.reach-fig, .og-fig) figcaption { font-size: var(--fs-14); font-weight: 600; line-height: 1.5; color: var(--ink); }
+      .reach-fig__states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 32px; margin-top: 12px; }
+      .reach-fig__head { margin: 0 0 10px; font-size: var(--fs-14); line-height: 1.55; color: var(--ink-soft); }
+      .reach-fig__head b { color: var(--ink); }
+      .reach-fig__nodes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+      .reach-fig__nodes li { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 52px; padding: 5px 6px; border: 1.5px solid var(--line-2); border-radius: 8px; background: var(--paper-2); color: var(--steel); font-family: var(--font-mono); font-size: var(--fs-12); line-height: 1.3; text-align: center; overflow-wrap: break-word; }
+      .reach-fig__nodes li.is-reached { background: var(--ink); border-color: var(--ink); color: #fff; }
+      .reach-fig__nodes li.is-new { background: var(--signal); border: 3px solid var(--ink); color: #fff; font-weight: 700; }
+      .reach-fig__tag { font-family: var(--font-sans); font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+      .reach-fig__key { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 12px 0 0; font-size: var(--fs-13); color: var(--steel); }
+      .reach-fig__key > span { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+      :is(.reach-fig__key, .og-bar__key) i { display: inline-block; flex: none; width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--line-2); background: var(--paper-2); }
+      :is(.reach-fig__key i.is-reached, .og-bar__key i.is-used) { background: var(--ink); border-color: var(--ink); }
+      .reach-fig__key i.is-new { background: var(--signal); border: 3px solid var(--ink); }
+      .og-fig { max-width: 920px; margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--line); }
+      .og-fig__total { margin: 10px 0 8px; font-size: var(--fs-14); color: var(--ink-soft); }
+      .og-fig__total b { font-size: var(--fs-22); color: var(--ink); font-variant-numeric: tabular-nums; }
+      .og-bar { display: flex; height: 28px; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; background: var(--paper-2); }
+      .og-bar__used { background: var(--ink); }
+      .og-bar__key { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 12px 0 0; }
+      .og-bar__key > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+      .og-bar__key dt { display: flex; align-items: center; gap: 8px; font-size: var(--fs-14); color: var(--ink-soft); }
+      .og-bar__key dd { margin: 0; font-size: var(--fs-16); font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .og-bar__key dd b { color: var(--signal-ink); }
+      /* The recorded run's figures sit above the 05 panel, so its own fixed before/after
+         figure would repeat them here; /security shows it. */
+      .og-delegation .reach-fig { display: none; }
+      .og-figs { padding-block: 8px 28px; }
+      .og-figs__scope { max-width: 75ch; margin: 14px 0 0; font-size: var(--fs-14); line-height: 1.7; color: var(--ink-soft); }
+      .og-chain { --indent: 22px; list-style: none; margin: 14px 0 18px; padding: 0; font-size: var(--fs-14); line-height: 1.5; color: var(--ink-soft); }
+      .og-chain li::before, .og-chain li::after { box-sizing: border-box; }
+      .og-chain li { position: relative; padding: 4px 0 4px 20px; }
+      .og-chain li + li { margin-left: var(--indent); }
+      .og-chain li + li + li { margin-left: calc(2 * var(--indent)); }
+      .og-chain li + li::before { content: ''; position: absolute; left: calc(4px - var(--indent)); top: -8px; width: calc(var(--indent) - 4px); height: 24px; border-left: 1.5px solid var(--line-2); border-bottom: 1.5px solid var(--line-2); }
+      .og-chain li.is-widened::before { border-color: var(--signal); border-width: 3px; }
+      .og-chain li::after { content: ''; position: absolute; left: 0; top: 11px; width: 10px; height: 10px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper-2); }
+      .og-chain li:first-child::after { background: var(--ink); }
+      .og-chain code { font-family: var(--font-mono); font-size: var(--fs-13); color: var(--ink); }
+      .og-chain .is-widened code:last-child { color: var(--signal-ink); font-weight: 700; }
+      .og-fig__result { margin: 16px 0 0; font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
+      .og-fig__result b { color: var(--ink); }
+      @media (max-width: 699px) {
+        .sec-claim > div, .reach-fig__states { grid-template-columns: minmax(0, 1fr); }
+        .reach-fig__nodes { gap: 6px; }
+        .reach-fig__nodes li { padding-inline: 2px; }
+        .og-bar__key { display: grid; gap: 6px; }
+        .og-bar__key > div { flex-wrap: nowrap; justify-content: space-between; }
+        .og-chain { --indent: 14px; }
+      }
     </style>
   </head>
 
@@ -118,6 +176,62 @@
           <p class="section__lede">Inspect standing permissions, exercised authority, and what a compromised identity could reach. Then widen a delegation edge and watch the result change.</p>
           <p class="product-hero__scope">Where the <a href="/reference-check">reference check</a> asks what a selected policy would allow, this analyzer measures how much authority a seeded synthetic agent fleet holds versus what it exercised; it evaluates no policy and signs nothing. Every fleet and event on this page is synthetic and seeded. These numbers describe the demonstration, not a customer deployment. Definitions and denominators accompany the published benchmark.</p>
           <div class="product-hero__links"><a href="https://github.com/bohueilin/Origin/blob/main/docs/OVER-GRANT-METRICS.md">Metric definitions ↗</a><a href="/trust/over-grant-bench.json">Published synthetic benchmark ↗</a><a href="#og-table-title">Explore the analyzer ↓</a></div>
+        </div>
+      </section>
+      <section class="section og-figs" aria-labelledby="og-figs-title">
+        <div class="shell">
+          <p class="kicker">The recorded run, drawn</p>
+          <h2 id="og-figs-title">Held versus used, and one widened edge.</h2>
+          <p class="og-figs__scope">Synthetic and seeded: seed 20260818, 400 roots, 2,074 synthetic identities, a 30-day window. These numbers describe the demonstration, not a customer deployment; the analyzer further down recomputes them in your browser.</p>
+          <figure class="og-fig" aria-labelledby="og-fig-held-cap">
+            <figcaption id="og-fig-held-cap">Granted scopes held at window start, split by whether they were exercised</figcaption>
+            <p class="og-fig__total"><b>8,675</b> granted scopes</p>
+            <div class="og-bar" aria-hidden="true"><span class="og-bar__used" style="width: 36.8%"></span></div>
+            <dl class="og-bar__key">
+              <div><dt><i class="is-used" aria-hidden="true"></i>Exercised in the window</dt><dd data-og="exercised">3,194 · 36.8%</dd></div>
+              <div><dt><i aria-hidden="true"></i>Never exercised</dt><dd data-og="never"><b>5,481 · 63.2%</b></dd></div>
+            </dl>
+          </figure>
+          <figure class="og-fig" aria-labelledby="og-fig-reach-cap">
+            <figcaption id="og-fig-reach-cap">Root agent-000's reach over 9 sensitive resources, before and after one widened edge</figcaption>
+            <ol class="og-chain" aria-label="The delegation path that changed">
+              <li><code>agent-000</code> root; its own grant does not change</li>
+              <li><code>agent-000.0</code> holds no payroll scope</li>
+              <li class="is-widened"><code>agent-000.0.0</code> gains <code>payroll:read</code>, two hops below the root</li>
+            </ol>
+            <div class="reach-fig__states">
+              <div>
+                <p class="reach-fig__head"><b>Before</b> · agent-000 reaches <b data-og="before">5 of 9</b> (55.6%).</p>
+                <ul class="reach-fig__nodes" aria-label="Before: sensitive resources">
+                  <li data-reach="none">payroll<span class="sr-only">, not reachable</span></li>
+                  <li class="is-reached" data-reach="reached">customer-pii<span class="sr-only">, reachable</span></li>
+                  <li class="is-reached" data-reach="reached">ledger<span class="sr-only">, reachable</span></li>
+                  <li data-reach="none">wire-transfer<span class="sr-only">, not reachable</span></li>
+                  <li class="is-reached" data-reach="reached">source-secrets<span class="sr-only">, reachable</span></li>
+                  <li data-reach="none">hr-records<span class="sr-only">, not reachable</span></li>
+                  <li class="is-reached" data-reach="reached">prod-db<span class="sr-only">, reachable</span></li>
+                  <li data-reach="none">audit-log<span class="sr-only">, not reachable</span></li>
+                  <li class="is-reached" data-reach="reached">object-store-public<span class="sr-only">, reachable</span></li>
+                </ul>
+              </div>
+              <div>
+                <p class="reach-fig__head"><b>After</b> · agent-000 reaches <b data-og="after">6 of 9</b> (66.7%).</p>
+                <ul class="reach-fig__nodes" aria-label="After: sensitive resources">
+                  <li class="is-new" data-reach="new">payroll<span class="sr-only">, newly reachable</span><span class="reach-fig__tag" aria-hidden="true">new</span></li>
+                  <li class="is-reached" data-reach="reached">customer-pii<span class="sr-only">, reachable</span></li>
+                  <li class="is-reached" data-reach="reached">ledger<span class="sr-only">, reachable</span></li>
+                  <li data-reach="none">wire-transfer<span class="sr-only">, not reachable</span></li>
+                  <li class="is-reached" data-reach="reached">source-secrets<span class="sr-only">, reachable</span></li>
+                  <li data-reach="none">hr-records<span class="sr-only">, not reachable</span></li>
+                  <li class="is-reached" data-reach="reached">prod-db<span class="sr-only">, reachable</span></li>
+                  <li data-reach="none">audit-log<span class="sr-only">, not reachable</span></li>
+                  <li class="is-reached" data-reach="reached">object-store-public<span class="sr-only">, reachable</span></li>
+                </ul>
+              </div>
+            </div>
+            <p class="reach-fig__key" aria-hidden="true"><span><i class="is-reached"></i>reachable</span><span><i></i>not reachable</span><span><i class="is-new"></i>newly reachable</span></p>
+            <p class="og-fig__result">On a separate seeded corpus with 90 planted widened edges, the analyzer caught <b data-og="planted">90 of 90, with 0 false positives</b>, against synthetic ground truth.</p>
+          </figure>
         </div>
       </section>
       <section class="section product-workspace og-workspace og-delegation" aria-label="Attenuation, interactive">

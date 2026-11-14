@@ -45,17 +45,16 @@
       .proof h2 { font-size: clamp(21px, 2.8vw, 27px); letter-spacing: -0.015em; margin: 0 0 6px; }
       .proof__sub { font-size: var(--fs-15); color: var(--ink-soft); max-width: 64ch; line-height: 1.55; margin-top: 4px; }
 
-      /* Honest label — amber, unmissable */
-      .proof__label { margin-top: 14px; background: #fbf3e0; border: 1px solid #ecd9ad; color: #8a5600; border-radius: 10px; padding: 11px 16px; font-size: var(--fs-14); font-weight: 600; line-height: 1.5; }
+      /* Honest label: unmissable through an ink rule and weight, not a status colour. */
+      .proof__label { margin-top: 14px; background: var(--paper-3); border: 1px solid var(--line-2); border-left: 3px solid var(--ink); color: var(--ink); border-radius: 10px; padding: 11px 16px; font-size: var(--fs-14); font-weight: 600; line-height: 1.5; }
 
       /* The ladder — three rung cards */
       .rungs { margin-top: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
       @media (max-width: 820px) { .rungs { grid-template-columns: 1fr; } }
       .rung { background: var(--paper-2); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--sh-sm); display: flex; flex-direction: column; }
-      .rung--now { border-color: #bcccff; }
+      .rung--now { border-color: var(--line-2); }
       .rung__badge { align-self: flex-start; font-family: var(--font-display); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; border-radius: 999px; padding: 4px 11px; margin-bottom: 12px; }
-      .rung__badge--now { color: var(--signal-ink); background: var(--signal-wash); border: 1px solid #bcccff; }
-      .rung__badge--wip { color: #8a5600; background: #fbf3e0; border: 1px solid #ecd9ad; }
+      .rung__badge--now { color: var(--signal-ink); background: var(--signal-wash); border: 1px solid var(--line-2); }
       .rung__badge--soon { color: var(--ink-soft); background: var(--paper-3); border: 1px solid var(--line-2); }
       .rung__id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-13); color: var(--ink-soft); }
       .rung h3 { font-size: 17px; margin: 6px 0 8px; letter-spacing: -0.01em; }
@@ -96,19 +95,21 @@
       .tr2-exec p { margin: 0; font-size: 15px; line-height: 1.6; color: #d5dae4; }
       .tr2-exec b { color: #fff; }
       .tr2-exec .tr2-not { display: block; margin-top: 12px; font-size: 13px; color: #aeb6c6; }
-      .tr2-digest { margin-top: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--signal-wash); border: 1px solid #bcccff; border-radius: 12px; padding: 13px 16px; }
+      .tr2-digest { margin-top: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--paper-3); border: 1px solid var(--line-2); border-radius: 12px; padding: 13px 16px; }
       .tr2-digest .tr2-digest__k { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--signal-ink); font-weight: 700; }
       .tr2-digest .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--ink); word-break: break-all; }
-      /* the 12-event flow, policy-state coloured */
+      /* The 12-event flow. Every event is scripted, so no status colours: the planned steps
+         keep the one green rule, held steps a dashed ink rule, approved and executed steps a
+         solid ink rule; each row's words say what the script recorded. */
       .tr2-flow { margin-top: 20px; list-style: none; padding: 0; display: grid; gap: 7px; counter-reset: ev; }
       .tr2-flow li { display: grid; grid-template-columns: 26px 1fr; align-items: baseline; column-gap: 12px; row-gap: 3px; background: var(--paper-2); border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 9px; padding: 10px 14px; }
       .tr2-flow li::before { counter-increment: ev; content: counter(ev); grid-column: 1; grid-row: 1; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-soft); text-align: right; }
       .tr2-flow .ev__a { grid-column: 2; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--ink); font-weight: 600; }
       .tr2-flow .ev__d { grid-column: 2; font-size: var(--fs-14); line-height: 1.5; color: var(--ink-soft); }
       .tr2-flow li.is-plan { border-left-color: var(--signal); }
-      .tr2-flow li.is-held { border-left-color: #d9a441; }
-      .tr2-flow li.is-ok { border-left-color: #2f9e6f; }
-      .tr2-flow li.is-block { border-left-color: #d1495b; background: #fdf1f2; }
+      .tr2-flow li.is-held { border-left: 3px dashed var(--ink-soft); }
+      .tr2-flow li.is-ok { border-left-color: var(--ink-soft); }
+      .tr2-flow li.is-block { border-left-color: var(--ink-soft); background: var(--paper-2); }
       .tr2-flow li.is-seal { border-left-color: var(--ink); }
       /* verify command block */
       .tr2-verify { margin-top: 18px; background: #0d1117; border-radius: 12px; padding: 16px 18px; }
@@ -128,8 +129,8 @@
       .tr2why__lead b { color: var(--ink); }
       .tr2why__grid { margin-top: 12px; display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
       @media (max-width: 560px) { .tr2why__grid { grid-template-columns: 1fr; } }
-      .tr2why__tile--no { border-color: #edc6c2; background: #fdf5f4; }
-      .tr2why__tile--no .tr2why__q { color: var(--danger); }
+      .tr2why__tile.tr2why__tile--no { border: 1.5px dashed var(--ink-soft); box-shadow: none; }
+      .tr2why__tile--no .tr2why__q { color: var(--ink); }
       .tr2why__tile { background: var(--paper-2); border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; box-shadow: var(--sh-sm); }
       .tr2why__q { font-size: var(--fs-13); font-weight: 700; color: var(--ink); margin: 0 0 6px; }
       .tr2why__a { font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.5; }
@@ -159,6 +160,62 @@
       /* A standalone text link, styled like .rung__link, with a 44px target. */
       .proof__app { margin: 14px 0 0; }
       .proof__app .rung__link { display: inline-flex; align-items: center; min-height: 44px; }
+
+      /* Pass 2 Phase 2: the evidence-ladder figure. It fills the hero's right column on wide
+         screens and follows the hero copy on narrow ones. Static: no animation, no transition.
+         Ink and the one green accent only; the unearned rung is dashed and carries no data.
+         The grid aligns to the top so a taller figure never pushes the eyebrow down. */
+      .proof-page .proof .editorial-hero__grid { align-items: start; }
+      .ladderfig { margin: 0; max-width: 36rem; container-type: inline-size; color: var(--ink); }
+      @media (max-width: 960px) { .proof-page .proof .editorial-hero__grid { grid-template-columns: 1fr; } }
+      .ladderfig__title { margin: 0 0 14px; font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); }
+      .ladderfig__rungs { list-style: none; margin: 0; padding: 0 0 0 28px; display: grid; gap: 14px; }
+      .ladderfig__rung { position: relative; background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 4px; padding: 14px 16px; }
+      /* The rail: a node per rung, and a segment from each node down to the next one. */
+      .ladderfig__rung::before { content: ""; position: absolute; left: -24px; top: 18px; width: 12px; height: 12px; box-sizing: border-box; border-radius: 50%; background: var(--signal); }
+      .ladderfig__rung::after { content: ""; position: absolute; left: -19px; top: 30px; bottom: -32px; width: 2px; background: var(--signal); }
+      .ladderfig__rung:last-child::after { content: none; }
+      .ladderfig__rung--soon { background: transparent; border: 1.5px dashed var(--ink-soft); }
+      .ladderfig__rung--soon::before { background: var(--paper); border: 2px solid var(--ink-soft); }
+      .ladderfig__rung--soon::after { background: none; width: 0; border-left: 2px dashed var(--ink-soft); }
+      .ladderfig__head { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+      .ladderfig__id { font-family: var(--font-mono); font-size: var(--fs-13); font-weight: 700; color: var(--ink); }
+      .ladderfig__status { font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); }
+      .ladderfig__rung--soon .ladderfig__status { color: var(--ink-soft); }
+      .ladderfig__name { margin: 4px 0 0; font-size: var(--fs-15); font-weight: 600; line-height: 1.4; color: var(--ink); }
+      .ladderfig__facts { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr; gap: 2px; }
+      .ladderfig__facts dt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--steel); line-height: 1.5; }
+      .ladderfig__facts dt:not(:first-child) { margin-top: 8px; }
+      .ladderfig__facts dd { margin: 0; font-size: var(--fs-14); line-height: 1.5; color: var(--ink-soft); }
+      .ladderfig .mono { font-family: var(--font-mono); font-size: var(--fs-13); color: var(--ink); overflow-wrap: anywhere; }
+      @container (min-width: 300px) { .ladderfig .mono { white-space: nowrap; } }
+      @media print { .ladderfig__rung { break-inside: avoid; } }
+      @container (min-width: 420px) {
+        .ladderfig__facts { grid-template-columns: 6.75rem 1fr; gap: 8px 12px; }
+        .ladderfig__facts dt:not(:first-child) { margin-top: 0; }
+      }
+
+      /* Pass 2 Phase 2: the TR-A002 landing line. */
+      .tr2why__landing { margin: 0 0 14px; font-size: clamp(19px, 2.2vw, 24px); font-weight: 500; line-height: 1.35; letter-spacing: -.015em; color: var(--ink); max-width: 46ch; }
+
+      /* Pass 2 Phase 2: event 11 is the scripted block, so it gets an ink frame, not a refuse
+         colour (those are kept for real checks). Event 10's scripted deny and the block line
+         below the list drop the red for the same reason. */
+      .tr2-flow li[data-seq="11"] { border: 2px solid var(--ink); background: var(--paper-3); }
+      .tr2-flow li[data-seq="11"]::before { grid-row: 2; }
+      .tr2-flow .ev__badge { grid-column: 1 / -1; justify-self: start; margin-bottom: 4px; font-family: var(--font-mono); font-size: var(--fs-12); font-weight: 700; line-height: 1.45; letter-spacing: .03em; text-transform: uppercase; color: var(--ink); background: var(--paper-2); border: 1px solid var(--ink); border-radius: 3px; padding: 2px 8px; }
+      .proof-page .blockline { border-left-color: var(--ink); background: var(--paper-3); }
+      .proof-page .blockline__t b { color: var(--ink); }
+      /* The computed trace diagram (scripts/evidence-diagrams.ts) marks the scripted held and
+         denied events with the shared home stylesheet's refuse red, and stepping through it on request outlines
+         them in status colours. On /proof they are scripted events, so ink instead: bold ink
+         text for held and denied, a dashed ink-soft outline for held steps. A focused node keeps
+         the shared home stylesheet's green focus ring. */
+      .proof-page .evidence-diagram .diagram-danger { fill: var(--ink); font-weight: 700; }
+      .proof-page .evidence-diagram.is-stepping [data-trace-node].is-held.is-stepped:not(:focus-visible) > rect { stroke: var(--ink-soft); stroke-dasharray: 6 4; }
+      .proof-page .evidence-diagram.is-stepping [data-trace-node].is-ok.is-stepped:not(:focus-visible) > rect { stroke: var(--ink-soft); }
+      .proof-page .evidence-diagram.is-stepping [data-trace-node].is-block.is-stepped:not(:focus-visible) > rect { stroke: var(--ink); }
+      .proof-page [data-trace-block]:not([hidden]) { border-left-color: var(--ink); }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>
@@ -197,7 +254,37 @@
         <p class="proof__lede">Start with the artifact. Check how it was produced, what its chain establishes, and where its authority ends.</p>
         <p class="editorial-caption">TR-A002 is a machine-emitted trace of a scripted scenario. TR-A001 is an authored format specimen. An external design-partner trace has not been earned yet.</p>
         <div class="editorial-actions"><a class="btn btn--primary" href="/proof/tr-a002.json" download>Download the TR-A002 trace</a><a class="btn btn--ghost" href="#tr-a002">Inspect TR-A002</a></div>
-      </div></div><!-- ORIGIN:TRACE --></section>
+      </div>
+      <!-- Pass 2 Phase 2: the evidence ladder as a static figure, highest rung first. Each fact
+           comes from this page and public/proof/tr-a002.json (event_count, final_digest). -->
+      <figure class="ladderfig" aria-labelledby="ladderfig-title">
+        <figcaption class="ladderfig__title" id="ladderfig-title">The evidence ladder, highest rung first</figcaption>
+        <ol class="ladderfig__rungs">
+          <li class="ladderfig__rung ladderfig__rung--soon" data-rung="TR-A003">
+            <p class="ladderfig__head"><span class="ladderfig__id">TR-A003</span><span class="ladderfig__status">Not earned yet</span></p>
+            <p class="ladderfig__name">First external design-partner trace</p>
+          </li>
+          <li class="ladderfig__rung" data-rung="TR-A002">
+            <p class="ladderfig__head"><span class="ladderfig__id">TR-A002</span><span class="ladderfig__status">Available now</span></p>
+            <p class="ladderfig__name">Machine-emitted trace of a scripted scenario</p>
+            <dl class="ladderfig__facts">
+              <dt>Provenance</dt><dd>Written by <span class="mono">scripts/generate-tr-a002.mjs</span>. The 12 events are scripted.</dd>
+              <dt>Computed</dt><dd>A SHA-256 hash chain over the 12 events, sealed as final digest <span class="mono">ca1d4690…</span></dd>
+              <dt>Does not establish</dt><dd>That any agent, policy gate, proxy, approver or sandbox ran. The top-level description is outside the chain.</dd>
+            </dl>
+          </li>
+          <li class="ladderfig__rung" data-rung="TR-A001">
+            <p class="ladderfig__head"><span class="ladderfig__id">TR-A001</span><span class="ladderfig__status">Available now</span></p>
+            <p class="ladderfig__name">Authored format specimen</p>
+            <dl class="ladderfig__facts">
+              <dt>Provenance</dt><dd>Written by hand to the evidence-package schema.</dd>
+              <dt>Computed</dt><dd>Nothing. Its digest is a placeholder.</dd>
+              <dt>Does not establish</dt><dd>That anything ran. It shows the shape of a record.</dd>
+            </dl>
+          </li>
+        </ol>
+      </figure>
+      </div><!-- ORIGIN:TRACE --></section>
       <!-- Proof-status ladder — scannable in five seconds -->
       <div class="proofladder" aria-label="Proof-status ladder">
         <p class="proofladder__cap">Proof status</p>
@@ -208,6 +295,7 @@
 
       <!-- Why TR-A002 matters — executive, non-technical, 10-second read -->
       <div class="tr2why">
+        <p class="tr2why__landing">The hash chain is real; the story it tells is scripted. Here is what each part shows.</p>
         <p class="tr2why__lead"><b>Why TR-A002 matters, in ten seconds:</b> a script wrote this file and computed a SHA-256 chain over its twelve events, so anyone can re-check it: an edit to any event breaks the chain or changes the final digest published below. The events themselves are a scripted scenario: no agent, policy gate, proxy, approver or sandbox ran. It does <b>not</b> show production readiness or customer approval.</p>
         <div class="tr2why__grid">
           <div class="tr2why__tile"><p class="tr2why__q">Is the file generated by code?</p><p class="tr2why__a">Yes. <code>scripts/generate-tr-a002.mjs</code> writes the file and computes every hash. The twelve events are typed into that script.</p></div>
@@ -338,7 +426,7 @@
           <li class="is-ok" data-seq="8"><span class="ev__s sr-only">Recorded (scripted)</span><span class="ev__a">action.recorded</span><span class="ev__d">The script records approver, verdict and scope in this event.</span></li>
           <li class="is-plan" data-seq="9"><span class="ev__s sr-only">Plan</span><span class="ev__a">retry.proposed_over_scope</span><span class="ev__d">Scripted retry: a second refund of $920.00, above the $500 ceiling.</span></li>
           <li class="is-block" data-seq="10"><span class="ev__s sr-only">Blocked</span><span class="ev__a">verdict.deny_or_block</span><span class="ev__d">Scripted verdict: deny. $920 exceeds the approved scope.</span></li>
-          <li class="is-block" data-seq="11"><span class="ev__s sr-only">Blocked</span><span class="ev__a">proxy.blocked</span><span class="ev__d">Scripted block: the event marks the over-scope refund as blocked and never dispatched.</span></li>
+          <li class="is-block" data-seq="11"><span class="ev__badge">Event 11 · turning point (scripted block in chain)</span><span class="ev__s sr-only">Blocked</span><span class="ev__a">proxy.blocked</span><span class="ev__d">Scripted block: the event marks the over-scope refund as blocked and never dispatched.</span></li>
           <li class="is-seal" data-seq="12"><span class="ev__s sr-only">Sealed</span><span class="ev__a">evidence.digest_sealed</span><span class="ev__d">Hash chain over the preceding 11 events is committed to the final digest.</span></li>
         </ol>
 

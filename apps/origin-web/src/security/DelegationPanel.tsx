@@ -1,6 +1,6 @@
 // One delegation graph for /security, /over-grant and build-time HTML.
 import { useState, useSyncExternalStore } from 'react'
-import { blastRadius, resources as overGrantResources, isSensitive } from '@origin/verifier-core/overGrant'
+import { blastRadius, effectiveScopes, resources as overGrantResources, isSensitive } from '@origin/verifier-core/overGrant'
 import type { OverGrantCorpus } from '@origin/verifier-core/overGrant'
 import { DemoCard, Log } from './panelUi'
 
@@ -30,6 +30,34 @@ const NARROW = [
 const subscribeToHydration = () => () => {}
 const isHydrated = () => true
 
+const corpusFor = (widened: ReadonlySet<string>) => ({
+  seed: 1,
+  windowDays: 30,
+  resources: overGrantResources,
+  identities: TREE.map((n) => ({
+    id: n.id,
+    parent: n.parent,
+    owner: 'human-01',
+    tainted: false,
+    granted: widened.has(n.id) && 'widen' in n ? [...n.granted, n.widen].sort() : [...n.granted],
+    granted_day: 0,
+    ttl_days: 30,
+  })),
+  events: [],
+  planted: { violationEdges: [], dormantScopes: [] },
+}) as unknown as OverGrantCorpus
+
+// The fixed before/after figure: which sensitive resources the root reaches with no
+// widened edge, and with payroll-bot widened. Computed, never typed in.
+const SENSITIVE_IDS = overGrantResources.filter(isSensitive).map((r) => r.id)
+const rootReach = (widened: ReadonlySet<string>) => {
+  const scopes = [...effectiveScopes(corpusFor(widened)).get('root')!]
+  return SENSITIVE_IDS.filter((id) => scopes.some((scope) => scope.startsWith(`${id}:`)))
+}
+const FIGURE_LEAF = TREE[3]
+const REACH_BEFORE = rootReach(new Set())
+const REACH_AFTER = rootReach(new Set([FIGURE_LEAF.id]))
+
 export function DelegationPanel({ hydrate = false }: { hydrate?: boolean }) {
   // Reserve the controls' space in the initial HTML. A failed script leaves the
   // complete computed baseline visible without presenting inoperative buttons.
@@ -37,25 +65,8 @@ export function DelegationPanel({ hydrate = false }: { hydrate?: boolean }) {
   const [widened, setWidened] = useState<ReadonlySet<string>>(new Set())
   const at = (id: string) => TREE.find((n) => n.id === id)!
 
-  const corpus = {
-    seed: 1,
-    windowDays: 30,
-    resources: overGrantResources,
-    identities: TREE.map((n) => ({
-      id: n.id,
-      parent: n.parent,
-      owner: 'human-01',
-      tainted: false,
-      granted: widened.has(n.id) && 'widen' in n ? [...n.granted, n.widen].sort() : [...n.granted],
-      granted_day: 0,
-      ttl_days: 30,
-    })),
-    events: [],
-    planted: { violationEdges: [], dormantScopes: [] },
-  } as unknown as OverGrantCorpus
-
-  const root = blastRadius(corpus).perIdentity.find((p) => p.id === 'root')!
-  const sensitive = overGrantResources.filter(isSensitive).length
+  const root = blastRadius(corpusFor(widened)).perIdentity.find((p) => p.id === 'root')!
+  const sensitive = SENSITIVE_IDS.length
   const pct = (n: number) => `${(n * 100).toFixed(1)}%`
 
   const toggle = (id: string) =>
@@ -72,6 +83,8 @@ export function DelegationPanel({ hydrate = false }: { hydrate?: boolean }) {
       kicker="05 · Delegated authority"
       title="Widen one edge. Watch the root's blast radius move."
       lede="A correct capability token can only narrow as it is delegated, so an ancestor reaches exactly its own grant. Break that on any edge and authority flows back up the tree."
+      how={`Six hand-built synthetic identities. An identity's reach is its own grant plus every descendant's, counted over ${sensitive} sensitive resources.`}
+      shows={`With every child narrowing, the root reaches ${REACH_BEFORE.length} of ${sensitive}; one widened edge lifts it to ${REACH_AFTER.length} of ${sensitive} while the root's own grant stays the same. It does not test a real permission system.`}
     >
       {(['wide', 'narrow'] as const).map((layout) => {
         const narrow = layout === 'narrow'
@@ -135,6 +148,34 @@ export function DelegationPanel({ hydrate = false }: { hydrate?: boolean }) {
           : { tone: 'bad', label: `${widened.size} edge${widened.size > 1 ? 's' : ''} widened`, text: `A descendant now holds a scope its parent never had, so the root inherits it.` },
         { tone: 'info', label: 'blast radius at the root', text: `${root.reachable} / ${sensitive} sensitive resources reachable — BRI ${pct(root.bri)}` },
       ]} />
+
+      <figure className="reach-fig" aria-labelledby="deleg-reach-cap">
+        <figcaption id="deleg-reach-cap">
+          Two fixed states: the root's reach before and after {FIGURE_LEAF.label} gains {FIGURE_LEAF.widen}, a scope its parent {at(FIGURE_LEAF.parent).label} never held
+        </figcaption>
+        <div className="reach-fig__states">
+          {[{ name: 'Before', reach: REACH_BEFORE }, { name: 'After', reach: REACH_AFTER }].map((state) => (
+            <div key={state.name}>
+              <p className="reach-fig__head"><b>{state.name}</b> · {TREE[0].label} reaches <b>{state.reach.length} of {sensitive}</b> sensitive resources.</p>
+              <ul className="reach-fig__nodes" aria-label={`${state.name}: sensitive resources`}>
+                {SENSITIVE_IDS.map((id) => {
+                  const reached = state.reach.includes(id)
+                  const isNew = reached && !REACH_BEFORE.includes(id)
+                  return (
+                    <li key={id} className={isNew ? 'is-new' : reached ? 'is-reached' : undefined}>
+                      {id}<span className="sr-only">{isNew ? ', newly reachable' : reached ? ', reachable' : ', not reachable'}</span>
+                      {isNew ? <span className="reach-fig__tag" aria-hidden="true">new</span> : null}
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p className="reach-fig__key" aria-hidden="true">
+          <span><i className="is-reached" />reachable</span><span><i />not reachable</span><span><i className="is-new" />newly reachable</span>
+        </p>
+      </figure>
     </DemoCard>
   )
 }

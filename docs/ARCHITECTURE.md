@@ -22,7 +22,7 @@ agent or robot may do — capability is never permission.** The same trust spine
                 │ scoped, revocable grant            │ readiness license (RSL + FAR/FRR)
 ┌───────────────▼─────────────────────────┐ ┌───────▼──────────────────────────┐
 │  ③ AUTHORITY / BROKER (server-side only) │ │  ③ PROVING GROUND (deterministic) │
-│     mint ephemeral lease → opaque handle │ │     multi-robot collision-free sim │
+│     mint ephemeral lease → opaque handle │ │     fleet sim, counts collisions   │
 │     resolve secret JIT at tool boundary  │ │     finish / escalate / refuse     │
 │     apps/janus/server · 1Password     │ │     apps/origin-web (warehouse)    │
 └───────────────┬─────────────────────────┘ └────────────────────────────────────┘

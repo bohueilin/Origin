@@ -46,7 +46,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=9fed823f" />
+    <link rel="stylesheet" href="/home.css?v=245b8c7f" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -109,6 +109,11 @@
       .linklike[data-copy] { color: var(--signal-ink); font-weight: 600; text-decoration: none; }
       .linklike[data-copy]:hover { text-decoration: underline; text-underline-offset: 5px; }
       @media (max-width: 680px) { .linklike[data-copy] { display: inline-flex; align-items: center; min-height: 44px; } }
+      /* Gates scoreboard: each detail is a whole verifier line. It wraps, even inside a long digest, and is never clipped. */
+      #gates-scoreboard td { white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+      /* A legacy stamp's restored ending: a shade lighter than the stamped text (5.3:1 on the board's
+         white), then a dagger keyed to the note under the table. */
+      #gates-scoreboard .gates-restored { margin: 10px 0 0; font-size: var(--fs-12); line-height: 1.6; color: var(--steel); }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>
@@ -173,14 +178,43 @@
           // Name and result share one cell: side by side when the row has room, the
           // result on its own line on a phone, so it never shrinks to one character.
           const nameCh = Math.max(...data.suites.map((s) => String(s.name).length))
+          const esc = (t) => t.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))
+          // Legacy stamps. scripts/gates-all.sh used to cut a detail with no "N passed"
+          // summary at 70 characters, so the tracked snapshot and any release stamped
+          // before this change end four verifier lines mid-phrase. Completion applies only
+          // to those snapshots: a detail of exactly 70 characters that ends in one of these
+          // cuts gets the ending the deterministic verifier prints, in its own span after
+          // the stamped text, marked † and explained in a note under the table. A release
+          // stamped after this change carries whole lines and is shown as stamped.
+          const LEGACY_CUTS = [
+            // proof:verify. TR-A002's digest is fixed by public/proof/tr-a002.json.
+            [/\(12 events, digest ca1$/, '(12 events, digest ca1d4690206e…)'],
+            // env:verify. The digest of docs/examples/warehouse-smoke.score-receipt.json, which the
+            // verifier recomputes. That fixture has not changed since gates-all first ran env:verify.
+            [/\(reward 1, d$/, '(reward 1, digest 55abc08bbd18…). This is reproducibility under this verifier, not a claim the score is "correct".'],
+            // reward:diff.
+            [/\(reward$/, '(reward integrity holds).'],
+            // honesty-lint. The counts after this one vary by commit, so the ellipsis marks the cut.
+            [/\+ (\d+) React$/, '+ $1 React copy files, …'],
+          ]
+          let completed = 0
+          const finish = (detail) => {
+            const cut = detail.trimEnd()
+            const legacy = detail.length === 70 && LEGACY_CUTS.find(([tail]) => tail.test(cut))
+            if (!legacy) return esc(detail)
+            const ending = cut.replace(legacy[0], legacy[1]).slice(cut.length)
+            completed += 1
+            return `<span>${esc(cut)}</span><span data-completed>${esc(ending)}<span aria-hidden="true">†</span>`
+              + `<span class="sr-only"> (ending restored from the verifier's fixed output)</span></span>`
+          }
           const rows = data.suites.map((s) => {
             const ok = s.result === 'PASS'
             const mark = ok ? '✓' : '✗'
             const color = ok ? '#1a7f4b' : '#b3261e'
-            const detail = (s.detail || '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))
+            const detail = finish(String(s.detail || ''))
             return `<tr><td style="color:${color};font-weight:600;padding-right:10px;vertical-align:top">${mark}</td>`
               + `<td><div style="display:flex;flex-wrap:wrap;column-gap:16px">`
-              + `<span style="flex:0 1 ${nameCh}ch;font-weight:600">${s.name}</span> <span style="flex:1 1 32ch">${detail}</span></div></td></tr>`
+              + `<span style="flex:0 1 ${nameCh}ch;font-weight:600">${s.name}</span> <span class="gates-detail" style="flex:1 1 32ch">${detail}</span></div></td></tr>`
           }).join('')
           const when = (data.generated_at || '').slice(0, 10)
           const sha = /^[0-9a-f]{7,40}$/.test(data.commit || '') ? data.commit.slice(0, 7) : ''
@@ -206,6 +240,7 @@
             `<div style="margin-bottom:10px">${bannerLine}</div>`
             + `<table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
             + `<tbody>${rows}</tbody></table>`
+            + (completed ? `<p class="gates-restored">† Ending restored from the verifier's fixed output. This snapshot cut lines at 70 characters; release stamps from now on carry the whole line.</p>` : '')
         } catch {
           /* keep the static reproduce note */
         }

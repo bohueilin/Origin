@@ -7,6 +7,11 @@
 .simulation-workspace .sim-stage { border-radius: 22px; }
 .simulation-workspace .sim-scores > div { border-radius: 16px; padding: 20px 14px; }
 .simulation-workspace .sim-scores b { font-size: 27px; font-weight: 500; }
+/* Labels are blocks with their own line height, so a two-line label such as "collision events
+   (counted)" wraps as one balanced label. On two-column phones every label reserves two lines, so
+   all tiles share one height and nothing shifts as the counters change. */
+.simulation-workspace .sim-scores span { display: block; line-height: 1.4; text-wrap: balance; }
+@media (max-width: 640px) { .simulation-workspace .sim-scores span { min-height: 2.8em; } }
 .simulation-workspace .sim-verdict { border-radius: 16px; padding: 22px; }
 .simulation-workspace .sim-note { max-width: 75ch; }
 .simulation-workspace .ops-panel { border-radius: 22px; padding: 24px; }

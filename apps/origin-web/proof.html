@@ -27,7 +27,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon-2026-09-28.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=9fed823f" />
+    <link rel="stylesheet" href="/home.css?v=245b8c7f" />
     <style>
       /* Standalone page shell — same pattern as brief.html */
       .proof { max-width: 960px; margin: 0 auto; padding: 32px 24px 72px; }
@@ -148,6 +148,17 @@
       .linklike[data-copy] { color: var(--signal-ink); font-weight: 600; text-decoration: none; }
       .linklike[data-copy]:hover { text-decoration: underline; text-underline-offset: 5px; }
       @media (max-width: 680px) { .linklike[data-copy] { display: inline-flex; align-items: center; min-height: 44px; } }
+      /* Hero offset: the eyebrow sits 56px under the sticky header, as on /reference-check and /verify.
+         Three gaps used to stack above it: .proof section's 44px margin, editorial.css?v=e1f14233's 7vw hero
+         padding and its 66px grid padding. These selectors outrank editorial.css?v=e1f14233, which loads later.
+         Screen only, so editorial.css?v=e1f14233 keeps its zero hero padding in print. */
+      @media screen {
+        .proof-page .proof > .editorial-hero { margin-top: 0; padding-top: 56px; }
+        .proof-page .proof > .editorial-hero > .editorial-hero__grid { padding-top: 0; }
+      }
+      /* A standalone text link, styled like .rung__link, with a 44px target. */
+      .proof__app { margin: 14px 0 0; }
+      .proof__app .rung__link { display: inline-flex; align-items: center; min-height: 44px; }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>
@@ -205,6 +216,7 @@
           <div class="tr2why__tile tr2why__tile--no"><p class="tr2why__q">What does it not prove?</p><p class="tr2why__a">Customer deployment, production readiness, compliance, reviewer acceptance, or revenue.</p></div>
         </div>
         <p class="mono-note" style="margin-top:14px">Plumbing evidence is not customer evidence. TR-A002 shows that the chain format and its verifier work; it is not a customer deployment, a performance claim, or reviewer acceptance.</p>
+        <p class="proof__app"><a class="rung__link" href="/app">Walk three scripted agent scenarios (/app) →</a></p>
       </div>
 
       <!-- ═══════════ The ladder — three rungs ═══════════ -->

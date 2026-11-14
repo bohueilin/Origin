@@ -11,17 +11,17 @@
 4. Produce a configuration-bound, browser-session-signed demo artifact.
 5. Reverify supported artifact checks offline. On /reference-check, adding a tool voids the legacy configuration-bound credential (VOID, code 4); in the downloaded record, an edit made without re-signing shows as VOID.
 
+Model proposes. Environment verifies. Gate decides. Trace proves. Capability is not permission.
+
 The public demo does not execute production actions, connect a customer's agent to a live tool-call proxy, or establish trusted issuer identity. Artifact integrity, policy evaluation, and release authority are separate questions.
 
 ## Audience and engagement
 Origin is a working prototype seeking design partners among agent-platform, security, trust, and infrastructure teams reviewing high-consequence agent workflows. The first wedge is internal-ops and production-access agents. No active customer pilot is claimed.
 
-A founder-led Agent Evidence Review starts with one workflow, the intended configuration, and the reviewer's approval question. The review produces a short written report naming the cases the reviewer would need to see and the evidence still missing. Customer data, pilot integrations, runtime controls, and deployment-specific terms require separate authorization and agreement. No customer deployment or reviewer acceptance is claimed.
+A founder-led Agent Evidence Review starts with one workflow, the intended configuration, and the reviewer's approval question. The review produces a short written report naming the cases the reviewer would need to see and the evidence still missing. No record of your agent's decisions can be produced today; any record attached is a browser reference check of a selected example policy and rates UNTRUSTED. Customer data, pilot integrations, runtime controls, and deployment-specific terms require separate authorization and agreement. No customer deployment or reviewer acceptance is claimed.
 
 ## Proposed architecture
 A future controlled execution path would place permission, scope, budget, policy, and approval checks between an agent proposal and a side effect. A controlled proxy, runtime enforcement, named approvals, and kill switches are proposed pilot architecture. They are not current general production capabilities.
-
-Model proposes. Environment executes. Verifier evaluates. Gate decides. Trace proves. Capability is not permission.
 
 ## Evidence ladder
 - TR-A001: authored specimen of the evidence-package format. Illustrative, not a machine-emitted run. See /proof#tr-a001.

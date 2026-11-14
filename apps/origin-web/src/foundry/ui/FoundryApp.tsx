@@ -555,6 +555,17 @@ export default function FoundryApp() {
         </p>
       </header>
 
+      {/* The same frame the no-JavaScript fallback in foundry.html carries after its H1. */}
+      <section className="fdy-card fdy-read" aria-labelledby="fdy-read-label">
+        <h2 className="fdy-hero__eyebrow" id="fdy-read-label">How to read this page</h2>
+        <ul>
+          <li><b>What it is.</b> A browser-local sample floor and a deterministic simulated evaluation, not robot training, deployment, or execution.</li>
+          <li><b>What the result means.</b> The oracle's verdict (finish, escalate or refuse) says whether a route on this grid fits its declared rules and budgets.</li>
+          <li><b>Its limits.</b> The verdict describes this grid model only, not any physical site or robot.</li>
+        </ul>
+        <nav className="fdy-read__links" aria-label="Related pages"><a href="/labs">Labs</a><a href="/proving-ground">Proving ground</a><a href="/reference-check">Reference check</a></nav>
+      </section>
+
       {apiError && (
         <div className="fdy-apierror" role="alert">
           {apiError}

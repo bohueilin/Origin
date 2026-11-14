@@ -4,7 +4,7 @@ These are original illustrative brand assets created for the September 2026 webs
 
 - `review-2026-09-28.webp`: AI-generated fictional people reviewing a laptop. Not customer, employee or office photography.
 - `trace.webp`: AI-generated glass and sunlight composition used as a metaphor for traceability. Retired from the homepage evidence section on 2026-10-18 (illustration stays away from measured numbers); used only on /404.
-- `lab.webp`: AI-generated fictional researcher and robot. Not an Origin facility, product deployment or evidence of robot capability.
+- `lab.webp`: AI-generated fictional person and mobile robot. Not an Origin facility, product deployment or evidence of robot capability.
 - `review-loop-2026-09-28.av1.mp4`, `.vp9.webm`, `.h264.mp4`: silent camera movement over the generated review still. The homepage shows the poster until playback is requested, with play/pause/replay controls; normal, reduced-motion and data-saver modes all start stopped.
 - `origin-mark.svg`: code-native geometric Origin mark.
 - `proving-floor.webp` and `proving-floor-small.webp`: original AI-generated miniature warehouse, in 1200px and 640px responsive encodings (about 78 KB and 33 KB). A fictional architectural model, not simulation output or an Origin facility. The proving-ground introduction labels it accordingly.

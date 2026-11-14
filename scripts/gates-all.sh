@@ -36,11 +36,15 @@ run() {
   # pull the most informative one-line summary out of the log (vitest/pytest style)
   local d
   d="$(grep -hoE '[0-9]+ passed[^,]*(, [0-9]+ (failed|skipped)[^,]*)*|Tests +[0-9]+ passed[^)]*\)|[0-9]+ passed, [0-9]+ skipped|[0-9]+ passed' "$log" | tail -1)"
-  [ -z "$d" ] && d="$(tail -1 "$log" | cut -c1-70)"
+  # Otherwise keep the whole last line: a 70-character cut used to end verifier lines
+  # mid-phrase ("digest ca1") on the /trust scoreboard.
+  [ -z "$d" ] && d="$(tail -1 "$log")"
   # CI terminals get coloured output (vite/picocolors colour when CI is set). Raw ESC
   # bytes are not valid inside a JSON string, so strip ANSI sequences and any other
   # control characters here, before the detail reaches the table or the summary.
   d="$(printf '%s' "$d" | sed $'s/\033\\[[0-9;]*[A-Za-z]//g' | tr -d '\000-\037\177')"
+  # Only a runaway line is capped: past 300 characters, cut at the last space and mark it.
+  if [ "${#d}" -gt 300 ]; then d="${d:0:300}"; d="${d% *}…"; fi
   DETAILS+=("$d")
   # surface failing logs immediately so failures are never hidden
   # (bash 3.2 on macOS has no negative array index — use the computed last index)

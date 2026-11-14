@@ -251,3 +251,7 @@ Phase 2 adds static figures, so a visitor who does not click can see what each p
 **Print.** `/proof` and `/trust` print black on white with no background fills, hide navigation, buttons, recordings and other interactive parts, keep headings with what follows them, and print the TR-A002 digest in full where the page shows it in full. Status dots and ladder rails print as borders, so they survive printing without background graphics. The printed TR-A002 event list leaves room for its two-digit numbers.
 
 **Tests.** `motion.spec.ts` now also covers `/trust`, `/labs`, `/brief` and the custom 404 page. `src/proving-ground/fleetPalette.test.ts` pins the six colours and their contrast.
+
+## Pass 2, Phase 4 — verification sweep
+
+A sweep of a production build at 1919, 1280, 430 and 375 px checked the seven validation gates across 16 routes. They are the `/trust` scoreboard, the recording captions, the hero spacing, the lab caption, wording drift, every route's heading and frame, and phone overflow. One drift remained: `/foundry`'s "Evidence boundary" still described the flow in the five-beat form ("the environment executes … the deterministic verifier evaluates …"), which the settled decision keeps for the proposed controlled path. It now reads "Within its lane the deterministic environment verifies each plan, the gate decides, and the trace records the result." A "Pass 2, Phase 4" lint block forbids the old sentence.

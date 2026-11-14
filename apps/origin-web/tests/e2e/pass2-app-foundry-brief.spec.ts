@@ -180,3 +180,12 @@ test('pass 2: the explainer links the three scripted scenarios on /app', async (
   await expect(link).toBeVisible()
   expect((await page.request.get('/app')).status()).toBe(200)
 })
+
+// Pass 2 Phase 4 — /foundry states the settled four-beat flow
+test('pass 2: /foundry describes the flow in four beats, not the five-beat proposed path', async ({ page }) => {
+  await page.goto('/foundry')
+  const boundary = page.locator('.fdy-hero', { hasText: 'Evidence boundary' })
+  await expect(boundary).toContainText('Within its lane the deterministic environment verifies each plan, the gate decides, and the trace records the result.')
+  await expect(page.locator('main')).not.toContainText(/environment executes/i)
+  await expect(page.locator('main')).not.toContainText(/verifier evaluates/i)
+})

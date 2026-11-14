@@ -668,6 +668,13 @@ const LAUNCH_CONTRACTS = [
       [/Origin\s+Labs\s+experiment,\s+not the product/i, 'the scope note naming the page an Origin Labs experiment, not the product'],
     ],
   })),
+  // Follow-ups
+  {
+    file: 'apps/origin-web/src/components/MultiRobotSim.tsx',
+    forbid: [
+      [/collision-free/i, 'a collision-free claim (the planner checks its own plan for shared and swapped cells)'],
+    ],
+  },
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

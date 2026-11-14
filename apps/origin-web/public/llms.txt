@@ -16,7 +16,7 @@ The public demo does not execute production actions, connect a customer's agent 
 ## Audience and engagement
 Origin is a working prototype seeking design partners among agent-platform, security, trust, and infrastructure teams reviewing high-consequence agent workflows. The first wedge is internal-ops and production-access agents. No active customer pilot is claimed.
 
-A founder-led Agent Evidence Review starts with one workflow, the intended configuration, and the reviewer's approval question. The review scopes the evaluation and identifies missing evidence. Customer data, pilot integrations, runtime controls, and deployment-specific terms require separate authorization and agreement. No customer deployment or reviewer acceptance is claimed.
+A founder-led Agent Evidence Review starts with one workflow, the intended configuration, and the reviewer's approval question. The review produces a short written report naming the cases the reviewer would need to see and the evidence still missing. Customer data, pilot integrations, runtime controls, and deployment-specific terms require separate authorization and agreement. No customer deployment or reviewer acceptance is claimed.
 
 ## Proposed architecture
 A future controlled execution path would place permission, scope, budget, policy, and approval checks between an agent proposal and a side effect. A controlled proxy, runtime enforcement, named approvals, and kill switches are proposed pilot architecture. They are not current general production capabilities.

@@ -683,6 +683,14 @@ const LAUNCH_CONTRACTS = [
       [/sandbox\s+trace/i, 'TR-A002 called a sandbox trace (no sandbox ran)'],
     ],
   },
+  // /brief and /llms.txt describe the review by what it delivers, a short written report,
+  // not as scoping an evaluation of the visitor's agent. New objects only.
+  ...['apps/origin-web/brief.html', 'apps/origin-web/public/llms.txt'].map((file) => ({
+    file,
+    forbid: [
+      [/scopes (the evaluation|what can be evaluated)/i, 'the review described as scoping an evaluation (it delivers a short written report)'],
+    ],
+  })),
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

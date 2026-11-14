@@ -1,0 +1,55 @@
+/* The proving-ground playback (MultiRobotSim in 2D, ProvingGround3D in 3D). Style Lock:
+   paper, ink and the fleet palette; flat fills, no glow, no gradient. */
+
+/* 2D: the editor's axes around the editor's 44px cells. Body clips sideways overflow,
+   so the board scrolls in its own keyboard-reachable region, as the editor's grid does. */
+.sim-scroll { overflow-x: auto; overscroll-behavior-x: contain; padding-bottom: 4px; }
+.sim-scroll:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; border-radius: 10px; }
+.sim-board { display: grid; grid-template-columns: 24px max-content; gap: 4px; width: max-content; margin: 12px auto 0; }
+.sim-board .sim-grid { gap: 4px; max-width: none; margin: 0; }
+.sim-axis { display: grid; gap: 4px; place-items: center; font-size: 13px; line-height: 1.5; font-weight: 600; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.sim-axis--cols { padding-bottom: 2px; border-bottom: 1px solid var(--line-2); }
+.sim-axis--rows { border-right: 1px solid var(--line-2); }
+.sim-axis--rows, .sim-axis--corner { position: sticky; left: 0; z-index: 3; background: var(--paper-2); }
+
+/* Codes and fleet marks stack inside a cell instead of overprinting. */
+.sim-board .sim-grid .sim-cell { flex-direction: column; line-height: 1; }
+.sim-board .sim-grid .sim-fleet-tag { position: static; }
+
+/* Walls read as they do in the editor. A robot is a flat fleet-colour glyph; a carried
+   box is a paper square on it. */
+.sim-board .sim-grid .sim-cell.wall { background: color-mix(in srgb, var(--ink) 12%, var(--paper-2)); color: var(--ink); border-color: var(--line-2); }
+.sim-board .sim-grid .sim-cell.robot { box-shadow: none; }
+.sim-board .sim-grid .sim-cell.carrying::after { content: ''; width: 40%; height: 40%; border-radius: 3px; background: var(--paper); }
+
+/* With its name printed inside (no free cell beside it), the code takes the editor's 14px
+   so any three-character code fits the cell, and a carried box moves to a corner. */
+.sim-board .sim-grid .sim-cell.robot--named { font-size: 14px; }
+.sim-board .sim-grid .sim-cell.robot--named.carrying::after { position: absolute; right: 3px; bottom: 3px; width: 9px; height: 9px; border-radius: 2px; }
+
+/* A robot's name sits in a free cell beside it on a paper backing (MultiRobotSim picks
+   the cell), joined to the robot by a short line in its fleet colour. */
+.sim-robot-label { position: absolute; z-index: 2; padding: 2px 4px; border: 1px solid; border-radius: 6px; background: var(--paper); font-size: 12px; line-height: 1.25; font-weight: 700; text-align: center; white-space: nowrap; pointer-events: none; }
+.sim-robot-label small { display: block; font-size: 12px; font-weight: 600; }
+.sim-robot-label::after { content: ''; position: absolute; border: 0 solid; }
+.sim-robot-label--n { bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); }
+.sim-robot-label--s { top: calc(100% + 4px); left: 50%; transform: translateX(-50%); }
+.sim-robot-label--e { left: calc(100% + 4px); top: 50%; transform: translateY(-50%); }
+.sim-robot-label--w { right: calc(100% + 4px); top: 50%; transform: translateY(-50%); }
+.sim-robot-label--n::after { top: 100%; left: calc(50% - 1px); height: 5px; border-left-width: 2px; }
+.sim-robot-label--s::after { bottom: 100%; left: calc(50% - 1px); height: 5px; border-left-width: 2px; }
+.sim-robot-label--e::after { right: 100%; top: calc(50% - 1px); width: 5px; border-top-width: 2px; }
+.sim-robot-label--w::after { left: 100%; top: calc(50% - 1px); width: 5px; border-top-width: 2px; }
+
+/* Forced colours drop background fills, which would leave a robot looking like empty
+   floor beside its name. Keep the fleet fill, the white name and the carried box, and
+   ring each robot in the theme's text colour so it shows on a dark theme too. */
+@media (forced-colors: active) {
+  .sim-board .sim-grid .sim-cell.robot, .sim-robot-label { forced-color-adjust: none; }
+  .sim-board .sim-grid .sim-cell.robot { outline: 2px solid CanvasText; }
+}
+
+/* 3D: a flat frame, progress bar and primary button. */
+.pg3d { background: var(--paper); }
+.pg3d .pg3d-prog-track .pg3d-prog-fill { background: var(--signal); }
+.pg3d .pg3d-btn.primary { box-shadow: none; }

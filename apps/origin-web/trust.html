@@ -114,6 +114,31 @@
       /* A legacy stamp's restored ending: a shade lighter than the stamped text (5.3:1 on the board's
          white), then a dagger keyed to the note under the table. */
       #gates-scoreboard .gates-restored { margin: 10px 0 0; font-size: var(--fs-12); line-height: 1.6; color: var(--steel); }
+
+      /* Pass 2 Phase 3: print. The shared editorial stylesheet already prints this page in black on white
+         with the header, footer and buttons hidden; these rules finish it. Print only, so the
+         screen layout and the scoreboard renderer are unchanged. That stylesheet loads after
+         this block, so each selector starts with body to outrank it. */
+      @media print {
+        /* Paper tokens: every colour resolves to black, white or a neutral grey rule. */
+        body.trust-page { --paper: #fff; --paper-2: #fff; --paper-3: #fff; --ink: #000; --ink-soft: #000; --steel: #000; --line: #bbb; --line-2: #888; --signal: #000; --signal-ink: #000; --signal-wash: #fff; --verify: #000; --warn: #000; --danger: #000; }
+        /* Nothing eases between screen and print colours. */
+        body.trust-page *, body.trust-page *::before, body.trust-page *::after { transition: none !important; }
+        /* Interactive chrome: the closing call to action and the copy-address control. */
+        body.trust-page :is(.editorial-closing > .btn, [data-copy-wrap], video, dialog) { display: none !important; }
+        body.trust-page .editorial-closing { display: block; }
+        /* The hero text runs the width of the page. */
+        body.trust-page .editorial-hero__grid { display: block; }
+        /* An external link prints its address, so the CI definition and a release's Actions run can be found from paper. */
+        body.trust-page main a[href^="http"]::after { content: " (" attr(href) ")"; overflow-wrap: anywhere; }
+        /* Tables fit the page width instead of keeping their phone scroll width. */
+        body.trust-page .editorial-table { min-width: 0; }
+        /* A status dot drawn with a border prints without background graphics. */
+        body.trust-page .status::before { box-sizing: border-box; background: none; border: 3.5px solid currentColor; }
+        /* Page breaks: a section's kicker, title and lede stay together and with what follows. */
+        body.trust-page .editorial-heading { break-inside: avoid; break-after: avoid; }
+        body.trust-page .kicker { break-after: avoid; }
+      }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>

@@ -25,6 +25,7 @@ import { StepBridge } from './StepBridge'
 import { GRID_MIN, GRID_MAX, clampN, planResize, type LostCell, type ResizePlan } from '../siteMapResize'
 import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
 import { floorCounts, floorTypes } from '../proving-ground/floorCounts'
+import { FLEET_COLORS } from '../proving-ground/fleetPalette'
 
 function keyOf(p: { x: number; y: number }): string {
   return `${p.x},${p.y}`
@@ -41,9 +42,6 @@ function without(list: readonly { x: number; y: number }[], x: number, y: number
 type Tool = 'wall' | 'hazard' | 'human' | 'robot' | 'item' | 'drop' | 'clear'
 // The three fleet-scoped layers (placed into the active fleet) vs the global ones.
 type FleetLayer = 'robots' | 'items' | 'drops'
-
-// One colour per fleet, matching the proving-ground sim (up to MAX_FLEETS).
-const FLEET_COLORS = ['#2b523b', '#1e6a52', '#8a5200', '#6940a3', '#9d2e68', '#0b637a']
 
 // The placement palette (paint-program model): a tool is always selected; tap the
 // grid to place it, tap a placed element (or use Erase) to remove it. Robot, item
@@ -1036,6 +1034,8 @@ export function ReflectAlign({
               </div>
             )}
 
+            {/* On a wide screen the fleet cards sit beside the tools and grid size. */}
+            <div className="smp-controls">
             <div className="smp-fleets" role="group" aria-label="Fleets to deploy" ref={fleetsRef}>
               {fleets.map((f, fi) => {
                 const color = FLEET_COLORS[fi % FLEET_COLORS.length]
@@ -1238,6 +1238,7 @@ export function ReflectAlign({
                 <button type="button" className="btn ghost" ref={undoRef} onClick={undoResize}>Undo resize (back to {undoable.from})</button>
               )}
             </div>
+            </div>
 
             {/* A shrink that would remove placed cells, or move the scored lane, waits
                 here. Nothing changes until the visitor confirms; Escape keeps the floor. */}
@@ -1277,7 +1278,9 @@ export function ReflectAlign({
 
             {/* Floor header: the size in words and a synthetic scale, so 108 squares
                 read as a room. The scale is a stated convention of this synthetic floor,
-                never a claim about a real building. */}
+                never a claim about a real building. On a wide screen the header, legend
+                and readout dock beside the grid; a phone keeps them stacked around it. */}
+            <div className="pg-floor">
             {proving && (
               <div className="floor-head">
                 <p className="floor-head-title">
@@ -1436,6 +1439,7 @@ export function ReflectAlign({
                 <p className="sr-only" role="status" aria-live="polite">{announcement}</p>
               </>
             )}
+            </div>
           </div>
 
           {proving ? (
@@ -1598,12 +1602,13 @@ export function ReflectAlign({
           </div>
         </div>
 
-        <div className="flow-actions">
-          <button className="btn primary hero-action" onClick={approve}>
-            {mode === 'proving-ground' ? 'Inspect the result' : 'Approve workflow'}
-          </button>
-          <span className="trust-note">{mode === 'proving-ground' ? 'The deterministic oracle scores geometry and robot types. No real robot executes.' : 'Approving locks this exact snapshot — evidence-backed verification scores it, not a model.'}</span>
-        </div>
+        {/* The proving ground puts its "Inspect the result" action after the playback. */}
+        {!proving && (
+          <div className="flow-actions">
+            <button className="btn primary hero-action" onClick={approve}>Approve workflow</button>
+            <span className="trust-note">Approving locks this exact snapshot — evidence-backed verification scores it, not a model.</span>
+          </div>
+        )}
       </div>
     </section>
   )

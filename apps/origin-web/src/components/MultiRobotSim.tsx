@@ -2,17 +2,21 @@
 // SAME deployment (N robots, M items, the floor you drew) animates identically on
 // the Illustrate step and the readiness-gym page. Finite, pausable deterministic playback.
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { DescriptiveSiteMap } from '../workflowDraft'
 import { siteFleets, cellNumber, robotNumber } from '../workflowDraft'
 import { planMultiAgent } from '../multiAgent'
 import { EMBODIMENT_CODE, type RobotEmbodiment } from '../environmentPlan'
 import { usePlaybackVisibility } from '../shared/usePlaybackVisibility'
 import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
+// One colour per fleet, shared with the editor and the 3D scene.
+import { FLEET_COLORS } from '../proving-ground/fleetPalette'
+import './floorPlayback.css'
 
-// One colour per FLEET. Robots, their items, and their drop inherit the fleet
-// colour, so the grouping — which robots serve which work — reads at a glance.
-const FLEET_COLORS = ['#2b523b', '#1e6a52', '#8a5200', '#6940a3', '#9d2e68', '#0b637a']
+// Where a robot's name may sit: a cell beside it, in one fixed order (above first), so a
+// name keeps its side until that cell stops being free. A short line joins it to its robot.
+const LABEL_SLOTS = [['n', 0, -1], ['e', 1, 0], ['s', 0, 1], ['w', -1, 0]] as const
+const CELL = 44 // px, the editor's track, so both grids share one geometry
 
 export function MultiRobotSim({
   siteMap,
@@ -86,18 +90,48 @@ export function MultiRobotSim({
   }
 
   const tick = Math.min(step, stepMax)
-  const robotAt = (x: number, y: number) =>
-    plan.robots.findIndex((rp) => {
-      const p = rp.timeline[Math.min(tick, rp.timeline.length - 1)]
-      return p && p.x === x && p.y === y
+  const at = plan.robots.map((rp) => rp.timeline[Math.min(tick, rp.timeline.length - 1)])
+  const robotAt = (x: number, y: number) => at.findIndex((p) => p && p.x === x && p.y === y)
+
+  // Give each robot's name a free cell beside it for this tick: no robot, item, drop, wall,
+  // hazard, human-only mark or other name there, and no other robot touching that cell, so
+  // the name reads as this robot's. With none free, the name stays inside the robot's cell.
+  const key = (x: number, y: number) => `${x},${y}`
+  const robotCells = new Set(at.flatMap((p) => (p ? [key(p.x, p.y)] : [])))
+  const marked = new Set([...items, ...drops, ...siteMap.obstacles, ...siteMap.hazards, ...siteMap.humanOnly].map((p) => key(p.x, p.y)))
+  const taken = new Set<string>()
+  const labelSlot = new Map<string, string>()
+  for (const p of at) {
+    if (!p || labelSlot.has(key(p.x, p.y))) continue
+    const slot = LABEL_SLOTS.find(([, dx, dy]) => {
+      const x = p.x + dx, y = p.y + dy, k = key(x, y)
+      const inside = x >= 0 && y >= 0 && x < siteMap.width && y < siteMap.height
+      const touchesOther = LABEL_SLOTS.some(([, ex, ey]) => (x + ex !== p.x || y + ey !== p.y) && robotCells.has(key(x + ex, y + ey)))
+      return inside && !robotCells.has(k) && !marked.has(k) && !taken.has(k) && !touchesOther
     })
+    if (!slot) continue
+    taken.add(key(p.x + slot[1], p.y + slot[2]))
+    labelSlot.set(key(p.x, p.y), slot[0])
+  }
+  const tracks = `repeat(${siteMap.width}, ${CELL}px)`
 
   return (
     <>
       <button className="btn btn--ghost btn--sm" onClick={togglePlayback}>
         {advancing ? 'Pause playback' : 'Play'}
       </button>
-      <div ref={gridRef} className="sim-grid" style={{ gridTemplateColumns: `repeat(${siteMap.width}, 1fr)` }}>
+      {/* The editor's axes and 44px cells, in a scroller like the editor's so a phone keeps
+          every column reachable; the row numbers stay pinned while the floor scrolls sideways. */}
+      <div className="sim-scroll" role="region" aria-label="2D playback (scrollable)" tabIndex={0}>
+      <div className="sim-board">
+      <span className="sim-axis sim-axis--corner" aria-hidden="true" />
+      <div className="sim-axis sim-axis--cols" aria-hidden="true" style={{ gridTemplateColumns: tracks }}>
+        {Array.from({ length: siteMap.width }, (_, x) => <span key={x}>{String.fromCharCode(65 + x)}</span>)}
+      </div>
+      <div className="sim-axis sim-axis--rows" aria-hidden="true" style={{ gridTemplateRows: `repeat(${siteMap.height}, ${CELL}px)` }}>
+        {Array.from({ length: siteMap.height }, (_, y) => <span key={y}>{y + 1}</span>)}
+      </div>
+      <div ref={gridRef} className="sim-grid" style={{ gridTemplateColumns: tracks }}>
         {Array.from({ length: siteMap.width * siteMap.height }, (_, i) => {
           const x = i % siteMap.width
           const y = Math.floor(i / siteMap.width)
@@ -117,19 +151,27 @@ export function MultiRobotSim({
           let text = ''
           let tag = ''
           let style: CSSProperties | undefined
+          let label: ReactNode
           if (rIdx >= 0) {
-            cls = `robot ${carrying ? 'carrying' : ''}`
-            {
-              const home = plan.robots[rIdx].start ?? robots[rIdx]
-              const emb =
-                siteMap.robotTypes?.[`${home.x},${home.y}`] ??
-                fleetEmbs[plan.robots[rIdx].fleet] ??
-                embodiment
-              // The editor's number for this robot within its fleet (AM1, AM2, HU1…).
-              text = `${EMBODIMENT_CODE[emb]}${robotNumber(siteMap, home.x, home.y)}`
-            }
-            if (multiFleet) tag = `F${plan.robots[rIdx].fleet + 1}`
-            style = { background: fleetColor, color: '#fff', borderColor: fleetColor }
+            const home = plan.robots[rIdx].start ?? robots[rIdx]
+            const emb =
+              siteMap.robotTypes?.[`${home.x},${home.y}`] ??
+              fleetEmbs[plan.robots[rIdx].fleet] ??
+              embodiment
+            const slot = labelSlot.get(key(x, y))
+            // The editor's number for this robot within its fleet (AM1, AM2, HU1…), beside the
+            // glyph on paper, or in white inside it when no cell beside it is free.
+            const code = `${EMBODIMENT_CODE[emb]}${robotNumber(siteMap, home.x, home.y)}`
+            const fleetTag = multiFleet ? `F${plan.robots[rIdx].fleet + 1}` : ''
+            cls = `robot ${carrying ? 'carrying' : ''} ${slot ? '' : 'robot--named'}`
+            if (slot) label = (
+              <span className={`sim-robot-label sim-robot-label--${slot}`} style={{ color: fleetColor, borderColor: fleetColor }}>
+                {code}
+                {fleetTag && <small>{fleetTag}</small>}
+              </span>
+            )
+            else { text = code; tag = fleetTag }
+            style = { background: fleetColor, borderColor: fleetColor, color: '#fff' }
           } else if (dropIdx >= 0) {
             cls = 'cell-drop'
             // The editor's number for this drop, which an edit never shifts.
@@ -148,9 +190,12 @@ export function MultiRobotSim({
             <div className={`sim-cell ${cls}`} key={`${x},${y}`} style={style}>
               {text}
               {tag && <span className="sim-fleet-tag">{tag}</span>}
+              {label}
             </div>
           )
         })}
+      </div>
+      </div>
       </div>
       <div className="site-legend sim-legend">
         {fleets.map((f, fi) => (

@@ -216,6 +216,40 @@
       .proof-page .evidence-diagram.is-stepping [data-trace-node].is-ok.is-stepped:not(:focus-visible) > rect { stroke: var(--ink-soft); }
       .proof-page .evidence-diagram.is-stepping [data-trace-node].is-block.is-stepped:not(:focus-visible) > rect { stroke: var(--ink); }
       .proof-page [data-trace-block]:not([hidden]) { border-left-color: var(--ink); }
+
+      /* Pass 2 Phase 3: print. The shared editorial stylesheet already prints this page in black on white
+         with the header, footer and buttons hidden; these rules finish it. Print only, so the
+         screen layout is unchanged. That stylesheet loads after this block, so each selector
+         starts with body to outrank it. */
+      @media print {
+        /* Paper tokens: every colour resolves to black, white or a neutral grey rule. */
+        body.proof-page { --paper: #fff; --paper-2: #fff; --paper-3: #fff; --ink: #000; --ink-soft: #000; --steel: #000; --line: #bbb; --line-2: #888; --signal: #000; --signal-ink: #000; --signal-wash: #fff; }
+        /* Nothing eases between screen and print colours. */
+        body.proof-page *, body.proof-page *::before, body.proof-page *::after { transition: none !important; }
+        /* Interactive chrome: the closing calls to action, the copy-address control, the in-tab
+           tamper demo and the trace stepper's readout. */
+        body.proof-page :is(.proof__cta, [data-copy-wrap], .tr2-tamper, [data-trace-block], video, dialog) { display: none !important; }
+        /* The title runs the width of the page. */
+        body.proof-page .proof .editorial-hero h1 { max-width: none; }
+        /* The download links print as plain links; the shared editorial stylesheet adds each file's address. */
+        body.proof-page .tr2-dl { display: block; }
+        body.proof-page .tr2-dl .btn { display: block; min-height: 0; margin: 4px 0; padding: 0; border: 0; line-height: 1.5; white-space: normal; text-decoration: underline; }
+        /* Digests and hashes print whole: they wrap and are never cut or ellipsized. */
+        body.proof-page :is(.mono, code, pre, .proofladder) { overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+        body.proof-page .mono { white-space: normal; }
+        /* The printed chain list has twelve events: room for a two-digit number before each. */
+        body.proof-page .evidence-diagram ol.sr-only { padding-left: 28pt; }
+        /* The ladder rail is drawn with borders, which print without background graphics. */
+        body.proof-page .ladderfig__rung::before { background: none; border: 6px solid #000; }
+        body.proof-page .ladderfig__rung::after { width: 0; background: none; border-left: 2px solid #000; }
+        body.proof-page .ladderfig__rung--soon::before { border-width: 2px; }
+        body.proof-page .ladderfig__rung--soon::after { border-left-style: dashed; }
+        /* Page breaks: a kicker stays with its heading, and a short block stays whole. */
+        body.proof-page .kicker { break-after: avoid; }
+        body.proof-page :is(.tr2-digest, .tr2-exec, .blockline, .proof__label, .proofladder__row) { break-inside: avoid; }
+        body.proof-page .spec-json h3 { break-after: avoid; }
+        body.proof-page .tr2-flow li { padding: 7px 12px; margin-block: 5px; }
+      }
     </style>
     <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
   </head>

@@ -82,3 +82,108 @@ test('trust jump labels match their section kickers and the meta claims no unsho
     await expect(page.locator(selector), selector).not.toHaveAttribute('content', /encryption|audit log/i)
   }
 })
+
+// Pass 2 Phase 3 — print
+//
+// /proof and /trust print in black on white. The header, navigation, buttons, calls to
+// action, copy controls, recordings and dialogs are hidden, nothing is filled (pseudo-elements
+// included), no text is lighter than near-black, the page does not scroll sideways, and every
+// digest prints whole. /proof prints the TR-A002 final digest in full. /trust names TR-A002
+// only in its gate scoreboard, as the verifier prints it (the first 12 hex characters, then
+// an ellipsis), so there the test checks that line.
+
+const TR_A002_DIGEST = 'ca1d4690206e4dcf3d654b907d02d2bccf9bcdc16ddc555071fec21874578b32'
+
+for (const route of ['/proof', '/trust']) {
+  test(`${route} prints in black on white, without interactive chrome, with every digest whole`, async ({ page }) => {
+    await page.goto(route)
+    const digest = route === '/proof'
+      ? page.locator('.tr2-digest .mono')
+      : page.locator('#gates-scoreboard tr').filter({ hasText: 'ev:proof:verify' }).locator('.gates-detail')
+    const expected = route === '/proof' ? TR_A002_DIGEST : TR_A002_DIGEST.slice(0, 12)
+    await expect(digest).toBeVisible()
+
+    await page.emulateMedia({ media: 'print' })
+    await expect(digest).toBeVisible()
+    if (route === '/proof') await expect(digest).toHaveText(TR_A002_DIGEST)
+    else await expect(digest).toContainText(expected)
+    expect(await page.locator('main').innerText()).toContain(expected)
+    const fit = await digest.evaluate((el) => ({ scroll: el.scrollWidth, client: el.clientWidth, overflow: getComputedStyle(el).textOverflow }))
+    expect(fit.scroll, 'the digest box holds its text').toBeLessThanOrEqual(fit.client)
+    expect(fit.overflow).not.toBe('ellipsis')
+
+    const printed = await page.evaluate(() => {
+      const shown = (el: Element) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden'
+      const name = (el: Element) => `${el.tagName.toLowerCase()}.${el.getAttribute('class') ?? ''} "${(el.textContent ?? '').trim().slice(0, 40)}"`
+      const clear = /^(rgba\(0, 0, 0, 0\)|rgb\(255, 255, 255\))$/
+      // A box that ellipsizes, or hides or scrolls overflow while narrower than its content, clips it.
+      const clips = (el: Element | null) => {
+        for (; el && el !== document.body; el = el.parentElement) {
+          const css = getComputedStyle(el)
+          if (css.textOverflow === 'ellipsis' || (css.overflowX !== 'visible' && el.scrollWidth > el.clientWidth)) return true
+        }
+        return false
+      }
+      // The /proof download links print as plain links with their address, so they stay.
+      const chrome = [...document.querySelectorAll('header, nav, button, video, dialog, .skip-link, .btn, [data-copy-wrap]')]
+        .filter((el) => shown(el) && !el.closest('.tr2-dl')).map(name)
+      const fills: string[] = []
+      const pale: string[] = []
+      for (const el of document.querySelectorAll('body *')) {
+        if (!shown(el)) continue
+        for (const pseudo of [null, '::before', '::after']) {
+          const css = getComputedStyle(el, pseudo)
+          if (pseudo && ['none', 'normal'].includes(css.content)) continue
+          if (!clear.test(css.backgroundColor) || css.backgroundImage !== 'none') fills.push(`${name(el)}${pseudo ?? ''} ${css.backgroundColor} ${css.backgroundImage}`)
+        }
+        const ownText = [...el.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim())
+        const [r, g, b] = (getComputedStyle(el).color.match(/\d+/g) ?? []).map(Number)
+        if (el.closest('main') && ownText && Math.max(r, g, b) > 64) pale.push(`${name(el)} ${getComputedStyle(el).color}`)
+      }
+      const clipped: string[] = []
+      const walker = document.createTreeWalker(document.querySelector('main')!, NodeFilter.SHOW_TEXT)
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const el = node.parentElement!
+        if (/[0-9a-f]{12,}/.test(node.textContent ?? '') && !(el instanceof SVGElement) && shown(el) && clips(el)) clipped.push(name(el))
+      }
+      return {
+        chrome, fills, pale, clipped,
+        page: getComputedStyle(document.documentElement).backgroundColor,
+        body: getComputedStyle(document.body).backgroundColor,
+        sideScroll: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      }
+    })
+    expect(printed.chrome, 'interactive chrome shown in print').toEqual([])
+    expect(printed.fills, 'background fills in print').toEqual([])
+    expect(printed.pale, 'text lighter than near-black in print').toEqual([])
+    expect(printed.clipped, 'digests clipped in print').toEqual([])
+    expect(printed.page).toMatch(/^(rgba\(0, 0, 0, 0\)|rgb\(255, 255, 255\))$/)
+    expect(printed.body).toBe('rgb(255, 255, 255)')
+    expect(printed.sideScroll, 'print layout scrolls sideways').toBeLessThanOrEqual(0)
+
+    if (route === '/proof') {
+      // The printed chain list's numbers sit outside its items; the body clips anything left of
+      // its edge, so the list leaves room for the widest number ("12. ").
+      const list = await page.locator('.evidence-diagram ol.sr-only').evaluate((ol) => {
+        const ctx = document.createElement('canvas').getContext('2d')!
+        ctx.font = getComputedStyle(ol.lastElementChild!).font
+        return { items: ol.children.length, room: ol.lastElementChild!.getBoundingClientRect().left - document.body.getBoundingClientRect().left, marker: ctx.measureText(`${ol.children.length}. `).width }
+      })
+      expect(list.items).toBe(12)
+      expect(list.room, 'room left of the list for "12. "').toBeGreaterThanOrEqual(list.marker)
+      // Each download link prints the file's address after its label.
+      for (const link of await page.locator('.tr2-dl a').all()) {
+        await expect(link).toBeVisible()
+        expect(await link.evaluate((a) => getComputedStyle(a, '::after').content)).toContain(`originphysicalai.com${await link.getAttribute('href')}`)
+      }
+    } else {
+      // An external link prints its address: the CI definition can be found from paper.
+      const ci = page.locator('main a[href$="/.github/workflows/ci.yml"]')
+      expect(await ci.evaluate((a) => getComputedStyle(a, '::after').content)).toContain(await ci.getAttribute('href') ?? 'missing href')
+    }
+
+    const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true })
+    expect(pdf.subarray(0, 5).toString('latin1')).toBe('%PDF-')
+    expect((pdf.toString('latin1').match(/\/Type\s*\/Page(?!s)/g) ?? []).length).toBeGreaterThan(0)
+  })
+}

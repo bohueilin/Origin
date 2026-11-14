@@ -1,6 +1,8 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const ROUTES = ['/', '/verify', '/reference-check', '/over-grant', '/security', '/proving-ground', '/operations', '/simulation', '/proof', '/reference-check-vs-runtime']
+// Pass 2 Phase 3 — motion routes. The dev server answers an unknown path such as /404 with the
+// home page, so the custom not-found page is reached at /404.html, as in a11y.spec.ts.
+const ROUTES = ['/', '/verify', '/reference-check', '/over-grant', '/security', '/proving-ground', '/operations', '/simulation', '/proof', '/reference-check-vs-runtime', '/trust', '/labs', '/brief', '/404.html']
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/*', route => {

@@ -57,9 +57,11 @@ test('mobile navigation remains usable when JavaScript is unavailable', async ({
       const emptyRoots = page.locator('#sim-root, #pg-root, #ops-root')
       for (const root of await emptyRoots.all()) expect(await root.evaluate(el => el.getBoundingClientRect().height), route).toBeLessThan(100)
       await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Trust', exact: true })).toBeVisible()
-      // Wave 4a: these two pages hid the burger without JavaScript before they loaded the
-      // nav script, so they keep hiding it (the other routes need a shared CSS fix).
-      if (route === '/proof' || route === '/reference-check-vs-runtime') await expect(page.getByRole('button', { name: 'Open menu' }), route).toBeHidden()
+      // Without JavaScript the burger would do nothing beside the expanded nav, so the
+      // shared stylesheet hides it on every route (it is in the markup, just not shown).
+      const burger = page.locator('[data-nav-toggle]')
+      await expect(burger, route).toHaveAttribute('aria-label', 'Open menu')
+      await expect(burger, route).toBeHidden()
     }
   } finally {
     await context.close()

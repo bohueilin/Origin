@@ -253,7 +253,10 @@ a:hover { text-decoration: underline; }
   .nav-ready .site-header__cta-mobile { display: inline-flex; min-height: 44px; }
   .site-header__cta { margin-left: auto; }
   .brand__sub { display: none; }
-  .site-header__burger { display: none; }
+  /* No JavaScript: the nav stays expanded and the burger would do nothing, so hide the
+     box that holds it (its compact CTA shows only with .nav-ready). A plain burger rule
+     here lost to the later unconditional .site-header__burger { display: flex }. */
+  html:not(.nav-ready) .site-header__cta { display: none; }
   .nav-ready .site-header__burger { display: flex; }
   /* burger active → move Log in into the menu so the header row can't overflow at 375px */
   .site-nav.is-open .nav-mobile-only { display: block; }

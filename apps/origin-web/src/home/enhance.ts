@@ -231,7 +231,8 @@ if (walk && !reduceMotion) {
 const dialog = document.getElementById('lead-modal') as HTMLDialogElement | null
 const form = document.getElementById('lead-form') as HTMLFormElement | null
 const titleEl = document.getElementById('lead-title')
-const subEl = document.getElementById('lead-sub')
+// The intent copy only: the no-confidential-data line after it in #lead-sub stays for every intent.
+const subEl = document.getElementById('lead-sub-copy')
 const intentEl = document.getElementById('lead-intent') as HTMLInputElement | null
 const errorEl = document.getElementById('lead-error') as HTMLElement | null
 const successEl = document.getElementById('lead-success') as HTMLElement | null

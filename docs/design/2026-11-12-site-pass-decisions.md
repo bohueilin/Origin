@@ -187,3 +187,35 @@ A pair that stays together counts once, and counts again only after it has separ
 ## Wave 6 — the dating rule
 
 `apps/origin-web/DESIGN_PRINCIPLES.md` gains a rule: a date on the site records when something happened, and it changes only when that thing happens again. No date is stamped by hand. The home gates strip and the `/trust` scoreboard refresh only through a release the owner dispatches, which re-runs the gates and stamps the deployed copy of the gates summary; nothing is committed back.
+
+## Pass 2, Phase 1 — rendered defects and precision
+
+The owner asked for a second pass that fixes rendered defects first, then adds explanatory figures. Phase 1 changes no evidence file, recording or share image.
+
+**`/trust` scoreboard.** Four rows ended mid-phrase because `scripts/gates-all.sh` cut a suite's summary line at 70 characters. It now keeps the whole line, capped at 300 characters at a word boundary. Snapshots stamped before this change still hold the cut lines, so the page restores those four endings from what the deterministic verifiers print for the byte-preserved inputs, marks each restored ending with † (and a screen-reader note), and says so under the table. A release stamp made after this change carries whole lines, so nothing is restored. Detail cells wrap at every width.
+
+**Recordings.** The recording files stay byte-identical. Their captions are burned into the picture, so the frame changed instead: a dark tray under the picture holds the native player controls, at least 48 px below the burned-in caption, and the frame's width is capped so the whole frame fits under the header on a laptop screen. Each caption is now a provenance bar: the "Recorded" pill, one summary line ("Recorded 2026-09-28 (57d5ccf) · one continuous take · synthetic demo data") and the existing detail text in a smaller size. Every word of the boundary is kept. The dated line under shot04 now says what changed: "the page has changed since (L0–L4 tier labels were removed and the record now states its result in format 1.1.0)".
+
+**Hero spacing.** `/proof` and `/labs` place the hero eyebrow 56 px below the header, as `/reference-check` and `/verify` do, using page-local styles.
+
+**Lab illustration.** The image shows a fictional person holding a tablet and a mobile robot. The alt text and caption now say so ("fictional person and mobile robot") and no longer call the person a researcher. The crop now anchors both images to the right, so both stay in frame at the widths checked (375, 430, 768, 1024, 1280, 1440 and 1919 px) and the caption matches what is on screen.
+
+**`/app`.** Its three scenarios are scripted walkthroughs. "Origin blocked it" becomes "In this simulated scenario, the scripted proxy marks it blocked — and the block is recorded in this scenario's audit chain." The page computes no hashes, so it says "this scenario's audit chain", not "hash chain". "Simulated / sandbox data" becomes "Simulated scenario data (scripted)", and side-effect lines say no sandbox ran. A short "How to read these scenarios" section sits under the H1. These head edits are approved by name: the description, `og:description` and `twitter:description` meta on `/app`. `/proof` and `/reference-check-vs-runtime` link to it ("Walk three scripted agent scenarios (/app) →").
+
+**`llms.txt`.** The settled four-beat maxim for the implemented flow ("Model proposes. Environment verifies. Gate decides. Trace proves. Capability is not permission.") now sits with the implemented workflow. The five-beat line under "Proposed architecture" is removed; the settled decision allowed it there but did not require it. It gains the site's offer limit: "No record of your agent's decisions can be produced today; any record attached is a browser reference check of a selected example policy and rates UNTRUSTED."
+
+**`/brief`.** It states the offer terms in the home `#offer` wording, adds "Send nothing confidential: no data agreement is in place yet." and the TR-A002 line "The hash chain is real; the story it tells is scripted." Its dateline reads "September 2026 (revised November 2026)", which records when the brief was revised, as the dating rule requires. It still prints on one page.
+
+**Home offer.** `#offer` and the lead dialog's introduction say "Send nothing confidential: no data agreement is in place yet." The dialog's privacy-policy link now opens in a new tab and says so to screen readers; this replaces the Wave 4b same-tab choice.
+
+**Labs pages.**
+- `/operations` adds: "Tiers L0–L4 score this seeded warehouse shift only; the agent reference check and the robot proving ground do not use tiers."
+- `/simulation` shortens its note to the required phrases and points to "How to read the result". The "collision events (counted)" tile label wraps to two balanced lines on phones.
+- `/labs` card 03 says: "Collision events, including with a finished robot parked in its cell or with the human marker, are counted from the frames."
+- `/foundry` gains a "How to read this page" section after its H1 and links to `/labs`, `/proving-ground` and `/reference-check`. Its title highlight is forest green.
+
+**Header without JavaScript.** The "Run reference check" pill is centred at 375 px.
+
+**`docs/ARCHITECTURE.md`.** Lines that no longer match the site are corrected, product and vendor names are replaced with categories, an absolute claim that the graders cannot be gamed and the word "safe" are removed, and "license" outputs read "evidence record".
+
+**Lint.** A "Pass 2, Phase 1" block in `scripts/honesty-lint.mjs` forbids "Origin blocked it" and "Simulated / sandbox data" on `/app` and "researcher" in the lab caption on `/` and `/labs`, and requires the four-beat maxim in `llms.txt` and the no-confidential-data line on `/` and `/brief`.

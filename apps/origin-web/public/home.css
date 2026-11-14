@@ -1010,6 +1010,9 @@ a:hover { text-decoration: underline; }
   .chip { min-height: 44px; }
   .modal__close { width: 40px; height: 40px; }
   .site-nav a { padding: 8px 0; display: inline-block; }
+  /* No JavaScript: the header CTA stays inside the expanded nav, where the link rule above
+     would strip its pill padding and centring and push the label to the top. */
+  html:not(.nav-ready) .site-nav a.btn { display: inline-flex; padding: 9px 16px; }
   .site-footer__nav a { padding: 11px 0; }
   .site-footer__legal-links a { padding: 12px 0; display: inline-block; }
   /* comfortable touch on the walkthrough's own controls + header/trust links */
@@ -1080,22 +1083,48 @@ a:hover { text-decoration: underline; }
    Decorative clips opt into the separate data-band behavior. Never loop.
    ============================================================ */
 .vband { padding: clamp(28px, 4vw, 44px) 0; }
-.vband__fig { margin: 0; }
+/* The whole frame fits under the 87px sticky header on a 1280x720 laptop: the width is
+   capped by the viewport height (picture + at most 120px of tray + 24px of air), with a
+   320px floor so a short landscape phone keeps a readable video. */
+.vband__fig { margin: 0 auto; max-width: min(100%, max(320px, calc((100svh - 87px - 120px - 24px) * 16 / 9))); }
+/* The captions are burned into the recordings, so the frame makes room for the player
+   instead: the element is one control tray taller than its 16:9 picture and the picture
+   is pinned to the top. Chromium's control stack is 72px tall at the bottom of the
+   element, and the burned-in caption box ends 24/720 of the picture height above the
+   picture's bottom edge, so a tray of 120px less that inset leaves 48px between the
+   caption and the controls at every width (121px: one more for subpixel rounding). The
+   height comes from the frame's width alone (no layout shift when the metadata loads).
+   Browsers without container units keep the plain 16:9 frame. */
 .vband__wrap {
   position: relative; border-radius: var(--radius); overflow: hidden;
   border: 1px solid var(--line); background: var(--graphite);
-  aspect-ratio: 16 / 9;
+  container-type: inline-size;
 }
-.vband__v { display: block; width: 100%; height: 100%; object-fit: cover; }
-.vband__pill {
-  position: static; display: inline-flex; margin: 12px 0 0;
-  font-size: var(--fs-12); background: var(--paper-2);
+.vband__v {
+  display: block; width: 100%; height: auto; aspect-ratio: 16 / 9;
+  object-fit: contain; object-position: 50% 0; background: var(--graphite);
 }
+@supports (height: 1cqi) {
+  .vband__wrap { --vband-tray: calc(121px - 100cqi * 9 / 16 * 24 / 720); }
+  .vband__v { aspect-ratio: auto; height: calc(100cqi * 9 / 16 + var(--vband-tray)); }
+}
+/* Provenance bar: the pill and one summary line, then the full boundary as smaller text. */
 .vband__cap {
   margin-top: 10px; font-size: var(--fs-14); line-height: 1.55; color: var(--steel);
   max-width: 62ch;
 }
 .vband__cap b { color: var(--ink-soft); font-weight: 600; }
+.vband__fig > .vband__cap { max-width: none; }
+.vband__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.vband__pill {
+  position: static; display: inline-flex; margin: 0;
+  font-size: var(--fs-12); background: var(--paper-2);
+}
+.vband__cap .vband__sum { font-size: var(--fs-16); font-weight: 600; line-height: 1.4; color: var(--ink); }
+.vband__detail { display: block; margin-top: 10px; color: var(--steel); max-width: 76ch; }
+.vband__cap small { display: block; margin-top: 6px; font-size: var(--fs-12); max-width: 76ch; }
+/* A dated note outside the figure: its own line, at reading weight. */
+.vband__note { margin-top: 14px; font-weight: 600; color: var(--ink-soft); }
 @media (max-width: 720px) { .vband { padding-block: 22px; } }
 
 /* ============================================================

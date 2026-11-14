@@ -39,7 +39,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon-2026-09-28.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=9fed823f" />
+    <link rel="stylesheet" href="/home.css?v=245b8c7f" />
 
     <style>
       .ops-wrap { display: grid; gap: 18px; margin-top: 24px; }
@@ -145,7 +145,7 @@
       <section class="section labs-read" aria-labelledby="ops-read-title">
         <div class="shell">
           <h2 id="ops-read-title">How to read the result</h2>
-          <p><b>What runs.</b> A shift of 3 to 8 waves with 2 to 6 robots. Each wave is one warehouse-simulation run with its own seed.</p><p><b>Targets</b>, synthetic and set by Origin: utilization at least 50%, fulfilment at least 95%, no collision event. Collision events are counted as on the warehouse simulation, including a finished robot parked in its cell.</p><p><b>Tier.</b> L0 if any collision event is counted; L1 if a wave needs an order the oracle refuses; L2 if a target is missed; L3 if every target is met; L4 if utilization is also at least 70%. The tier describes this seeded shift only and grants no operating authority.</p><p><b>Metrics.</b> Utilization is the share of active robot-ticks in which a robot moved; peak simultaneous is the most robots moving in one tick; throughput is orders delivered per 100 ticks.</p><p><b>Limits.</b> No order arrivals, charging or travel-time variation.</p>
+          <p><b>What runs.</b> A shift of 3 to 8 waves with 2 to 6 robots. Each wave is one warehouse-simulation run with its own seed.</p><p><b>Targets</b>, synthetic and set by Origin: utilization at least 50%, fulfilment at least 95%, no collision event. Collision events are counted as on the warehouse simulation, including a finished robot parked in its cell.</p><p><b>Tier.</b> L0 if any collision event is counted; L1 if a wave needs an order the oracle refuses; L2 if a target is missed; L3 if every target is met; L4 if utilization is also at least 70%. The tier describes this seeded shift only and grants no operating authority. Tiers L0–L4 score this seeded warehouse shift only; the agent reference check and the robot proving ground do not use tiers.</p><p><b>Metrics.</b> Utilization is the share of active robot-ticks in which a robot moved; peak simultaneous is the most robots moving in one tick; throughput is orders delivered per 100 ticks.</p><p><b>Limits.</b> No order arrivals, charging or travel-time variation.</p>
         </div>
       </section>
     </main>

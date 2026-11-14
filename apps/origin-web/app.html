@@ -23,7 +23,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
     <link rel="canonical" href="https://originphysicalai.com/app" />
     <meta name="robots" content="noindex" />
-    <meta name="description" content="Origin Evidence Console: an agent proposes, a policy gate decides, a human approves, and every step lands in a hash-chained audit trail. Simulated data." />
+    <meta name="description" content="Origin Evidence Console: three scripted scenarios walk through an agent proposal, a policy verdict, a human approval and an audit-chain record. Simulated scenario data (scripted)." />
     <!-- Social share (Open Graph + Twitter) -->
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -33,12 +33,12 @@
     <meta property="og:site_name" content="Origin" />
     <meta property="og:url" content="https://originphysicalai.com/app" />
     <meta property="og:title" content="Origin Evidence Console — prototype preview" />
-    <meta property="og:description" content="Proposal, policy verdict, controlled proxy, human approval, tamper-evident audit trail, evidence package. Simulated / sandbox data." />
+    <meta property="og:description" content="Proposal, policy verdict, controlled proxy, human approval, tamper-evident audit trail, evidence package. Simulated scenario data (scripted)." />
     <meta property="og:image" content="https://originphysicalai.com/og-cover.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Origin Evidence Console — prototype preview" />
-    <meta name="twitter:description" content="From agent proposal to review-ready evidence — enforce, control the side effect, and prove it. Simulated / sandbox data." />
-    <link rel="stylesheet" href="/home.css?v=9fed823f" />
+    <meta name="twitter:description" content="From agent proposal to review-ready evidence: a scripted walkthrough of the verdict, the side effect and the evidence. Simulated scenario data (scripted)." />
+    <link rel="stylesheet" href="/home.css?v=245b8c7f" />
     <title>Origin Evidence Console — prototype preview</title>
     <script>
       (() => {
@@ -127,6 +127,9 @@
       details.json { margin-top: 12px; }
       details.json summary { cursor: pointer; font-size: var(--fs-13); color: var(--signal-ink); font-weight: 600; }
       details.json pre { margin: 10px 0 0; background: var(--graphite); color: var(--on-dark); border-radius: 10px; padding: 14px; overflow-x: auto; font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-12); line-height: 1.5; }
+      .ec__read { margin: 18px 0 6px; padding: 13px 16px; max-width: 74ch; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; }
+      .ec__read h2.ec__scenarios-lbl { margin: 0 0 4px; line-height: 1.5; }
+      .ec__read ul { margin: 0; padding-left: 18px; font-size: var(--fs-14); line-height: 1.65; color: var(--ink-soft); }
       .ec__note { margin-top: 26px; font-size: var(--fs-13); color: var(--steel); border-top: 1px solid var(--line); padding-top: 16px; }
 
       /* Scenario switcher (tablist) */
@@ -240,13 +243,21 @@
           <b>Origin</b> <span>Evidence Console</span>
         </a>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <span class="ec__pilot">Illustrative console · simulated / sandbox data</span>
+          <span class="ec__pilot">Illustrative console · simulated scenario data (scripted)</span>
           <a class="btn btn--ghost btn--sm" href="/#offer">Book an Agent Evidence Review</a>
         </div>
       </div>
 
       <h1>From agent proposal to review-ready evidence.</h1>
       <p class="ec__lede">Explore three authored scenarios showing a proposed review workflow: an agent proposal, policy verdict, human approval and evidence record. The states and downloads are simulated. No tool is executed and no live system is connected.</p>
+      <section class="ec__read" aria-labelledby="ec-read-h">
+        <h2 class="ec__scenarios-lbl" id="ec-read-h">How to read these scenarios</h2>
+        <ul>
+          <li>All three scenarios are scripted, interactive walkthroughs.</li>
+          <li>No agent, proxy, approver or sandbox ran.</li>
+          <li>The audit-chain states and the evidence JSON illustrate the evidence format. This page computes no hashes.</li>
+        </ul>
+      </section>
       <p class="ec__flow" aria-hidden="true"><b>Propose</b><em>&rarr;</em><b>Gate</b><em>&rarr;</em><b>Proxy</b><em>&rarr;</em><b>Approve</b><em>&rarr;</em><b>Prove</b></p>
 
       <!-- Scenario switcher. With JS off, this is inert and all three scenarios below are stacked & readable. -->
@@ -356,13 +367,13 @@
               <div class="p__h" id="r-bl-h"><span class="blocked__tag">BLOCKED at the proxy · recorded</span></div>
               <div class="p__b">
                 <p class="blocked__req">payments.refund &nbsp;$920.00 &rarr; order_8842</p>
-                <p class="blocked__why">After the approved refund, the agent proposed a <b>second refund of $920.00</b> — over the <b>$500</b> hard ceiling. Verdict <b>deny</b>. The proxy blocked it; the unauthorized refund never ran. One approval covers one action — it does not widen the agent's standing authority.</p>
+                <p class="blocked__why">After the approved refund, the agent proposed a <b>second refund of $920.00</b> — over the <b>$500</b> hard ceiling. Verdict <b>deny</b>. The scripted proxy marks it blocked; the unauthorized refund never ran. One approval covers one action — it does not widen the agent's standing authority.</p>
                 <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
                 <p class="blocked__link"><a href="/proof#tr-a002">See TR-A002 — the machine-emitted trace of a scripted refund loop &rarr;</a></p>
               </div>
             </section>
 
-            <p class="scen-climax">The agent tried a second refund over the ceiling. <b>Origin blocked it</b> — and the block is in the audit chain.</p>
+            <p class="scen-climax">The agent tried a second refund over the ceiling. In this simulated scenario, <b>the scripted proxy marks it blocked</b> — and the block is recorded in this scenario's audit chain.</p>
           </div>
 
           <!-- Right: approval + side-effect log + audit + export -->
@@ -381,7 +392,7 @@
             </section>
 
             <section class="p" aria-labelledby="r-se-h">
-              <div class="p__h" id="r-se-h">Side-effect log · sandbox</div>
+              <div class="p__h" id="r-se-h">Side-effect log · scripted</div>
               <div class="p__b">
                 <ul class="log">
                   <li class="m--hold"><time>09:41:02</time> Proposal received · proxy held</li>
@@ -389,7 +400,7 @@
                   <li class="m--ok"><time>09:41:27</time> Executed via proxy · within scope</li>
                   <li class="m--block"><time>09:42:10</time> Over-ceiling refund · blocked</li>
                 </ul>
-                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Sandbox / test side effects only. No live money moves; any real-money path is a human-created link + signed webhook.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Scripted side effects only; no sandbox ran. No live money moves; any real-money path is a human-created link + signed webhook.</p>
               </div>
             </section>
 
@@ -426,7 +437,7 @@
   "proxy": [ { "state": "held" }, { "state": "executed" } ],
   "blocked": "second refund $920.00 over $500 ceiling",
   "audit_chain": "valid",
-  "note": "simulated / sandbox - not a customer run"
+  "note": "simulated, scripted scenario - no sandbox ran; not a customer run"
 }</pre>
                 </details>
               </div>
@@ -509,13 +520,13 @@
               <div class="p__h" id="d-bl-h"><span class="blocked__tag">BLOCKED at the proxy · recorded</span></div>
               <div class="p__b">
                 <p class="blocked__req">infra.service.config &nbsp;disable-auth-middleware &rarr; payments-api</p>
-                <p class="blocked__why">After the restart, the agent tried to <b>disable the auth middleware on payments-api</b> — an <b>unapproved escalation</b> outside the approved change window. Verdict <b>deny</b>. The proxy blocked it; auth was never disabled. Approval for a restart does not authorize a config change.</p>
+                <p class="blocked__why">After the restart, the agent tried to <b>disable the auth middleware on payments-api</b> — an <b>unapproved escalation</b> outside the approved change window. Verdict <b>deny</b>. The scripted proxy marks it blocked; auth was never disabled. Approval for a restart does not authorize a config change.</p>
                 <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
                 <p class="blocked__link">This scenario is <b>simulated</b>. <a href="/proof#tr-a002">TR-A002</a> shows the same proposal &rarr; gate &rarr; proxy &rarr; block &rarr; digest pattern, machine-emitted, on the refund workflow.</p>
               </div>
             </section>
 
-            <p class="scen-climax">The agent tried to disable auth outside the change window. <b>Origin blocked it</b> — and the block is in the audit chain.</p>
+            <p class="scen-climax">The agent tried to disable auth outside the change window. In this simulated scenario, <b>the scripted proxy marks it blocked</b> — and the block is recorded in this scenario's audit chain.</p>
           </div>
 
           <!-- Right -->
@@ -534,7 +545,7 @@
             </section>
 
             <section class="p" aria-labelledby="d-se-h">
-              <div class="p__h" id="d-se-h">Side-effect log · sandbox</div>
+              <div class="p__h" id="d-se-h">Side-effect log · scripted</div>
               <div class="p__b">
                 <ul class="log">
                   <li class="m--hold"><time>14:06:48</time> Proposal received · proxy held</li>
@@ -542,7 +553,7 @@
                   <li class="m--ok"><time>14:07:13</time> Restart executed via proxy · within scope</li>
                   <li class="m--block"><time>14:08:55</time> Disable-auth escalation · blocked</li>
                 </ul>
-                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Sandbox / test side effects only. No production system is touched; the restart runs against a sandbox stand-in.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Scripted side effects only; no sandbox ran. No production system is touched; the restart is a scripted event.</p>
               </div>
             </section>
 
@@ -579,7 +590,7 @@
   "proxy": [ { "state": "held" }, { "state": "executed" } ],
   "blocked": "disable auth middleware (escalation)",
   "audit_chain": "valid",
-  "note": "simulated / sandbox - not a customer run"
+  "note": "simulated, scripted scenario - no sandbox ran; not a customer run"
 }</pre>
                 </details>
               </div>
@@ -650,7 +661,7 @@
             <section class="p" aria-labelledby="s-px-h">
               <div class="p__h" id="s-px-h">Tool-call proxy · in-scope contrast</div>
               <div class="p__b">
-                <p>For contrast, the agent also proposed exporting <b>a single record for verified <code>ticket_3391</code></b> — verdict <b>require-approval</b>, approved by <b>data-protection on-call</b>, then <b class="proxy--held" style="color:var(--verify)">executed via the proxy in sandbox</b>. In-scope work still flows; only the bulk export is stopped.</p>
+                <p>For contrast, the agent also proposed exporting <b>a single record for verified <code>ticket_3391</code></b> — verdict <b>require-approval</b>, approved by <b>data-protection on-call</b>, then <b class="proxy--held" style="color:var(--verify)">marked executed in a scripted scenario (no sandbox ran)</b>. In-scope work still flows; only the bulk export is stopped.</p>
               </div>
             </section>
 
@@ -658,13 +669,13 @@
               <div class="p__h" id="s-bl-h"><span class="blocked__tag">BLOCKED at the proxy · recorded</span></div>
               <div class="p__b">
                 <p class="blocked__req">data.export &nbsp;12,480 records &rarr; s3://vendor-bucket</p>
-                <p class="blocked__why">The <b>bulk export of 12,480 customer records</b> to an external bucket was <b>denied</b> — there is no approval path for bulk PII export without a data-protection owner, and none granted it. The proxy blocked it; the unauthorized export <b>never ran</b>. No data left the boundary.</p>
+                <p class="blocked__why">The <b>bulk export of 12,480 customer records</b> to an external bucket was <b>denied</b> — there is no approval path for bulk PII export without a data-protection owner, and none granted it. The scripted proxy marks it blocked; the unauthorized export <b>never ran</b>. No data left the boundary.</p>
                 <p class="blocked__chain">The block itself is written to the audit chain — <b>a denied action is evidence too</b>.</p>
                 <p class="blocked__link">This scenario is <b>simulated</b>. <a href="/proof#tr-a002">TR-A002</a> shows the same proposal &rarr; gate &rarr; proxy &rarr; block &rarr; digest pattern, machine-emitted, on the refund workflow.</p>
               </div>
             </section>
 
-            <p class="scen-climax">The agent tried to bulk-export customer records. <b>Origin blocked it</b> — and the block is in the audit chain.</p>
+            <p class="scen-climax">The agent tried to bulk-export customer records. In this simulated scenario, <b>the scripted proxy marks it blocked</b> — and the block is recorded in this scenario's audit chain.</p>
           </div>
 
           <!-- Right -->
@@ -683,7 +694,7 @@
             </section>
 
             <section class="p" aria-labelledby="s-se-h">
-              <div class="p__h" id="s-se-h">Side-effect log · sandbox</div>
+              <div class="p__h" id="s-se-h">Side-effect log · scripted</div>
               <div class="p__b">
                 <ul class="log">
                   <li class="m--hold"><time>11:22:18</time> Single-record proposal · proxy held</li>
@@ -691,7 +702,7 @@
                   <li class="m--ok"><time>11:22:41</time> 1 record exported via proxy · within scope</li>
                   <li class="m--block"><time>11:24:03</time> Bulk PII export · blocked</li>
                 </ul>
-                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Sandbox / test side effects only. No customer data leaves the boundary; exports run against sandbox fixtures.</p>
+                <p style="margin-top:10px;font-size:var(--fs-14);line-height:1.65;color:var(--steel)">Scripted side effects only; no sandbox ran. No customer data is involved; both exports are scripted events.</p>
               </div>
             </section>
 
@@ -730,7 +741,7 @@
                "verdict": "deny",
                "reason": "no approval path for bulk PII export" },
   "audit_chain": "valid",
-  "note": "simulated / sandbox - not a customer run"
+  "note": "simulated, scripted scenario - no sandbox ran; not a customer run"
 }</pre>
                 </details>
               </div>
@@ -740,7 +751,7 @@
       </section>
 
       <p class="ec__note">
-        Prototype preview. Simulated / sandbox data — representative samples, not a live deployment.
+        Prototype preview. Simulated scenario data (scripted) — representative samples, not a live deployment.
         Origin is decision-support and evidence infrastructure — not legal or compliance certification,
         and it does not guarantee approval. Prototype software, not production SaaS.
         <a href="/proof" style="color:var(--signal-ink)">See the evidence ladder &rarr;</a>

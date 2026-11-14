@@ -64,10 +64,20 @@ body {
   letter-spacing: -0.02em; margin: 0 0 18px;
 }
 .fdy-hero__mark {
-  background: linear-gradient(180deg, transparent 62%, rgba(52, 224, 161, 0.4) 62%);
+  /* Style Lock: a forest-green highlighter stroke, no mint and no gradient. */
+  box-shadow: inset 0 -0.36em 0 rgba(43, 82, 59, 0.16);
   padding: 0 2px;
 }
 .fdy-hero__sub { max-width: 660px; font-size: 17px; color: var(--text-soft); margin: 0; }
+
+/* ---- how to read this page: the frame the no-JS fallback carries too ---- */
+.fdy-card.fdy-read { padding: 20px 28px 6px; }
+.fdy-read h2 { margin: 0 0 8px; }
+.fdy-read ul { margin: 0; padding-left: 18px; max-width: 75ch; color: var(--text-soft); }
+.fdy-read b { color: var(--text); }
+.fdy-read__links { display: flex; flex-wrap: wrap; gap: 0 22px; }
+.fdy-read__links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 600; }
+.fdy-read__links a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 
 /* ---- cards ---- */
 .fdy-card {

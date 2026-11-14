@@ -691,6 +691,39 @@ const LAUNCH_CONTRACTS = [
       [/scopes (the evaluation|what can be evaluated)/i, 'the review described as scoping an evaluation (it delivers a short written report)'],
     ],
   })),
+  // Pass 2, Phase 1
+  // /app's three scenarios are scripted: the scripted proxy marks a block, Origin does not
+  // block anything, and no sandbox ran. The lab illustration's person is a fictional figure,
+  // not presented as a researcher. llms.txt keeps the settled four-beat maxim for the
+  // implemented flow. \s+ because tags read as spaces.
+  // These read visible text and head meta only, so an alt attribute is not checked.
+  // New objects only.
+  {
+    file: 'apps/origin-web/app.html',
+    forbid: [
+      [/Origin\s+blocked\s+it/i, 'a scripted block described as something Origin did'],
+      [/Simulated\s+\/\s+sandbox\s+data/i, 'scripted scenario data labelled as sandbox data'],
+    ],
+  },
+  ...['apps/origin-web/index.html', 'apps/origin-web/labs.html'].map((file) => ({
+    file,
+    forbid: [
+      [/fictional\s+researcher|Illustrative\s+researcher/i, 'the illustration\'s person is a fictional figure, not presented as a researcher'],
+    ],
+  })),
+  {
+    file: 'apps/origin-web/public/llms.txt',
+    require: [
+      [/Model proposes\.\s+Environment verifies\.\s+Gate decides\.\s+Trace proves\./, 'the settled four-beat maxim for the implemented flow'],
+    ],
+  },
+  // Home #offer, the lead dialog and /brief tell visitors to send nothing confidential.
+  ...['apps/origin-web/index.html', 'apps/origin-web/brief.html'].map((file) => ({
+    file,
+    require: [
+      [/Send\s+nothing\s+confidential:\s+no\s+data\s+agreement\s+is\s+in\s+place\s+yet\./, 'the no-confidential-data line on the offer'],
+    ],
+  })),
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

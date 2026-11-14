@@ -96,7 +96,7 @@ test('lead form is a low-friction four-field request', async ({ page }) => {
 test('evidence console does not style simulated states as working buttons', async ({ page }) => {
   await page.goto('/app.html')
   await expect(page.locator('.approvals .btn')).toHaveCount(0)
-  await expect(page.getByText(/simulated \/ sandbox data/i).first()).toBeVisible()
+  await expect(page.getByText(/simulated scenario data \(scripted\)/i).first()).toBeVisible()
   await expect(page.getByText(/Simulated approval state/i).first()).toBeVisible()
   await expect(page.getByRole('button', { name: /Download simulated evidence JSON/i }).first()).toBeVisible()
 })

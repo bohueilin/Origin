@@ -177,15 +177,9 @@ export function SimulationPage() {
               </>}
         </div>
         <p className="sim-note">
-          The robots follow the <b>oracle-verified</b> plan (Origin’s deterministic <code>bfsOracle</code>,
-          finish/escalate/refuse). A deterministic wait-only coordinator holds a robot when its next cell
-          is taken by a robot still on its route or is, now or on the next tick, the human marker’s cell.
-          It does not re-plan or keep robots out of a finished robot’s parked cell, and the human marker
-          does not yield. Collision events are counted from the frames: two robots in one cell (a
-          finished robot parked in its cell counts), a robot in the human marker’s cell, or two of them
-          swapping cells in one tick. The whole run is <b>reproducible under this verifier</b> and can be
-          signed as a Sigil you re-check offline. We claim <b>no learned-policy result</b>: this
-          visualizes a verified plan executing, not a trained model. Synthetic layout; seeded + replayable.
+          Robots follow the <b>oracle-verified</b> plan (<code>bfsOracle</code>), <b>reproducible under
+          this verifier</b>; <b>no learned-policy result</b> is claimed. Synthetic layout; seeded +
+          replayable. <a href="#sim-read-title">How to read the result</a>
         </p>
       </div>
     </div>

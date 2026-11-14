@@ -179,7 +179,9 @@ export function OperationsPage() {
       <p className="ops-note">
         Every metric is computed <b>deterministically</b> from this synthetic shift. The fixed
         verifier compares utilization, fulfilment, collisions and refused waves with the displayed
-        targets. Signing records these outcomes; it grants no operating authority. This is
+        targets. Tiers L0–L4 score this seeded warehouse shift only; the agent reference check
+        and the robot proving ground do not use tiers. Signing records these outcomes; it grants
+        no operating authority. This is
         <b> reproducible under this verifier</b>, never "safe". We claim <b>no learned-coordinator
         result</b>; the metrics score a verified plan, not a trained model. Synthetic layouts;
         seeded and replayable.

@@ -222,8 +222,14 @@ for (const [field, change] of Object.entries(SCENE_CHANGES)) {
     await canvas.scrollIntoViewIfNeeded()
     await expect(controls.getByRole('button', { name: 'Pause', exact: true })).toBeVisible()
     await expect(page.locator('.pg3d-prog-txt')).not.toHaveText(/^✓ all/)
-    await page.clock.runFor(8000)
-    await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
+    // Painting a robot type scrolls the canvas out of view, and IntersectionObserver
+    // reports its return outside the virtual clock, so one long runFor can elapse
+    // while playback is still paused off-screen. Advance in steps that yield to the
+    // browser until the preview completes.
+    await expect.poll(async () => {
+      await page.clock.runFor(1000)
+      return controls.getByRole('button', { name: 'Replay', exact: true }).isVisible()
+    }, { timeout: 30_000 }).toBe(true)
   })
 }
 

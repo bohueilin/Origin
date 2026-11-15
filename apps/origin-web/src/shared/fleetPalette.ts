@@ -14,5 +14,8 @@ export const FLEET_COLORS: readonly string[] = [
   '#525e2c', // Fleet 6: olive bronze
 ]
 
+/** Each colour's name, in the same order, so words can name a fleet's swatch ("Fleet 1 (forest)"). */
+export const FLEET_COLOR_NAMES: readonly string[] = ['forest', 'ochre', 'plum', 'rose', 'umber', 'olive']
+
 /** The same palette as numbers, for three.js materials. */
 export const FLEET_COLORS_HEX: readonly number[] = FLEET_COLORS.map((c) => parseInt(c.slice(1), 16))

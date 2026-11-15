@@ -28,6 +28,71 @@ function smoother(t: number) {
   return c * c * c * (c * (c * 6 - 15) + 10)
 }
 
+// The default view: a high three-quarter angle, 48° above the floor and 37° round from its
+// front edge. The floor's projected box fills FLOOR_FILL of the canvas's binding dimension,
+// and the whole scene stays at least MARGIN inside every edge of the canvas.
+const VIEW_DIR = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(42), THREE.MathUtils.degToRad(37))
+const FLOOR_FILL = 0.7
+const MARGIN = 0.025
+
+const floorPoints = (W: number, H: number) =>
+  [[-W / 2, -H / 2], [W / 2, -H / 2], [W / 2, H / 2], [-W / 2, H / 2]].map(([x, z]) => new THREE.Vector3(x, 0, z))
+
+/** A point projected onto the canvas, as fractions (0 = left/top, 1 = right/bottom). */
+function onCanvas(camera: THREE.Camera, p: THREE.Vector3): [number, number] {
+  const v = p.clone().project(camera)
+  return [(v.x + 1) / 2, (1 - v.y) / 2]
+}
+
+/** The projected box of a set of points, as canvas fractions. */
+function canvasBox(camera: THREE.Camera, points: THREE.Vector3[]) {
+  const ps = points.map((p) => onCanvas(camera, p))
+  const xs = ps.map((p) => p[0]), ys = ps.map((p) => p[1])
+  return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) }
+}
+
+/** Puts the camera on the default bearing so the floor fills FLOOR_FILL of the canvas and the
+ *  box of the whole scene (`framed`: the floor's corners, every structure, person and box, and
+ *  each robot's route) is centred on the canvas, MARGIN inside its edges. So a floor with tall
+ *  racks sits lower than one without, and where the racks are too tall for both, the floor
+ *  fills less, so the whole scene always stays in the frame. Perspective makes the projected
+ *  size only roughly inverse to distance, so rounds of scale-then-pan converge on it. Returns
+ *  the distance from the camera to the pivot. */
+function fitCamera(camera: THREE.PerspectiveCamera, target: THREE.Vector3, W: number, H: number, framed: THREE.Vector3[]) {
+  const floor = floorPoints(W, H)
+  target.set(0, 0, 0)
+  let dist = new THREE.Box3().setFromPoints(framed).getBoundingSphere(new THREE.Sphere()).radius * 3
+  const right = new THREE.Vector3(), up = new THREE.Vector3()
+  const place = () => {
+    camera.position.copy(target).addScaledVector(VIEW_DIR, dist)
+    camera.lookAt(target); camera.updateMatrixWorld()
+  }
+  const room = 1 - 2 * MARGIN
+  for (let i = 0; i < 10; i++) {
+    // Pan in the camera plane, as the orbit control's own pan does, to centre the scene's box
+    // (or, while it is too tall, to rest its foot on the bottom margin) ...
+    place()
+    let s = canvasBox(camera, framed)
+    const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * dist
+    right.setFromMatrixColumn(camera.matrixWorld, 0); up.setFromMatrixColumn(camera.matrixWorld, 1)
+    target.addScaledVector(right, (s.x0 + s.x1 - 1) * halfH * camera.aspect)
+      .addScaledVector(up, (s.y1 - s.y0 > room ? 2 * (1 - MARGIN - s.y1) : 1 - s.y0 - s.y1) * halfH)
+    // ... then move in or out to the fill.
+    place()
+    const f = canvasBox(camera, floor)
+    s = canvasBox(camera, framed)
+    const fill = Math.max(f.x1 - f.x0, f.y1 - f.y0)
+    dist *= Math.max(fill / FLOOR_FILL, Math.max(s.x1 - s.x0, s.y1 - s.y0) / room)
+  }
+  // Slide the pivot along the line of sight onto the floor plane. The camera and the picture
+  // stay the same, and turning the view about a pivot on the floor never takes the camera
+  // below the single-sided floor and ground.
+  const slide = -target.y / VIEW_DIR.y
+  target.addScaledVector(VIEW_DIR, slide); dist -= slide
+  place()
+  return dist
+}
+
 type Built = {
   group: THREE.Group; cargo: THREE.Mesh; fly: number
   rotors: THREE.Mesh[]; wheels: THREE.Mesh[]; legs: THREE.Mesh[]
@@ -41,7 +106,7 @@ function robotModel(emb: RobotEmbodiment, color: number): Built {
   // near-black, so each fleet reads as its legend swatch.
   const body = new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0, toneMapped: false })
   const dark = new THREE.MeshStandardMaterial({ color: 0x272d26, roughness: 0.6, metalness: 0.3 })
-  const tyre = new THREE.MeshStandardMaterial({ color: 0x0c1118, roughness: 0.8 })
+  const tyre = new THREE.MeshStandardMaterial({ color: 0x1a1915, roughness: 0.8 })
   const cargoMat = new THREE.MeshStandardMaterial({ color: CARGO, roughness: 0.78 })
   const rotors: THREE.Mesh[] = [], wheels: THREE.Mesh[] = [], legs: THREE.Mesh[] = []
   const cargo = new THREE.Mesh(CARGO_GEO, cargoMat)
@@ -164,7 +229,7 @@ function robotModel(emb: RobotEmbodiment, color: number): Built {
       const door = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.28, 0.02), new THREE.MeshStandardMaterial({ color: 0xedf1e7, roughness: 0.6 }))
       door.position.set(0, dy, 0.26); g.add(door)
     }
-    const screen = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.1, 0.02), new THREE.MeshStandardMaterial({ color: 0x0b1220 }))
+    const screen = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.1, 0.02), new THREE.MeshStandardMaterial({ color: 0x1d211c }))
     screen.position.set(0, 0.96, 0.26); g.add(screen)
     wheel(-0.2, -0.18, 0.08); wheel(0.2, -0.18, 0.08); wheel(-0.2, 0.18, 0.08); wheel(0.2, 0.18, 0.08)
     cargo.position.set(0, 0.4, 0.34) // at the open lower compartment
@@ -174,7 +239,7 @@ function robotModel(emb: RobotEmbodiment, color: number): Built {
     shell.position.y = 0.2; shell.castShadow = true; shell.receiveShadow = true; g.add(shell)
     const deck = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 0.6), body) // the face a high camera sees
     deck.position.y = 0.35; g.add(deck)
-    const eye = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.1, 0.05), new THREE.MeshStandardMaterial({ color: 0x0b1220 }))
+    const eye = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.1, 0.05), new THREE.MeshStandardMaterial({ color: 0x1d211c }))
     eye.position.set(0, 0.24, 0.38); g.add(eye)
     wheel(-0.26, -0.28); wheel(0.26, -0.28); wheel(-0.26, 0.28); wheel(0.26, 0.28)
     cargo.position.set(0, 0.52, 0)
@@ -187,7 +252,7 @@ function humanWorker(): THREE.Group {
   const g = new THREE.Group()
   const vest = new THREE.MeshStandardMaterial({ color: 0xf5a623, roughness: 0.7 })
   const skin = new THREE.MeshStandardMaterial({ color: 0xd7a877, roughness: 0.7 })
-  const pants = new THREE.MeshStandardMaterial({ color: 0x2b2f36, roughness: 0.8 })
+  const pants = new THREE.MeshStandardMaterial({ color: 0x33302b, roughness: 0.8 })
   const hat = new THREE.MeshStandardMaterial({ color: 0xf5d020, roughness: 0.5 })
   const torso = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.42, 0.18), vest); torso.position.y = 0.82; torso.castShadow = true; g.add(torso)
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.12, 18, 14), skin); head.position.y = 1.16; head.castShadow = true; g.add(head)
@@ -200,9 +265,10 @@ function humanWorker(): THREE.Group {
 // Fixed structures vary by the user's domain — a warehouse has high-bay racks, a
 // hospital has supply cabinets, a lab has fume-hood benches, a plant has machine
 // cells. Each obstacle cell renders the structure that fits the domain.
+// Warm paper, stone and sage floor tints (Style Lock: no grey-blue).
 const DOMAIN_FLOOR: Record<PhysicalDomain, number> = {
-  warehouse: 0xeef1f4, logistics: 0xedf0f3, manufacturing: 0xe7eaee,
-  hospital: 0xeef5f4, lab: 0xeaeef2, eldercare: 0xf3ede3,
+  warehouse: 0xf1eee6, logistics: 0xefece4, manufacturing: 0xebe7de,
+  hospital: 0xedf1e7, lab: 0xecebe3, eldercare: 0xf3ede3,
 }
 const DOMAIN_STRUCT_LABEL: Record<PhysicalDomain, string> = {
   warehouse: 'high-bay rack', logistics: 'high-bay rack', manufacturing: 'machine cell',
@@ -218,27 +284,27 @@ function obstacleProp(domain: PhysicalDomain): THREE.Group {
     m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; g.add(m); return m
   }
   if (domain === 'hospital') {
-    box(0.86, 2.3, 0.7, M(0xeef3f7, 0.6), 0, 1.15, 0)                 // white cabinet body
-    for (const ly of [0.6, 1.2, 1.8]) box(0.82, 0.05, 0.66, M(0xc3cdd6, 0.5, 0.4), 0, ly, 0)
+    box(0.86, 2.3, 0.7, M(0xf4f2ec, 0.6), 0, 1.15, 0)                 // white cabinet body
+    for (const ly of [0.6, 1.2, 1.8]) box(0.82, 0.05, 0.66, M(0xcdc6b8, 0.5, 0.4), 0, ly, 0)
     ;[0x4e5b48, 0x8a5800, 0x272d26].forEach((c, i) =>               // supply totes: ink-soft, ochre, ink
       box(0.22, 0.18, 0.5, M(c, 0.7), -0.26 + i * 0.26, 0.72, 0.05))
     box(0.3, 0.08, 0.02, M(0xd23b3b), 0, 2.0, 0.36)                  // red cross
     box(0.08, 0.3, 0.02, M(0xd23b3b), 0, 2.0, 0.36)
   } else if (domain === 'lab') {
-    box(0.9, 0.95, 0.7, M(0x2b3038, 0.5, 0.3), 0, 0.48, 0)           // dark bench cabinet
-    box(0.92, 0.06, 0.72, M(0x9aa3b0, 0.3, 0.6), 0, 0.98, 0)         // steel worktop
+    box(0.9, 0.95, 0.7, M(0x34312c, 0.5, 0.3), 0, 0.48, 0)           // dark bench cabinet
+    box(0.92, 0.06, 0.72, M(0xa8a196, 0.3, 0.6), 0, 0.98, 0)         // steel worktop
     const glass = new THREE.MeshStandardMaterial({ color: 0xdfe4d8, roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.38 })
     box(0.9, 1.3, 0.5, glass, 0, 1.7, -0.05)                         // fume-hood glass
-    box(0.9, 0.1, 0.7, M(0x3a4048, 0.4, 0.5), 0, 2.4, 0)            // hood top
+    box(0.9, 0.1, 0.7, M(0x3f3b35, 0.4, 0.5), 0, 2.4, 0)            // hood top
     for (const sx of [-0.2, 0.2]) {                                  // glassware
       const c = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.22, 12), glass)
       c.position.set(sx, 1.12, 0.1); g.add(c)
     }
   } else if (domain === 'manufacturing') {
-    box(0.95, 1.0, 0.8, M(0x3d444d, 0.5, 0.5), 0, 0.5, 0)            // machine base
+    box(0.95, 1.0, 0.8, M(0x48433c, 0.5, 0.5), 0, 0.5, 0)            // machine base
     box(0.99, 0.5, 0.84, M(0xf2c029, 0.5, 0.3), 0, 1.25, 0)         // yellow safety housing
-    box(0.3, 0.3, 0.3, M(0x20242a, 0.4, 0.7), 0, 1.7, 0)
-    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.8, 12), M(0xd0d4da, 0.4, 0.6))
+    box(0.3, 0.3, 0.3, M(0x2a2723, 0.4, 0.7), 0, 1.7, 0)
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.8, 12), M(0xd4cfc5, 0.4, 0.6))
     arm.position.set(0, 2.0, 0.1); arm.rotation.z = 0.5; arm.castShadow = true; g.add(arm)
   } else if (domain === 'eldercare') {
     box(0.84, 2.0, 0.66, M(0xb08453, 0.8, 0.05), 0, 1.0, 0)          // warm wooden wardrobe
@@ -333,21 +399,24 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
 
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0xefede6) // warm paper-stone (Style Lock: no grey-blue)
-    scene.fog = new THREE.Fog(0xefede6, maxDim * 2.4, maxDim * 6)
+    // Set from the framed view in frameFloor, below.
+    const fog = new THREE.Fog(0xefede6, 1, 2)
+    scene.fog = fog
 
     const camera = new THREE.PerspectiveCamera(46, w0 / h0, 0.1, 1000)
-    camera.position.set(maxDim * 0.95, maxDim * 0.95 + 3.2, maxDim * 1.25)
-
     const controls = new OrbitControls(camera, renderer.domElement)
     // Event-driven camera changes also work while playback is paused.
     controls.enableDamping = false
-    controls.target.set(0, 1.1, 0)
-    controls.minDistance = maxDim * 0.55; controls.maxDistance = maxDim * 3.6
     controls.maxPolarAngle = Math.PI * 0.49
-    controls.update()
+    // A pan slides the pivot across the floor plane, never below it.
+    controls.screenSpacePanning = false
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x9aa3b0, 0.7))
-    const sun = new THREE.DirectionalLight(0xfff4e6, 1.05)
+    // Light the robots' front faces near their fleet swatch without any glow: a warm sky and
+    // stone bounce, a high sun, and a soft fill from the viewer's side.
+    scene.add(new THREE.HemisphereLight(0xfffdf8, 0xe2dccf, 1.4))
+    const front = new THREE.DirectionalLight(0xfffaf2, 1.6)
+    front.position.set(maxDim * 0.34, maxDim * 0.4, maxDim * 0.94); scene.add(front)
+    const sun = new THREE.DirectionalLight(0xfff4e6, 1.3)
     sun.position.set(W * 0.7, maxDim * 1.7, H * 0.55); sun.castShadow = true
     sun.shadow.mapSize.set(2048, 2048)
     const d = maxDim
@@ -358,12 +427,12 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     const fill = new THREE.DirectionalLight(0xf2efe8, 0.3)
     fill.position.set(-W * 0.6, maxDim, -H * 0.5); scene.add(fill)
 
-    // floor: concrete pad + a larger ground for depth
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(maxDim * 5, maxDim * 5),
-      new THREE.MeshStandardMaterial({ color: 0xcfd4da, roughness: 1 }))
+    // floor: a pale pad on a darker warm-stone ground for depth (sized in frameFloor)
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshStandardMaterial({ color: 0xc9c0b0, roughness: 1 }))
     ground.rotation.x = -Math.PI / 2; ground.position.y = -0.04; ground.receiveShadow = true; scene.add(ground)
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, H),
-      new THREE.MeshStandardMaterial({ color: DOMAIN_FLOOR[domain] ?? 0xeef1f4, roughness: 0.95 }))
+      new THREE.MeshStandardMaterial({ color: DOMAIN_FLOOR[domain] ?? DOMAIN_FLOOR.warehouse, roughness: 0.95 }))
     floor.rotation.x = -Math.PI / 2; floor.position.y = -0.02; floor.receiveShadow = true; scene.add(floor)
 
     const gpts: number[] = []
@@ -371,8 +440,16 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     for (let y = 0; y <= H; y++) gpts.push(-W / 2, 0, y - H / 2, W / 2, 0, y - H / 2)
     const grid = new THREE.LineSegments(
       new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(gpts, 3)),
-      new THREE.LineBasicMaterial({ color: 0xd2d7df }))
+      new THREE.LineBasicMaterial({ color: 0xd3ccbe }))
     grid.position.y = 0.002; scene.add(grid)
+
+    // Everything the default view keeps in frame: the floor's corners, each structure, person
+    // and box (a delivered box is in the scene, hidden, from the start), and each robot's route.
+    const framed = floorPoints(W, H)
+    const keepInView = (b: THREE.Box3) => {
+      for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) framed.push(new THREE.Vector3(x, y, z))
+    }
+    const addFramed = (o: THREE.Object3D) => { scene.add(o); keepInView(new THREE.Box3().setFromObject(o)) }
 
     const tileGeo = new THREE.PlaneGeometry(0.92, 0.92)
     const haz = new THREE.MeshStandardMaterial({ color: 0xe0563f, roughness: 1, transparent: true, opacity: 0.5 })
@@ -386,14 +463,14 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
       // verdict — but "determinism is sacred" is the product claim, and Math.random()
       // here is the first thing an adversarial reviewer greps for.
       person.rotation.y = (((c.x * 73856093) ^ (c.y * 19349663)) >>> 0) % 360 * (Math.PI / 180)
-      scene.add(person); humans.push(person)
+      addFramed(person); humans.push(person)
     }
 
     // fixed structures at every obstacle cell — shaped to the user's domain
     // (warehouse racks · hospital cabinets · lab benches · machine cells · …)
     for (const o of siteMap.obstacles ?? []) {
       const prop = obstacleProp(domain)
-      prop.position.set(wx(o.x), 0, wz(o.y)); scene.add(prop)
+      prop.position.set(wx(o.x), 0, wz(o.y)); addFramed(prop)
     }
 
     // item pallets + cargo to pick
@@ -410,7 +487,7 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
       const pallet = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.1, 0.6), palletMat)
       pallet.position.set(wx(it.x), 0.05, wz(it.y)); pallet.receiveShadow = true; scene.add(pallet)
       const box = new THREE.Mesh(CARGO_GEO, cargoMat)
-      box.position.set(wx(it.x), 0.3, wz(it.y)); box.castShadow = true; scene.add(box)
+      box.position.set(wx(it.x), 0.3, wz(it.y)); box.castShadow = true; addFramed(box)
       itemBoxes.push({ mesh: box, pickTick: plan.itemPickTick[i] ?? Infinity })
     })
     // drop zones — painted outline; boxes stack ONLY here
@@ -439,13 +516,13 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
           const k = `${cell.x},${cell.y}`; const h = stackAt[k] ?? 0; stackAt[k] = h + 1
           const box = new THREE.Mesh(CARGO_GEO, cargoMat)
           box.position.set(wx(cell.x), 0.22 + h * 0.42, wz(cell.y)); box.castShadow = true; box.visible = false
-          scene.add(box); delivered.push({ mesh: box, tick: t + 1 })
+          addFramed(box); delivered.push({ mesh: box, tick: t + 1 })
         }
       }
     })
 
     // robots — embodiment-aware
-    const botEmb: RobotEmbodiment[] = []
+    const botEmb: RobotEmbodiment[] = [], botFleet: number[] = []
     const bots: Built[] = plan.robots.map((r) => {
       const fi = robotFleet[r.index] ?? r.fleet ?? 0
       // resolve each robot's type: explicit per-robot → its fleet's type → workflow
@@ -453,13 +530,48 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
       const home = r.start ?? { x: 0, y: 0 }
       const perRobot = siteMap.robotTypes?.[`${home.x},${home.y}`]
       const useEmb = perRobot ?? fleetEmbs[fi] ?? (emb === 'other' ? CYCLE[r.index % CYCLE.length] : emb)
-      botEmb.push(useEmb)
+      botEmb.push(useEmb); botFleet.push(fi)
       const built = robotModel(useEmb, FLEET_COLORS_HEX[fi % FLEET_COLORS_HEX.length])
       const s = r.start ?? { x: 0, y: 0 }
       built.group.position.set(wx(s.x), built.fly, wz(s.y))
       scene.add(built.group)
+      // Its reach, whichever way it faces, kept in view on every cell its route visits.
+      const b = new THREE.Box3().setFromObject(built.group), at = built.group.position
+      const reach = Math.hypot(Math.max(at.x - b.min.x, b.max.x - at.x), Math.max(at.z - b.min.z, b.max.z - at.z))
+      const top = b.max.y + 0.1 // with a drone's hover and a walker's gait
+      for (const c of new Map([s, ...r.timeline].map((c) => [`${c.x},${c.y}`, c])).values()) {
+        keepInView(new THREE.Box3(new THREE.Vector3(wx(c.x) - reach, 0, wz(c.y) - reach), new THREE.Vector3(wx(c.x) + reach, top, wz(c.y) + reach)))
+      }
       return built
     })
+
+    // Frame the floor on load, on a floor resize (this effect re-runs) and on a canvas
+    // resize, until the visitor turns or zooms the view themselves.
+    let userMoved = false
+    const onStart = () => { userMoved = true }
+    controls.addEventListener('start', onStart)
+    const frameFloor = () => {
+      const dist = fitCamera(camera, controls.target, W, H, framed)
+      controls.minDistance = dist * 0.3
+      // The fog starts just beyond the deepest framed point, so nothing in the default view
+      // is fogged, and reaches full strength two pivot distances later. Zooming out stops
+      // with the pivot half-way into it, so the floor never fades out entirely, and the
+      // ground reaches well past the fog from any view, so its edge only ever shows as fog.
+      const deepest = Math.max(...framed.map((p) => -p.clone().applyMatrix4(camera.matrixWorldInverse).z))
+      fog.near = deepest * 1.02; fog.far = fog.near + dist * 2
+      controls.maxDistance = (fog.near + fog.far) / 2
+      ground.scale.set(fog.far * 4, fog.far * 4, 1)
+      controls.update()
+      // Where the floor's corners, the whole scene and the top of each AMR's deck (0.38 up)
+      // land on the canvas, as fractions, for checks that read the picture.
+      const fx = (v: number) => v.toFixed(3)
+      mount.dataset.floorCorners = floorPoints(W, H).flatMap((p) => onCanvas(camera, p)).map(fx).join(' ')
+      const box = canvasBox(camera, framed)
+      mount.dataset.sceneBox = [box.x0, box.y0, box.x1, box.y1].map(fx).join(' ')
+      mount.dataset.amrDecks = bots.flatMap((bot, i) => botEmb[i] === 'amr'
+        ? [`${botFleet[i] + 1}:${onCanvas(camera, bot.group.position.clone().setY(0.38)).map(fx).join(',')}`] : []).join(' ')
+    }
+    frameFloor()
 
     const ticks = Math.max(plan.ticks, 1)
     const clock = new THREE.Clock()
@@ -555,12 +667,14 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
 
     const onResize = () => {
       const w = mount.clientWidth || w0, h = mount.clientHeight || h0
-      camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h); wake()
+      camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h)
+      if (!userMoved) frameFloor()
+      wake()
     }
     const ro = new ResizeObserver(onResize); ro.observe(mount)
 
     return () => {
-      disposed = true; wakeRef.current = () => {}; replayRef.current = () => {}; controls.removeEventListener('change', wake); cancelAnimationFrame(raf); ro.disconnect(); controls.dispose(); renderer.dispose()
+      disposed = true; wakeRef.current = () => {}; replayRef.current = () => {}; controls.removeEventListener('change', wake); controls.removeEventListener('start', onStart); cancelAnimationFrame(raf); ro.disconnect(); controls.dispose(); renderer.dispose()
       scene.traverse((o) => {
         const m = o as THREE.Mesh
         if (m.geometry) m.geometry.dispose()

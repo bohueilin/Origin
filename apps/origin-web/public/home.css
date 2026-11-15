@@ -1442,3 +1442,15 @@ html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root,
 /* Release 6 Phase 3: the recordings' "Full provenance and limits" disclosure is a 44 px target with the site's focus ring. */
 .vband__prov-details > summary { min-height: 44px; padding-block: 11px; box-sizing: border-box; width: fit-content; cursor: pointer; color: var(--ink-soft); }
 .vband__prov-details > summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; border-radius: 6px; }
+
+/* Release 6 follow-up (Gate 7): on phones every tap target is at least 44 x 44 CSS px.
+   Boxed controls take a real minimum. A link inside running text grows its box with
+   padding that an inline box adds without moving any line, and its sideways padding is
+   cancelled by an equal negative margin, so the words stay exactly where they were. */
+@media screen and (max-width: 760px) {
+  :is(button, select, summary, [role="tab"], input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"])) { min-height: 44px; box-sizing: border-box; }
+  :is(button, [role="tab"]) { min-width: 44px; }
+  .brand, .ec__brand, .skip-link, .site-footer__legal-links a, .editorial .editorial-jumps a, .product-hero__links a, .rung__link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; box-sizing: border-box; }
+  .site-header nav a { min-width: 44px; justify-content: center; }
+  :is(p, li, dd, td, th, figcaption, small, em, strong, span, label) > a:not([class]) { padding: calc(22px - .5em) 4px; margin-inline: -4px; }
+}

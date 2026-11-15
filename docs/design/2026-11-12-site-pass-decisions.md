@@ -415,3 +415,18 @@ The lines use the same per-fleet counts as the fleet cards and update with every
 The canvas publishes the projected floor corners, scene box and AMR decks as data attributes for these checks.
 
 **Not changed.** The 3D playback still starts when it scrolls into view, as noted in Release 6, Phase 1. On a phone the 3D canvas keeps its 520 px height, so a floor fitted to the canvas's width leaves space above and below it.
+
+## Release 6, Phase 4 follow-up — tap targets on a phone (Gate 7)
+
+The Release 6 sweep's seventh gate checks every visible interactive target at 375 × 812. On `main` after Phase 4 (`4be6677`), 181 targets on the sixteen public routes were under 44 × 44 CSS px. Most were shared pieces: the header and footer brand links, the footer's Privacy and Terms links, the editorial "On this page" links, the hero link rows, the Labs robot-type chips and template buttons, the `/foundry` buttons, form fields, and 47 links inside running text. Now none are, at 360, 375 and 430 px.
+
+**How.** Each rule applies on screens below 761 px only, so desktop and print are unchanged.
+- **Boxed controls** take a real 44 px minimum: buttons, tabs, selects, fields, disclosures, the robot-type chips, the template buttons, the `/verify` file and checkbox labels, and the `/foundry` buttons. Narrow links in the header, footer and Labs nav are at least 44 px wide.
+- **A link inside running text** grows its box with vertical padding. An inline box adds that padding without moving any line. Its 4 px sideways padding is cancelled by an equal negative margin, so the words stay exactly where they were. Links carry no background or border, so only the focus ring shows the larger box.
+- The rules sit in labelled "Gate 7" blocks at the end of `public/home.css` (fourteen routes), `public/lab-shell.css` and `src/foundry/ui/foundry.css` (`/capture` and `/foundry`), `src/App.css` and `src/shared/product-workspace.css`. `npm run css:version:fix` rewrote the `home.css?v=` line in every entry, the two legal pages included (that line only), on the owner's instruction.
+
+**Measured on a production build at 375 px.** Nothing scrolls sideways. The header stays 75 px tall on the thirteen site pages. Pages grow only where boxed controls grew, by 0–219 px (`/capture`, with its sixteen template buttons and ten chips, grows most). Layout shift measured 0 on all thirteen measured routes at 375 and 1440 px.
+
+**Test.** `r6-p4-tap-targets.spec.ts` loads each of the sixteen routes at 375 × 812. It fails on any visible target under 44 × 44 and on any sideways scroll. A control wrapped in its label is measured by the label. A skip link that is 1 × 1 until focused is not yet a target. Without the new rules, the spec fails on every route.
+
+**Separate fix first.** `main`'s build-only Deploy run for `4be6677` failed one 3D-preview test. Painting a robot type scrolls the canvas out of view, and the page's visibility observer reports its return outside Playwright's virtual clock. That was fixed in its own test-only PR (#129) before this one.

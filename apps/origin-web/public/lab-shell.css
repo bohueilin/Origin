@@ -24,3 +24,9 @@ main:has(:is(#root, #capture-root, #passport-root) > *) .lab-fallback { display:
 
 .lab-footer { align-items: center; flex-wrap: wrap; font-size: 14px; }
 .lab-footer nav { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px 24px; }
+
+/* Release 6 follow-up (Gate 7): on phones every tap target is at least 44 x 44 CSS px. */
+@media screen and (max-width: 760px) {
+  .lab-masthead nav a, .lab-footer a { min-width: 44px; justify-content: center; }
+  .skip-link { display: inline-flex; align-items: center; min-height: 44px; box-sizing: border-box; }
+}

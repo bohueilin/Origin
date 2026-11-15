@@ -517,6 +517,17 @@ export function CaptureConsole({
           deterministic checks. Real-world readiness requires separately authorized evidence and validation.
         </p>
 
+        {/* The same frame the no-JavaScript fallback in capture.html carries after its H1. */}
+        <section className="capture-read" aria-labelledby="capture-read-label">
+          <h2 id="capture-read-label">How to read this page</h2>
+          <ul>
+            <li><b>What it is.</b> A page that turns your site notes and the files or links you add, or a synthetic sample package, into a small grid map, a set of robot tasks and a trace; no robot is connected.</li>
+            <li><b>What the result means.</b> The deterministic grid oracle labels each task finish, escalate or refuse; the metrics replay the oracle and two fixed baselines on those tasks, and the score out of 100 weights map confidence at 45%, label coverage (how many of the three labels the tasks use) at 35% and trace completeness (the run has tasks and at least one input) at 20%, so none of it measures a real site, robot or learned policy.</li>
+            <li><b>Its limits.</b> On the public site the model-backed floor-plan parser is restricted, so the map is a template sized by the kinds of input you add and marked from words in your notes and file names; the sample package is synthetic, and the panels it opens show fixed demo numbers.</li>
+          </ul>
+          <nav className="capture-read__links" aria-label="Related pages"><a href="/labs">Labs</a><a href="/proving-ground">Proving ground</a><a href="/reference-check">Reference check</a></nav>
+        </section>
+
         <div className="site-thesis" aria-label="How Origin evaluates synthetic site context">
           <div>
             <span>Customer inputs</span>
@@ -527,7 +538,7 @@ export function CaptureConsole({
             <strong>2D map + task environment</strong>
           </div>
           <div>
-            <span>Verification decides</span>
+            <span>Verification labels</span>
             <strong>Finish · escalate · refuse</strong>
           </div>
           <div>
@@ -1571,8 +1582,10 @@ export function CaptureConsole({
                       <span className="panel-kicker">Replayable trace</span>
                       <strong>{siteGymRun.trace.trace_id}</strong>
                       <p>
-                        Digest {siteGymRun.trace.digest} ties inputs, artifacts, site map,
-                        task set, verification version {siteGymRun.trace.oracle_version}, and metrics.
+                        Digest {siteGymRun.trace.digest} is a 32-bit checksum of this run's capture ID, artifacts
+                        and their provenance, structured site map, review state and metrics. It is not a cryptographic
+                        digest or a signature, and it does not cover the task set or the verification
+                        version {siteGymRun.trace.oracle_version}.
                       </p>
                     </div>
                     <ul>
@@ -1717,18 +1730,23 @@ export function CaptureConsole({
               </li>
             ))}
           </ol>
+          {/* The settled four-beat maxim; each line says what that beat is on this page. */}
           <div className="rsi-proof">
             <div>
               <strong>Model proposes.</strong>
-              <span>Vision and language models can draft maps, tasks, and hard cases quickly.</span>
+              <span>A model can draft the map from a floor-plan image; on the public site that parser is restricted, so a deterministic template stands in.</span>
             </div>
             <div>
               <strong>Environment verifies.</strong>
-              <span>Evidence-backed verification computes labels and rewards. No self-grading.</span>
+              <span>The deterministic grid oracle computes every task label; no model grades its own output.</span>
+            </div>
+            <div>
+              <strong>Gate decides.</strong>
+              <span>A person approves the map or marks it for correction; that decision is recorded in the trace and the bundle.</span>
             </div>
             <div>
               <strong>Trace proves.</strong>
-              <span>Readiness is shown through refuse recall, unsafe- / missed-action rates, counterfactuals, and audit traces.</span>
+              <span>The trace records this run's inputs, artifacts, review state, versions and metrics; its ID is an unsigned 32-bit checksum, not a signature.</span>
             </div>
           </div>
         </section>
@@ -1740,7 +1758,9 @@ export function CaptureConsole({
           <button className="btn ghost" onClick={() => submit('manual')} disabled={!canContinue}>
             Map manually instead
           </button>
-          <span className="trust-note">Local media processing · verified labels only · no model self-grading</span>
+          {/* parserIntegration.ts posts a floor-plan image as a data URI to /api/foundry/parse-floor;
+              the public Pages Function refuses any request without the service token. */}
+          <span className="trust-note">Media stays in this browser, except a floor-plan image you add: it is sent, with up to 600 characters of your outcome and workflow text, to Origin's parse endpoint, which on the public site refuses it without a service token · verified labels only · no model self-grading</span>
         </div>
       </div>
     </section>

@@ -58,6 +58,35 @@ const FIGURE_LEAF = TREE[3]
 const REACH_BEFORE = rootReach(new Set())
 const REACH_AFTER = rootReach(new Set([FIGURE_LEAF.id]))
 
+// A different tree: the edge the 06 panel's "Widen one delegation edge" picks in the clean
+// seed-20260818 fleet (SecurityPage.tsx widenOne), which shot02 recorded and over-grant.html
+// draws; src/overgrant/recordedFigures.test.ts recomputes it. Named here so 05 is not read as
+// that run.
+const SEEDED_RUN_EDGE = 'agent-000.0.0 gains payroll:read'
+
+// The fixed figure's drawing of each state: TREE's own nodes and edges at its own
+// coordinates, with the widened edge, its leaf and a ring on the root in the one green.
+// It is an <img> of an SVG, not an inline <svg>, because the panel's tree must stay its
+// only visible <svg> (delegation-reflow.spec.ts). Labels stay in the HTML around it.
+// Colours are the home.css tokens --ink, --steel, --signal and --paper-2.
+const MINI = { ink: '#272d26', edge: '#59664f', accent: '#2b523b', paper: '#ffffff' }
+const miniTree = (widened: string | null) => {
+  const at = (id: string) => TREE.find((n) => n.id === id)!
+  const edges = TREE.filter((n) => n.parent).map((n) => {
+    const p = at(n.parent!)
+    const on = n.id === widened
+    return `<line x1="${p.x}" y1="${p.y + 18}" x2="${n.x}" y2="${n.y - 18}" stroke="${on ? MINI.accent : MINI.edge}" stroke-width="${on ? 7 : 3.5}" stroke-linecap="round"/>`
+  })
+  const ring = widened ? `<circle cx="${TREE[0].x}" cy="${TREE[0].y}" r="27" fill="none" stroke="${MINI.accent}" stroke-width="4"/>` : ''
+  const nodes = TREE.map((n) => {
+    const fill = n.id === 'root' ? MINI.ink : n.id === widened ? MINI.accent : MINI.paper
+    const stroke = n.id === 'root' ? MINI.ink : n.id === widened ? MINI.accent : MINI.edge
+    return `<circle cx="${n.x}" cy="${n.y}" r="18" fill="${fill}" stroke="${stroke}" stroke-width="3"/>`
+  })
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="384" height="262" viewBox="72 14 384 262">${edges.join('')}${ring}${nodes.join('')}</svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
 export function DelegationPanel({ hydrate = false }: { hydrate?: boolean }) {
   // Reserve the controls' space in the initial HTML. A failed script leaves the
   // complete computed baseline visible without presenting inoperative buttons.
@@ -83,7 +112,7 @@ export function DelegationPanel({ hydrate = false }: { hydrate?: boolean }) {
       kicker="05 · Delegated authority"
       title="Widen one edge. Watch the root's blast radius move."
       lede="A correct capability token can only narrow as it is delegated, so an ancestor reaches exactly its own grant. Break that on any edge and authority flows back up the tree."
-      how={`Six hand-built synthetic identities. An identity's reach is its own grant plus every descendant's, counted over ${sensitive} sensitive resources.`}
+      how={`Six hand-built synthetic identities in an interactive tree rooted at ${TREE[0].label}. It is not experiment 06's seeded fleet, whose recorded run widens a different edge: ${SEEDED_RUN_EDGE}. An identity's reach is its own grant plus every descendant's, counted over ${sensitive} sensitive resources; its blast-radius index (BRI) is the share of those ${sensitive} it can reach.`}
       shows={`With every child narrowing, the root reaches ${REACH_BEFORE.length} of ${sensitive}; one widened edge lifts it to ${REACH_AFTER.length} of ${sensitive} while the root's own grant stays the same. It does not test a real permission system.`}
     >
       {(['wide', 'narrow'] as const).map((layout) => {
@@ -154,9 +183,11 @@ export function DelegationPanel({ hydrate = false }: { hydrate?: boolean }) {
           Two fixed states: the root's reach before and after {FIGURE_LEAF.label} gains {FIGURE_LEAF.widen}, a scope its parent {at(FIGURE_LEAF.parent).label} never held
         </figcaption>
         <div className="reach-fig__states">
-          {[{ name: 'Before', reach: REACH_BEFORE }, { name: 'After', reach: REACH_AFTER }].map((state) => (
+          {[{ name: 'Before', reach: REACH_BEFORE, widened: null }, { name: 'After', reach: REACH_AFTER, widened: FIGURE_LEAF.id }].map((state) => (
             <div key={state.name}>
               <p className="reach-fig__head"><b>{state.name}</b> · {TREE[0].label} reaches <b>{state.reach.length} of {sensitive}</b> sensitive resources.</p>
+              <img className="reach-fig__tree" src={miniTree(state.widened)} width="176" height="120" alt="" />
+
               <ul className="reach-fig__nodes" aria-label={`${state.name}: sensitive resources`}>
                 {SENSITIVE_IDS.map((id) => {
                   const reached = state.reach.includes(id)

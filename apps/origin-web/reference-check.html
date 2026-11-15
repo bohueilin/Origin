@@ -45,7 +45,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2d450846" />
+    <link rel="stylesheet" href="/home.css?v=012f7e7d" />
 
     <style>
       .rc-grid { display: grid; gap: 22px; margin-top: 26px; }
@@ -232,6 +232,8 @@
       /* Which battery the scores above are for, and the IAM battery's scores for the same two presets. */
       .rcx-fig__battery { max-width: 70ch; margin: 6px 0 0; font-size: var(--fs-13); line-height: 1.5; color: var(--ink-soft); }
       .rcx-fig__battery code { font: var(--fs-12)/1.45 var(--font-mono); color: var(--ink); white-space: nowrap; }
+      /* Release 6 Phase 3: without JavaScript, one line ties the two static figures to the tool. */
+      .rcx-nojs { max-width: 70ch; margin: 22px 0 0; font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
       .rcx-anat { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
       .rcx-anat > li { min-width: 0; display: grid; gap: 6px; align-content: start; }
       .rcx-anat__lbl { font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--signal-ink); }
@@ -386,19 +388,21 @@
       <section class="section vband" aria-label="Recorded synthetic policy evaluation"><div class="shell">
           <figure class="vband__fig">
             <div class="vband__wrap">
-              <video class="vband__v" poster="/video/shot04-2026-09-28.webp"
+              <video class="vband__v" poster="/video/shot04-2026-11-15.webp"
                      width="1280" height="720" muted playsinline controls preload="none"
                      aria-label="Screen recording: 12 of 12 synthetic selected-policy decisions match the oracle; signed policy-evaluation evidence is downloaded, the legacy credential VOIDs with code 4 after a tool change, and the downloaded evidence verifies UNTRUSTED.">
-                <source src="/video/shot04-2026-09-28.mp4" type="video/mp4" />
-                <track kind="captions" srclang="en" label="English" src="/video/shot04-2026-09-28.vtt" />
+                <source src="/video/shot04-2026-11-15.mp4" type="video/mp4" />
+                <track kind="captions" srclang="en" label="English" src="/video/shot04-2026-11-15.vtt" />
               </video>
             </div>
             <figcaption class="vband__cap evidence-contract">
-              <span class="vband__bar"><span class="pill pill--rec vband__pill">Recorded &middot; one take &middot; synthetic data</span> <b class="vband__sum">Recorded 2026-09-28 (57d5ccf) &middot; one continuous take &middot; synthetic demo data</b></span>
-              <span class="vband__detail">Recorded 2026-09-28 on originphysicalai.com (57d5ccf), using synthetic demo data. 12 of 12 selected-policy decisions match the deterministic oracle on a synthetic battery; no agent is contacted. Signed policy-evaluation evidence is downloaded with a browser-session key. Adding <code>payments.transfer</code> produces a legacy credential VOID (code 4); the downloaded evidence is unchanged. The file is pasted into /verify and returns UNTRUSTED: intact, but its session signer is unpinned. This is not execution evidence or deployment permission.</span>
-              <small>Duration 0:41. Captions and a cursor dot are overlaid; the run is one continuous take. <a href="https://github.com/bohueilin/Origin/blob/main/apps/origin-web/scripts/RECORDINGS.md">Recording method and provenance</a>.</small></figcaption>
+              <span class="vband__bar"><span class="pill pill--rec vband__pill">Recorded &middot; one take &middot; synthetic data</span> <b class="vband__sum">Recorded 2026-11-15 (49b5cd0) &middot; synthetic demo data</b></span>
+              <details class="vband__prov-details"><summary>Full provenance and limits</summary>
+                <span class="vband__detail">Recorded 2026-11-15 on originphysicalai.com (49b5cd0), using synthetic demo data. 12 of 12 selected-policy decisions match the deterministic oracle on a synthetic battery; no agent is contacted. Signed policy-evaluation evidence is downloaded with a browser-session key. Adding <code>payments.transfer</code> produces a legacy credential VOID (code 4); the downloaded evidence is unchanged. The file is pasted into /verify and returns UNTRUSTED: intact, but its session signer is unpinned. This is not execution evidence or deployment permission.</span>
+                <small>Duration 0:42. Captions and a cursor dot are overlaid; the run is one continuous take. <a href="https://github.com/bohueilin/Origin/blob/main/apps/origin-web/scripts/RECORDINGS.md">Recording method and provenance</a>.</small>
+              </details></figcaption>
           </figure>
-          <p class="vband__cap vband__note">Recorded <time datetime="2026-09-28">2026-09-28</time>; the page has changed since (L0–L4 tier labels were removed and the record now states its result in format 1.1.0).</p>
+          <p class="vband__cap vband__note">Recorded <time datetime="2026-11-15">2026-11-15</time>; the pages have changed since (/reference-check and /verify now open with a static specimen beside the introduction, and /verify shows a labelled preview before anything is verified).</p>
       </div></section>
       <section class="section rcx" aria-labelledby="rcx-title">
         <div class="shell">
@@ -471,7 +475,7 @@
               </div>
             </div>
             <span class="rcx-fig__note">Graded by <code>support-oracle-v1</code> on battery <code>support-gym-v1</code>.</span>
-            <p class="rcx-fig__battery" id="rcx-battery">Scores above are for the customer-support synthetic battery (<code>support-gym-v1</code>); on the IAM battery (<code>iam-gym-v1</code>), Least-privilege matches 11 of 12 (1 stricter miss) and Permissive matches 3 of 12.</p>
+            <p class="rcx-fig__battery" id="rcx-battery">Scores above are for the customer-support synthetic battery (<code>support-gym-v1</code>); on the IAM battery (<code>iam-gym-v1</code>), Least-privilege matches 11 of 12 (1 stricter miss), Moderate matches 8 of 12 with 3 over-grants and 1 looser miss, and Permissive matches 3 of 12.</p>
           </figure>
 
           <figure class="rcx-fig" id="rcx-row" aria-labelledby="rcx-row-title" aria-describedby="rcx-row-desc">
@@ -508,6 +512,7 @@
             </dl>
             </div>
           </figure>
+          <noscript><p class="rcx-nojs">The static preset comparison and annotated row above show the results the interactive tool produces on the default customer-support battery.</p></noscript>
         </div>
       </section>
     </main>

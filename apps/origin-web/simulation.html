@@ -39,7 +39,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon-2026-09-28.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2d450846" />
+    <link rel="stylesheet" href="/home.css?v=012f7e7d" />
 
     <style>
       .sim-wrap { display: grid; gap: 18px; margin-top: 24px; }
@@ -133,7 +133,7 @@
       <section class="section labs-read" aria-labelledby="sim-read-title">
         <div class="shell">
           <h2 id="sim-read-title">How to read the result</h2>
-          <p><b>What runs.</b> 2 to 6 robots on a fixed 14 × 12 grid with four shelf columns. Each robot's route comes from the deterministic oracle. A wait-only coordinator holds a robot when its next cell is taken by a robot still on its route or is, now or on the next tick, the human marker's cell. It does not re-plan or keep robots out of a finished robot's parked cell, and the human marker follows a fixed loop without yielding. New layout draws new orders, not new shelving.</p><p><b>Verdicts.</b> Finish: every order delivered and no collision event counted. Escalate: the coordinator deadlocks, the oracle escalates an order, or a collision event is counted. Refuse: an order needs a restricted cell; this scene has none.</p><p><b>Collision events.</b> Two robots in one cell, including a finished robot parked in its cell; a robot in the human marker's cell; or two of them swapping cells in one tick. A pair that stays together for several ticks counts once.</p><p><b>Limits.</b> Grid hops, not motion: no speeds, footprints, sensing or real facility.</p>
+          <p><b>What runs.</b> 2 to 6 robots on a fixed 14 × 12 grid with four shelf columns. Each robot's route comes from the deterministic oracle. A wait-only coordinator holds a robot when its next cell is taken by a robot still on its route or is, now or on the next tick, the human marker's cell. It does not re-plan or keep robots out of a finished robot's parked cell, and the human marker follows a fixed loop without yielding. New layout draws new orders, not new shelving.</p><p><b>Verdicts.</b> Finish: every order delivered and no collision event counted. Escalate: the coordinator deadlocks, the oracle escalates an order, or a collision event is counted. Refuse: an order needs a restricted cell; this scene has none.</p><p><b>Collision events.</b> Two robots in one cell, including a finished robot parked in its cell; a robot in the human marker's cell; or two of them swapping cells in one tick. A pair that stays together for several ticks counts once. In a deadlocked run, each repeated pass of the human marker through a stopped robot's cell counts as a new collision event.</p><p><b>Limits.</b> Grid hops, not motion: no speeds, footprints, sensing or real facility.</p>
         </div>
       </section>
     </main>

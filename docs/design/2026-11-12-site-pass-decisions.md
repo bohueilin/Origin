@@ -332,3 +332,44 @@ The film caption now says that, unlike the illustrated scene, this result is rea
 - **`/security`:** an index of the six experiments, with "Start here: 04 or 05".
 
 `/proof` gains a TR-A002 card under its hero buttons: 12 scripted events, a SHA-256 hash chain, the final digest prefix and the re-check commands. Like the page's full block, it downloads the published JSON (`curl -sO https://originphysicalai.com/proof/tr-a002.json`) before running `node scripts/verify-tr-a002.mjs tr-a002.json`, because a fresh clone has no `tr-a002.json` in `apps/origin-web`.
+
+## Release 6, Phase 3 — re-recorded demos, drawn figures and precision
+
+**Re-recorded demos.** The three recordings (`/verify`, `/over-grant`, `/reference-check`) were re-recorded on 2026-11-15 against the live Release 5 site (`49b5cd0`), with the repository's own recorders. Each is one continuous take on synthetic data, with only first-party and Google Fonts GET requests allowed, and passes the recording contract.
+
+**Captions.** The old renderer drew a full-width top band and large caption bars over the recorded interface. Now:
+- one small "RECORDED · ONE TAKE · SYNTHETIC DATA" pill sits in a corner for the whole take;
+- at most one compact caption bar shows at a time, anchored near the bottom of the picture, at most 78% of the frame wide, with nothing at 0:00 but the pill;
+- the site's player tray keeps the native controls below the picture.
+
+Release 5 fills the `/verify` field from the link, so the `/reference-check` recorder now checks that the record the link carries matches the download, clears the field and requires it empty, then pastes the download and requires the field to match it. The edit drops the "Loaded from a shared link" note, so the verdict is for the pasted file.
+
+The dated note under that recording says what has changed since: Release 6 adds a hero specimen to `/reference-check` and `/verify`, and a preview to `/verify`. The superseded 2026-09-28 files are removed.
+
+**Provenance.** Each recorded figure shows a one-line summary ("Recorded 2026-11-15 (49b5cd0) · synthetic demo data") with the pill. A "Full provenance and limits" disclosure holds the remaining sentences, word for word; it is a 44 px target with the site's focus ring.
+
+**Two trees, named apart.** The "5 of 9 → 6 of 9" reach figures describe two different trees:
+- the recorded seeded run on `/over-grant`, where `agent-000.0.0` gains `payroll:read`;
+- the interactive six-identity tree in `/security` experiment 05.
+
+Each is now labelled as its own tree. "BRI" is spelled out where it is defined: blast-radius index, the share of the 9 sensitive resources an identity can reach.
+
+**Precision fixes.**
+- **`/security`** says where to start (experiment 04 or 05). Experiment 04 now explains its 11 of 12: `iam-06` is a stricter miss, and 12 of 12 would mean grading the answer key against itself.
+- **`/verify`** opens its workspace with one line on what the page checks and what its result does not establish.
+- **`/reference-check`** gives the IAM Moderate score (8 of 12, 3 over-grants, 1 looser miss). It also tells readers without JavaScript that the comparison and the annotated row show the tool's results on the support battery.
+- **`/simulation`** explains that in a deadlocked run each repeated pass of the human marker through a stopped robot's cell counts as a new collision event.
+- **`/operations`** labels its chip "target: collisions = 0", and its reading guide says the wave caption reports the counted events.
+- **`/capture`** names the score's three weighted terms (map confidence 45%, label coverage 35%, trace completeness 20%). It calls the trace digest what it is: a 32-bit checksum that does not cover the tasks or the versions. Its footer says a floor-plan image you add is sent to Origin's parse endpoint, which refuses it on the public site.
+
+**Framing and links.**
+- `/capture` gains a static H1 and a "How to read this page" frame. Its flow strip uses the four-beat maxim, and the page links to `/labs`, `/proving-ground` and `/reference-check`.
+- `/foundry` and the research dashboard scope their line as "In this lab: Gemma proposes; Origin's verifier checks". A lint rule forbids presenting the old line as the site's maxim.
+- `/trust` and home section 01 link to the explainer.
+- `/trust` tells readers without JavaScript where the release's gate summary is. It gives no fixed suite count, which could drift.
+
+**Drawn figures.**
+- `/proof`'s ladder has SVG nodes, rails and a dashed outline for the unearned rung.
+- `/over-grant`'s bar and delegation figures are drawn in SVG, with the facts kept as text. In forced-colours mode they take system colours, as `/proof`'s ladder does.
+- The six `/labs` diagrams are named images with descriptions.
+- `/brief` prints its boundary and contact lines at 10.5 px and still fits one page.

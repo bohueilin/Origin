@@ -46,7 +46,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2d450846" />
+    <link rel="stylesheet" href="/home.css?v=012f7e7d" />
 
     <style>
       /* Local helpers layered on top of the shared design system — tables + status badges. */
@@ -114,6 +114,13 @@
       /* A legacy stamp's restored ending: a shade lighter than the stamped text (5.3:1 on the board's
          white), then a dagger keyed to the note under the table. */
       #gates-scoreboard .gates-restored { margin: 10px 0 0; font-size: var(--fs-12); line-height: 1.6; color: var(--steel); }
+      /* Without JavaScript the board holds one static line that links the stamped summary; the renderer replaces it. */
+      #gates-scoreboard .gates-static { margin: 0; }
+      #gates-scoreboard .gates-static a { text-decoration: underline; text-underline-offset: 2px; }
+      /* Release 6 Phase 3: a standalone "Read next" text link under the hero actions, styled like
+         /proof's arrow links, with a 44px target. */
+      .trust-readnext { margin: 14px 0 0; }
+      .trust-readnext a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-14); font-weight: 600; color: var(--signal-ink); text-decoration: underline; text-underline-offset: 2px; }
 
       /* Pass 2 Phase 3: print. The shared editorial stylesheet already prints this page in black on white
          with the header, footer and buttons hidden; these rules finish it. Print only, so the
@@ -140,7 +147,7 @@
         body.trust-page .kicker { break-after: avoid; }
       }
     </style>
-    <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
+    <link rel="stylesheet" href="/editorial.css?v=e89c1932" />
   </head>
 
   <body class="editorial trust-page">
@@ -180,6 +187,7 @@
           <p class="section__lede">A useful reference check starts with a clear boundary. Origin evaluates a bound configuration against deterministic synthetic tasks and gives reviewers an artifact they can recheck.</p>
           <p class="editorial-caption">Working prototype. Seeking design partners. Not production SaaS or compliance certification. Not a guarantee of approval.</p>
           <div class="editorial-actions"><a class="btn btn--primary" href="/verify">Inspect an artifact</a><a class="btn btn--ghost" href="/reference-check-vs-runtime">Understand the boundary</a></div>
+          <p class="trust-readnext"><a href="/reference-check-vs-runtime">Read next: what runs in your browser today vs. the proposed pilot architecture →</a></p>
         </div></div><!-- ORIGIN:POSTURE -->
         <nav class="editorial-jumps" aria-label="On this page"><a href="#posture"><span>01</span>Current posture</a><a href="#gated"><span>02</span>Verification</a><a href="#data"><span>03</span>Data &amp; retention</a><a href="#controls"><span>04</span>Responsibility</a><a href="#packet"><span>05</span>Security review</a></nav>
       </div></section>
@@ -190,7 +198,7 @@
       </div></section>
       <section class="editorial-section" id="gated" aria-labelledby="gated-title"><div class="shell">
         <div class="editorial-heading"><p class="kicker">02 / Verification</p><div><h2 id="gated-title">The checks have a record, too.</h2><p>The deterministic oracle is the sole label and reward authority. <code>make gates-all</code> runs the public repository's build, tests, evidence checks, and honesty checks. Inspect the <a href="https://github.com/bohueilin/Origin/blob/main/.github/workflows/ci.yml">CI definition</a> or reproduce the checks locally.</p></div></div>
-        <div id="gates-scoreboard" class="mono-note">Reproduce locally with <code>make gates-all</code>. The gate snapshot shipped with this release loads here (needs JavaScript).</div>
+        <div id="gates-scoreboard" class="mono-note"><p class="gates-static">The gate summary shipped with this release is at <a href="/trust/gates-summary.json">/trust/gates-summary.json</a>; the full per-suite table renders here with JavaScript. Reproduce locally with <code>make gates-all</code>.</p></div>
         <p class="editorial-caption">A timestamped snapshot is evidence of that run, not a live assurance. Numbers in this scoreboard are reproducible under this verifier on the public repository. Private research metrics published elsewhere have separate provenance.</p>
       </div></section>
             <script type="module">

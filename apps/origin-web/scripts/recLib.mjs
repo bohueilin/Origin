@@ -93,7 +93,7 @@ export async function openRecording(name, pathname) {
   const { chromium } = await import('playwright')
   const fs = await import('node:fs/promises')
   const { createHash } = await import('node:crypto')
-  const out = `/tmp/rec/${name}`
+  const out = `${process.env.REC_DIR || '/tmp/rec'}/${name}`
   await fs.mkdir(out, { recursive: true })
   try {
     await fs.rename(`${out}/run.json`, `${out}/run-previous-${Date.now()}.json`)

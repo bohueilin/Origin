@@ -19,7 +19,7 @@ The dated 1200px `lab` variant, 800px `proving-floor` variant and 1280px review 
 
 The WebP images are optimized encodings of the approved generated originals. None of these brand assets is product evidence.
 
-Three synthetic product recordings made on 2026-09-28 at release `57d5ccf` live under `/video/` with dated names. They replace the withdrawn recordings and the generated `05-second-reader` clip. Every recording is click-to-play, carries a persistent disclosure, and has a figure description that states its scope. The attestation recording appears on both `/` and `/verify`; the other takes show the in-page over-grant analyzer and the selected-policy reference check. Raw masters stay outside Git. See [the recording method](../../scripts/RECORDINGS.md), caption specifications and run manifests under `scripts/` for facts, hashes and reproducibility.
+Three synthetic product recordings made on 2026-11-15 at release `49b5cd0` live under `/video/` with dated names. They replace the withdrawn recordings and the generated `05-second-reader` clip. Every recording is click-to-play, carries a persistent disclosure, and has a figure description that states its scope. The attestation recording appears on both `/` and `/verify`; the other takes show the in-page over-grant analyzer and the selected-policy reference check. Raw masters stay outside Git. See [the recording method](../../scripts/RECORDINGS.md), caption specifications and run manifests under `scripts/` for facts, hashes and reproducibility.
 
 ## Origin mark · 2026-09-28
 

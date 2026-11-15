@@ -13,14 +13,15 @@ const stamp = (s) => {
   return `${pad(Math.floor(ms / 3_600_000))}:${pad(Math.floor(ms / 60_000) % 60)}:${pad(Math.floor(ms / 1000) % 60)}.${pad(ms % 1000, 3)}`
 }
 
-// captions[0] is the persistent disclosure tag (whole take); it becomes a NOTE, and the
-// figcaption already states it. The remaining captions become cues in order.
+// captions[0] is the corner pill shown for the whole take; it becomes a NOTE with the
+// take's provenance, which the figcaption also states. The remaining captions become cues
+// in order.
 export function vttFor(run) {
   const [tag, ...cues] = run.render.captions
   return [
     'WEBVTT',
     '',
-    `NOTE ${tag.text}`,
+    `NOTE ${tag.text} · recorded ${run.date} on ${run.host} (${run.commit}) · captions and cursor dot overlaid`,
     ...cues.flatMap((c, i) => ['', String(i + 1), `${stamp(c.from_s)} --> ${stamp(c.to_s)}`, c.text]),
     '',
   ].join('\n')

@@ -46,7 +46,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2d450846" />
+    <link rel="stylesheet" href="/home.css?v=012f7e7d" />
 
     <style>
       /* Local helpers for the live demo panels, layered on the shared design system. */
@@ -103,8 +103,13 @@
       .og-fig { max-width: 920px; margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--line); }
       .og-fig__total { margin: 10px 0 8px; font-size: var(--fs-14); color: var(--ink-soft); }
       .og-fig__total b { font-size: var(--fs-22); color: var(--ink); font-variant-numeric: tabular-nums; }
-      .og-bar { display: flex; height: 28px; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; background: var(--paper-2); }
-      .og-bar__used { background: var(--ink); }
+      /* Release 6 Phase 3: the held bar is drawn in SVG. Widths are percentages of the drawing,
+         so the split stays proportional at every width; the bracket marks the never-exercised
+         part in the one green. Labels and numbers stay in the HTML key below it. */
+      .og-bar { display: block; width: 100%; overflow: visible; }
+      .og-bar__held { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1.5px; }
+      .og-bar__used { fill: var(--ink); }
+      .og-bar__brace { stroke: var(--signal); stroke-width: 2px; }
       .og-bar__key { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 12px 0 0; }
       .og-bar__key > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
       .og-bar__key dt { display: flex; align-items: center; gap: 8px; font-size: var(--fs-14); color: var(--ink-soft); }
@@ -115,17 +120,37 @@
       .og-delegation .reach-fig { display: none; }
       .og-figs { padding-block: 8px 28px; }
       .og-figs__scope { max-width: 75ch; margin: 14px 0 0; font-size: var(--fs-14); line-height: 1.7; color: var(--ink-soft); }
-      .og-chain { --indent: 22px; list-style: none; margin: 14px 0 18px; padding: 0; font-size: var(--fs-14); line-height: 1.5; color: var(--ink-soft); }
-      .og-chain li::before, .og-chain li::after { box-sizing: border-box; }
-      .og-chain li { position: relative; padding: 4px 0 4px 20px; }
-      .og-chain li + li { margin-left: var(--indent); }
-      .og-chain li + li + li { margin-left: calc(2 * var(--indent)); }
-      .og-chain li + li::before { content: ''; position: absolute; left: calc(4px - var(--indent)); top: -8px; width: calc(var(--indent) - 4px); height: 24px; border-left: 1.5px solid var(--line-2); border-bottom: 1.5px solid var(--line-2); }
-      .og-chain li.is-widened::before { border-color: var(--signal); border-width: 3px; }
-      .og-chain li::after { content: ''; position: absolute; left: 0; top: 11px; width: 10px; height: 10px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper-2); }
-      .og-chain li:first-child::after { background: var(--ink); }
+      /* The delegation path, drawn: each row carries an SVG of its node and the edge from its
+         parent, in a gutter left of the text. A row's drawing runs from its node to its own
+         bottom edge and the next row's picks up at its top, so the edges stay joined however
+         the text wraps. The widened edge and its node are the one green. */
+      .og-fig__which { max-width: 75ch; margin: 8px 0 0; font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
+      .og-fig__which code { font-family: var(--font-mono); font-size: var(--fs-13); color: var(--ink); }
+      .og-chain { list-style: none; margin: 14px 0 18px; padding: 0; font-size: var(--fs-14); line-height: 1.5; color: var(--ink-soft); }
+      .og-chain li { position: relative; min-height: 32px; padding: 5px 0 6px 80px; }
+      .og-chain__g { position: absolute; left: 0; top: 0; width: 72px; height: 100%; overflow: visible; }
+      .og-chain__edge { fill: none; stroke: var(--steel); stroke-width: 1.5px; }
+      .og-chain__edge--widened { stroke: var(--signal); stroke-width: 3px; }
+      .og-chain__node { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1.5px; }
+      .og-chain__node--root { fill: var(--ink); }
+      .og-chain__node--widened { fill: var(--signal); stroke: var(--signal); }
       .og-chain code { font-family: var(--font-mono); font-size: var(--fs-13); color: var(--ink); }
       .og-chain .is-widened code:last-child { color: var(--signal-ink); font-weight: 700; }
+      /* Forced colours leave SVG fills and strokes as authored, so both drawings and the bar's
+         key take system colours there: ink parts CanvasText, paper parts Canvas, and the one
+         green (the widened edge, its node and the never-exercised bracket) Highlight. */
+      @media (forced-colors: active) {
+        .og-bar__held { fill: Canvas; stroke: CanvasText; }
+        .og-bar__used { fill: CanvasText; }
+        .og-bar__brace { stroke: Highlight; }
+        .og-bar__key i { forced-color-adjust: none; background: Canvas; border-color: CanvasText; }
+        .og-bar__key i.is-used { background: CanvasText; border-color: CanvasText; }
+        .og-chain__edge { stroke: CanvasText; }
+        .og-chain__edge--widened { stroke: Highlight; }
+        .og-chain__node { fill: Canvas; stroke: CanvasText; }
+        .og-chain__node--root { fill: CanvasText; }
+        .og-chain__node--widened { fill: Highlight; stroke: Highlight; }
+      }
       .og-fig__result { margin: 16px 0 0; font-size: var(--fs-14); line-height: 1.6; color: var(--ink-soft); }
       .og-fig__result b { color: var(--ink); }
       @media (max-width: 699px) {
@@ -134,7 +159,7 @@
         .reach-fig__nodes li { padding-inline: 2px; }
         .og-bar__key { display: grid; gap: 6px; }
         .og-bar__key > div { flex-wrap: nowrap; justify-content: space-between; }
-        .og-chain { --indent: 14px; }
+        .og-chain li { padding-left: 76px; }
       }
       /* Release 6 Phase 2: the hero is a poster. From 960 px the copy holds the left ~55% and the
          held-versus-exercised meter the right ~45%; phones keep one column, meter after the copy.
@@ -248,7 +273,14 @@
           <figure class="og-fig" aria-labelledby="og-fig-held-cap">
             <figcaption id="og-fig-held-cap">Granted scopes held at window start, split by whether they were exercised</figcaption>
             <p class="og-fig__total"><b>8,675</b> granted scopes</p>
-            <div class="og-bar" aria-hidden="true"><span class="og-bar__used" style="width: 36.8%"></span></div>
+            <!-- The used rect's inline width repeats its width attribute; recordedFigures.test.ts pins it. -->
+            <svg class="og-bar" width="100%" height="44" aria-hidden="true" focusable="false">
+              <rect class="og-bar__held" x="0" y="0" width="100%" height="28" />
+              <rect class="og-bar__used" x="0" y="0" width="36.8%" height="28" style="width: 36.8%" />
+              <line class="og-bar__brace" x1="36.8%" x2="36.8%" y1="34" y2="44" />
+              <line class="og-bar__brace" x1="100%" x2="100%" y1="34" y2="44" />
+              <line class="og-bar__brace" x1="36.8%" x2="100%" y1="44" y2="44" />
+            </svg>
             <dl class="og-bar__key">
               <div><dt><i class="is-used" aria-hidden="true"></i>Exercised in the window</dt><dd data-og="exercised">3,194 · 36.8%</dd></div>
               <div><dt><i aria-hidden="true"></i>Never exercised</dt><dd data-og="never"><b>5,481 · 63.2%</b></dd></div>
@@ -256,10 +288,11 @@
           </figure>
           <figure class="og-fig" aria-labelledby="og-fig-reach-cap">
             <figcaption id="og-fig-reach-cap">Root agent-000's reach over 9 sensitive resources, before and after one widened edge</figcaption>
+            <p class="og-fig__which">In the recorded seeded run (experiment 06's fleet), <code>agent-000.0.0</code> gains <code>payroll:read</code>. The interactive tree just below is a different one, experiment 05's six hand-built identities rooted at platform: there, for example, <code>payroll-bot</code> gains <code>hr-records:read</code>, which also takes platform from 5 of 9 to 6 of 9.</p>
             <ol class="og-chain" aria-label="The delegation path that changed">
-              <li><code>agent-000</code> root; its own grant does not change</li>
-              <li><code>agent-000.0</code> holds no payroll scope</li>
-              <li class="is-widened"><code>agent-000.0.0</code> gains <code>payroll:read</code>, two hops below the root</li>
+              <li><svg class="og-chain__g" aria-hidden="true" focusable="false"><line class="og-chain__edge" x1="9" y1="22" x2="9" y2="100%" /><circle class="og-chain__node og-chain__node--root" cx="9" cy="16" r="6" /></svg><code>agent-000</code> root; its own grant does not change</li>
+              <li><svg class="og-chain__g" aria-hidden="true" focusable="false"><path class="og-chain__edge" d="M9 0V16H25" /><line class="og-chain__edge og-chain__edge--widened" x1="31" y1="22" x2="31" y2="100%" /><circle class="og-chain__node" cx="31" cy="16" r="6" /></svg><code>agent-000.0</code> holds no payroll scope</li>
+              <li class="is-widened"><svg class="og-chain__g" aria-hidden="true" focusable="false"><path class="og-chain__edge og-chain__edge--widened" d="M31 0V16H47" /><circle class="og-chain__node og-chain__node--widened" cx="53" cy="16" r="6" /></svg><code>agent-000.0.0</code> gains <code>payroll:read</code>, two hops below the root</li>
             </ol>
             <div class="reach-fig__states">
               <div>
@@ -302,17 +335,19 @@
       <section class="section vband" aria-label="Recorded synthetic authority analysis"><div class="shell">
           <figure class="vband__fig">
             <div class="vband__wrap">
-              <video class="vband__v" poster="/video/shot02-2026-09-28.webp"
+              <video class="vband__v" poster="/video/shot02-2026-11-15.webp"
                      width="1280" height="720" muted playsinline controls preload="none"
                      aria-label="Screen recording: 2074 synthetic identities, 63.2 percent unused granted scopes, root reach 55.6 to 66.7 percent; a separate planted corpus recovers 90 of 90 edges with 0 false positives.">
-                <source src="/video/shot02-2026-09-28.mp4" type="video/mp4" />
-                <track kind="captions" srclang="en" label="English" src="/video/shot02-2026-09-28.vtt" />
+                <source src="/video/shot02-2026-11-15.mp4" type="video/mp4" />
+                <track kind="captions" srclang="en" label="English" src="/video/shot02-2026-11-15.vtt" />
               </video>
             </div>
             <figcaption class="vband__cap evidence-contract">
-              <span class="vband__bar"><span class="pill pill--rec vband__pill">Recorded &middot; one take &middot; synthetic data</span> <b class="vband__sum">Recorded 2026-09-28 (57d5ccf) &middot; one continuous take &middot; synthetic demo data</b></span>
-              <span class="vband__detail">Recorded 2026-09-28 on originphysicalai.com (57d5ccf), using synthetic demo data. The in-page analyzer uses seed 20260818, 400 roots and 2,074 synthetic identities. 63.2% of granted scopes were never exercised in the window. Widening one delegation edge changes the root’s sensitive-resource reach from 55.6% to 66.7%. A fresh seeded corpus has 90 planted widened edges: 90/90 caught, 0 false positives against synthetic ground truth. The separate <a href='/trust/over-grant-bench.json'>published benchmark</a> uses 2,000 roots.</span>
-              <small>Duration 0:29. Captions and a cursor dot are overlaid; the run is one continuous take. <a href="https://github.com/bohueilin/Origin/blob/main/apps/origin-web/scripts/RECORDINGS.md">Recording method and provenance</a>.</small></figcaption>
+              <span class="vband__bar"><span class="pill pill--rec vband__pill">Recorded &middot; one take &middot; synthetic data</span> <b class="vband__sum">Recorded 2026-11-15 (49b5cd0) &middot; synthetic demo data</b></span>
+              <details class="vband__prov-details"><summary>Full provenance and limits</summary>
+                <span class="vband__detail">Recorded 2026-11-15 on originphysicalai.com (49b5cd0), using synthetic demo data. The in-page analyzer uses seed 20260818, 400 roots and 2,074 synthetic identities. 63.2% of granted scopes were never exercised in the window. Widening one delegation edge changes the root’s sensitive-resource reach from 55.6% to 66.7%. A fresh seeded corpus has 90 planted widened edges: 90/90 caught, 0 false positives against synthetic ground truth. The separate <a href='/trust/over-grant-bench.json'>published benchmark</a> uses 2,000 roots.</span>
+                <small>Duration 0:29. Captions and a cursor dot are overlaid; the run is one continuous take. <a href="https://github.com/bohueilin/Origin/blob/main/apps/origin-web/scripts/RECORDINGS.md">Recording method and provenance</a>.</small>
+              </details></figcaption>
           </figure>
           <div class="og-recorded-stats" aria-label="Recorded synthetic demonstration results">
             <p><span class="og-recorded-stats__value">63.2%</span> <span>of granted scopes never exercised in the window · seed 20260818, 400 roots, 2,074 synthetic identities · describes the demonstration, not a customer deployment</span></p>

@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
 const squash = (text: string | null) => (text ?? '').replace(/\s+/g, ' ').trim()
 
 // Each preset's summary on a battery, from the code /verify replays, with the stricter-miss count.
-async function presetScores(scenario: 'support' | 'iam', preset: 'least-privilege' | 'permissive') {
+async function presetScores(scenario: 'support' | 'iam', preset: 'least-privilege' | 'moderate' | 'permissive') {
   const { buildPolicyEvaluation } = await import('@origin/verifier-core/policyEvaluation')
   const { missDirection } = await import('@origin/verifier-core/missDirection')
   const { PRESETS, SUPPORT_PRESETS } = await import('../../src/certify/policySpec')
@@ -34,10 +34,13 @@ test('pass 2 follow-up: the comparison names its battery and gives the IAM batte
   const { IAM_GYM_VERSION } = await import('@origin/verifier-core/iamGym')
   const lp = await presetScores('iam', 'least-privilege')
   const perm = await presetScores('iam', 'permissive')
+  const mod = await presetScores('iam', 'moderate')
   // The owner's numbers, as the oracle returns them: no over-grant under least-privilege, so its
   // one miss is the stricter one.
   expect([lp.summary.matched, lp.summary.total, lp.summary.over_grants, lp.summary.misses, lp.stricter]).toEqual([11, 12, 0, 1, 1])
   expect([perm.summary.matched, perm.summary.total]).toEqual([3, 12])
+  // Release 6 Phase 3 adds the IAM Moderate score: 8 of 12, 3 over-grants and one looser miss.
+  expect([mod.summary.matched, mod.summary.total, mod.summary.over_grants, mod.summary.misses, mod.stricter]).toEqual([8, 12, 3, 1, 0])
   // The preset names are the ones the page's buttons show.
   expect(lp.label.startsWith('Least-privilege')).toBe(true)
   expect(perm.label.startsWith('Permissive')).toBe(true)
@@ -48,7 +51,9 @@ test('pass 2 follow-up: the comparison names its battery and gives the IAM batte
   await expect(line).toBeVisible()
   expect(squash(await line.textContent())).toBe(
     `Scores above are for the customer-support synthetic battery (${SUPPORT_GYM_VERSION}); on the IAM battery (${IAM_GYM_VERSION}), ` +
-    `Least-privilege matches ${lp.summary.matched} of ${lp.summary.total} (${lp.stricter} stricter miss) and Permissive matches ${perm.summary.matched} of ${perm.summary.total}.`,
+    `Least-privilege matches ${lp.summary.matched} of ${lp.summary.total} (${lp.stricter} stricter miss), ` +
+    `Moderate matches ${mod.summary.matched} of ${mod.summary.total} with ${mod.summary.over_grants} over-grants and ${mod.summary.misses} looser miss, ` +
+    `and Permissive matches ${perm.summary.matched} of ${perm.summary.total}.`,
   )
   await expect(line.locator('code')).toHaveText([SUPPORT_GYM_VERSION, IAM_GYM_VERSION])
   // It follows the support battery's grading note, inside the figure whose scores it qualifies.

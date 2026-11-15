@@ -283,7 +283,7 @@ function RsiVerifierCard() {
   return (
     <section className="fdy-card fdy-rsi-card">
       <div className="fdy-card__head">
-        <h2>Gemma proposes. Origin verifies.</h2>
+        <h2>In this lab: Gemma proposes; Origin's verifier checks</h2>
         <p>
           The checked-in demo turns a building map into deterministic simulated scenario tests. A model may propose
           variants in a separately configured backend; the oracle — never an LLM judge — recomputes every verdict

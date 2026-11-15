@@ -36,7 +36,7 @@ export function FloorLibrary({
     }
   }, [])
 
-  if (floors === null) return <div className="floorlib-empty">Loading reference floors…</div>
+  if (floors === null) return <div className="floorlib-empty floorlib-loading">Loading reference floors…</div>
   if (floors.length === 0) return <div className="floorlib-empty">No reference floors available.</div>
 
   function openViewer(f: FloorCatalogEntry, i: number) {

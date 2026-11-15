@@ -77,7 +77,7 @@ for (const [route, shot] of RECORDINGS) {
       expect((await pill.boundingBox())!.y, at).toBeGreaterThanOrEqual(box.top)
       const summary = figure.locator('.vband__sum')
       await expect(summary, at).toBeVisible()
-      await expect(summary, at).toHaveText(`Recorded ${date} (${commit}) · one continuous take · synthetic demo data`)
+      await expect(summary, at).toHaveText(`Recorded ${date} (${commit}) · synthetic demo data`)
     }
   })
 }
@@ -103,7 +103,7 @@ test('pass 2: the shot04 dated note stays its own line after the figure', async 
   const { date } = manifest('shot04')
   await page.goto('/reference-check')
   const note = page.locator('.vband > .shell > figure.vband__fig + p.vband__note')
-  await expect(note).toHaveText(`Recorded ${date}; the page has changed since (L0–L4 tier labels were removed and the record now states its result in format 1.1.0).`)
+  await expect(note).toHaveText(`Recorded ${date}; the pages have changed since (/reference-check and /verify now open with a static specimen beside the introduction, and /verify shows a labelled preview before anything is verified).`)
   expect(await note.evaluate((el) => Number(getComputedStyle(el).fontWeight))).toBeGreaterThanOrEqual(600)
   expect(await note.evaluate((el) => getComputedStyle(el).display)).toBe('block')
 })

@@ -7178,3 +7178,8 @@ select.field-input {
   font-size: var(--fs-11, 0.6875rem);
   line-height: 1.5;
 }
+
+/* Release 6 follow-up (Gate 7): on phones every tap target is at least 44 x 44 CSS px. */
+@media screen and (max-width: 760px) {
+  .embodiment-chip, .floorlib-use, .btn, .field-input { min-height: 44px; box-sizing: border-box; }
+}

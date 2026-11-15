@@ -354,3 +354,10 @@ body {
   font-size: var(--fs-12, 0.75rem);
   line-height: 1.5;
 }
+
+/* Release 6 follow-up (Gate 7): on phones every tap target is at least 44 x 44 CSS px.
+   A link inside running text grows with padding that moves no line (see home.css). */
+@media screen and (max-width: 760px) {
+  .fdy-btn, .fdy-foot a, .fdy-read__links a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; box-sizing: border-box; }
+  :is(p, li, small, span, label) > a:not([class]) { padding: calc(22px - .5em) 4px; margin-inline: -4px; }
+}

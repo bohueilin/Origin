@@ -571,3 +571,9 @@ body.product-route--proving-ground { overflow-x: clip; }
 .pg-section { min-width: 0; scroll-margin-top: 110px; }
 .pg-section:focus-visible { outline: 2px solid var(--signal); outline-offset: 6px; }
 .pg-wrap.product-workspace :is(.align-panel, .align-block) { box-shadow: none; }
+
+/* Release 6 follow-up (Gate 7): on phones every tap target is at least 44 x 44 CSS px. */
+@media screen and (max-width: 760px) {
+  .product-workspace :is(.sec-peek, .workspace-details) > summary { min-height: 44px; display: flex; align-items: center; }
+  .product-workspace :is(.vfy-file, .vfy-toggle) { min-height: 44px; box-sizing: border-box; }
+}

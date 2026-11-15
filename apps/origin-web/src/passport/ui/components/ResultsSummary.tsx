@@ -24,8 +24,8 @@ function approved(snap: PassportSnapshot, cap: Capability): boolean {
 function MailIcon() {
   return (
     <svg className="pp-mail-ico" viewBox="0 0 24 24" width="1.25em" height="1.25em" aria-hidden="true">
-      <rect x="2.5" y="5" width="19" height="14" rx="3.2" fill="#3b62d6" />
-      <path d="M4 8l8 5.4L20 8" fill="none" stroke="#bcd6ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="2.5" y="5" width="19" height="14" rx="3.2" fill="#2b523b" />
+      <path d="M4 8l8 5.4L20 8" fill="none" stroke="#dfe4d8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

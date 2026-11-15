@@ -269,3 +269,41 @@ After Release 4, an outside review and a pre-send verification found no false or
 **The home walkthrough on phones.** The walkthrough keeps one height across its five stages, so Play never shifts the page; on phones the tallest stages are now laid out more tightly. At 375 px the shared height drops from about 1,046 px to about 898 px, and the largest empty space under a shorter stage from about 285 px to about 208 px. No text or type size changed, and wider screens are unchanged.
 
 **`/brief` in print.** In print only, the five-stage figure hides its record-field codes and one caption phrase about them, so its text prints at 10.5 px or more instead of 9 px. The brief still prints on one page at A4 and Letter, and the screen is unchanged.
+
+## Release 6, Phase 1 — no blue, one fleet palette, no scroll-started motion
+
+**No blue or teal in served code.** The Style Lock allows one accent, forest green `#2b523b`. This phase removes the blue and teal that remained:
+- **`src/App.css`:**
+  - `.btn.primary` painted a blue-to-green gradient on the React pages' primary buttons (for example `/capture`). It is now flat forest green, `#203f2d` on hover.
+  - Every other gradient and blue or slate tone in the file is now a solid Style Lock token.
+  - Its header comment now states the Style Lock.
+- **The passport, account, sign-in and support-form styles:** blue focus rings, buttons and hovers are forest green; focus rings stay 2 px. The passport agent avatars and step chips drew navy and teal from a per-agent hue; they are now neutral, with a forest ring on the active agent and no glow.
+- **Pale-blue borders** on home, `/trust`, `/app` and `/foundry` use the neutral line.
+- **`/foundry`:** its trail tint is now sage. The human-only tint is a lighter plum, `#9a7bc6`, so the caption's "purple gate" stays true; it holds 3.34:1 on an empty floor cell.
+- **Keyboard focus:** controls that had no ring of their own showed the browser's blue one. `/foundry`, `/soc`, `/passport`, the `<summary>` toggles on `/capture` and `/app`, the Labs skip links and the recorded-demo players now show a forest ring on paper and a light ring on dark panels. The players' frame carries the ring, because the frame clips the video's own. The `/foundry` consent checkbox fills forest green. On the graphite verify strip of `/proof`, every ring is the on-dark tone: the forest ring measured 1.6:1 there.
+- **The research dashboard** (`/rsi/rsi_dashboard.html`) maps its cool greys and blues to the site's neutrals. No text or data changed.
+- **The licence-level colours** in `src/license.ts` are now steel, plum and olive.
+- **The proving-ground verdict dots** use the site's verify, warn and danger tokens.
+
+Third-party brand marks (Google, Coinbase) keep their own colours. `src/factorydad/` is an unserved prototype: it gains a README saying so and stays outside the scan.
+
+**One fleet palette.** The six fleet colours move to `src/shared/fleetPalette.ts`. `/simulation` and `/operations` now draw their robots in the same palette as `/proving-ground`: forest, ochre, plum, rose, umber and olive. This replaces a blue and a teal robot. Their canvas floors, shelves and stage backgrounds are warm paper and stone, the dock is forest green, and the proving-ground 3D background is warm stone. Only colours changed; the simulations compute the same results.
+
+**No scroll-started motion.** The home walkthrough already moved only when a visitor clicked Play, Prev, Next or a stage. Code that started motion on scroll or load, and that no page uses, is removed:
+- an older walkthrough's scroll observer;
+- a scroll-triggered step highlight;
+- a `[data-video]` block that started a film on load;
+- the unused `videoBand.ts`.
+
+The home hero film and its script are unchanged.
+
+**Tests.**
+- A unit test fails if any served source holds the named blue values or builds a colour from a hue variable.
+- Browser tests check, on six pages:
+  - the primary buttons are flat forest green;
+  - nothing paints blue or teal;
+  - on `/foundry` and `/proof`, every keyboard focus ring is solid, at least 3:1 on its ground and never blue, and the consent checkbox is forest green;
+  - the robots wear the fleet palette;
+  - the walkthrough stays on Bind while scrolled into view until a visitor presses Play.
+
+**Noted, not changed here.** The Labs playbacks on `/operations` and `/proving-ground` (2D and 3D) start playing when they scroll into view. Changing that alters three pages' behaviour, so it is left for the owner to decide.

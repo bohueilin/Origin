@@ -74,7 +74,6 @@ export interface AgentView {
   name: string
   role: string
   mono: string
-  hue: number
   status: AgentStatus
 }
 

@@ -21,6 +21,8 @@ import {
   applyWarehouseAction,
   initialWarehouseState,
 } from '../warehouse'
+// The robots wear the proving ground's fleet colours, so every Labs floor shares one palette.
+import { FLEET_COLORS } from '../shared/fleetPalette'
 
 export interface SimRobot {
   id: string
@@ -136,7 +138,6 @@ export function buildWarehouseScene(opts: { seed?: number; width?: number; heigh
   }
 
   const SKUS = ['A-17', 'B-04', 'C-92', 'D-33', 'E-51', 'F-08']
-  const COLORS = ['#2f6df6', '#0f9d6e', '#b97400', '#7c3aed', '#0891b2', '#db2777']
   const robots: SimRobot[] = []
   for (let i = 0; i < nRobots; i += 1) {
     const start = { x: 0, y: Math.min(height - 1, i * 2 + 1) }
@@ -168,7 +169,7 @@ export function buildWarehouseScene(opts: { seed?: number; width?: number; heigh
     }
     const oracle = bfsOracle(task)
     const { cells, itemIndex } = planToCells(task)
-    robots.push({ id: task.id, color: COLORS[i % COLORS.length], sku: SKUS[i % SKUS.length], task, oracleLabel: oracle.label, plan: cells, itemIndex })
+    robots.push({ id: task.id, color: FLEET_COLORS[i % FLEET_COLORS.length], sku: SKUS[i % SKUS.length], task, oracleLabel: oracle.label, plan: cells, itemIndex })
   }
 
   // human marker patrol: a deterministic loop through the aisles (the marker does not yield)

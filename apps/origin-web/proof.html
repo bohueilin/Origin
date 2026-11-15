@@ -27,7 +27,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon-2026-09-28.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=54a3dc77" />
+    <link rel="stylesheet" href="/home.css?v=2d450846" />
     <style>
       /* Standalone page shell — same pattern as brief.html */
       .proof { max-width: 960px; margin: 0 auto; padding: 32px 24px 72px; }
@@ -91,10 +91,10 @@
       .proof__card a { text-decoration: underline; text-underline-offset: 2px; }
 
       /* ── TR-A002 machine-emitted trace ── */
-      .tr2-exec { margin-top: 16px; background: var(--ink); color: #eef1f6; border-radius: 14px; padding: 22px 24px; box-shadow: var(--sh-sm); }
-      .tr2-exec p { margin: 0; font-size: 15px; line-height: 1.6; color: #d5dae4; }
+      .tr2-exec { margin-top: 16px; background: var(--ink); color: var(--on-dark); border-radius: 14px; padding: 22px 24px; box-shadow: var(--sh-sm); }
+      .tr2-exec p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--on-dark); }
       .tr2-exec b { color: #fff; }
-      .tr2-exec .tr2-not { display: block; margin-top: 12px; font-size: 13px; color: #aeb6c6; }
+      .tr2-exec .tr2-not { display: block; margin-top: 12px; font-size: 13px; color: var(--on-dark-soft); }
       .tr2-digest { margin-top: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--paper-3); border: 1px solid var(--line-2); border-radius: 12px; padding: 13px 16px; }
       .tr2-digest .tr2-digest__k { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--signal-ink); font-weight: 700; }
       .tr2-digest .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--ink); word-break: break-all; }
@@ -112,16 +112,19 @@
       .tr2-flow li.is-block { border-left-color: var(--ink-soft); background: var(--paper-2); }
       .tr2-flow li.is-seal { border-left-color: var(--ink); }
       /* verify command block */
-      .tr2-verify { margin-top: 18px; background: #0d1117; border-radius: 12px; padding: 16px 18px; }
-      .tr2-verify pre { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-13); color: #d5dae4; line-height: 1.7; white-space: pre-wrap; }
+      .tr2-verify { margin-top: 18px; background: var(--graphite); border-radius: 12px; padding: 16px 18px; }
+      .tr2-verify pre { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-13); color: var(--on-dark); line-height: 1.7; white-space: pre-wrap; }
       .tr2-verify .tr2-verify__c { color: #7fd88f; }
-      .tr2-verify .tr2-verify__cap { margin-top: 10px; font-size: var(--fs-13); color: #c5cbd6; }
+      .tr2-verify .tr2-verify__cap { margin-top: 10px; font-size: var(--fs-13); color: var(--on-dark-soft); }
       .tr2-verify__row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
       .tr2-verify__lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #7fd88f; font-weight: 700; margin: 0; }
-      .tr2-verify__copy { font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: #d5dae4; background: #1b2430; border: 1px solid #2b3644; border-radius: 7px; padding: 5px 11px; cursor: pointer; white-space: nowrap; }
-      .tr2-verify__copy:hover { background: #232f3d; }
+      .tr2-verify__copy { font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--on-dark); background: var(--graphite-2); border: 1px solid var(--line-dark); border-radius: 7px; padding: 5px 11px; cursor: pointer; white-space: nowrap; }
+      .tr2-verify__copy:hover { background: var(--line-dark); }
       .tr2-verify__copy:focus-visible { outline: 2px solid #7fd88f; outline-offset: 2px; }
-      .tr2-verify__plain { margin-top: 8px; font-size: var(--fs-13); color: #d5dae4; }
+      /* Every focus ring on the graphite strip is the on-dark tone: the shared forest ring is
+         1.6:1 here. Same specificity as home.css?v=2d450846's tamper-button ring, later in the cascade. */
+      .proof-page .tr2-verify :is(a, pre, button):focus-visible { outline-color: var(--on-dark); }
+      .tr2-verify__plain { margin-top: 8px; font-size: var(--fs-13); color: var(--on-dark); }
       .tr2-verify__plain b { color: #fff; }
       /* Why TR-A002 matters — executive, non-technical */
       .tr2why { margin-top: 18px; }

@@ -41,7 +41,7 @@ export function PlanTimeline({ snap }: { snap: PassportSnapshot }) {
                 <div className="pp-step-head">
                   <span className="pp-step-title">{step.title}</span>
                   {agent && (
-                    <span className="pp-step-agent" style={{ ['--hue' as string]: agent.hue }}>
+                    <span className="pp-step-agent">
                       <span className="pp-step-agent-mono">{agent.mono}</span>
                       {agent.name}
                     </span>

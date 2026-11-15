@@ -184,7 +184,7 @@
 .cset-role-badge { display: inline-block; font: 700 10px/1 var(--sans); letter-spacing: .04em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; vertical-align: 1px; }
 .cset-role-badge.role-user { color: #4f584b; background: #e5eadf; }
 .cset-role-badge.role-admin { color: #203f2d; background: #edf1e7; }
-.cset-role-badge.role-super_admin { color: #6d28d9; background: #efe9fb; }
+.cset-role-badge.role-super_admin { color: #6940a3; background: #f1ecf6; }
 .cset-rail-head .cset-role-badge { margin-top: 6px; align-self: flex-start; }
 /* Role lookup FAILED — deliberately not styled as a badge. A badge asserts a fact;
    this has to read as an unresolved error, or it becomes the silent demotion again. */
@@ -383,15 +383,16 @@
 }
 
 /* ---- Fleet permissions (the Fleet → Robot → Credential matrix) ---- */
-/* Per-fleet accent palette — six instrument-panel hues, reused for rail dots, robot chips,
-   and the selected-robot detail edge so a fleet reads as one color throughout. */
+/* Per-fleet accent palette — the six fleet colours of src/shared/fleetPalette.ts (no blue,
+   no teal), reused for rail dots, robot chips, and the selected-robot detail edge so a fleet reads
+   as one color throughout. */
 .fp-grid { --fp-c: #2b523b; }
 .fp-fleet[data-color="0"], .fp-robot[data-color="0"], .fp-detail[data-color="0"], .fp-fleet-head[data-color="0"] { --fp-c: #2b523b; }
-.fp-fleet[data-color="1"], .fp-robot[data-color="1"], .fp-detail[data-color="1"], .fp-fleet-head[data-color="1"] { --fp-c: #0b9d76; }
-.fp-fleet[data-color="2"], .fp-robot[data-color="2"], .fp-detail[data-color="2"], .fp-fleet-head[data-color="2"] { --fp-c: #c2521f; }
-.fp-fleet[data-color="3"], .fp-robot[data-color="3"], .fp-detail[data-color="3"], .fp-fleet-head[data-color="3"] { --fp-c: #7c4dd1; }
-.fp-fleet[data-color="4"], .fp-robot[data-color="4"], .fp-detail[data-color="4"], .fp-fleet-head[data-color="4"] { --fp-c: #b9781b; }
-.fp-fleet[data-color="5"], .fp-robot[data-color="5"], .fp-detail[data-color="5"], .fp-fleet-head[data-color="5"] { --fp-c: #1f8fb0; }
+.fp-fleet[data-color="1"], .fp-robot[data-color="1"], .fp-detail[data-color="1"], .fp-fleet-head[data-color="1"] { --fp-c: #8a5200; }
+.fp-fleet[data-color="2"], .fp-robot[data-color="2"], .fp-detail[data-color="2"], .fp-fleet-head[data-color="2"] { --fp-c: #6940a3; }
+.fp-fleet[data-color="3"], .fp-robot[data-color="3"], .fp-detail[data-color="3"], .fp-fleet-head[data-color="3"] { --fp-c: #9d2e68; }
+.fp-fleet[data-color="4"], .fp-robot[data-color="4"], .fp-detail[data-color="4"], .fp-fleet-head[data-color="4"] { --fp-c: #4a4238; }
+.fp-fleet[data-color="5"], .fp-robot[data-color="5"], .fp-detail[data-color="5"], .fp-fleet-head[data-color="5"] { --fp-c: #525e2c; }
 
 /* Top banner — representative (amber) vs live (green). The headline trust signal. */
 .fp-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid #d9ded3; background: #fbfaf6; }

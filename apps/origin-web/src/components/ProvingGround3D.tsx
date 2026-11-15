@@ -15,7 +15,7 @@ import { planMultiAgent, type MultiAgentPlan } from '../multiAgent'
 import type { GridPos } from '../warehouse'
 import type { RobotEmbodiment, PhysicalDomain } from '../environmentPlan'
 // One colour per fleet, shared with the editor and the 2D playback.
-import { FLEET_COLORS, FLEET_COLORS_HEX } from '../proving-ground/fleetPalette'
+import { FLEET_COLORS, FLEET_COLORS_HEX } from '../shared/fleetPalette'
 import './floorPlayback.css'
 
 const TICK_SECONDS = 0.78
@@ -332,8 +332,8 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0xe9edf2)
-    scene.fog = new THREE.Fog(0xe9edf2, maxDim * 2.4, maxDim * 6)
+    scene.background = new THREE.Color(0xefede6) // warm paper-stone (Style Lock: no grey-blue)
+    scene.fog = new THREE.Fog(0xefede6, maxDim * 2.4, maxDim * 6)
 
     const camera = new THREE.PerspectiveCamera(46, w0 / h0, 0.1, 1000)
     camera.position.set(maxDim * 0.95, maxDim * 0.95 + 3.2, maxDim * 1.25)

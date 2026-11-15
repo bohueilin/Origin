@@ -2,7 +2,7 @@
    Scoped under .dc-root; reuses passport tokens (--accent/--good/--mono/etc.)
    and defines fallbacks for any token not present in the parent scope. */
 .dc-root {
-  --dc-accent: var(--accent, #2f6df6);
+  --dc-accent: var(--accent, #2b523b);
   --dc-good: var(--good, #12a567);
   --dc-warn: var(--warn, #d98613);
   --dc-bad: var(--bad, #e0483f);
@@ -34,7 +34,7 @@
 .dc-thesis-mark {
   flex-shrink: 0; width: 8px; height: 8px; border-radius: 2px;
   background: var(--dc-accent);
-  box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.14);
+  box-shadow: 0 0 0 3px rgba(43, 82, 59, 0.14);
 }
 
 /* ---- the chain canvas: SVG attribution lines underneath, node rows on top ---- */
@@ -83,7 +83,7 @@ button.dc-node { cursor: pointer; font: inherit; color: inherit; }
 .dc-node-root { background: linear-gradient(165deg, var(--dc-panel), var(--dc-bg-2)); border-color: var(--dc-line-2); }
 .dc-node-traced {
   border-color: var(--dc-accent);
-  box-shadow: 0 0 0 1px var(--dc-accent), 0 14px 36px -18px rgba(47, 109, 246, 0.45);
+  box-shadow: 0 0 0 1px var(--dc-accent), 0 14px 36px -18px rgba(39, 45, 38, 0.3);
   transform: translateY(-1px);
 }
 .dc-node-dim { opacity: 0.5; filter: saturate(0.85); }
@@ -96,11 +96,11 @@ button.dc-node { cursor: pointer; font: inherit; color: inherit; }
   color: var(--dc-soft); font: 800 11px var(--dc-display); letter-spacing: 0.02em;
 }
 .dc-node-root .dc-glyph {
-  background: linear-gradient(150deg, #7aa2ff, #2f6df6 65%);
+  background: var(--dc-accent);
   border-color: transparent; color: #fff;
-  box-shadow: 0 6px 16px -6px rgba(47, 109, 246, 0.6);
+  box-shadow: none;
 }
-.dc-node-orch .dc-glyph { color: var(--dc-accent); border-color: rgba(47, 109, 246, 0.3); background: rgba(47, 109, 246, 0.08); }
+.dc-node-orch .dc-glyph { color: var(--dc-accent); border-color: rgba(43, 82, 59, 0.3); background: rgba(43, 82, 59, 0.08); }
 .dc-glyph-empty { color: var(--dc-muted); }
 
 .dc-node-id { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
@@ -152,7 +152,7 @@ button.dc-node { cursor: pointer; font: inherit; color: inherit; }
 /* ---- focus path callout ---- */
 .dc-callout {
   margin-top: 16px; padding: 12px 15px;
-  background: rgba(47, 109, 246, 0.05); border: 1px solid rgba(47, 109, 246, 0.22);
+  background: rgba(43, 82, 59, 0.05); border: 1px solid rgba(43, 82, 59, 0.22);
   border-radius: 12px; display: flex; align-items: center; gap: 11px;
   animation: dc-rise 240ms ease both;
 }
@@ -161,7 +161,7 @@ button.dc-node { cursor: pointer; font: inherit; color: inherit; }
   font-family: var(--dc-mono); font-size: 11px; color: var(--dc-soft);
   background: var(--dc-panel); border: 1px solid var(--dc-line-2); border-radius: 6px; padding: 2px 7px;
 }
-.dc-callout-hop-root { color: var(--dc-accent); border-color: rgba(47, 109, 246, 0.35); font-weight: 700; }
+.dc-callout-hop-root { color: var(--dc-accent); border-color: rgba(43, 82, 59, 0.35); font-weight: 700; }
 .dc-callout-arrow { color: var(--dc-muted); font-size: 11px; }
 .dc-callout-text { font-size: 12.5px; color: var(--dc-soft); line-height: 1.45; }
 .dc-callout-text b { color: var(--dc-ink); font-weight: 600; }

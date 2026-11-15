@@ -18,7 +18,9 @@ function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 }
 const LEVEL_CLS: Record<string, string> = { L0: 'ops-bad', L1: 'ops-bad', L2: 'ops-warn', L3: 'ops-ok', L4: 'ops-ok' }
-const VERDICT_DOT: Record<string, string> = { finish: '#0f9d6e', escalate: '#b97400', refuse: '#e5484d' }
+// Each wave's verdict comes from the oracle, so its dot uses the site's finish / escalate /
+// refuse tokens (--verify, --warn, --danger).
+const VERDICT_DOT: Record<string, string> = { finish: '#0f7a57', escalate: '#8a5800', refuse: '#b23a30' }
 
 export function OperationsPage() {
   const [robots, setRobots] = useState(4)

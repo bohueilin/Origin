@@ -22,7 +22,6 @@ function Avatar({ a, active }: { a: AgentView; active: boolean }) {
   return (
     <span
       className={`pp-ava pp-ava-${a.status} ${active ? 'pp-ava-active' : ''}`}
-      style={{ ['--hue' as string]: a.hue }}
       title={`${a.name} — ${STATUS_LABEL[a.status]}`}
     >
       <span className="pp-ava-mono">{a.mono}</span>

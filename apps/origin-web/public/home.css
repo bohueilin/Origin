@@ -474,7 +474,7 @@ a:hover { text-decoration: underline; }
 .arch__node rect { fill: var(--paper-2); stroke: var(--line-2); stroke-width: 1.2; }
 .arch__node text { font-family: var(--font-sans); font-size: var(--fs-11); fill: var(--ink); text-anchor: middle; font-weight: 600; }
 .arch__node .arch__muted { fill: var(--steel); font-weight: 500; font-size: var(--fs-11); }
-.arch__node--core rect { fill: #fbfcff; stroke: #c6d3ff; }
+.arch__node--core rect { fill: var(--paper-2); stroke: var(--line-2); }
 .arch__core-label { fill: var(--signal-ink) !important; font-family: var(--font-sans) !important; font-size: var(--fs-12) !important; font-weight: 700 !important; }
 .arch__chips rect { fill: var(--signal-wash); stroke: var(--line-2); }
 .arch__chips text { fill: var(--signal-ink); font-size: var(--fs-11); font-weight: 700; }
@@ -713,7 +713,7 @@ a:hover { text-decoration: underline; }
 .walk__order-main { display: flex; flex-direction: column; gap: 3px; }
 .walk__order-label { font-family: var(--font-sans); font-weight: 700; color: var(--on-dark); font-size: var(--fs-15); }
 .walk__order-intent { color: var(--on-dark-soft); font-size: var(--fs-14); }
-.walk__order-robot { font-size: var(--fs-12); font-weight: 600; color: #bad1a8; background: rgba(143,166,255,.1); border: 1px solid rgba(143,166,255,.25); border-radius: 999px; padding: 5px 11px; white-space: nowrap; }
+.walk__order-robot { font-size: var(--fs-12); font-weight: 600; color: #bad1a8; background: rgba(186,209,168,.1); border: 1px solid rgba(186,209,168,.25); border-radius: 999px; padding: 5px 11px; white-space: nowrap; }
 
 /* tabs + controls + mode toggle are enhancement-only: hidden until JS adds .is-enhanced */
 .walk__tabs, .walk__controls, .walk__modes { display: none; }
@@ -840,7 +840,7 @@ a:hover { text-decoration: underline; }
 .intg-appendix__dl dd { margin: 0; font-size: var(--fs-14); color: var(--ink-soft); }
 .intg-appendix__note { margin-top: 16px; font-size: var(--fs-14); color: var(--ink-soft); }
 .linkbtn { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--signal-ink); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
-.linkbtn:hover { color: #1a3aa8; }
+.linkbtn:hover { color: var(--signal-hover); }
 
 /* mobile section index — orientation on a long page */
 .sectionindex { display: none; }
@@ -1104,6 +1104,10 @@ a:hover { text-decoration: underline; }
   display: block; width: 100%; height: auto; aspect-ratio: 16 / 9;
   object-fit: contain; object-position: 50% 0; background: var(--graphite);
 }
+/* Keyboard focus on the player: the frame's overflow clips the video's own ring, and Chromium
+   paints that ring blue, so the frame carries the forest ring out on the paper instead. */
+.vband__wrap:has(> .vband__v:focus-visible) { outline: 3px solid var(--signal); outline-offset: 2px; }
+@supports selector(:has(*)) { .vband__v:focus-visible { outline: none; } }
 @supports (height: 1cqi) {
   .vband__wrap { --vband-tray: calc(121px - 100cqi * 9 / 16 * 24 / 720); }
   .vband__v { aspect-ratio: auto; height: calc(100cqi * 9 / 16 + var(--vband-tray)); }
@@ -1139,7 +1143,7 @@ a:hover { text-decoration: underline; }
 .cin-evidence-list > .cin-evidence-pending { border-width: 1px; }
 .card__k { display: block; font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); margin-bottom: 8px; }
 .card h3 { font-family: var(--font-sans); font-size: var(--fs-17); line-height: 1.3; margin: 0 0 7px; color: var(--ink); }
-.card--tint { background: var(--signal-wash); border-color: #cfdcff; }
+.card--tint { background: var(--signal-wash); border-color: var(--line-2); }
 .card--tint .card__k { color: var(--signal-ink); }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 30px; }
 @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
@@ -1150,7 +1154,7 @@ a:hover { text-decoration: underline; }
 .mono-note { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-14); line-height: 1.65; color: var(--steel); max-width: 78ch; }
 .compare-row { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 26px; }
 .compare-line { display: grid; grid-template-columns: 190px 1fr; gap: 16px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper-2); align-items: baseline; }
-.compare-line--origin { border-color: #cfdcff; background: var(--signal-wash); }
+.compare-line--origin { border-color: var(--line-2); background: var(--signal-wash); }
 .compare-line b { font-family: var(--font-sans); font-size: var(--fs-15); color: var(--ink); }
 .compare-line span { color: var(--ink-soft); font-size: var(--fs-15); }
 @media (max-width: 620px) { .compare-line { grid-template-columns: 1fr; gap: 4px; } }
@@ -1256,11 +1260,11 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 @media (max-width: 680px) {
   .trace-band .trace { display: none; }
   .loop-compact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
-  .loop-compact span { font-family: var(--font-sans); font-weight: 600; font-size: var(--fs-13); color: var(--on-dark); background: #1b1f27; border: 1px solid var(--line-dark); border-radius: 999px; padding: 8px 14px; }
-  .loop-compact .lc-plan { color: #cdd9ff; border-color: #3a4a7a; }
+  .loop-compact span { font-family: var(--font-sans); font-weight: 600; font-size: var(--fs-13); color: var(--on-dark); background: var(--graphite); border: 1px solid var(--line-dark); border-radius: 999px; padding: 8px 14px; }
+  .loop-compact .lc-plan { color: var(--on-dark); border-color: var(--line-dark); }
   .loop-compact .lc-block { color: #f0b6ae; border-color: #6a3a34; }
   .loop-compact .lc-ok { color: #a9e6cd; border-color: #2f6a54; }
-  .loop-compact em { color: #7f93b8; font-style: normal; font-weight: 700; }
+  .loop-compact em { color: var(--on-dark-soft); font-style: normal; font-weight: 700; }
 }
 
 /* ── Proof-status ladder — shared across home / proof / brief ── */
@@ -1281,13 +1285,13 @@ ol.cards, ul.cards { list-style: none; padding-left: 0; }
 
 /* Accessible links inside the dark TR-A002 verification strip. */
 .tr2-verify__lbl a {
-  color: #9db2ff !important;
+  color: #b9d3a8 !important;
   text-decoration-color: currentColor;
 }
 
 .tr2-verify__lbl a:hover,
 .tr2-verify__lbl a:focus-visible {
-  color: #c6d0ff !important;
+  color: #d5e4c9 !important;
 }
 
 /* Hero self-verification — lets a visitor recompute the console's own hash chain

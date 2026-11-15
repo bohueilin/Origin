@@ -2,7 +2,7 @@
 
 .icm {
   /* fall back to shared passport tokens; define hexes for standalone use */
-  --icm-accent: var(--accent, #2f6df6);
+  --icm-accent: var(--accent, #2b523b);
   --icm-good: var(--good, #12a567);
   --icm-good-ink: var(--good-ink, #0a7d52);
   --icm-warn: var(--warn, #d98613);

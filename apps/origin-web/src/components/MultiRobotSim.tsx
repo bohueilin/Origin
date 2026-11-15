@@ -10,7 +10,7 @@ import { EMBODIMENT_CODE, type RobotEmbodiment } from '../environmentPlan'
 import { usePlaybackVisibility } from '../shared/usePlaybackVisibility'
 import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
 // One colour per fleet, shared with the editor and the 3D scene.
-import { FLEET_COLORS } from '../proving-ground/fleetPalette'
+import { FLEET_COLORS } from '../shared/fleetPalette'
 import './floorPlayback.css'
 
 // Where a robot's name may sit: a cell beside it, in one fixed order (above first), so a

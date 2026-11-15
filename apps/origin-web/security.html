@@ -120,6 +120,38 @@
         .og-bar__key { display: grid; gap: 6px; }
         .og-bar__key > div { flex-wrap: nowrap; justify-content: space-between; }
       }
+      /* Release 6 Phase 2: the static hero is a poster. From 960 px the copy holds the left ~55%
+         and the six-experiment index card the right ~45%; phones keep one column, card after
+         the copy. The shared product stylesheet's hero rules arrive with the page script, so
+         they are repeated here, value for value: set in the head, the hero lays out once and
+         does not move when that sheet lands. The demos section's padding is repeated for the
+         same reason, so it does not move up under the hero either. */
+      .product-route .product-hero { padding-top: 56px; padding-bottom: 32px; }
+      .product-route .section--tint { padding-block: 48px; }
+      .product-route .product-hero h1 { max-width: 22ch; font-size: clamp(36px, 4.3vw, 56px); line-height: 1.08; letter-spacing: -.045em; font-weight: 500; }
+      .product-route .product-hero > .shell > .section__lede { max-width: 65ch; font-size: clamp(17px, 1.7vw, 20px); line-height: 1.65; margin-top: 24px; }
+      .product-route .product-hero__scope { max-width: 75ch; font-size: var(--fs-14); line-height: 1.75; color: var(--ink-soft); padding-left: 18px; border-left: 2px solid #adbd9d; margin: 24px 0 0; }
+      @media (min-width: 960px) {
+        .product-route--security .product-hero > .shell { display: grid; grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); grid-template-rows: repeat(3, auto) 1fr; column-gap: clamp(40px, 4.5vw, 64px); align-items: start; }
+        .product-route--security .product-hero > .shell > * { grid-column: 1; }
+        .product-route--security .product-hero > .shell > .sec-index { grid-column: 2; grid-row: 1 / -1; margin-top: 0; }
+      }
+      /* The index card: the six experiments in page order, names as the cards below give them.
+         04 and 05 are marked as the place to start by words, weight and a green rule, never by
+         colour alone. Static: no links, no hover state, nothing moves. */
+      .sec-index { margin: 36px 0 0; max-width: 40rem; padding: 22px 24px 20px; background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 4px; color: var(--ink); }
+      .sec-index__cap { margin: 0; font-size: var(--fs-12); font-weight: 700; line-height: 1.5; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); }
+      .sec-index__start { margin: 10px 0 14px; font-size: var(--fs-15); line-height: 1.5; color: var(--ink-soft); }
+      .sec-index__start b { color: var(--signal-ink); }
+      .sec-index__nb { white-space: nowrap; }
+      .sec-index__list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+      .sec-index__list li { display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); column-gap: 10px; align-items: baseline; padding: 9px 12px 9px 15px; border-bottom: 1px solid var(--line); border-left: 3px solid transparent; }
+      .sec-index__n { font-family: var(--font-mono); font-size: var(--fs-13); font-weight: 700; color: var(--steel); font-variant-numeric: tabular-nums; }
+      .sec-index__name { font-size: var(--fs-15); line-height: 1.45; color: var(--ink); }
+      .sec-index__why { grid-column: 2; margin-top: 2px; font-size: var(--fs-13); line-height: 1.5; color: var(--ink-soft); }
+      .sec-index__list li.is-start { border-left-color: var(--signal); background: var(--signal-wash); }
+      .sec-index__list li.is-start .sec-index__n { color: var(--signal-ink); }
+      .sec-index__list li.is-start .sec-index__name { font-weight: 700; }
     </style>
   </head>
 
@@ -160,6 +192,21 @@
           <h1 id="security-title">Trust starts with a check you can repeat.</h1>
           <p class="section__lede">Sign a receipt. Change one field. Challenge a signer. Follow a policy version. Six small experiments make the evidence mechanisms visible and inspectable.</p>
           <p class="product-hero__scope">The verification code runs locally on synthetic inputs. These demonstrations establish bounded properties under their verifiers; they do not provide production runtime enforcement or certify an agent. See <a href="/reference-check-vs-runtime">what runs today and what is only proposed</a>.</p>
+          <!-- Release 6 Phase 2: the hero specimen. Numbers and names are the DemoCard kickers in
+               src/security/SecurityPage.tsx and src/security/DelegationPanel.tsx, in page order;
+               04's and 05's lines are those cards' titles. -->
+          <div class="sec-index">
+            <p class="sec-index__cap" id="sec-index-cap">Six experiments on this page</p>
+            <p class="sec-index__start"><b>Start here:</b> <span class="sec-index__nb">04 · Configuration binding</span> or <span class="sec-index__nb">05 · Delegated authority</span>.</p>
+            <ol class="sec-index__list" aria-labelledby="sec-index-cap">
+              <li><span class="sec-index__n">01</span> <span class="sec-index__name">Signature integrity</span></li>
+              <li><span class="sec-index__n">02</span> <span class="sec-index__name">Batch inclusion</span></li>
+              <li><span class="sec-index__n">03</span> <span class="sec-index__name">Policy history</span></li>
+              <li class="is-start"><span class="sec-index__n">04</span> <span class="sec-index__name">Configuration binding</span> <span class="sec-index__why">Change the configuration. Re-check the evidence.</span></li>
+              <li class="is-start"><span class="sec-index__n">05</span> <span class="sec-index__name">Delegated authority</span> <span class="sec-index__why">Widen one edge. Watch the root's blast radius move.</span></li>
+              <li><span class="sec-index__n">06</span> <span class="sec-index__name">Authority analysis</span></li>
+            </ol>
+          </div>
         </div>
       </section>
 

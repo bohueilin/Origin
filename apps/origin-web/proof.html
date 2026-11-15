@@ -27,7 +27,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon-2026-09-28.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2d450846" />
+    <link rel="stylesheet" href="/home.css?v=012f7e7d" />
     <style>
       /* Standalone page shell — same pattern as brief.html */
       .proof { max-width: 960px; margin: 0 auto; padding: 32px 24px 72px; }
@@ -122,7 +122,7 @@
       .tr2-verify__copy:hover { background: var(--line-dark); }
       .tr2-verify__copy:focus-visible { outline: 2px solid #7fd88f; outline-offset: 2px; }
       /* Every focus ring on the graphite strip is the on-dark tone: the shared forest ring is
-         1.6:1 here. Same specificity as home.css?v=2d450846's tamper-button ring, later in the cascade. */
+         1.6:1 here. Same specificity as home.css?v=012f7e7d's tamper-button ring, later in the cascade. */
       .proof-page .tr2-verify :is(a, pre, button):focus-visible { outline-color: var(--on-dark); }
       .tr2-verify__plain { margin-top: 8px; font-size: var(--fs-13); color: var(--on-dark); }
       .tr2-verify__plain b { color: #fff; }
@@ -153,9 +153,9 @@
       .linklike[data-copy]:hover { text-decoration: underline; text-underline-offset: 5px; }
       @media (max-width: 680px) { .linklike[data-copy] { display: inline-flex; align-items: center; min-height: 44px; } }
       /* Hero offset: the eyebrow sits 56px under the sticky header, as on /reference-check and /verify.
-         Three gaps used to stack above it: .proof section's 44px margin, editorial.css?v=e1f14233's 7vw hero
-         padding and its 66px grid padding. These selectors outrank editorial.css?v=e1f14233, which loads later.
-         Screen only, so editorial.css?v=e1f14233 keeps its zero hero padding in print. */
+         Three gaps used to stack above it: .proof section's 44px margin, editorial.css?v=e89c1932's 7vw hero
+         padding and its 66px grid padding. These selectors outrank editorial.css?v=e89c1932, which loads later.
+         Screen only, so editorial.css?v=e89c1932 keeps its zero hero padding in print. */
       @media screen {
         .proof-page .proof > .editorial-hero { margin-top: 0; padding-top: 56px; }
         .proof-page .proof > .editorial-hero > .editorial-hero__grid { padding-top: 0; }
@@ -174,13 +174,30 @@
       .ladderfig__title { margin: 0 0 14px; font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); }
       .ladderfig__rungs { list-style: none; margin: 0; padding: 0 0 0 28px; display: grid; gap: 14px; }
       .ladderfig__rung { position: relative; background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 4px; padding: 14px 16px; }
-      /* The rail: a node per rung, and a segment from each node down to the next one. */
-      .ladderfig__rung::before { content: ""; position: absolute; left: -24px; top: 18px; width: 12px; height: 12px; box-sizing: border-box; border-radius: 50%; background: var(--signal); }
-      .ladderfig__rung::after { content: ""; position: absolute; left: -19px; top: 30px; bottom: -32px; width: 2px; background: var(--signal); }
-      .ladderfig__rung:last-child::after { content: none; }
-      .ladderfig__rung--soon { background: transparent; border: 1.5px dashed var(--ink-soft); }
-      .ladderfig__rung--soon::before { background: var(--paper); border: 2px solid var(--ink-soft); }
-      .ladderfig__rung--soon::after { background: none; width: 0; border-left: 2px dashed var(--ink-soft); }
+      /* Release 6 Phase 3: the ladder is drawn in SVG; the facts stay HTML text. Each rung holds
+         an inline SVG in the 28 px gutter, in CSS px (no viewBox): its node, a tie into its card,
+         and the rail down to the next rung's node. The SVG runs the rung's height plus 40 px
+         (the 14 px gap, the two card borders between them and the next node's 24 px offset), so
+         the rail ends in the next node as the cards wrap, with no script. TR-A003's outline is
+         an SVG rect whose 1.5 px dashed stroke ends on the card's edge, so the dash is the same
+         in every browser. Under it the card keeps a transparent 1 px dashed border, which
+         forced-colours mode paints in the system text colour in place of the SVG outline; there
+         the rail and nodes take the system colours too. */
+      .ladderfig__rung--soon { background: transparent; border: 1px dashed transparent; }
+      .ladderfig__draw { position: absolute; left: -28px; top: 0; width: 28px; height: calc(100% + 40px); overflow: visible; pointer-events: none; }
+      .ladderfig__rung:last-child .ladderfig__draw { height: 100%; }
+      .ladderfig__draw :is(line, circle) { stroke: var(--signal); stroke-width: 2; }
+      .ladderfig__node { fill: var(--signal); }
+      .ladderfig__rung--soon .ladderfig__draw :is(line, circle) { stroke: var(--ink-soft); stroke-dasharray: 4 3; }
+      .ladderfig__rung--soon .ladderfig__draw .ladderfig__node { fill: var(--paper); stroke-dasharray: none; }
+      .ladderfig__outline { position: absolute; top: -.25px; left: -.25px; width: calc(100% + .5px); height: calc(100% + .5px); max-width: none; overflow: visible; pointer-events: none; }
+      .ladderfig__outline rect { fill: none; stroke: var(--ink-soft); stroke-width: 1.5; stroke-dasharray: 6 4; }
+      @media (forced-colors: active) {
+        .ladderfig__outline { display: none; }
+        .ladderfig .ladderfig__draw :is(line, circle) { stroke: CanvasText; }
+        .ladderfig .ladderfig__draw .ladderfig__node { fill: CanvasText; }
+        .ladderfig .ladderfig__rung--soon .ladderfig__node { fill: Canvas; }
+      }
       .ladderfig__head { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
       .ladderfig__id { font-family: var(--font-mono); font-size: var(--fs-13); font-weight: 700; color: var(--ink); }
       .ladderfig__status { font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); }
@@ -260,11 +277,8 @@
         body.proof-page .mono { white-space: normal; }
         /* The printed chain list has twelve events: room for a two-digit number before each. */
         body.proof-page .evidence-diagram ol.sr-only { padding-left: 28pt; }
-        /* The ladder rail is drawn with borders, which print without background graphics. */
-        body.proof-page .ladderfig__rung::before { background: none; border: 6px solid #000; }
-        body.proof-page .ladderfig__rung::after { width: 0; background: none; border-left: 2px solid #000; }
-        body.proof-page .ladderfig__rung--soon::before { border-width: 2px; }
-        body.proof-page .ladderfig__rung--soon::after { border-left-style: dashed; }
+        /* The ladder's SVG prints without background graphics: the paper tokens above draw its
+           rail, nodes and dashed outline in black, and the unearned node is filled white. */
         /* Page breaks: a kicker stays with its heading, and a short block stays whole. */
         body.proof-page .kicker { break-after: avoid; }
         body.proof-page :is(.tr2-digest, .tr2-exec, .blockline, .proof__label, .proofladder__row) { break-inside: avoid; }
@@ -272,7 +286,7 @@
         body.proof-page .tr2-flow li { padding: 7px 12px; margin-block: 5px; }
       }
     </style>
-    <link rel="stylesheet" href="/editorial.css?v=e1f14233" />
+    <link rel="stylesheet" href="/editorial.css?v=e89c1932" />
   </head>
   <body class="editorial proof-page">
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -319,15 +333,20 @@
         </div>
       </div>
       <!-- Pass 2 Phase 2: the evidence ladder as a static figure, highest rung first. Each fact
-           comes from this page and public/proof/tr-a002.json (event_count, final_digest). -->
+           comes from this page and public/proof/tr-a002.json (event_count, final_digest).
+           Release 6 Phase 3: the rail, nodes, ties and TR-A003's dashed outline are drawn in SVG
+           (decorative, hidden from screen readers); the rungs' facts stay HTML text. -->
       <figure class="ladderfig" aria-labelledby="ladderfig-title">
         <figcaption class="ladderfig__title" id="ladderfig-title">The evidence ladder, highest rung first</figcaption>
         <ol class="ladderfig__rungs">
           <li class="ladderfig__rung ladderfig__rung--soon" data-rung="TR-A003">
+            <svg class="ladderfig__outline" aria-hidden="true" focusable="false"><rect width="100%" height="100%" rx="3.25" /></svg>
+            <svg class="ladderfig__draw" aria-hidden="true" focusable="false"><line class="ladderfig__rail" x1="10" y1="24" x2="10" y2="100%" /><line class="ladderfig__tie" x1="16" y1="24" x2="27" y2="24" /><circle class="ladderfig__node" cx="10" cy="24" r="5" /></svg>
             <p class="ladderfig__head"><span class="ladderfig__id">TR-A003</span><span class="ladderfig__status">Not earned yet</span></p>
             <p class="ladderfig__name">First external design-partner trace</p>
           </li>
           <li class="ladderfig__rung" data-rung="TR-A002">
+            <svg class="ladderfig__draw" aria-hidden="true" focusable="false"><line class="ladderfig__rail" x1="10" y1="24" x2="10" y2="100%" /><line class="ladderfig__tie" x1="16" y1="24" x2="27" y2="24" /><circle class="ladderfig__node" cx="10" cy="24" r="5" /></svg>
             <p class="ladderfig__head"><span class="ladderfig__id">TR-A002</span><span class="ladderfig__status">Available now</span></p>
             <p class="ladderfig__name">Machine-emitted trace of a scripted scenario</p>
             <dl class="ladderfig__facts">
@@ -337,6 +356,7 @@
             </dl>
           </li>
           <li class="ladderfig__rung" data-rung="TR-A001">
+            <svg class="ladderfig__draw" aria-hidden="true" focusable="false"><line class="ladderfig__tie" x1="16" y1="24" x2="27" y2="24" /><circle class="ladderfig__node" cx="10" cy="24" r="5" /></svg>
             <p class="ladderfig__head"><span class="ladderfig__id">TR-A001</span><span class="ladderfig__status">Available now</span></p>
             <p class="ladderfig__name">Authored format specimen</p>
             <dl class="ladderfig__facts">

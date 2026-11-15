@@ -878,8 +878,8 @@ test('wave 3: the shot04 recording keeps its figure and gets a dated line outsid
   await page.goto('/reference-check')
   const figure = page.locator('video[poster*="shot04-"]').locator('xpath=ancestor::figure')
   const line = page.locator('.vband > .shell > figure.vband__fig + p.vband__cap')
-  await expect(line).toHaveText(`Recorded ${manifest.date}; the page has changed since (L0–L4 tier labels were removed and the record now states its result in format 1.1.0).`)
-  await expect(figure).not.toContainText('the page has changed since')
+  await expect(line).toHaveText(`Recorded ${manifest.date}; the pages have changed since (/reference-check and /verify now open with a static specimen beside the introduction, and /verify shows a labelled preview before anything is verified).`)
+  await expect(figure).not.toContainText('the pages have changed since')
   expect(await line.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14)
 })
 

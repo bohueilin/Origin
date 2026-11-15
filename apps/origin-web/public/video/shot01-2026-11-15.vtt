@@ -1,23 +1,23 @@
 WEBVTT
 
-NOTE One take · synthetic demo data · recorded 2026-09-28 on originphysicalai.com (57d5ccf) · captions and cursor dot overlaid
+NOTE RECORDED · ONE TAKE · SYNTHETIC DATA · recorded 2026-11-15 on originphysicalai.com (49b5cd0) · captions and cursor dot overlaid
 
 1
-00:00:01.099 --> 00:00:09.633
+00:00:00.776 --> 00:00:09.249
 /verify loads a synthetic demo attestation, signed in this tab
 
 2
-00:00:09.633 --> 00:00:13.139
+00:00:09.249 --> 00:00:12.753
 VALID (code 0): intact and signed by its embedded key — not signer identity
 
 3
-00:00:13.139 --> 00:00:22.545
+00:00:12.753 --> 00:00:22.130
 Network off from here — the next two verdicts are computed in this tab with no network
 
 4
-00:00:22.545 --> 00:00:31.929
+00:00:22.130 --> 00:00:31.468
 One field changed without re-signing: VOID (code 1)
 
 5
-00:00:31.929 --> 00:00:36.432
+00:00:31.468 --> 00:00:35.969
 Field restored: VALID (code 0), still offline

@@ -455,6 +455,7 @@ export function VerifyPage() {
 
   return (
     <div className="vfy-grid product-workspace">
+      <p className="vfy-purpose">Paste or open a record. This page checks whether its bytes and any signature are intact, replays its stated policy decisions when it carries them, and states what that result does not establish.</p>
       <ol className="workspace-steps" aria-label="Verification workflow">
         <li><span>01</span><div><b>Bring an artifact</b>Paste or open JSON, or load an example</div></li>
         <li><span>02</span><div><b>Check its integrity</b>Inspect the verdict and its scope</div></li>

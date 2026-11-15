@@ -346,6 +346,15 @@ const AGENT_CONFIG = {
 }
 const computeLevel = (verdicts: LicenseVerdict[]) => computeLicenseFromVerdicts(verdicts).level.id
 
+// The recommended preset's score on the IAM battery and its one miss, from the oracle, for the
+// card's claim: 11 of 12, because it escalates iam-06, which the oracle allows. security.html
+// repeats the sentence for readers without JavaScript (staticIndex.test.ts keeps them in step).
+const LP_IAM = (() => {
+  const policyFor = policyForSpec(PRESETS['least-privilege'].spec)
+  const rows = iamTasks.map((task) => ({ id: task.id, passed: verifyIamDecision(task, policyFor(task)).passed }))
+  return { matched: rows.filter((r) => r.passed).length, miss: rows.find((r) => !r.passed)!.id }
+})()
+
 function ReferenceCheckPanel() {
   const [steps, setSteps] = useState<Step[]>([])
   const [result, setResult] = useState<IamReferenceCheck | null>(null)
@@ -452,7 +461,7 @@ function ReferenceCheckPanel() {
       title="Change the configuration. Re-check the evidence."
       lede="Evaluate a synthetic policy against the deterministic IAM battery, inspect its config-bound credential, then change the declared model. No named agent is contacted or executed."
       how={`Deterministic code grades the Least-privilege preset's answers to ${iamTasks.length} synthetic IAM requests against the oracle, Origin's answer key. The credential records one digest of the declared model, tools, context and harness, and another of the battery.`}
-      shows="How many answers match the oracle, and that the credential fails (code 4) once the declared model changes. No agent is contacted or run, and the credential is unsigned."
+      shows={`How many answers match the oracle, and that the credential fails (code 4) once the declared model changes. The Least-privilege preset matches ${LP_IAM.matched} of ${iamTasks.length}: it escalates ${LP_IAM.miss}, which the oracle allows, a stricter miss; grading the oracle's own answer key would match ${iamTasks.length} of ${iamTasks.length} by construction. No agent is contacted or run, and the credential is unsigned.`}
     >
       <div className="sec-actions">
         <button className="btn btn--primary btn--sm" onClick={runHarnessed}>
@@ -695,6 +704,7 @@ export function SecurityPage() {
         <span className="workspace-eyebrow">Six experiments · synthetic inputs</span>
         <p>Run a check, challenge it, and inspect the underlying artifact. Each panel uses the published verification modules in your browser. An intact signature establishes integrity; trusted identity and deployment authority require separate evidence.</p>
       </div>
+      <p className="sec-start"><b>Start here:</b> Experiment 04 (Configuration binding) or 05 (Delegated authority).</p>
       <nav className="workspace-nav" aria-label="Verification experiments">
         <a href="#signatures">01 · Signatures</a><a href="#batches">02 · Batches</a>
         <a href="#policy-history">03 · Policy history</a><a href="#config-binding">04 · Configuration</a>

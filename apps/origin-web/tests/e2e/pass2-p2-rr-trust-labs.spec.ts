@@ -177,8 +177,9 @@ for (const width of [375, 1280]) {
       const svg = page.locator(`.labs-card[data-lab="${lab}"] svg.labs-fig[data-lab-fig="${lab}"]`)
       await expect(svg, lab).toHaveCount(1)
       await expect(svg, lab).toBeVisible()
-      // Decorative: the card text says what the diagram shows.
-      await expect(svg, lab).toHaveAttribute('aria-hidden', 'true')
+      // A named image (Release 6 Phase 3): its <title> names it and its <desc> says what it draws.
+      await expect(svg, lab).toHaveAttribute('role', 'img')
+      await expect(svg, lab).not.toHaveAttribute('aria-hidden')
       await expect(svg, lab).toHaveAttribute('height', '56')
       await expect(svg, lab).toHaveAttribute('width', /^\d+$/)
       const box = (await svg.boundingBox())!

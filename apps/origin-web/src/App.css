@@ -6325,15 +6325,15 @@ select.field-input {
 }
 .rsi-proof {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-top: 14px;
 }
 .rsi-proof div {
   padding: 13px 14px;
-  border: 1px solid rgba(15, 157, 110, .22);
+  border: 1px solid #dfe4d8;
   border-radius: 13px;
-  background: rgba(15, 157, 110, .06);
+  background: #edf1e7;
 }
 .rsi-proof strong {
   display: block;
@@ -7116,6 +7116,21 @@ select.field-input {
 .capture .capture-divider { padding-top: 40px; margin-top: 40px; }
 .capture .capture-divider-n { background: #2b523b; color: #fff; }
 @media(max-width:640px) { .capture .flow-shell { padding: 28px 20px 60px; }.capture .flow-sub { font-size: 15px; } }
+/* The reading frame matches the static copy in capture.html's fallback. */
+.capture .capture-read { max-width: 780px; margin: 18px 0 8px; padding: 14px 18px 6px; background: #fff; border: 1px solid #dfe4d8; border-radius: 14px; color: #4e5b48; font-size: 15px; line-height: 1.6; }
+.capture .capture-read h2 { margin: 0 0 6px; font-size: 12px; font-weight: 700; line-height: 1.5; letter-spacing: .06em; text-transform: uppercase; color: #59664f; }
+.capture .capture-read ul { margin: 0; padding-left: 18px; }
+.capture .capture-read li + li { margin-top: 4px; }
+.capture .capture-read b { color: #272d26; }
+.capture .capture-read__links { display: flex; flex-wrap: wrap; gap: 0 22px; }
+.capture .capture-read__links a { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; color: #2b523b; font-size: 14px; font-weight: 600; }
+@media(max-width:640px) { .capture .capture-read { font-size: 14px; padding: 12px 16px 4px; } }
+/* The flow strip's labels read at 12 px, the site's floor for text on screen. */
+.capture .site-thesis span { font-size: 12px; line-height: 1.5; }
+/* Hold a viewport of space only while the reference-floor catalogue loads, so the sections after
+   it never move in view when the cards arrive (the loaded grid is always taller). The "No
+   reference floors available." state keeps its natural height. */
+.capture .floorlib:has(> .floorlib-loading) { min-height: 100vh; }
 
 @media (prefers-reduced-motion: reduce) {
   .btn:active, .rl-step:hover, .si-legend div:hover, .floorlib-card:hover,

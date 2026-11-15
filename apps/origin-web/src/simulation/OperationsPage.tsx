@@ -124,7 +124,7 @@ export function OperationsPage() {
         <button className="btn btn--primary btn--sm" onClick={runNewShift}>Run a new shift</button>
         <label className="ops-range">Fleet<input type="range" min={2} max={6} value={robots} onChange={(e) => changeRobots(Number(e.target.value))} /><b>{robots}</b></label>
         <label className="ops-range">Waves<input type="range" min={3} max={8} value={waves} onChange={(e) => changeWaves(Number(e.target.value))} /><b>{waves}</b></label>
-        <span className="ops-targets">Targets · util ≥ {Math.round(DEFAULT_TARGETS.min_utilization * 100)}% · fulfilment ≥ {Math.round(DEFAULT_TARGETS.min_fulfilment * 100)}% · collisions = 0</span>
+        <span className="ops-targets">Targets · util ≥ {Math.round(DEFAULT_TARGETS.min_utilization * 100)}% · fulfilment ≥ {Math.round(DEFAULT_TARGETS.min_fulfilment * 100)}% · <span className="ops-targets__item">target: collisions = {DEFAULT_TARGETS.max_collisions}</span></span>
       </div>
 
       {/* The SLA verdict */}

@@ -22,7 +22,15 @@ for (const shot of ['shot01', 'shot02', 'shot04']) {
   })
   const expected = [spec.tag, ...spec.captions.map(c => c.text)].map(resolve)
   if (JSON.stringify(expected) !== JSON.stringify(run.render.captions.map(c => c.text))) throw new Error(`${shot}: caption text differs from recorded render`)
-  if (run.render.caption_px < 44 || run.render.tag_px < 30 || JSON.stringify(run.render.tag_xy) !== '[24,24]') throw new Error(`${shot}: unreadable disclosure`)
+  // A small top-left pill for the whole take, then at most one compact caption bar at a time,
+  // anchored 24 px above the picture's bottom edge (the site's frame tray assumes 696/720).
+  const [pill, ...bars] = run.render.captions
+  if (run.render.caption_px < 24 || run.render.caption_px > 26 || run.render.tag_px < 18 || JSON.stringify(run.render.tag_xy) !== '[24,24]') throw new Error(`${shot}: unreadable disclosure`)
+  if (pill.from_s !== 0 || pill.box[2] > 1280 / 3 + 24 || pill.box[3] > 72) throw new Error(`${shot}: the recorded pill must stay a small top-left corner pill for the whole take`)
+  for (const [i, bar] of bars.entries()) {
+    if (bar.box[3] !== 696 || bar.box[1] < 720 * 4 / 5 || bar.box[2] - bar.box[0] > Math.round(1280 * 0.78)) throw new Error(`${shot}: caption ${i + 1} is not one compact bar at the bottom`)
+    if (i > 0 && bar.from_s < bars[i - 1].to_s) throw new Error(`${shot}: captions ${i} and ${i + 1} show at once`)
+  }
   const track = trackName(run)
   if (fs.readFileSync(new URL(`public/video/${track}`, root), 'utf8') !== vttFor(run)) throw new Error(`${shot}: ${track} differs from the rendered captions (run scripts/recording-tracks.mjs)`)
   // Every page that shows this recording carries its text track and states the encoded duration.

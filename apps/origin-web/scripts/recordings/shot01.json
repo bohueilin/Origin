@@ -1,30 +1,30 @@
 {
   "shot": "shot01",
-  "date": "2026-09-28",
+  "date": "2026-11-15",
   "date_timezone": "UTC",
-  "recorded_at": "2026-09-28T07:03:41.050Z",
+  "recorded_at": "2026-11-15T03:12:27.031Z",
   "host": "originphysicalai.com",
-  "commit": "57d5ccf",
+  "commit": "49b5cd0",
   "release": {
-    "generated_at": "2026-09-28T07:01:35Z",
-    "commit": "57d5ccf",
+    "generated_at": "2026-11-14T22:21:08Z",
+    "commit": "49b5cd0",
     "tracked_clean": true,
     "all_green": true,
     "suites": [
       {
         "name": "ts:build (workspaces)",
         "result": "PASS",
-        "detail": "\u2713 built in 152ms"
+        "detail": "\u2713 built in 117ms"
       },
       {
         "name": "ts:build (chronos-ui)",
         "result": "PASS",
-        "detail": "\u2713 built in 907ms"
+        "detail": "\u2713 built in 621ms"
       },
       {
         "name": "ts:origin-web (+evidence+verifier-core globs)",
         "result": "PASS",
-        "detail": "Tests  797 passed (797)"
+        "detail": "Tests  948 passed (948)"
       },
       {
         "name": "ts:janus",
@@ -34,12 +34,12 @@
       {
         "name": "ts:@origin/evidence",
         "result": "PASS",
-        "detail": "Tests  41 passed (41)"
+        "detail": "Tests  63 passed (63)"
       },
       {
         "name": "ts:@origin/verifier-core",
         "result": "PASS",
-        "detail": "Tests  46 passed (46)"
+        "detail": "Tests  88 passed (88)"
       },
       {
         "name": "ev:verify:evidence",
@@ -49,17 +49,22 @@
       {
         "name": "ev:proof:verify",
         "result": "PASS",
-        "detail": "ALL CHECKS PASSED \u2014 TR-A002 hash chain verified (12 events, digest c"
+        "detail": "ALL CHECKS PASSED \u2014 TR-A002 hash chain verified (12 events, digest ca1d4690206e\u2026)"
+      },
+      {
+        "name": "ev:proof:verify (tamper test)",
+        "result": "PASS",
+        "detail": "3 passed"
       },
       {
         "name": "ev:env:verify",
         "result": "PASS",
-        "detail": "VERIFIED \u2014 the score is reproducible under verifier 1.0.0 (reward 1,"
+        "detail": "VERIFIED \u2014 the score is reproducible under verifier 1.0.0 (reward 1, digest 55abc08bbd18\u2026). This is reproducibility under this verifier, not a claim the score is \"correct\"."
       },
       {
         "name": "ev:reward:diff",
         "result": "PASS",
-        "detail": "OK \u2014 every exploit is driven to 0 and every gold is preserved (rewar"
+        "detail": "OK \u2014 every exploit is driven to 0 and every gold is preserved (reward integrity holds)."
       },
       {
         "name": "ev:/verify selftest",
@@ -69,7 +74,7 @@
       {
         "name": "honesty-lint",
         "result": "PASS",
-        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 174 Rea"
+        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 184 React copy files, 15 social cards + 3 caption files + cover template, 28 banned patterns, 3 required disclaimers, 63 launch contracts."
       },
       {
         "name": "py:cobra",
@@ -83,37 +88,37 @@
       }
     ],
     "source": "release",
-    "built_at": "2026-09-28T07:01:35Z",
-    "run_url": "https://github.com/bohueilin/Origin/actions/runs/36388418172"
+    "built_at": "2026-11-14T22:21:08Z",
+    "run_url": "https://github.com/bohueilin/Origin/actions/runs/43646436991"
   },
   "beats": [
     {
       "name": "painted",
-      "t": 1.099
+      "t": 0.776
     },
     {
       "name": "load",
-      "t": 3.093
+      "t": 2.778
     },
     {
       "name": "verify",
-      "t": 9.633
+      "t": 9.249
     },
     {
       "name": "offline",
-      "t": 13.139
+      "t": 12.753
     },
     {
       "name": "tamper-verify",
-      "t": 22.545
+      "t": 22.13
     },
     {
       "name": "restore",
-      "t": 31.929
+      "t": 31.468
     },
     {
       "name": "end",
-      "t": 36.432
+      "t": 35.969
     }
   ],
   "facts": {
@@ -122,98 +127,100 @@
     "restored_code": 0
   },
   "observed": {
-    "valid": "VALID\nSigil \u2014 portable signed receipt \u00b7 code 0",
-    "tampered": "VOID\nSigil \u2014 portable signed receipt \u00b7 code 1",
-    "restored": "VALID\nSigil \u2014 portable signed receipt \u00b7 code 0"
+    "valid": "VALID\nOrigin Attestation code 0: valid\nVALID means intact and signed by the embedded key; not signer identity",
+    "tampered": "VOID\nOrigin Attestation code 1: payload tampered",
+    "restored": "VALID\nOrigin Attestation code 0: valid\nVALID means intact and signed by the embedded key; not signer identity"
   },
   "blocked_requests": [
     "GET https://www.googletagmanager.com/gtag/js"
   ],
-  "raw_file": "page@8b5ea2cb6d86a1a7171c947936563355.webm",
-  "raw_sha256": "bbeb5dadc133fcc809ac37156c1816409d5076e1ac29f0daa629a929285b821a",
+  "raw_file": "page@04a2d638885a35cfa1f48df6921c2b42.webm",
+  "raw_sha256": "4dc0c6c100d080ba83a26b7324f38924fc818342d0991bb965e7148c8e46d65b",
   "font": "Carlito-Regular.ttf",
   "font_sha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
   "network_off_from": "offline",
   "render": {
-    "output": "shot01-2026-09-28.mp4",
-    "sha256": "c79d2b9b7c0c6a043be20979cb5a581bfc3102e7ed3c4bea78da7837b4883d24",
-    "poster": "shot01-2026-09-28.webp",
-    "poster_sha256": "9b6a09e3c30175d4fe068714085230506cb9876dbe1f808498b19df06389fc7e",
+    "output": "shot01-2026-11-15.mp4",
+    "sha256": "34811313556aca9e9cda42b5d3a8077421624fbb5d005f635ff926b8ad1099d1",
+    "poster": "shot01-2026-11-15.webp",
+    "poster_sha256": "22dcc649bab2f2cf02b01109c3fc4e5b6b53c652996c0d054445687b77a5c872",
     "size": [
       1280,
       720
     ],
-    "caption_px": 44,
-    "tag_px": 30,
+    "caption_px": 25,
+    "tag_px": 20,
     "tag_xy": [
       24,
       24
     ],
     "lead_trimmed_s": 0,
+    "caption_max_w": 998,
+    "caption_bottom_px": 24,
     "captions": [
       {
         "from_s": 0,
-        "to_s": 36.432,
-        "text": "One take \u00b7 synthetic demo data \u00b7 recorded 2026-09-28 on originphysicalai.com (57d5ccf) \u00b7 captions and cursor dot overlaid",
+        "to_s": 35.969,
+        "text": "RECORDED \u00b7 ONE TAKE \u00b7 SYNTHETIC DATA",
         "box": [
           24,
           24,
-          1160,
-          124
+          396,
+          56
         ]
       },
       {
-        "from_s": 1.099,
-        "to_s": 9.633,
+        "from_s": 0.776,
+        "to_s": 9.249,
         "text": "/verify loads a synthetic demo attestation, signed in this tab",
         "box": [
-          85,
-          622,
-          1195,
+          316,
+          654,
+          964,
           696
         ]
       },
       {
-        "from_s": 9.633,
-        "to_s": 13.139,
+        "from_s": 9.249,
+        "to_s": 12.753,
         "text": "VALID (code 0): intact and signed by its embedded key \u2014 not signer identity",
         "box": [
-          74,
-          568,
-          1205,
+          234,
+          654,
+          1045,
           696
         ]
       },
       {
-        "from_s": 13.139,
-        "to_s": 22.545,
+        "from_s": 12.753,
+        "to_s": 22.13,
         "text": "Network off from here \u2014 the next two verdicts are computed in this tab with no network",
         "box": [
-          48,
-          568,
-          1232,
+          166,
+          654,
+          1113,
           696
         ]
       },
       {
-        "from_s": 22.545,
-        "to_s": 31.929,
+        "from_s": 22.13,
+        "to_s": 31.468,
         "text": "One field changed without re-signing: VOID (code 1)",
         "box": [
-          156,
-          622,
-          1124,
+          354,
+          654,
+          926,
           696
         ]
       },
       {
-        "from_s": 31.929,
-        "to_s": 36.432,
+        "from_s": 31.468,
+        "to_s": 35.969,
         "text": "Field restored: VALID (code 0), still offline",
         "box": [
-          251,
-          622,
-          1029,
+          408,
+          654,
+          871,
           696
         ]
       }

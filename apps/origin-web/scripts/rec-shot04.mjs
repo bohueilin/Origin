@@ -35,9 +35,18 @@ try {
   await clickAt(await probe('verify link', page.getByRole('link', { name: /^Re-verify it on \/verify/ })))
   await page.waitForLoadState('networkidle')
   const input = await probe('artifact', page.locator('#vfy-artifact'))
+  // The link carries the record in its fragment and fills the field: it must hold the
+  // downloaded bytes. Clear the field and require it empty, so the value after the paste can
+  // only come from the clipboard; the edit also drops the page's shared-link note.
+  const linkMatches = await input.inputValue() === evidence
+  if (!linkMatches) throw new Error('The /verify link carries a different record than the download')
   await page.evaluate(text => navigator.clipboard.writeText(text), evidence)
-  await clickAt(input); await page.keyboard.press('ControlOrMeta+V')
-  if (await input.inputValue() !== evidence) throw new Error('Clipboard paste differs from download')
+  await clickAt(input); await page.keyboard.press('ControlOrMeta+A'); await page.keyboard.press('Backspace')
+  if (await input.inputValue() !== '') throw new Error('Could not clear the linked record before pasting')
+  await page.keyboard.press('ControlOrMeta+V')
+  const clipboardMatches = await input.inputValue() === evidence
+  if (!clipboardMatches) throw new Error('Clipboard paste differs from download')
+  await page.locator('.vfy-note', { hasText: 'Loaded from a shared link' }).waitFor({ state: 'detached', timeout: 2000 })
   mark('paste'); await page.waitForTimeout(2500)
   await clickAt(await probe('verify', page.getByRole('button', { name: 'Verify', exact: true })))
   const reverify = await probe('re-verification', page.locator('.vfy-verdict'))
@@ -46,5 +55,5 @@ try {
   const reverifyText = await reverify.innerText()
   mark('reverify'); await page.waitForTimeout(5500)
   await finish({ ...counts, tool, code },
-    { verdict: verdictText, drift: driftText, reverify: reverifyText }, { download: downloaded.suggestedFilename(), download_sha256: digest, clipboard_matches_download: true })
+    { verdict: verdictText, drift: driftText, reverify: reverifyText }, { download: downloaded.suggestedFilename(), download_sha256: digest, link_matches_download: linkMatches, clipboard_matches_download: clipboardMatches })
 } finally { await r.browser.close() }

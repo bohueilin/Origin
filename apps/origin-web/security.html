@@ -46,7 +46,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-2026-09-28.png" />
 
     <script>document.documentElement.classList.add('nav-ready');addEventListener('load',function(){if(!document.documentElement.classList.contains('nav-bound'))document.documentElement.classList.remove('nav-ready')})</script>
-    <link rel="stylesheet" href="/home.css?v=2d450846" />
+    <link rel="stylesheet" href="/home.css?v=012f7e7d" />
 
     <style>
       /* Local helpers for the live demo panels, layered on the shared design system. */
@@ -110,6 +110,12 @@
       .og-bar__key dt { display: flex; align-items: center; gap: 8px; font-size: var(--fs-14); color: var(--ink-soft); }
       .og-bar__key dd { margin: 0; font-size: var(--fs-16); font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
       .og-bar__key dd b { color: var(--signal-ink); }
+      /* Release 6 Phase 3: the place to start, above the experiment list (with and without
+         JavaScript), and the 05 figure's drawing of each state, an image of the panel's own tree. */
+      .sec-start { margin: 0; max-width: 75ch; font-size: var(--fs-15); line-height: 1.6; color: var(--ink-soft); }
+      .sec-start b { color: var(--signal-ink); }
+      #security-root > .sec-start { margin: 0 0 14px; }
+      .reach-fig__tree { display: block; width: 176px; max-width: 100%; height: auto; margin: 0 0 12px; }
       .sec-static-claim { margin: 0 0 22px; max-width: 80ch; }
       .sec-static-claim > p { margin: 0; font-weight: 700; color: var(--ink); }
       .delegation-static + .sec-static-claim { margin-top: 26px; }
@@ -214,6 +220,7 @@
       <section class="section section--tint" aria-label="Live verification demos">
         <div class="shell">
           <div id="security-root">
+          <p class="sec-start"><b>Start here:</b> Experiment 04 (Configuration binding) or 05 (Delegated authority).</p>
           <ul class="onpage-static" aria-label="Experiments on this page">
             <li>01 · Signature integrity — Flip one byte and it voids.</li>
             <li>02 · Batch inclusion — Eight receipts. One signature. Each checkable alone.</li>
@@ -238,7 +245,7 @@
           </div>
           <div class="sec-static-claim">
             <p>04 · Configuration binding</p>
-            <dl class="sec-claim"><div><dt>How it works</dt><dd>Deterministic code grades the Least-privilege preset's answers to 12 synthetic IAM requests against the oracle, Origin's answer key. The credential records one digest of the declared model, tools, context and harness, and another of the battery.</dd></div><div><dt>What it shows</dt><dd>How many answers match the oracle, and that the credential fails (code 4) once the declared model changes. No agent is contacted or run, and the credential is unsigned.</dd></div></dl>
+            <dl class="sec-claim"><div><dt>How it works</dt><dd>Deterministic code grades the Least-privilege preset's answers to 12 synthetic IAM requests against the oracle, Origin's answer key. The credential records one digest of the declared model, tools, context and harness, and another of the battery.</dd></div><div><dt>What it shows</dt><dd>How many answers match the oracle, and that the credential fails (code 4) once the declared model changes. The Least-privilege preset matches 11 of 12: it escalates iam-06, which the oracle allows, a stricter miss; grading the oracle's own answer key would match 12 of 12 by construction. No agent is contacted or run, and the credential is unsigned.</dd></div></dl>
           </div>
           <div class="product-workspace delegation-static"><!-- ORIGIN:DELEGATION --></div>
           <div class="sec-static-claim">

@@ -1438,3 +1438,7 @@ html.nav-ready :is(#verify-root, #security-root, #sim-root, #pg-root, #ops-root,
   :is(.og-delegation, .delegation-static) .deleg--narrow { max-width: 320px; aspect-ratio: 220 / 365; }
   .deleg--narrow .deleg__l { font-size: 14px; }
 }
+
+/* Release 6 Phase 3: the recordings' "Full provenance and limits" disclosure is a 44 px target with the site's focus ring. */
+.vband__prov-details > summary { min-height: 44px; padding-block: 11px; box-sizing: border-box; width: fit-content; cursor: pointer; color: var(--ink-soft); }
+.vband__prov-details > summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; border-radius: 6px; }

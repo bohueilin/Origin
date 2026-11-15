@@ -756,6 +756,15 @@ const LAUNCH_CONTRACTS = [
       [/environment\s+executes\s+only\s+within\s+its\s+lane/i, 'the five-beat flow stated as the implemented /foundry flow'],
     ],
   },
+  // Release 6, Phase 3
+  // The RSI lab's line is scoped to the lab ("In this lab: Gemma proposes; Origin's verifier
+  // checks"), not presented as the site's maxim. New objects only.
+  ...['apps/origin-web/src/foundry/ui/FoundryApp.tsx', 'apps/origin-web/public/rsi/rsi_dashboard.html'].map((file) => ({
+    file,
+    forbid: [
+      [/Gemma\s+proposes[.,]\s+Origin\s+verifies/i, 'the RSI lab line presented as the site maxim'],
+    ],
+  })),
 ]
 
 for (const contract of LAUNCH_CONTRACTS) {

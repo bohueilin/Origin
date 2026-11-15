@@ -170,7 +170,7 @@
          The grid aligns to the top so a taller figure never pushes the eyebrow down. */
       .proof-page .proof .editorial-hero__grid { align-items: start; }
       .ladderfig { margin: 0; max-width: 36rem; container-type: inline-size; color: var(--ink); }
-      @media (max-width: 960px) { .proof-page .proof .editorial-hero__grid { grid-template-columns: 1fr; } }
+      @media (max-width: 959px) { .proof-page .proof .editorial-hero__grid { grid-template-columns: 1fr; } }
       .ladderfig__title { margin: 0 0 14px; font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); }
       .ladderfig__rungs { list-style: none; margin: 0; padding: 0 0 0 28px; display: grid; gap: 14px; }
       .ladderfig__rung { position: relative; background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 4px; padding: 14px 16px; }
@@ -197,6 +197,24 @@
         .ladderfig__facts { grid-template-columns: 6.75rem 1fr; gap: 8px 12px; }
         .ladderfig__facts dt:not(:first-child) { margin-top: 0; }
       }
+
+      /* Release 6 Phase 2: the hero is a two-column poster from 960 px, and a compact TR-A002 card
+         under the hero buttons balances the ladder on the right. Its facts come from
+         public/proof/tr-a002.json (event_count, final_digest); the two commands are the ones the
+         page gives below (download the published JSON, then verify it), one per line. Ink, paper
+         and the one green rule; static, no focus stop. */
+      .tr2-card { margin: 20px 0 0; max-width: 36rem; padding: 14px 16px 16px; background: var(--paper-2); border: 1px solid var(--line-2); border-left: 3px solid var(--signal); border-radius: 4px; }
+      .tr2-card__k { margin: 0; font-size: var(--fs-12); font-weight: 700; line-height: 1.5; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); }
+      .tr2-card__facts { margin: 6px 0 0; font-size: var(--fs-15); line-height: 1.55; color: var(--ink); }
+      .tr2-card__facts .mono { font-family: var(--font-mono); font-size: var(--fs-14); white-space: nowrap; }
+      .tr2-card__lbl { margin: 12px 0 6px; font-size: var(--fs-13); line-height: 1.5; color: var(--ink-soft); }
+      .tr2-card__lbl code { font-family: var(--font-mono); font-size: var(--fs-13); color: var(--ink); }
+      .tr2-card__cmd { margin: 0; padding: 8px 12px; background: var(--paper-3); border: 1px solid var(--line); border-radius: 4px; font-family: var(--font-mono); font-size: var(--fs-13); line-height: 1.5; color: var(--ink); overflow-wrap: anywhere; }
+      .tr2-card__cmd code { display: block; }
+      /* Narrow screens break the commands at spaces and after each slash of the URL, never at
+         the hyphen inside a file name. */
+      .tr2-card__cmd span { white-space: nowrap; }
+      @media print { .tr2-card { break-inside: avoid; } }
 
       /* Pass 2 Phase 2: the TR-A002 landing line. */
       .tr2why__landing { margin: 0 0 14px; font-size: clamp(19px, 2.2vw, 24px); font-weight: 500; line-height: 1.35; letter-spacing: -.015em; color: var(--ink); max-width: 46ch; }
@@ -291,6 +309,14 @@
         <p class="proof__lede">Start with the artifact. Check how it was produced, what its chain establishes, and where its authority ends.</p>
         <p class="editorial-caption">TR-A002 is a machine-emitted trace of a scripted scenario. TR-A001 is an authored format specimen. An external design-partner trace has not been earned yet.</p>
         <div class="editorial-actions"><a class="btn btn--primary" href="/proof/tr-a002.json" download>Download the TR-A002 trace</a><a class="btn btn--ghost" href="#tr-a002">Inspect TR-A002</a></div>
+        <!-- Release 6 Phase 2: event_count and final_digest from public/proof/tr-a002.json; the
+             commands are the full block's own: download the published JSON, then verify it. -->
+        <div class="tr2-card" role="group" aria-labelledby="tr2-card-title">
+          <p class="tr2-card__k" id="tr2-card-title">TR-A002 · trace of a scripted scenario</p>
+          <p class="tr2-card__facts">12 scripted events · SHA-256 hash chain · <span class="mono">final_digest ca1d4690206e…</span></p>
+          <p class="tr2-card__lbl">Re-check the chain in the public repository's <code>apps/origin-web</code> folder:</p>
+          <p class="tr2-card__cmd"><code>curl -sO https://<wbr>originphysicalai.com/<wbr>proof/<wbr><span>tr-a002.json</span></code><code>node <span>scripts/verify-tr-a002.mjs</span> <span>tr-a002.json</span></code></p>
+        </div>
       </div>
       <!-- Pass 2 Phase 2: the evidence ladder as a static figure, highest rung first. Each fact
            comes from this page and public/proof/tr-a002.json (event_count, final_digest). -->

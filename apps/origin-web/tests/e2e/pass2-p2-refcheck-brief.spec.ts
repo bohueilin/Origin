@@ -2,8 +2,10 @@ import { test, expect, type Locator, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 
 // Pass 2 Phase 2 — /reference-check and /brief figures
-// /reference-check opens with a compact copy of the home five-stage figure, placed in the hero
-// before the tool. Below the shot04 recording and its dated line, a static section compares
+// /reference-check opens with a compact five-stage figure, placed in the hero before the tool.
+// (It began as a copy of the home figure; Release 6 Phase 2 fused that figure into the home
+// walkthrough's stage strip, so /reference-check's figure and /brief's, which share their markup,
+// are now checked against each other and against the code, and the home tabs keep the names.) Below the shot04 recording and its dated line, a static section compares
 // the permissive baseline with the least-privilege preset on the synthetic support battery and
 // reads one row of the result in full. /brief's five-step strip becomes the same five-stage
 // figure and still prints on one page. Both pages gloss "session-signed" and "unpinned" on
@@ -143,13 +145,17 @@ test('pass 2 phase 2: /reference-check opens with the five-stage figure, before 
   await expect(fig.locator('svg.stagefig__head')).toHaveCount(4)
   for (const svg of await fig.locator('svg').all()) await expect(svg).toHaveAttribute('aria-hidden', 'true')
 
-  // The same stages, names and annotations as the home figure.
+  // The same stages, names and annotations as /brief's figure (the two share their markup), and
+  // the same stage names, in order, as the home walkthrough's tabs.
   const here = await stageContent(fig, '.stagefig__stage', '.stagefig__name', '.stagefig__note')
+  await page.goto('/brief')
+  expect(here).toEqual(await stageContent(figure(page, STAGE_FIGURE), '.brief__step', 'h2', 'p'))
   await page.goto('/')
-  const home = await stageContent(figure(page, STAGE_FIGURE), '.stagefig__stage', '.stagefig__name', '.stagefig__note')
-  expect(here).toEqual(home)
+  await expect(page.locator('#demo [role="tab"] > b')).toHaveText(here.map(({ name }) => name))
 
-  // Every label is the code's own.
+  // Every label is the code's own: the stage names, the record fields each stage touches (each
+  // one present in a record built the way /reference-check builds it), the battery size, the
+  // record format, the verdict words of the Grade key and the two /verify outcomes.
   const record = await sampleRecord()
   const { supportTasks } = await import('@origin/verifier-core/supportGym')
   const { iamTasks } = await import('@origin/verifier-core/iamGym')
@@ -157,12 +163,26 @@ test('pass 2 phase 2: /reference-check opens with the five-stage figure, before 
   expect(supportTasks.length).toBe(12)
   expect(iamTasks.length).toBe(12)
   expect(record.schema_version).toBe(ACTION_RUN_SCHEMA_VERSION)
+  expect(here.map(({ node, name }) => [node, name])).toEqual(STAGES.map(([n, name]) => [n, name]))
+  expect(here.map(({ codes }) => codes)).toEqual([
+    ['subject.model_digest', 'subject.tools_digest', 'proposal.input_digest'],
+    ['subject.environment_digest'],
+    ['evaluation.decisions'],
+    [`schema_version ${ACTION_RUN_SCHEMA_VERSION}`, 'evaluation', 'signature'],
+    [],
+  ])
   expect(here[1].note).toContain(`${supportTasks.length} fixed synthetic requests`)
   expect(here[3].note).toContain(`Record format ${ACTION_RUN_SCHEMA_VERSION}`)
   for (const code of here.flatMap((stage) => stage.codes)) {
     const [path] = code.split(' ')
     expect(path in record || field(record, path) !== undefined, code).toBe(true)
   }
+  const verdictWords = source('../../src/reference-check/ReferenceCheckPage.tsx')
+  for (const word of ['✓ match', '△ miss (stricter)', '△ miss (looser)', '<OverGrantMark /> over-grant']) expect(verdictWords).toContain(word)
+  expect(here[2].keys).toEqual(['✓match', '△miss (stricter)', '△miss (looser)', 'over-grant, counted separately'])
+  // /verify's verdicts for an Action/Run record (src/verify/detect.mjs).
+  expect(source('../../src/verify/detect.mjs')).toContain("const verdict = firstFailed ? 'VOID' : !d.issuer_trusted ? 'UNTRUSTED' : 'VALID'")
+  expect(here[4].keys).toEqual(['UNTRUSTEDan intact record', 'VOIDan edit made without re-signing'])
 })
 
 test('pass 2 phase 2: the preset contrast on /reference-check is what the oracle returns', async ({ page }) => {
@@ -305,9 +325,9 @@ test('pass 2 phase 2: /brief carries the five-stage figure and still prints on o
   for (const svg of await fig.locator('svg').all()) await expect(svg).toHaveAttribute('aria-hidden', 'true')
   const here = await stageContent(fig, '.brief__step', 'h2', 'p')
   expect(here.map((s) => s.node)).toEqual(STAGES.map(([n]) => n))
-  await page.goto('/')
-  const home = await stageContent(figure(page, STAGE_FIGURE), '.stagefig__stage', '.stagefig__name', '.stagefig__note')
-  expect(here.map(({ name, note, codes, keys }) => ({ name, note, codes, keys }))).toEqual(home.map(({ name, note, codes, keys }) => ({ name, note, codes, keys })))
+  // The same stages, names, notes, fields and keys as /reference-check's figure (shared markup).
+  await page.goto('/reference-check')
+  expect(here).toEqual(await stageContent(figure(page, STAGE_FIGURE), '.stagefig__stage', '.stagefig__name', '.stagefig__note'))
 
   await page.goto('/brief')
   await page.emulateMedia({ media: 'print' })

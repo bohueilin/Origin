@@ -307,3 +307,28 @@ The home hero film and its script are unchanged.
   - the walkthrough stays on Bind while scrolled into view until a visitor presses Play.
 
 **Noted, not changed here.** The Labs playbacks on `/operations` and `/proving-ground` (2D and 3D) start playing when they scroll into view. Changing that alters three pages' behaviour, so it is left for the owner to decide.
+
+## Release 6, Phase 2 — the receipt in the hero, one five-stage walkthrough, two-column tool heroes
+
+**Home hero.** The hero film, its caption's "AI-generated illustration" disclosure, the H1 and the maturity line are unchanged. The hero's visual column now also shows a static card, "What the check produces", with one real graded row and the record strip:
+- **The row:** `sup-02` · Refund $450 (over the $100 refund cap). The Permissive policy allows it, the oracle escalates it, and the verdict is "△ miss (looser)".
+- **The strip:** Action/Run record 1.1.0 · 12 decisions re-run on `/verify` · UNTRUSTED (browser-session key) · VOID if edited without re-signing.
+
+The film caption now says that, unlike the illustrated scene, this result is real reference-check output that can be re-checked in the browser. The request quoted a "$250 cap"; that belongs to the scripted `/app` scenario, while the reference check's cap is $100, so the card uses $100.
+
+**One five-stage walkthrough.** Section 01 showed the five stages twice: a figure, then the tabbed walkthrough. They are now one component:
+- **The tab strip is the stage strip.** It shows each stage's number, name, a one-line note and the record field it touches. The figure's other facts moved into the panels. The five stages sit in one row from 1024 px; below that the strip is a list and each field shows in its panel. Measured: from 900 to 1023 px the longest name, Challenge, squeezed its connector to 2–14 px and `subject.environment_digest` broke inside the identifier.
+- **Two-column panels.** From 900 px each panel splits about 52/48: the stage's question and prose on the left, its schematic and readout on the right.
+- **Less empty space, no movement.** The panels' content heights are balanced, so no stage leaves more than about 4% of the panel empty at 1280 and 1919 px, or about 12% at 375 px. Moving between stages, or pressing Play, still moves nothing below.
+- **The human case.** Stages 1 and 2 open on it: "A $450 refund over the $100 refund cap: should the agent proceed, refuse, or hand it to a person?"
+- **A three-beat strip.** Under the walkthrough, beside the boundary line: your agent waits on approval → you run the check in your browser → your reviewer re-runs the grading and sees UNTRUSTED or VOID. It links to `/app` and says that this is another case: "A separate scripted scenario: walk a $480 refund over a $250 auto-cap on /app". Without that, $480 next to the walkthrough's $450 read like a typo.
+
+**Tool heroes.** From 960 px, `/reference-check`, `/verify`, `/over-grant` and `/security` open as two columns: copy on the left, a static specimen on the right. On phones the specimen follows the copy.
+- **`/reference-check`:** the `sup-02` decision and what `input_digest` binds.
+- **`/verify`:**
+  - a 1.1.0 report specimen: 4 of 12 match, 6 over-grants and 2 misses (Permissive, support battery); UNTRUSTED when intact, VOID when edited;
+  - a labelled preview in the result card before anything is verified.
+- **`/over-grant`:** a drawn meter of the recorded run: 8,675 scopes granted, 3,194 exercised, 63.2% never exercised. The names and numbers are HTML rows above the bars, so at 320 px, or with wider text spacing, a number wraps under its name instead of printing over it.
+- **`/security`:** an index of the six experiments, with "Start here: 04 or 05".
+
+`/proof` gains a TR-A002 card under its hero buttons: 12 scripted events, a SHA-256 hash chain, the final digest prefix and the re-check commands. Like the page's full block, it downloads the published JSON (`curl -sO https://originphysicalai.com/proof/tr-a002.json`) before running `node scripts/verify-tr-a002.mjs tr-a002.json`, because a fresh clone has no `tr-a002.json` in `apps/origin-web`.

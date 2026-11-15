@@ -165,6 +165,23 @@ function StatedResult({ result }: { result: ReportResult }) {
   )
 }
 
+// Before anything is verified: what a report will hold, in its order, by label only. It states no
+// verdict, count or check result, and the real report replaces it.
+function ReportPreview() {
+  const slots = (words: string[]) => words.map((word) => <Fragment key={word}><span className="vfy-preview__slot">{word}</span>{' '}</Fragment>)
+  return (
+    <div className="vfy-preview" role="group" aria-labelledby="vfy-preview-tag">
+      <p className="vfy-preview__tag" id="vfy-preview-tag">Preview · labels only · nothing checked yet</p>
+      <ol className="vfy-preview__list">
+        <li><b>Verdict</b> {slots(['VALID', 'UNTRUSTED', 'VOID'])}with the format's name and any code</li>
+        <li><b>Stated result</b> {slots(['Matches', 'Misses', 'Over-grants'])}as a 1.1.0 record states them and as re-run in this tab</li>
+        <li><b>Checks</b> a summary line, then each check marked {slots(['pass', 'void', 'note'])}</li>
+        <li><b>What this establishes</b> and what it does not</li>
+      </ol>
+    </div>
+  )
+}
+
 function DetectionTable() {
   return (
     <article className="card">
@@ -524,10 +541,13 @@ export function VerifyPage() {
           <div className="vfy-result">
             <span className="workspace-eyebrow">The verification record</span>
             {!report && !error ? (
-              <div className="workspace-empty">
-                <b>{text.trim() ? 'Ready to inspect.' : 'Your result starts here.'}</b>
-                <p>{text.trim() ? 'Select Verify to check the current artifact. Editing the JSON or signer pin clears the previous verdict.' : 'Load an example or paste JSON (or open a .json file), then select Verify. You will see the checks, their outcome, and the limits of that outcome.'}</p>
-              </div>
+              <>
+                <div className="workspace-empty">
+                  <b>{text.trim() ? 'Ready to inspect.' : 'Your result starts here.'}</b>
+                  <p>{text.trim() ? 'Select Verify to check the current artifact. Editing the JSON or signer pin clears the previous verdict.' : 'Load an example or paste JSON (or open a .json file), then select Verify. You will see the checks, their outcome, and the limits of that outcome.'}</p>
+                </div>
+                <ReportPreview />
+              </>
             ) : null}
             {notes.map((n, i) => <p className="vfy-note" key={i}>{n}</p>)}
             <div ref={verdictRef} className="check-feedback">

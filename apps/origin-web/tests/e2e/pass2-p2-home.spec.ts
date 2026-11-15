@@ -10,6 +10,11 @@ import { readFileSync } from 'node:fs'
 // static: no animation, no SMIL, no layout shift, rendered text at least 12 px at 375 px and
 // no sideways scroll at 375 or 1280. The shot01 caption names the format beside each code,
 // and "session-signed" and "unpinned" get plain-words glosses on first use.
+//
+// Release 6 Phase 2 fused the five-stage figure into the walkthrough: the stage tablist is now
+// the stage strip (number, name, one-line note, record field), so the standalone #stagefig is
+// gone and the pins below that read it now read the strip. Its per-stage annotations moved into
+// the tabs and panels (the Grade key into panel 3). See r6-p2-walkthrough.spec.ts.
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/*', (route) => {
@@ -19,8 +24,8 @@ test.beforeEach(async ({ page }) => {
   })
 })
 
-const STAGES = [['01', 'Bind'], ['02', 'Challenge'], ['03', 'Grade'], ['04', 'Attest'], ['05', 'Reverify']] as const
-const FIGURE_NAME = 'The reference check in five stages'
+const STAGES = [['1', 'Bind'], ['2', 'Challenge'], ['3', 'Grade'], ['4', 'Attest'], ['5', 'Reverify']] as const
+const STRIP_NAME = 'The reference check in five stages'
 const PANEL_FIGURES = [
   'Four inputs, one input digest',
   "The support battery: 12 requests and the oracle's answer to each",
@@ -28,10 +33,10 @@ const PANEL_FIGURES = [
   'The record your browser signs',
   "What /verify runs, in order, in the reviewer's browser",
 ]
-const FIGURES = '#stagefig, .panelfig, .demo-boundary'
+const FIGURES = '[data-demo] [role="tablist"], .panelfig, .demo-boundary'
 const source = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-const stageFigure = (page: Page) => page.getByRole('figure', { name: FIGURE_NAME, exact: true })
+const stageStrip = (page: Page) => page.locator('#demo').getByRole('tablist', { name: STRIP_NAME, exact: true })
 
 async function openPanel(page: Page, step: number) {
   await page.locator(`#demo-tab-${step}`).click()
@@ -101,26 +106,27 @@ async function stillness(page: Page) {
   })
 }
 
-test('pass 2 phase 2: the five-stage figure sits between the #demo head and the tablist', async ({ page }) => {
+// Release 6 Phase 2: this pinned a standalone figure between the #demo head and the tablist. The
+// owner fused the two, so it now pins the strip the figure became: the tablist, right after the
+// #demo head, carrying the figure's stages, notes and record fields, with the Grade key and the
+// Reverify outcomes in their panels.
+test('pass 2 phase 2: the stage strip (the tablist) carries the five stages, labelled from the code', async ({ page }) => {
   await page.goto('/')
-  const figure = stageFigure(page)
-  await expect(figure).toHaveCount(1)
-  await expect(figure).toBeVisible()
-  expect(await figure.evaluate((el) => ({
-    inDemo: Boolean(el.closest('#demo')),
-    after: el.previousElementSibling?.matches('.cin-section-head') ?? false,
-    before: el.nextElementSibling?.matches('[data-demo]') ?? false,
-  }))).toEqual({ inDemo: true, after: true, before: true })
-  await expect(figure.locator('#stagefig-desc')).toHaveText('What each stage does and the record fields involved. The requests are synthetic; your agent is not run.')
+  const strip = stageStrip(page)
+  await expect(strip).toHaveCount(1)
+  await expect(strip).toBeVisible()
+  await expect(page.locator('#demo #stagefig, #demo .stagefig')).toHaveCount(0)
+  expect(await strip.evaluate((el) => el.closest('[data-demo]')?.previousElementSibling?.matches('.cin-section-head') ?? false)).toBe(true)
+  await expect(page.locator('#demo .section__lede')).toContainText('The requests are synthetic; your agent is not run.')
 
   // The stage names are the pinned tab names, in the tablist's order.
-  const stages = figure.locator('.stagefig__stage')
+  const stages = strip.getByRole('tab')
   await expect(stages).toHaveCount(5)
-  await expect(figure.locator('.stagefig__node')).toHaveText(STAGES.map(([n]) => n))
-  await expect(figure.locator('.stagefig__name')).toHaveText(STAGES.map(([, name]) => name))
-  for (const [i, [, name]] of STAGES.entries()) await expect(page.locator(`#demo-tab-${i + 1}`)).toContainText(name)
-  await expect(figure.locator('svg.stagefig__head')).toHaveCount(4)
-  for (const svg of await figure.locator('svg').all()) await expect(svg).toHaveAttribute('aria-hidden', 'true')
+  await expect(strip.locator('[role="tab"] > span')).toHaveText(STAGES.map(([n]) => n))
+  await expect(strip.locator('[role="tab"] > b')).toHaveText(STAGES.map(([, name]) => name))
+  for (const [i, [, name]] of STAGES.entries()) await expect(page.locator(`#demo-tab-${i + 1}`)).toHaveAccessibleName(name)
+  await expect(strip.locator('[role="tab"] > i')).toHaveCount(5)
+  for (const connector of await strip.locator('[role="tab"] > i').all()) await expect(connector).toHaveAttribute('aria-hidden', 'true')
 
   // Every label is the code's own: field names exist in a record built the way /reference-check
   // builds it, the battery count is the shipped battery's, and the format version is the builder's.
@@ -130,30 +136,32 @@ test('pass 2 phase 2: the five-stage figure sits between the #demo head and the 
   const { ACTION_RUN_SCHEMA_VERSION } = await import('@origin/evidence/action-run-evidence')
   expect(iamTasks.length).toBe(supportTasks.length)
   expect(record.schema_version).toBe(ACTION_RUN_SCHEMA_VERSION)
-  const fields = [
-    ['subject.model_digest', 'subject.tools_digest', 'proposal.input_digest'],
-    ['subject.environment_digest'],
-    ['evaluation.decisions'],
-    [`schema_version ${ACTION_RUN_SCHEMA_VERSION}`, 'evaluation', 'signature'],
-  ]
-  for (const [i, codes] of fields.entries()) {
-    await expect(stages.nth(i).locator('code')).toHaveText(codes)
-    for (const code of codes) expect(code.split(' ')[0] in record || field(record, code.split(' ')[0]) !== undefined, code).toBe(true)
+  const fields = ['proposal.input_digest', 'subject.environment_digest', 'evaluation.decisions', `schema_version ${ACTION_RUN_SCHEMA_VERSION}`]
+  for (const [i, code] of fields.entries()) {
+    await expect(stages.nth(i).locator('code')).toHaveText(code)
+    expect(code.split(' ')[0] in record || field(record, code.split(' ')[0]) !== undefined, code).toBe(true)
   }
-  await expect(stages.nth(0)).toContainText('The model and tools you type are kept only as digests.')
-  await expect(stages.nth(1)).toContainText(`${supportTasks.length} fixed synthetic requests written by Origin, the same on every run.`)
-  await expect(stages.nth(1)).toContainText('allow, deny or escalate')
-  // The Grade key uses the /reference-check verdict words.
+  await expect(stages.nth(4).locator('code')).toHaveText('UNTRUSTED · VOID')
+  // The rest of the figure's record fields are in the panels' schematics.
+  await expect(page.locator('#demo-panel-1 .panelfig__binds code')).toHaveText(['subject.model_digest', 'subject.tools_digest', 'subject.policy_digest', 'subject.environment_digest'])
+  await expect(page.locator('#demo-panel-4 .panelfig__record dt').first()).toHaveText('schema_version')
+  await expect(stages.nth(0)).toContainText('Model and tools kept only as digests.')
+  await expect(page.locator('#demo-panel-1 .panelfig__note')).toContainText('The model and tools you type are not stored in the record, only their digests.')
+  await expect(stages.nth(1)).toContainText(`${supportTasks.length} fixed synthetic requests, the same every run.`)
+  await expect(page.locator('#demo-panel-2')).toContainText('written by Origin')
+  await expect(stages.nth(2)).toContainText('Code, not a model, compares with the oracle.')
+  // The Grade key uses the /reference-check verdict words, now in panel 3.
   const verdictWords = source('../../src/reference-check/ReferenceCheckPage.tsx')
   for (const word of ['✓ match', '△ miss (stricter)', '△ miss (looser)', '<OverGrantMark /> over-grant']) expect(verdictWords).toContain(word)
   // The marks are aria-hidden; the over-grant mark is drawn in ink, since the emoji renders red.
-  await expect(stages.nth(2).locator('.stagefig__key li')).toHaveText(['✓match', '△miss (stricter)', '△miss (looser)', 'over-grant, counted separately'])
-  for (const mark of await stages.nth(2).locator('.stagefig__key .mk').all()) await expect(mark).toHaveAttribute('aria-hidden', 'true')
-  await expect(stages.nth(2)).toContainText("Origin's answer key. Not a model.")
-  await expect(stages.nth(3)).toContainText(`Your browser signs the record with a key it makes for that run. Record format ${ACTION_RUN_SCHEMA_VERSION} states the result.`)
-  await expect(stages.nth(4)).toContainText("/verify re-runs the grading in the reviewer's browser.")
-  await expect(stages.nth(4).locator('.stagefig__key b')).toHaveText(['UNTRUSTED', 'VOID'])
-  await expect(stages.nth(4).locator('.stagefig__key li').nth(1)).toHaveText('VOIDan edit made without re-signing')
+  const key = page.locator('#demo-panel-3 .demo__key')
+  await expect(key.locator('li')).toHaveText(['✓match', '△miss (stricter)', '△miss (looser)', 'over-grant, counted separately'])
+  for (const mark of await key.locator('.mk').all()) await expect(mark).toHaveAttribute('aria-hidden', 'true')
+  await expect(stages.nth(3)).toContainText('Signed by a key your browser makes.')
+  await expect(page.locator('#demo-panel-4 .panelfig__note')).toContainText('The signing key is made in your browser for that run.')
+  await expect(stages.nth(4)).toContainText('/verify re-runs the grading.')
+  await expect(page.locator('#demo-panel-5 .panelfig__outcome b')).toHaveText(['UNTRUSTED', 'VOID'])
+  await expect(page.locator('#demo-panel-5 .panelfig__outcome').nth(1)).toContainText('edited without re-signing')
 })
 
 test('pass 2 phase 2: each tab panel carries one static schematic, labelled from the code', async ({ page }) => {
@@ -263,7 +271,10 @@ test('pass 2 phase 2: the tablist keeps its names, ids and keyboard contract', a
   for (const [i, [, name]] of STAGES.entries()) {
     await expect(tabs.nth(i)).toHaveAttribute('id', `demo-tab-${i + 1}`)
     await expect(tabs.nth(i)).toHaveAttribute('aria-controls', `demo-panel-${i + 1}`)
-    await expect(tabs.nth(i)).toHaveText(`${i + 1}${name}`)
+    // Release 6 Phase 2: each tab also carries its stage's note and field (the stage strip), so
+    // the tab is named by its stage name and its number leads its text.
+    await expect(tabs.nth(i)).toHaveAccessibleName(name)
+    await expect(tabs.nth(i)).toHaveText(new RegExp(`^${i + 1}${name}`))
   }
   const selected = (n: number) => expect(page.locator(`#demo-tab-${n}`)).toHaveAttribute('aria-selected', 'true')
   await page.locator('#demo-tab-1').focus()
@@ -332,7 +343,7 @@ test('pass 2 phase 2: session-signed and unpinned are glossed on first use', asy
 test('pass 2 phase 2: the figures are static', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
-  await expect(stageFigure(page)).toBeVisible()
+  await expect(stageStrip(page)).toBeVisible()
   for (const step of [1, 2, 3, 4, 5]) {
     await openPanel(page, step)
     await expect(page.locator(`#demo-panel-${step} .panelfig`)).toBeVisible()
@@ -349,7 +360,7 @@ test('pass 2 phase 2: the figures read at 375 px, fit at 375 and 1280, and stack
   for (const [width, height] of [[375, 812], [1280, 800]] as const) {
     await page.setViewportSize({ width, height })
     await page.goto('/')
-    const stages = stageFigure(page).locator('.stagefig__stage')
+    const stages = stageStrip(page).getByRole('tab')
     await expect(stages).toHaveCount(5)
     const boxes = await stages.evaluateAll((els) => els.map((el) => el.getBoundingClientRect()).map(({ x, y }) => ({ x, y })))
     if (width === 1280) {
@@ -391,7 +402,7 @@ for (const [width, height] of [[375, 812], [1280, 800]] as const) test(`pass 2 p
     }).observe({ type: 'layout-shift', buffered: true })
   })
   await page.goto('/#demo', { waitUntil: 'load' })
-  await expect(stageFigure(page)).toBeInViewport()
+  await expect(stageStrip(page)).toBeInViewport()
   await page.waitForTimeout(1500)
   const total = await page.evaluate(() => (window as unknown as { __shifts: number[] }).__shifts.reduce((sum, value) => sum + value, 0))
   expect(total).toBeLessThanOrEqual(0.001)
@@ -464,7 +475,9 @@ test('pass 2 phase 2: without JavaScript every panel shows its schematic', async
   const page = await context.newPage()
   try {
     await page.goto(`${baseURL}/`)
-    await expect(stageFigure(page)).toBeVisible()
+    // Release 6 Phase 2: the stage strip is the tablist, which needs JavaScript; without it each
+    // panel shows, headed by its stage name.
+    for (const [i, [, name]] of STAGES.entries()) await expect(page.locator(`#demo-panel-${i + 1} h3 .demo__tag`)).toHaveText(name)
     for (const name of PANEL_FIGURES) await expect(page.getByRole('figure', { name, exact: true })).toBeVisible()
     await expect(page.locator('#demo .demo-boundary')).toBeVisible()
   } finally {

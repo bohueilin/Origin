@@ -136,6 +136,43 @@
         .og-bar__key > div { flex-wrap: nowrap; justify-content: space-between; }
         .og-chain { --indent: 14px; }
       }
+      /* Release 6 Phase 2: the hero is a poster. From 960 px the copy holds the left ~55% and the
+         held-versus-exercised meter the right ~45%; phones keep one column, meter after the copy.
+         The shared product stylesheet's hero rules arrive with the page script, so they are
+         repeated here, value for value: set in the head, the hero lays out once and does not
+         move when that sheet lands. */
+      .product-route .product-hero { padding-top: 56px; padding-bottom: 32px; }
+      .product-route .product-hero h1 { max-width: 22ch; font-size: clamp(36px, 4.3vw, 56px); line-height: 1.08; letter-spacing: -.045em; font-weight: 500; }
+      .product-route .product-hero > .shell > .section__lede { max-width: 65ch; font-size: clamp(17px, 1.7vw, 20px); line-height: 1.65; margin-top: 24px; }
+      .product-route .product-hero__scope { max-width: 75ch; font-size: var(--fs-14); line-height: 1.75; color: var(--ink-soft); padding-left: 18px; border-left: 2px solid #adbd9d; margin: 24px 0 0; }
+      .product-route .product-hero__links { display: flex; flex-wrap: wrap; gap: 12px 26px; margin-top: 24px; font-size: 13px; font-weight: 600; }
+      .product-route .product-hero__links a { color: var(--signal-ink); }
+      @media (min-width: 960px) {
+        .product-route--over-grant .product-hero > .shell { display: grid; grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); grid-template-rows: repeat(4, auto) 1fr; column-gap: clamp(40px, 4.5vw, 64px); align-items: start; }
+        .product-route--over-grant .product-hero > .shell > * { grid-column: 1; }
+        .product-route--over-grant .product-hero > .shell > .og-meter { grid-column: 2; grid-row: 1 / -1; margin-top: 0; }
+      }
+      /* The meter: granted scopes as a full bar, exercised scopes as a bar of the same scale, and
+         the never-exercised remainder left empty, outlined and bracketed in the one green. Bar widths are percentages of
+         the drawing, so the geometry stays proportional at every width. The labels and numbers
+         are HTML rows above each bar, not SVG text: when a name and its number do not fit on
+         one line (320 px, or with wider letter and word spacing), the number wraps under the
+         name, flush right, instead of printing over it. Still. */
+      .og-meter { margin: 36px 0 0; max-width: 40rem; padding: 22px 24px 20px; background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 4px; color: var(--ink); }
+      .og-meter__cap { margin: 0; font-size: var(--fs-12); font-weight: 700; line-height: 1.5; letter-spacing: .06em; text-transform: uppercase; color: var(--steel); }
+      .og-meter__lead { margin: 12px 0 18px; font-size: var(--fs-15); line-height: 1.5; color: var(--ink-soft); }
+      .og-meter__lead b { display: block; font-size: clamp(44px, 4.4vw, 60px); font-weight: 500; line-height: 1.05; letter-spacing: -.045em; color: var(--signal-ink); font-variant-numeric: tabular-nums; }
+      .og-meter__nb { white-space: nowrap; }
+      .og-meter__row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 12px; margin: 0 0 6px; font-size: var(--fs-14); line-height: 1.4; color: var(--ink-soft); }
+      .og-meter__num { margin-left: auto; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+      .og-meter__bar { display: block; width: 100%; overflow: visible; }
+      .og-meter__bar + .og-meter__row { margin-top: 12px; }
+      .og-meter__never { margin: 4px 0 0; font-size: var(--fs-14); line-height: 1.4; font-weight: 700; text-align: right; color: var(--signal-ink); font-variant-numeric: tabular-nums; }
+      .og-meter__held { fill: var(--steel); }
+      .og-meter__used { fill: var(--ink); }
+      .og-meter__gap { fill: var(--paper-2); stroke: var(--signal); stroke-width: 2px; }
+      .og-meter__brace { stroke: var(--signal); stroke-width: 2px; }
+      .og-meter__src { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: var(--fs-13); line-height: 1.6; color: var(--steel); }
     </style>
   </head>
 
@@ -176,6 +213,31 @@
           <p class="section__lede">Inspect standing permissions, exercised authority, and what a compromised identity could reach. Then widen a delegation edge and watch the result change.</p>
           <p class="product-hero__scope">Where the <a href="/reference-check">reference check</a> asks what a selected policy would allow, this analyzer measures how much authority a seeded synthetic agent fleet holds versus what it exercised; it evaluates no policy and signs nothing. Every fleet and event on this page is synthetic and seeded. These numbers describe the demonstration, not a customer deployment. Definitions and denominators accompany the published benchmark.</p>
           <div class="product-hero__links"><a href="https://github.com/bohueilin/Origin/blob/main/docs/OVER-GRANT-METRICS.md">Metric definitions ↗</a><a href="/trust/over-grant-bench.json">Published synthetic benchmark ↗</a><a href="#og-table-title">Explore the analyzer ↓</a></div>
+          <!-- Release 6 Phase 2: the hero specimen. Numbers from the recorded run's clean fleet,
+               generateCorpus({ seed: 20260818, roots: 400, depth: 4, violationRate: 0 }) scored by
+               analyzeOverGrant (packages/verifier-core/overGrant.mjs): gur.scopesGranted 8,675,
+               gur.scopesExercised 3,194 (fleetGur 36.8%), never exercised 5,481 (overGrantSurface 63.2%).
+               The same values src/overgrant/recordedFigures.test.ts pins for the figure below. -->
+          <figure class="og-meter" aria-labelledby="og-meter-cap">
+            <figcaption class="og-meter__cap" id="og-meter-cap">Authority held versus exercised, the recorded run</figcaption>
+            <p class="og-meter__lead"><b data-meter="never-share">63.2%</b> of granted scopes were never exercised in the <span class="og-meter__nb">30-day window</span>.</p>
+            <div class="og-meter__chart" role="img" aria-label="Granted at window start: 8,675 scopes. Exercised in the window: 3,194, 36.8%. Never exercised: 5,481, 63.2%.">
+              <p class="og-meter__row"><span>Granted at window start</span><b class="og-meter__num" data-meter="granted">8,675</b></p>
+              <svg class="og-meter__bar" width="100%" height="28" aria-hidden="true" focusable="false">
+                <rect class="og-meter__held" x="0" y="0" width="100%" height="28" data-meter-bar="granted" />
+              </svg>
+              <p class="og-meter__row"><span>Exercised in the window</span><b class="og-meter__num" data-meter="exercised">3,194 · 36.8%</b></p>
+              <svg class="og-meter__bar" width="100%" height="44" aria-hidden="true" focusable="false">
+                <rect class="og-meter__gap" x="36.8%" y="0" width="63.2%" height="28" data-meter-bar="never" />
+                <rect class="og-meter__used" x="0" y="0" width="36.8%" height="28" data-meter-bar="exercised" />
+                <line class="og-meter__brace" x1="36.8%" x2="36.8%" y1="34" y2="44" />
+                <line class="og-meter__brace" x1="100%" x2="100%" y1="34" y2="44" />
+                <line class="og-meter__brace" x1="36.8%" x2="100%" y1="44" y2="44" />
+              </svg>
+              <p class="og-meter__never" data-meter="never">5,481 never exercised · 63.2%</p>
+            </div>
+            <p class="og-meter__src">Seed 20260818 · 400 roots · 2,074 synthetic identities. Synthetic and seeded: it describes the demonstration, not a customer deployment.</p>
+          </figure>
         </div>
       </section>
       <section class="section og-figs" aria-labelledby="og-figs-title">

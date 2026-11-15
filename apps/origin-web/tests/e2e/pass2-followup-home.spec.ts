@@ -10,6 +10,12 @@ import { test, expect, type Page } from '@playwright/test'
 // Measured on 2026-11-14 with the macOS type stack (Avenir Next, SF Mono), before -> after:
 //   375 x 812: locked height 1046 -> 898 px; largest slack (Bind) 285 -> 208 px
 //   390 x 844: locked height 1046 -> 876 px; largest slack (Bind) 304 -> 202 px
+// Release 6 Phase 2 (2026-11-14) added content to the shorter stages (Bind and Challenge open on
+// the battery's sup-02 case, Challenge shows its oracle answer, Attest its record row) and moved each panel's schematic
+// and readout into one column; the locked height grew and the largest slack shrank:
+//   375 x 812: locked height 898 -> 1001 px; largest slack (Bind) 208 -> 117 px
+//   390 x 844: locked height 876 -> 963 px; largest slack (Bind) 202 -> 115 px
+// The pins below are those figures (r6-p2-walkthrough.spec.ts pins the empty share, 15% at most).
 // The pixel pins allow 8 px over the after figures. They run only where Avenir Next renders:
 // another type stack wraps differently (the ubuntu CI runner falls back to its own system face).
 // Positions are layout boxes (offsets), so an entrance transform is never mistaken for a move.
@@ -23,8 +29,8 @@ test.beforeEach(async ({ page }) => {
 })
 
 const PHONES = [
-  { width: 375, height: 812, locked: 906, slack: 216 },
-  { width: 390, height: 844, locked: 885, slack: 211 },
+  { width: 375, height: 812, locked: 1009, slack: 125 },
+  { width: 390, height: 844, locked: 971, slack: 123 },
 ] as const
 
 async function openHome(page: Page, width: number, height: number) {

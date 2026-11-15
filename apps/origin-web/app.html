@@ -38,7 +38,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Origin Evidence Console — prototype preview" />
     <meta name="twitter:description" content="From agent proposal to review-ready evidence: a scripted walkthrough of the verdict, the side effect and the evidence. Simulated scenario data (scripted)." />
-    <link rel="stylesheet" href="/home.css?v=54a3dc77" />
+    <link rel="stylesheet" href="/home.css?v=2d450846" />
     <title>Origin Evidence Console — prototype preview</title>
     <script>
       (() => {
@@ -75,7 +75,7 @@
       .st--proposed { color: var(--steel); border-color: var(--line-2); background: #fff; }
       .st--needs { color: var(--warn); border-color: #ecd9ad; background: #fbf4e3; }
       .st--blocked { color: var(--danger); border-color: #edc6c2; background: #fbecea; }
-      .st--exec { color: var(--signal-ink); border-color: #bcccff; background: var(--signal-wash); }
+      .st--exec { color: var(--signal-ink); border-color: var(--line-2); background: var(--signal-wash); }
       .st--verified { color: var(--verify); border-color: #bfe3d3; background: #eaf6f0; }
       .q { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
       .q li { padding: 11px 15px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
@@ -126,6 +126,7 @@
       .export .btn { margin-top: 12px; }
       details.json { margin-top: 12px; }
       details.json summary { cursor: pointer; font-size: var(--fs-13); color: var(--signal-ink); font-weight: 600; }
+      details.json summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; border-radius: 6px; }
       details.json pre { margin: 10px 0 0; background: var(--graphite); color: var(--on-dark); border-radius: 10px; padding: 14px; overflow-x: auto; font-family: ui-monospace, Menlo, monospace; font-size: var(--fs-12); line-height: 1.5; }
       .ec__read { margin: 18px 0 6px; padding: 13px 16px; max-width: 74ch; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; }
       .ec__read h2.ec__scenarios-lbl { margin: 0 0 4px; line-height: 1.5; }

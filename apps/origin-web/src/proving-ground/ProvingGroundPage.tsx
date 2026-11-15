@@ -23,7 +23,7 @@ function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 }
 
-const VERDICT_DOT: Record<string, string> = { finish: '#0f9d6e', escalate: '#b97400', refuse: '#e5484d' }
+const VERDICT_DOT: Record<string, string> = { finish: '#0f7a57', escalate: '#8a5800', refuse: '#b23a30' } // the site's --verify / --warn / --danger tokens
 
 export function ProvingGroundPage() {
   const [draft] = useState(starterUnderstanding)

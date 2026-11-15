@@ -1,16 +1,17 @@
 // render2d — a clean canvas renderer for the warehouse sim. Pure 2D, no deps. Draws the
 // floor grid, pod-rack shelves, exclusion zones, each robot's faint verified path, the
 // robots (carrying state + colour), the human marker, and the outbound docks.
-// Origin design tokens. One draw call per animation frame; the sim is the source of truth.
+// Origin design tokens (Style Lock: paper, ink, warm stone neutrals, one forest accent; no
+// blue or teal). One draw call per animation frame; the sim is the source of truth.
 import type { SimScene, SimResult, SimFrame } from './warehouseSim'
 
-const INK = '#14161a'
-const LINE = '#e3e8f1'
-const BG = '#f6f8fc'
-const SHELF = '#dfe6f2'
-const SHELF_EDGE = '#c3cee0'
+const INK = '#272d26' // --ink
+const LINE = '#dfe4d8' // --line
+const BG = '#f8f7f4' // --paper
+const SHELF = '#e4e0d6' // warm stone
+const SHELF_EDGE = '#c9c3b6'
 const HUMAN = '#e5484d'
-const DOCK = '#0f9d6e'
+const DOCK = '#2b523b' // forest signal; its fill is a low-alpha wash of the same colour
 
 export interface Draw2DOpts {
   showPaths?: boolean
@@ -81,7 +82,7 @@ export class Warehouse2DRenderer {
 
     // outbound docks (each robot's drop)
     for (const r of scene.robots) {
-      ctx.fillStyle = 'rgba(15,157,110,0.12)'
+      ctx.fillStyle = hexA(DOCK, 0.1)
       roundRect(ctx, cx(r.task.drop) + 1.5, cy(r.task.drop) + 1.5, cell - 3, cell - 3, 3)
       ctx.fill()
       ctx.strokeStyle = DOCK
@@ -114,9 +115,10 @@ export class Warehouse2DRenderer {
       const X = cx(rs.pos) + cell / 2
       const Y = cy(rs.pos) + cell / 2
       const rad = cell * (rs.done ? 0.24 : 0.3)
-      // body
+      // body: always the full fleet colour (a parked robot is smaller, not faded), so the
+      // white label keeps at least 6.3:1 on every fleet colour
       ctx.beginPath()
-      ctx.fillStyle = rs.done ? hexA(def.color, 0.55) : def.color
+      ctx.fillStyle = def.color
       ctx.arc(X, Y, rad, 0, Math.PI * 2)
       ctx.fill()
       // carrying pod

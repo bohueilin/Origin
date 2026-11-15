@@ -5,7 +5,8 @@
 import * as THREE from 'three'
 import type { SimScene, SimResult, SimFrame } from './warehouseSim'
 
-const COL = { floor: 0xeef2f8, line: 0xc3cee0, shelf: 0xd0daea, dock: 0x0f9d6e, human: 0xe5484d, bg: 0xf6f8fc }
+// Style Lock: paper ground, warm stone floor and racks, a forest-green dock wash; no blue or teal.
+const COL = { floor: 0xefede6, line: 0xc9d2c2, shelf: 0xe4e0d6, dock: 0x2b523b, human: 0xe5484d, bg: 0xf8f7f4 }
 
 export class Warehouse3DRenderer {
   private renderer: THREE.WebGLRenderer

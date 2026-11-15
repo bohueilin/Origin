@@ -2,7 +2,7 @@
 
 .pp-led {
   /* Fall back to local tokens if rendered outside .pp-app. */
-  --led-accent: var(--accent, #2f6df6);
+  --led-accent: var(--accent, #2b523b);
   --led-good: var(--good, #12a567);
   --led-warn: var(--warn, #d98613);
   --led-bad: var(--bad, #e0483f);

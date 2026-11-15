@@ -3,6 +3,8 @@
 // each readable as text on the paper ground and on white.
 import { describe, expect, it } from 'vitest'
 import { FLEET_COLORS, FLEET_COLORS_HEX } from './fleetPalette'
+import { buildWarehouseScene } from '../simulation/warehouseSim'
+import { runShift } from '../simulation/opsMetrics'
 
 // WCAG 2 relative luminance and contrast ratio.
 const luminance = (hex: string) => {
@@ -28,6 +30,31 @@ describe('fleet palette', () => {
     for (const colour of FLEET_COLORS) {
       expect(contrast(colour, '#f8f7f4'), `${colour} on paper`).toBeGreaterThanOrEqual(4.5)
       expect(contrast(colour, '#ffffff'), `${colour} on white`).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+})
+
+// Release 6 Phase 1 — sim palette: the /simulation and /operations warehouse robots wear the
+// same six fleet colours, robot n in fleet colour n, whatever the seed or fleet size.
+describe('warehouse robots wear the fleet palette', () => {
+  it('colours robot n with fleet colour n, for every fleet size the pages offer', () => {
+    for (const seed of [20260713, 777, 1]) {
+      for (let robots = 2; robots <= 6; robots += 1) {
+        const colours = buildWarehouseScene({ seed, robots }).robots.map((r) => r.color)
+        expect(colours, `seed ${seed}, ${robots} robots`).toEqual(FLEET_COLORS.slice(0, robots))
+      }
+    }
+  })
+
+  it('uses the same colours in every wave of an operations shift', () => {
+    for (const wave of runShift(777, 6, 6).waves) {
+      expect(buildWarehouseScene({ seed: wave.seed, robots: 6 }).robots.map((r) => r.color)).toEqual([...FLEET_COLORS])
+    }
+  })
+
+  it('keeps white robot labels at 4.5:1 or more on every robot colour', () => {
+    for (const robot of buildWarehouseScene({ robots: 6 }).robots) {
+      expect(contrast('#ffffff', robot.color), robot.color).toBeGreaterThanOrEqual(4.5)
     }
   })
 })

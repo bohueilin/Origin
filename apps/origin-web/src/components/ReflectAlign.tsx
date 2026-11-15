@@ -25,7 +25,7 @@ import { StepBridge } from './StepBridge'
 import { GRID_MIN, GRID_MAX, clampN, planResize, type LostCell, type ResizePlan } from '../siteMapResize'
 import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
 import { floorCounts, floorTypes } from '../proving-ground/floorCounts'
-import { FLEET_COLORS } from '../proving-ground/fleetPalette'
+import { FLEET_COLORS } from '../shared/fleetPalette'
 
 function keyOf(p: { x: number; y: number }): string {
   return `${p.x},${p.y}`

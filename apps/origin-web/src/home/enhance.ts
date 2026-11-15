@@ -2,16 +2,14 @@
  * Origin homepage — progressive enhancement only.
  *
  * The homepage is fully readable and usable as static HTML with this module
- * absent. Everything here is additive: header elevation, the
- * Observe→Plan→Act→Verify highlight, the lead-form modal, and analytics.
- * All motion is gated on `prefers-reduced-motion`.
+ * absent. Everything here is additive: header elevation, the lead-form modal,
+ * the walkthroughs, and analytics. Nothing moves unless the visitor asks:
+ * scrolling never starts a walkthrough or a video. All motion is gated on
+ * `prefers-reduced-motion`.
  */
 
 export {} // ensure this file is treated as a module (required for `declare global`)
 
-// Video bands live on several static pages; enhance.ts already loads on three of
-// them, so importing here avoids a second module request on those.
-import './../shared/videoBand'
 import './cinematic'
 
 type Gtag = (...args: unknown[]) => void
@@ -63,22 +61,6 @@ if (burger && siteNav) {
   // Mark the controls bound so the early header reservation survives load.
   // Without this marker the head script restores ordinary navigation links.
   document.documentElement.classList.add('nav-ready', 'nav-bound')
-}
-
-/* ---------- Observe → Plan → Act → Verify highlight ---------- */
-if (!reduceMotion && 'IntersectionObserver' in window) {
-  const steps = Array.from(document.querySelectorAll<HTMLElement>('.loop__step'))
-  if (steps.length) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) (e.target as HTMLElement).classList.add('is-active')
-        })
-      },
-      { rootMargin: '-20% 0px -40% 0px', threshold: 0.5 },
-    )
-    steps.forEach((s) => io.observe(s))
-  }
 }
 
 /* ---------- analytics: delegated CTA + section tracking ---------- */
@@ -133,7 +115,8 @@ if (typeof navigator.clipboard?.writeText === 'function') {
 
 /* ---------- Product walkthrough stepper ----------
    Enhancement only. With JS off or reduced-motion on, CSS shows all four panels
-   stacked (the workflow is fully communicated) and the tabs/controls stay hidden. */
+   stacked (the workflow is fully communicated) and the tabs/controls stay hidden.
+   It advances only on a click of Replay, a tab or a mode, never on scroll. */
 const walk = document.querySelector<HTMLElement>('[data-walk]')
 if (walk && !reduceMotion) {
   const blocks = Array.from(walk.querySelectorAll<HTMLElement>('.walk__mode-block'))
@@ -198,12 +181,6 @@ if (walk && !reduceMotion) {
     })
 
     replay?.addEventListener('click', () => { markInteracted(); play(activeBlock) })
-
-    // auto-play the active mode once, when scrolled into view; pause on interaction
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { play(activeBlock); io.disconnect() } })
-    }, { threshold: 0.4 })
-    io.observe(walk)
   }
 }
 
@@ -416,34 +393,6 @@ form?.addEventListener('submit', async (e) => {
     ].join('\n')
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
-})
-
-/* ---------- Vision film: click-to-play (lazy, no autoplay) ----------
-   The <video> is laid out from the start (poster only, preload="none" so no
-   bytes until play) with native controls as a guaranteed fallback. The overlay
-   just kicks off playback and gets out of the way. */
-// Reveal the designed overlay only when JS is active; with JS off the CSS keeps it
-// hidden so the native <video controls> are directly usable (no "nothing happens").
-document.querySelectorAll<HTMLElement>('[data-video]').forEach((fig) => fig.classList.add('is-enhanced'))
-document.querySelectorAll<HTMLElement>('[data-video-play]').forEach((btn) => {
-  const fig = btn.closest('[data-video]')
-  const video = fig?.querySelector('video') as HTMLVideoElement | null
-  if (!video) return
-  // Reveal the playing video only once playback truly starts; never hide the
-  // overlay up-front, or a delayed/blocked play() leaves the viewer on a static
-  // poster ("nothing happens"). If play fails, keep the overlay + the native
-  // <video controls> so a click is never a dead end.
-  const reveal = () => { btn.hidden = true }
-  const restore = () => { btn.hidden = false }
-  const start = () => { video.muted = true; return video.play().then(reveal) }
-  // It's an ambient brand film: autoplay muted where the browser allows it. If
-  // autoplay is blocked (Safari Low Power Mode, data-saver, strict autoplay),
-  // the poster/▶ overlay stays and a click starts it (with a load()+retry).
-  start().catch(() => { try { video.load() } catch { /* ignore */ } restore() })
-  btn.addEventListener('click', () => {
-    start().catch(() => { try { video.load() } catch { /* ignore */ } start().catch(restore) })
-    track('vision_video_play')
-  })
 })
 
 /* ---------- interactive 90-second demo (progressive enhancement) ---------- */

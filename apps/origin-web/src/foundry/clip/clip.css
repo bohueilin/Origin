@@ -14,6 +14,8 @@ html, body { margin: 0; background: #111c16; }
 }
 .clip *, .clip *::before, .clip *::after { box-sizing: border-box; }
 .clip :is(button, a):focus-visible { outline: 3px solid #d0e3ac; outline-offset: 5px; }
+/* The skip link sits on the dark ground, so its ring is the light one, not lab-shell's forest. */
+.skip-link:focus-visible { outline: 3px solid #d0e3ac; outline-offset: 2px; }
 .clip__nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; max-width: 1180px; margin: 0 auto; }
 .clip__brand { color: #f4f4e9; text-decoration: none; font-size: 21px; letter-spacing: -.035em; font-weight: 600; }
 .clip__back { color: var(--clip-muted); text-decoration: none; font-size: 13px; padding: 10px 0; }

@@ -373,3 +373,45 @@ Each is now labelled as its own tree. "BRI" is spelled out where it is defined: 
 - `/over-grant`'s bar and delegation figures are drawn in SVG, with the facts kept as text. In forced-colours mode they take system colours, as `/proof`'s ladder does.
 - The six `/labs` diagrams are named images with descriptions.
 - `/brief` prints its boundary and contact lines at 10.5 px and still fits one page.
+
+## Release 6, Phase 4 — proving-ground editor, fleet counts and the 3D view
+
+**Editor from 901 px.** The docked editor now starts at 901 px instead of 1024 px. Before, from 901 to 1023 px, the grid scrolled sideways inside a narrower column (111–180 px of it hidden), and the legend was not beside it.
+- The legend and the new fleet counts form one column beside the grid.
+- The readout sits directly under the grid, 16 px below it, however tall the column grows.
+- The floor header spans the top until 1099 px and joins the column from 1100 px. The readout joins the column, last, from 1240 px.
+- From 901 to 1099 px the card and panel padding shrink and the docked text is 13 px. Every cell and control stays at least 44 px.
+- Phones stack the parts in markup order: header, legend, counts, grid, readout.
+
+The oracle, the template floor and the scored output are unchanged.
+
+**Robots by fleet.** Beside the grid, each fleet's robots are listed in words, from the live floor:
+- "Fleet 1 (forest): 2 robots — AMR";
+- a mixed fleet: "Fleet 1 (forest): 4 robots — 3 AMRs, 1 humanoid";
+- an empty fleet: "Fleet 3 (plum): no robots, scored as robot dog". The oracle still scores an empty fleet as its own type.
+
+The lines use the same per-fleet counts as the fleet cards and update with every edit. The colour names sit next to the colours in `src/shared/fleetPalette.ts`, and the palette test pins them.
+
+**3D view.**
+- **Camera.** It now fits the floor instead of leaving it in the middle third of the canvas.
+  - The default view is 48° above the floor and 37° round from its front edge. The old view was about 36° above the floor.
+  - The floor fills 70% of the canvas's binding dimension: its height on a desktop canvas, its width on a phone.
+  - The whole scene stays at least 2.5% inside every edge: racks, props, people, boxes and each robot's route. Where tall racks on a small floor cannot fit at 70%, the floor fills less instead of the racks leaving the frame. On desktop, a few small rack floors (narrower than 10 columns and 4–8 rows deep) fill between about 0.5 and 0.65; a 4 × 4 floor whose back row is all racks fills 0.49.
+  - The view re-frames after a floor resize, and after a canvas resize until the visitor first turns or zooms it.
+  - The orbit pivot sits on the floor, so turning the view never takes the camera below the floor.
+  - The fog follows the framed view, so robots on a phone are no longer washed out, and zooming out stops before the scene fades.
+- **Colour.** The ground, grid lines, floor tints and props are warm stone and sage; no grey-blue remains. A new front fill light, a brighter warm sky light and a stronger sun light the robots, with no emissive material.
+  - Before the camera change, robot front faces moved from 12–22 ΔE2000 from their fleet colour to under 2.5. The closest pair of fleets, forest and olive, went from 8.8 to at least 11.3 apart.
+  - In the final view an AMR's deck renders within 3.0 of its swatch on desktop and on a phone. The Pass 2 record allowed 8.4.
+
+**Tests.**
+- `r6-p4-pg-layout.spec.ts` covers the docked layout at 901–1239 px with the starter floor, six fleets, a 12 × 4 floor and a mixed fleet. It checks the readout under the grid, the count wording after edits, the 1280 px column and the phone order.
+- `r6-p4-pg-3d.spec.ts` checks:
+  - the floor fill (0.65–0.75) and the whole scene in view, on load, after a resize and on a shallow rack floor;
+  - warm ground and background;
+  - the floor still drawn at the lowest angle;
+  - an AMR deck's colour.
+
+The canvas publishes the projected floor corners, scene box and AMR decks as data attributes for these checks.
+
+**Not changed.** The 3D playback still starts when it scrolls into view, as noted in Release 6, Phase 1. On a phone the 3D canvas keeps its 520 px height, so a floor fitted to the canvas's width leaves space above and below it.

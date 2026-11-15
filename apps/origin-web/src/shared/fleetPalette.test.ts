@@ -2,7 +2,7 @@
 // docs/design/2026-11-12-site-pass-decisions.md): six exact colours, no blue or teal,
 // each readable as text on the paper ground and on white.
 import { describe, expect, it } from 'vitest'
-import { FLEET_COLORS, FLEET_COLORS_HEX } from './fleetPalette'
+import { FLEET_COLORS, FLEET_COLORS_HEX, FLEET_COLOR_NAMES } from './fleetPalette'
 import { buildWarehouseScene } from '../simulation/warehouseSim'
 import { runShift } from '../simulation/opsMetrics'
 
@@ -20,6 +20,10 @@ const contrast = (a: string, b: string) => {
 describe('fleet palette', () => {
   it('is the six Style Lock colours, in fleet order', () => {
     expect(FLEET_COLORS).toEqual(['#2b523b', '#8a5200', '#6940a3', '#9d2e68', '#4a4238', '#525e2c'])
+  })
+
+  it('names each colour, in the same order, for the fleet counts', () => {
+    expect(FLEET_COLOR_NAMES).toEqual(['forest', 'ochre', 'plum', 'rose', 'umber', 'olive'])
   })
 
   it('gives three.js the same colours as numbers', () => {

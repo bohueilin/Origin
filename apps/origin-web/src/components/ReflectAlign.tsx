@@ -24,8 +24,33 @@ import { useAuth } from '../auth/AuthProvider'
 import { StepBridge } from './StepBridge'
 import { GRID_MIN, GRID_MAX, clampN, planResize, type LostCell, type ResizePlan } from '../siteMapResize'
 import { FloorCountStrip } from '../proving-ground/FloorCountStrip'
-import { floorCounts, floorTypes } from '../proving-ground/floorCounts'
-import { FLEET_COLORS } from '../shared/fleetPalette'
+import { floorCounts, floorTypes, type FloorType } from '../proving-ground/floorCounts'
+import { FLEET_COLORS, FLEET_COLOR_NAMES } from '../shared/fleetPalette'
+
+/** A type as a word inside a sentence: "humanoid", "robot dog", but "AMR". Counted more
+ *  than once it is plural ("AMRs", "tuggers (tow AGV)"), except "other / custom". */
+function typeWord(emb: RobotEmbodiment, n = 1): string {
+  const label = getEmbodimentProfile(emb).label
+  const word = /^[A-Z]{2,}\b/.test(label) ? label : label.charAt(0).toLowerCase() + label.slice(1)
+  return n > 1 && emb !== 'other' ? word.replace(/( \(|$)/, 's$1') : word
+}
+
+/** One fleet's robots in plain words, read from the same per-fleet type counts as the
+ *  fleet cards and the type panel: "Fleet 1 (forest): 2 robots — AMR". A fleet with no
+ *  robots is still scored as its own type, as the oracle scores it. No-break spaces keep
+ *  "Fleet 1" and each count with the first word of its type, and the dash with what
+ *  follows it, so a narrow column never ends a line on a bare number or dash. */
+function fleetCountLine(types: FloorType[], fleet: number, ownType: RobotEmbodiment): string {
+  const name = `Fleet\u00a0${fleet + 1} (${FLEET_COLOR_NAMES[fleet % FLEET_COLOR_NAMES.length]})`
+  const here = types.flatMap((t) => {
+    const n = t.byFleet.find((b) => b.fleet === fleet)?.robots ?? 0
+    return n ? [{ emb: t.embodiment, n }] : []
+  })
+  const total = here.reduce((sum, h) => sum + h.n, 0)
+  if (!total) return `${name}: no robots, scored as ${typeWord(ownType)}`
+  const kinds = here.length === 1 ? typeWord(here[0].emb) : here.map((h) => `${h.n}\u00a0${typeWord(h.emb, h.n)}`).join(', ')
+  return `${name}: ${total}\u00a0${total === 1 ? 'robot' : 'robots'} —\u00a0${kinds}`
+}
 
 function keyOf(p: { x: number; y: number }): string {
   return `${p.x},${p.y}`
@@ -1278,8 +1303,9 @@ export function ReflectAlign({
 
             {/* Floor header: the size in words and a synthetic scale, so 108 squares
                 read as a room. The scale is a stated convention of this synthetic floor,
-                never a claim about a real building. On a wide screen the header, legend
-                and readout dock beside the grid; a phone keeps them stacked around it. */}
+                never a claim about a real building. From 901px the legend and fleet counts
+                dock beside the grid with the readout under it; the header joins the column
+                from 1100px and the readout from 1240px. A phone stacks them in this order. */}
             <div className="pg-floor">
             {proving && (
               <div className="floor-head">
@@ -1293,12 +1319,15 @@ export function ReflectAlign({
               </div>
             )}
 
-            {/* Docked legend: the exact marks the grid draws, before the first tap. */}
+            {/* Beside the grid from 901px, above it on a phone: the legend (the exact marks the
+                grid draws, before the first tap) and each fleet's robots in words, from the
+                live floor, so a count never has to be read off the grid. */}
             {proving && (
+              <div className="pg-floor-side">
               <div className="grid-legend" role="group" aria-label="Legend">
                 <p className="grid-legend-title"><b>Legend</b> Tap a tool, then tap the floor.</p>
                 <p className="grid-legend-note">
-                  Robot, item (I) and drop (D) in each fleet’s colour{fleets.length > 1 ? '; F1 marks Fleet 1' : ''}:
+                  Robot, item (I) and drop (D) in each fleet’s colour{fleets.length > 1 ? '; F1 marks Fleet\u00a01' : ''}:
                 </p>
                 <ul className="grid-legend-fleets">
                   {fleets.map((f, fi) => {
@@ -1323,6 +1352,18 @@ export function ReflectAlign({
                   <li><span className="lg-cell cell-hazard" aria-hidden="true">!</span> Hazard: off-limits to robots</li>
                   <li><span className="lg-cell cell-human" aria-hidden="true">H</span> Human-only: reserved for people</li>
                 </ul>
+              </div>
+              <div className="grid-fleet-counts" role="group" aria-label="Robots by fleet">
+                <p className="grid-fleet-counts-title">Robots by fleet</p>
+                <ul>
+                  {fleets.map((f, fi) => (
+                    <li key={fi}>
+                      <span className="grid-fleet-counts-dot" style={{ background: FLEET_COLORS[fi % FLEET_COLORS.length] }} aria-hidden="true" />
+                      <span>{fleetCountLine(types, fi, f.embodiment ?? embodiment)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
               </div>
             )}
 

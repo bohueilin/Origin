@@ -1,10 +1,13 @@
 import { test, expect, type Page } from '@playwright/test'
 
 // Pass 2 Phase 3 — proving-ground editor layout
-// From 1024px the floor header, legend and readout dock beside the grid, so the editor
-// card no longer leaves a half-empty column; a phone keeps the stacked layout. The
-// primary "Inspect the result" control follows the playback (draw, watch, inspect), and
-// the fleet colours come from the shared palette, which has no teal or blue.
+// From 901px the legend (with the fleet counts since Release 6) docks beside the grid, so
+// the editor card no longer leaves a half-empty column. The floor header joins that column
+// from 1100px; the readout sits under the grid until 1240px and then comes last in the
+// column, so at 1280 and 1919 the header, legend and readout are all beside the grid. A
+// phone keeps the stacked layout. The primary "Inspect the result" control follows the
+// playback (draw, watch, inspect), and the fleet colours come from the shared palette,
+// which has no teal or blue.
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/*', (route) => {

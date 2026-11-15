@@ -292,6 +292,14 @@ body.product-route--proving-ground { overflow-x: clip; }
 }
 .pg-wrap.product-workspace .cell-wall { background: color-mix(in srgb, var(--ink) 12%, var(--paper-2)); color: var(--ink); border-color: var(--line-2); }
 
+/* Robots by fleet, in words: one line per fleet, its swatch first. Static text. One
+   shrinkable track, so a long line wraps instead of widening the others. */
+.pg-wrap.product-workspace .grid-fleet-counts { margin: 0 0 12px; }
+.pg-wrap.product-workspace .grid-fleet-counts-title { margin: 0 0 6px; font-size: 12px; line-height: 1.6; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--signal-ink); }
+.pg-wrap.product-workspace .grid-fleet-counts ul { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.pg-wrap.product-workspace .grid-fleet-counts li { display: flex; align-items: flex-start; gap: 8px; }
+.pg-wrap.product-workspace .grid-fleet-counts-dot { flex: none; width: 10px; height: 10px; margin-top: calc(.75em - 5px); border-radius: 50%; }
+
 /* Axes: letters across the top, numbers down the side; the row numbers stay
    pinned at the left edge while a narrow screen scrolls the grid sideways. */
 .pg-wrap.product-workspace .site-grid--axes { gap: 4px; }
@@ -412,25 +420,50 @@ body.product-route--proving-ground { overflow-x: clip; }
 /* The primary action follows the playback (draw, watch, inspect). */
 .pg-wrap.product-workspace .pg-inspect { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 
-/* From 1024px the build panel spans the editor card: fleet cards beside the tools, and
-   the floor header, legend and readout docked beside the grid, so no column is left
-   half empty. The type panel follows it, as in the markup. A phone stays stacked. */
-@media (min-width: 1024px) {
+/* From 901px the build panel spans the editor card: fleet cards beside the tools, and
+   the legend and fleet counts (.pg-floor-side) docked beside the grid, so no column is
+   left half empty. The floor header spans the top until the docked column is wide enough
+   to hold it. The readout sits directly under the grid until the column can hold it too:
+   the docked column spans the grid's row, the readout's row and a last flexible row that
+   takes whatever it runs past them, so a long column never pushes the readout down. The
+   readout adds no width to the grid's column beyond 28em, so under a narrow floor it is as
+   wide as the docked column it joins at 1240px. The type panel follows, as in the markup.
+   900px and below stays stacked, in markup order. */
+@media (min-width: 901px) {
   .pg-wrap.product-workspace .align-grid { grid-template-columns: minmax(0, 1fr); }
   .pg-wrap.product-workspace .smp-controls { display: grid; grid-template: auto auto auto 1fr / minmax(0, 1fr) minmax(0, 1fr); column-gap: 20px; }
   .pg-wrap.product-workspace .smp-controls > * { grid-column: 2; }
   .pg-wrap.product-workspace .smp-controls > .smp-fleets { grid-column: 1; grid-row: 1 / -1; }
-  .pg-wrap.product-workspace .pg-floor { display: grid; column-gap: 24px; grid-template: "head head" "grid legend" "grid readout" "grid ." 1fr / max-content minmax(0, 1fr); }
+  .pg-wrap.product-workspace .pg-floor { display: grid; column-gap: 24px; grid-template: "head head" "grid side" "readout side" ". side" 1fr / max-content minmax(0, 1fr); }
   .pg-wrap.product-workspace .pg-floor > .floor-head { grid-area: head; }
-  .pg-wrap.product-workspace .pg-floor > .grid-legend { grid-area: legend; }
+  .pg-wrap.product-workspace .pg-floor > .pg-floor-side { grid-area: side; }
   .pg-wrap.product-workspace .pg-floor > .site-grid-scroll { grid-area: grid; }
-  .pg-wrap.product-workspace .pg-floor > .grid-readout-row { grid-area: readout; margin-top: 0; }
+  .pg-wrap.product-workspace .pg-floor > .grid-readout-row { grid-area: readout; contain: inline-size; min-width: 28em; }
+  /* A fleet holding several types shows several marks; they wrap inside the column. */
+  .pg-wrap.product-workspace .grid-legend-fleets li { flex-wrap: wrap; }
   .pg-wrap.product-workspace .pg-types { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
   .pg-wrap.product-workspace .pg-types-panel > :is(.pg-types-inputs, .field, .field-hint) { max-width: 75ch; }
 }
+/* Below 1100px the docked column is 153–351px, so the editor card and build panel give
+   it some of their padding and the docked text steps down to 13px (never below 12px). */
+@media (min-width: 901px) and (max-width: 1099px) {
+  .pg-wrap.product-workspace .flow-shell { padding: 24px; }
+  .pg-wrap.product-workspace .site-map-panel { padding: 16px; }
+  .pg-wrap.product-workspace .pg-floor { column-gap: 16px; }
+  .pg-wrap.product-workspace .grid-legend { padding: 8px 10px; }
+  .pg-wrap.product-workspace :is(.grid-legend-title, .grid-legend-note, .grid-legend ul, .grid-fleet-counts ul) { font-size: 13px; line-height: 1.5; }
+  .pg-wrap.product-workspace .grid-legend ul { gap: 4px 12px; }
+  .pg-wrap.product-workspace .grid-legend li { gap: 4px; }
+  .pg-wrap.product-workspace .lg-cell { min-width: 24px; height: 24px; }
+}
 /* Once the docked column is wide enough, the floor header joins it. */
 @media (min-width: 1100px) {
-  .pg-wrap.product-workspace .pg-floor { grid-template-areas: "grid head" "grid legend" "grid readout" "grid ."; }
+  .pg-wrap.product-workspace .pg-floor { grid-template-areas: "grid head" "grid side" "readout side" ". side"; }
+}
+/* From 1240px (the card's full width) the readout joins the docked column, last. */
+@media (min-width: 1240px) {
+  .pg-wrap.product-workspace .pg-floor { grid-template: "grid head" "grid side" "grid readout" "grid ." 1fr / max-content minmax(0, 1fr); }
+  .pg-wrap.product-workspace .pg-floor > .grid-readout-row { margin-top: 0; contain: none; min-width: 0; }
 }
 @media (max-width: 720px) {
   /* On a phone the bar is one state line plus the floor total, so the grid keeps

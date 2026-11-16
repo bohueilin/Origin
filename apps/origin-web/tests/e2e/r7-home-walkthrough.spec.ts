@@ -31,6 +31,12 @@ for (const [width, height] of [[1280, 800], [1919, 998]] as const) {
   for (const start of ['strip under the header', 'strip scrolled under the header'] as const) {
     test(`release 7: at ${width} px, from the ${start}, Next never clips a stage under the sticky header`, async ({ page }, testInfo) => {
       test.skip(testInfo.project.name !== 'desktop-chromium', 'viewports are set explicitly')
+      // Reduced motion turns off the page's scroll-behavior: smooth. In CI, Playwright's own
+      // scroll before a click was animated by it and ran on after the click, carrying the strip
+      // 316 px under the header after the guard had already checked it (seen in this test's
+      // scroll log). playwright.config.ts records the same conflict for the mobile project. The
+      // guard itself scrolls instantly under either preference.
+      await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.setViewportSize({ width, height })
       await page.goto('/')
       await expect(page.locator('[data-demo]')).toHaveClass(/is-enhanced/)

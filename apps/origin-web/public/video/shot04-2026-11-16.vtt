@@ -1,27 +1,27 @@
 WEBVTT
 
-NOTE RECORDED · ONE TAKE · SYNTHETIC DATA · recorded 2026-11-15 on originphysicalai.com (49b5cd0) · captions and cursor dot overlaid
+NOTE RECORDED · ONE TAKE · SYNTHETIC DATA · recorded 2026-11-16 on originphysicalai.com (965215b) · cursor dot and corner label overlaid; captions shown under the picture
 
 1
-00:00:00.797 --> 00:00:08.489
+00:00:00.946 --> 00:00:08.583
 /reference-check · a selected policy vs a synthetic battery; no agent contacted
 
 2
-00:00:08.489 --> 00:00:14.888
+00:00:08.583 --> 00:00:14.999
 12 synthetic policy decisions scored by the deterministic oracle
 
 3
-00:00:14.888 --> 00:00:21.432
+00:00:14.999 --> 00:00:21.510
 Signed policy-evaluation evidence downloaded (browser-session key)
 
 4
-00:00:21.432 --> 00:00:30.986
+00:00:21.510 --> 00:00:31.187
 One tool added (payments.transfer): the legacy config-bound credential VOIDs (code 4); the downloaded evidence is unchanged
 
 5
-00:00:30.986 --> 00:00:36.478
+00:00:31.187 --> 00:00:36.726
 The /verify link carries the same record; the field is cleared and the downloaded file pasted in is byte-identical
 
 6
-00:00:36.478 --> 00:00:41.981
+00:00:36.726 --> 00:00:42.229
 Pasted into /verify: UNTRUSTED — intact, but the session signer is unpinned

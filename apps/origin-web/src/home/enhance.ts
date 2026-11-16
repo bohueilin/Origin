@@ -11,6 +11,7 @@
 export {} // ensure this file is treated as a module (required for `declare global`)
 
 import './cinematic'
+import './captionTray'
 
 type Gtag = (...args: unknown[]) => void
 declare global {
@@ -458,6 +459,18 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
     nextBtn?.toggleAttribute('disabled', step === N - 1)
   }
   const go = (i: number) => { step = Math.max(0, Math.min(N - 1, i)); render() }
+  // Release 7 (R11/N3): a stage changed by a click must not open with its tab strip and heading
+  // under the sticky header. If the strip's top sits above the header's foot (the visitor had
+  // scrolled the section up, or a tool scrolled the clicked button into view), the page scrolls
+  // just enough to put it 12 px below the header. Otherwise nothing scrolls. Play never calls it.
+  const rail = demo.querySelector<HTMLElement>('.demo__rail')
+  const keepStripInView = () => {
+    if (!rail) return
+    const headerBottom = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? 0
+    const top = rail.getBoundingClientRect().top
+    if (top < headerBottom + 8) window.scrollBy({ top: top - headerBottom - 12, behavior: reduceMotion ? 'auto' : 'smooth' })
+  }
+  const goByClick = (i: number) => { stop(); go(i); keepStripInView() }
 
   // WAI-ARIA tabs keyboard contract: Left/Right wrap, Home/End jump to the ends.
   dots.forEach((d) => {
@@ -482,9 +495,9 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
     timer = window.setInterval(() => { if (step >= N - 1) stop(); else go(step + 1) }, 1700)
   }
 
-  dots.forEach((d, i) => d.addEventListener('click', () => { stop(); go(i) }))
-  prevBtn?.addEventListener('click', () => { stop(); go(step - 1) })
-  nextBtn?.addEventListener('click', () => { stop(); go(step + 1) })
+  dots.forEach((d, i) => d.addEventListener('click', () => goByClick(i)))
+  prevBtn?.addEventListener('click', () => goByClick(step - 1))
+  nextBtn?.addEventListener('click', () => goByClick(step + 1))
   if (reduceMotion && playBtn) playBtn.style.display = 'none'
   else playBtn?.addEventListener('click', () => { const wasPlaying = !!timer; play(); if (!wasPlaying) track('demo_play') })
   render()

@@ -1,13 +1,19 @@
 import { test, expect, type Locator, type Page } from '@playwright/test'
 
-// Release 6 Phase 4 — proving-ground 3D camera, light and fog
-// The 3D view frames the floor it shows, from 48° above it. The camera's distance and aim come
-// from the scene: the floor's projected box fills 65–75% of the canvas in its binding dimension,
-// and the projected box of the whole scene (the floor, every rack, prop, person and box, and
-// each robot's route) is centred on the canvas and stays at least 2% inside every edge. So a
-// floor with tall racks sits lower than one without: the rule is the centred scene, not a
-// centred floor. This holds on load, after a floor resize and on a shallow 12 × 4 warehouse,
-// where the racks' tops show inside the canvas. The canvas publishes where the floor's corners
+// Release 6 Phase 4 — proving-ground 3D camera, light and fog (refit in release 7, R01/D2)
+// The 3D view frames the floor it shows, from 44° above it and 32° round from its front edge.
+// The camera's distance and aim come from the scene: the floor's projected box fills 72% of the
+// canvas's height or 88% of its width, whichever it reaches first, unless the projected box of
+// the whole scene (the floor, every rack, prop, person and box, and each robot's route) would
+// pass 2.5% from an edge first; that box is centred on the canvas and stays at least 2% inside
+// every edge. So a floor with tall racks sits lower than one without: the rule is the centred
+// scene, not a centred floor. The canvas is 17:10 (at least 520 px tall) on a wide stage and
+// square on a phone, so at 1280 × 800 and 1919 × 998 the starter floor spans at least 70% of
+// the canvas's height and 55–65% of its width (measured 71.3% × 58.4% of 1112 × 654), and at
+// 375 × 812 the canvas is 280–340 px tall and the floor spans 88% of its width and at least
+// 60% of its height (measured 62.3% of 283 × 283). This holds on load, after a floor resize
+// and on a shallow 12 × 4 warehouse, where the racks' tops show inside the canvas. The view
+// opens paused on its first frame (release 7, R10). The canvas publishes where the floor's corners
 // (data-floor-corners), the scene's box (data-scene-box) and each AMR's deck (data-amr-decks)
 // land, and the pixels confirm them: pale floor inside a corner, darker ground outside, and an
 // AMR's deck within a colour difference (CIEDE2000) of 5 of its fleet swatch, on a phone as on a
@@ -29,8 +35,8 @@ test.beforeEach(async ({ page }) => {
   })
 })
 
-/** Opens /proving-ground's 3D view with time held still and draws one paused frame;
- *  `before` edits the floor first. */
+/** Opens /proving-ground's 3D view with time held still and draws its first frame, which
+ *  opens paused; `before` edits the floor first. */
 async function open3D(page: Page, before?: () => Promise<void>): Promise<Locator> {
   await page.clock.install()
   await page.clock.pauseAt(Date.now() + 1000)
@@ -44,7 +50,7 @@ async function open3D(page: Page, before?: () => Promise<void>): Promise<Locator
   test.skip(!webgl, 'This runner has no WebGL, so the proving ground cannot draw its 3D scene here.')
   if (before) await before()
   await page.getByRole('button', { name: '3D', exact: true }).click()
-  await page.getByRole('button', { name: 'Pause', exact: true }).click()
+  await expect(page.locator('.pg3d-controls').getByRole('button', { name: 'Play', exact: true })).toBeVisible()
   return draw(page)
 }
 
@@ -67,7 +73,7 @@ async function corners(page: Page): Promise<Point[]> {
 function box(cs: Point[]) {
   const xs = cs.map((c) => c[0]), ys = cs.map((c) => c[1])
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys)
-  return { x0, x1, y0, y1, larger: Math.max(x1 - x0, y1 - y0) }
+  return { x0, x1, y0, y1, w: x1 - x0, h: y1 - y0 }
 }
 
 /** The whole scene's projected box, as fractions of the canvas. */
@@ -78,13 +84,17 @@ async function sceneBox(page: Page) {
   return { x0, y0, x1, y1 }
 }
 
-/** The floor fills 65–75% of the canvas in its binding dimension; the whole scene, floor
- *  included, is centred on the canvas and at least 2% inside each edge. */
+/** The floor fills 72% of the canvas's height or 88% of its width, or else the scene binds
+ *  first (spans 94% or more); the whole scene, floor included, is centred on the canvas and at
+ *  least 2% inside each edge. Returns the floor's box. */
 async function expectFramed(page: Page, what: string) {
   const b = box(await corners(page))
   const s = await sceneBox(page)
-  expect(b.larger, `${what}: the floor's share of the canvas`).toBeGreaterThanOrEqual(0.65)
-  expect(b.larger, `${what}: the floor's share of the canvas`).toBeLessThanOrEqual(0.75)
+  const share = `${what}: the floor spans ${b.w.toFixed(3)} × ${b.h.toFixed(3)} of the canvas, the scene ${(s.x1 - s.x0).toFixed(3)} × ${(s.y1 - s.y0).toFixed(3)}`
+  expect(b.h, share).toBeLessThanOrEqual(0.74)
+  expect(b.w, share).toBeLessThanOrEqual(0.9)
+  const binds = b.h >= 0.7 || b.w >= 0.86 || Math.max(s.x1 - s.x0, s.y1 - s.y0) >= 0.94
+  expect(binds, `${share}: the height, width or scene fill binds`).toBe(true)
   for (const edge of [s.x0, s.y0]) expect(edge, `${what}: the scene starts inside the canvas`).toBeGreaterThanOrEqual(0.02)
   for (const edge of [s.x1, s.y1]) expect(edge, `${what}: the scene ends inside the canvas`).toBeLessThanOrEqual(0.98)
   expect(Math.abs((s.x0 + s.x1) / 2 - 0.5), `${what}: the scene is centred across`).toBeLessThanOrEqual(0.01)
@@ -92,6 +102,7 @@ async function expectFramed(page: Page, what: string) {
   for (const [edge, inside] of [[b.x0, b.x0 >= s.x0], [b.x1, b.x1 <= s.x1], [b.y0, b.y0 >= s.y0], [b.y1, b.y1 <= s.y1]] as const) {
     expect(inside, `${what}: the floor's edge ${edge} lies within the scene's box`).toBe(true)
   }
+  return b
 }
 
 /** The median colour of a square patch (5×5 by default) round each point (CSS px from the canvas's top left). */
@@ -170,7 +181,28 @@ async function fewerRows(page: Page, rows: number) {
   }
 }
 
-test('the 3D floor fills 65–75% of the canvas, with the whole scene centred inside it, on load and after a floor resize', async ({ page }) => {
+// Measured on main (965215b) before the refit: 42.6% × 70% of a 1112 × 520 canvas at 1280 and
+// 1919, and 70% × 27.8% of a 283 × 520 canvas at 375.
+const SIZES = [
+  { width: 1919, height: 998, floorW: [0.55, 0.65], floorH: [0.7, 0.74], canvasH: [600, 700] },
+  { width: 1280, height: 800, floorW: [0.55, 0.65], floorH: [0.7, 0.74], canvasH: [600, 700] },
+  { width: 375, height: 812, floorW: [0.86, 0.9], floorH: [0.6, 0.74], canvasH: [280, 340] },
+] as const
+
+for (const size of SIZES) test(`at ${size.width} × ${size.height} the starter floor spans enough of the canvas's width and height`, async ({ page }) => {
+  await page.setViewportSize({ width: size.width, height: size.height })
+  const canvas = await open3D(page)
+  const { width, height } = (await canvas.boundingBox())!
+  expect(height, `canvas ${width} × ${height}: its height`).toBeGreaterThanOrEqual(size.canvasH[0])
+  expect(height, `canvas ${width} × ${height}: its height`).toBeLessThanOrEqual(size.canvasH[1])
+  const b = await expectFramed(page, `${size.width} × ${size.height}`)
+  expect(b.w, "the floor's share of the canvas's width").toBeGreaterThanOrEqual(size.floorW[0])
+  expect(b.w, "the floor's share of the canvas's width").toBeLessThanOrEqual(size.floorW[1])
+  expect(b.h, "the floor's share of the canvas's height").toBeGreaterThanOrEqual(size.floorH[0])
+  expect(b.h, "the floor's share of the canvas's height").toBeLessThanOrEqual(size.floorH[1])
+})
+
+test('the 3D floor fills its binding dimension, with the whole scene centred inside it, on load and after a floor resize', async ({ page }) => {
   await open3D(page)
   await expectFramed(page, 'starter 12 × 9 floor')
   const before = await page.locator('.pg3d-canvas').getAttribute('data-floor-corners')
@@ -184,7 +216,9 @@ test('the 3D floor fills 65–75% of the canvas, with the whole scene centred in
 test('on a shallow 12 × 4 warehouse floor every rack stands wholly inside the canvas', async ({ page }) => {
   const canvas = await open3D(page, () => fewerRows(page, 4))
   await expect(page.locator('.floor-head-title')).toContainText('12 wide × 4 deep')
-  await expectFramed(page, 'shallow 12 × 4 floor')
+  // The racks' tops bind first here, so the floor fills less than 72% of the height.
+  const b = await expectFramed(page, 'shallow 12 × 4 floor')
+  expect(Math.max(b.w, b.h), "the shallow floor's larger share of the canvas").toBeGreaterThanOrEqual(0.6)
   // The racks' orange uprights reach the top of the scene. They start inside the canvas, at
   // the top of the published scene box, never at its edge.
   const { height: h } = (await canvas.boundingBox())!
@@ -225,7 +259,7 @@ test('the published corners match the picture, and the ground, background and fl
   }
 })
 
-test('a narrower canvas re-frames the floor until the visitor turns the view, which dragging still does', async ({ page }) => {
+test('a canvas of a new shape re-frames the floor until the visitor turns the view, which dragging still does', async ({ page }) => {
   const canvas = await open3D(page)
   const mount = page.locator('.pg3d-canvas')
   const first = await mount.getAttribute('data-floor-corners')
@@ -233,11 +267,14 @@ test('a narrower canvas re-frames the floor until the visitor turns the view, wh
   const widthNow = async () => (await canvas.boundingBox())!.width
   const wide = await widthNow()
 
-  // Untouched, the view re-frames the floor for the new canvas shape.
-  await page.setViewportSize({ width: Math.round(viewport.width * 0.8), height: viewport.height })
-  await expect.poll(widthNow).toBeLessThan(wide)
+  // Untouched, the view re-frames the floor for the new canvas shape. The canvas keeps its
+  // aspect while it narrows (17:10 on a wide stage, square on a phone), so the resize crosses
+  // into another shape: a desktop narrows until the 520 px floor holds the height, and a phone
+  // widens past 640 px to the 17:10 stage.
+  await page.setViewportSize({ width: viewport.width > 640 ? 768 : 720, height: viewport.height })
+  await expect.poll(widthNow).not.toBe(wide)
   await expect(mount).not.toHaveAttribute('data-floor-corners', first ?? '')
-  await expectFramed(page, 'narrower canvas')
+  await expectFramed(page, 'resized canvas')
   const framed = await mount.getAttribute('data-floor-corners')
 
   // Dragging turns the view.

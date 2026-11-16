@@ -28,7 +28,7 @@ for (const [route, shot, claim] of [
     await expect(pill).toHaveText('Recorded · one take · synthetic data')
     expect(await pill.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(12)
     expect((await pill.boundingBox())!.y).toBeGreaterThanOrEqual((await video.boundingBox())!.y + (await video.boundingBox())!.height)
-    // Text captions are available but off by default (the burned-in captions already show).
+    // The text track has no `default`: the caption tray under the player shows its cues (R05).
     const track = video.locator('track[kind="captions"]')
     await expect(track).toHaveCount(1)
     expect(await track.getAttribute('default')).toBeNull()

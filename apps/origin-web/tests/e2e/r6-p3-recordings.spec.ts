@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 
-// Release 6 Phase 3 — recordings
-// The three recordings are re-recorded on the live Release 5 site (commit 49b5cd0, UTC date
-// 2026-11-15) and re-rendered: a small "RECORDED · ONE TAKE · SYNTHETIC DATA" pill in the
-// picture's top-left corner and at most one caption at a time, as one compact bar 24 px above
-// the picture's bottom edge (scripts/burn-captions.py). Each recording figure leads with a
+// Release 6 Phase 3 — recordings; Release 7 (R05) — no caption in the picture
+// The three recordings are re-recorded on the live Release 6 site (commit 965215b, UTC date
+// 2026-11-16) and rendered with only a small "RECORDED · ONE TAKE · SYNTHETIC DATA" pill in the
+// picture's top-left corner, over the site's sticky header (scripts/burn-captions.py). No
+// caption is drawn into the picture: the cues are timed text in the manifest and the WebVTT
+// track, and the site's caption tray shows the active one under the player. Each recording figure leads with a
 // one-line summary bar (the pill and "Recorded <date> (<commit>) · synthetic demo data") and
 // keeps every other provenance and boundary sentence in an inline "Full provenance and limits"
 // disclosure inside the figure. The poster, video and caption track are the new dated files,
@@ -22,13 +23,13 @@ test.beforeEach(async ({ page }) => {
 type Box = [number, number, number, number]
 type Manifest = {
   date: string, commit: string, host: string,
-  render: { output: string, poster: string, caption_px: number, tag_px: number, captions: { from_s: number, to_s: number, text: string, box: Box }[] },
+  render: { output: string, poster: string, tag_px: number, captions_in_picture: boolean, captions: { from_s: number, to_s: number, text: string, box?: Box }[] },
 }
 const manifest = (shot: string) =>
   JSON.parse(readFileSync(new URL(`../../scripts/recordings/${shot}.json`, import.meta.url), 'utf8')) as Manifest
 
-const DATE = '2026-11-15'
-const COMMIT = '49b5cd0'
+const DATE = '2026-11-16'
+const COMMIT = '965215b'
 const RECORDINGS: [route: string, shot: string, claim: string][] = [
   ['/', 'shot01', 'not signer identity'],
   ['/verify', 'shot01', 'still offline'],
@@ -60,7 +61,7 @@ for (const [route, shot, claim] of RECORDINGS) {
     const vtt = await page.request.get(`/video/${shot}-${DATE}.vtt`)
     expect(vtt.status()).toBe(200)
     const cues = await vtt.text()
-    expect(cues.startsWith('WEBVTT\n\nNOTE RECORDED · ONE TAKE · SYNTHETIC DATA · recorded 2026-11-15 on originphysicalai.com (49b5cd0) · captions and cursor dot overlaid\n')).toBe(true)
+    expect(cues.startsWith('WEBVTT\n\nNOTE RECORDED · ONE TAKE · SYNTHETIC DATA · recorded 2026-11-16 on originphysicalai.com (965215b) · cursor dot and corner label overlaid; captions shown under the picture\n')).toBe(true)
     expect(cues).toContain(run.render.captions[1].text)
 
     // The summary bar: the pill and one summary line, inside the figure.
@@ -85,7 +86,7 @@ for (const [route, shot, claim] of RECORDINGS) {
     await expect(detail).toBeHidden()
     expect(squash(await detail.textContent()).startsWith(`Recorded ${DATE} on originphysicalai.com (${COMMIT}), using synthetic demo data.`)).toBe(true)
     await expect(detail).toContainText(claim)
-    await expect(details.locator('small')).toContainText(/^Duration \d:\d\d\. Captions and a cursor dot are overlaid; the run is one continuous take\. Recording method and provenance\.$/)
+    await expect(details.locator('small')).toContainText(/^Duration \d:\d\d\. A cursor dot and the corner label are overlaid; the captions show under the picture, not in it\. The run is one continuous take\. Recording method and provenance\.$/)
     // Nothing of the provenance sits outside the bar and the disclosure.
     expect(await figure.locator('figcaption').evaluate((el) => [...el.children].map((child) => child.className))).toEqual(['vband__bar', 'vband__prov-details'])
     await summary.click()
@@ -95,32 +96,31 @@ for (const [route, shot, claim] of RECORDINGS) {
   })
 }
 
-test('r6 p3: the shot04 dated note says what has changed since the take', async ({ page }) => {
+// Release 7 (shelf-life policy): the take is of the Release 6 pages, so the disclosure carries no
+// drift note, and no dated note sits under the figure.
+test('r6 p3: the shot04 disclosure carries no drift note', async ({ page }) => {
   await page.goto('/reference-check')
-  const note = page.locator('.vband > .shell > figure.vband__fig + p.vband__note')
-  await expect(note).toHaveText(`Recorded ${DATE}; the pages have changed since (/reference-check and /verify now open with a static specimen beside the introduction, and /verify shows a labelled preview before anything is verified).`)
-  await expect(note.locator('time')).toHaveAttribute('datetime', DATE)
-  // The two changes it names are on the pages today.
-  await expect(page.locator('#rc-spec')).toHaveCount(1)
-  await page.goto('/verify')
-  await expect(page.getByText('Preview · labels only · nothing checked yet', { exact: true })).toBeVisible()
+  await expect(page.locator('.vband__note')).toHaveCount(0)
+  const detail = page.locator('video[poster*="shot04-"]').locator('xpath=ancestor::figure').locator('.vband__detail')
+  await expect(detail).not.toContainText('have since gained')
+  await expect(detail).not.toContainText('the pages have changed since')
 })
 
-test('r6 p3: the rendered captions are one compact bar at a time under a small corner pill', async () => {
+test('r7: the picture carries only the corner pill; every caption is timed text for the tray and the track', async () => {
   for (const shot of ['shot01', 'shot02', 'shot04']) {
     const { render } = manifest(shot)
-    expect(render.caption_px, shot).toBeGreaterThanOrEqual(24)
-    expect(render.caption_px, shot).toBeLessThanOrEqual(26)
-    const [pill, ...bars] = render.captions
+    expect(render.captions_in_picture, shot).toBe(false)
+    expect(render, shot).not.toHaveProperty('caption_px')
+    const [pill, ...cues] = render.captions
     expect(pill.text, shot).toBe('RECORDED · ONE TAKE · SYNTHETIC DATA')
-    expect(pill.box.slice(0, 2), shot).toEqual([24, 24])
-    expect(pill.box[2], shot).toBeLessThanOrEqual(1280 / 3 + 24)
-    expect(pill.box[3], shot).toBeLessThanOrEqual(72)
-    for (const [i, bar] of bars.entries()) {
-      expect(bar.box[3], `${shot} caption ${i + 1}`).toBe(696)
-      expect(bar.box[1], `${shot} caption ${i + 1}`).toBeGreaterThanOrEqual(576)
-      expect(bar.box[2] - bar.box[0], `${shot} caption ${i + 1}`).toBeLessThanOrEqual(998)
-      if (i > 0) expect(bar.from_s, `${shot} caption ${i + 1}`).toBeGreaterThanOrEqual(bars[i - 1].to_s)
+    expect(pill.box!.slice(0, 2), shot).toEqual([24, 24])
+    expect(pill.box![2], shot).toBeLessThanOrEqual(1280 / 3 + 24)
+    expect(pill.box![3], shot).toBeLessThanOrEqual(72)
+    expect(cues.length, shot).toBeGreaterThan(1)
+    for (const [i, cue] of cues.entries()) {
+      expect(cue, `${shot} caption ${i + 1}`).not.toHaveProperty('box')
+      expect(cue.to_s, `${shot} caption ${i + 1}`).toBeGreaterThan(cue.from_s)
+      if (i > 0) expect(cue.from_s, `${shot} caption ${i + 1}`).toBeGreaterThanOrEqual(cues[i - 1].to_s)
     }
   }
 })

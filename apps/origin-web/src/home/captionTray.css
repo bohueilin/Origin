@@ -1,0 +1,18 @@
+/* Caption tray under a recorded demo (captionTray.ts): one cue at a time, below the player and
+   its native controls, never over the recorded picture. Every cue shares one grid cell, so the
+   tray keeps the height of its longest cue (at least 48 px) and a cue change never moves the
+   page. Ink #272d26 on #edf1e7 is 12:1. */
+.vband__tray {
+  display: grid; align-items: center;
+  box-sizing: border-box; min-height: 48px; margin-top: 8px; padding: 10px 16px;
+  border-radius: 10px; background: #edf1e7; color: #272d26;
+  font-size: var(--fs-15); line-height: 1.45;
+}
+.vband__tray > span { grid-area: 1 / 1; min-width: 0; overflow-wrap: anywhere; visibility: hidden; }
+.vband__tray > span.is-on { visibility: visible; }
+@media (forced-colors: active) { .vband__tray { border: 1px solid CanvasText; } }
+/* The whole player still fits under the 87px sticky header on a 1280x720 laptop: the shared
+   width cap (home.css .vband__fig, and 850 px in the home hero) also leaves room for the tray
+   at two lines plus its margin (72 px). */
+.vband__fig:has(> .vband__tray) { max-width: min(100%, max(320px, calc((100svh - 87px - 120px - 24px - 72px) * 16 / 9))); }
+#product .vband__fig:has(> .vband__tray) { max-width: min(850px, 100%, max(320px, calc((100svh - 87px - 120px - 24px - 72px) * 16 / 9))); }

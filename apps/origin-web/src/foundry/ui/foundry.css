@@ -80,6 +80,7 @@ body {
 .fdy-read h2 { margin: 0 0 8px; }
 .fdy-read ul { margin: 0; padding-left: 18px; max-width: 75ch; color: var(--text-soft); }
 .fdy-read b { color: var(--text); }
+.fdy-read .lab-frame__sample { margin: 8px 0 4px; max-width: 75ch; font-size: 14px; line-height: 1.55; color: var(--text-soft); }
 .fdy-read__links { display: flex; flex-wrap: wrap; gap: 0 22px; }
 .fdy-read__links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 600; }
 .fdy-read__links a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }

@@ -73,6 +73,10 @@ test('robot names sit beside their glyphs on a paper backing, never on a robot o
   await page.clock.install()
   await open2D(page)
   const play = page.getByRole('button', { name: 'Play', exact: true })
+  // The playback opens paused on its first frame; Play starts it.
+  await play.click()
+  await expect(page.getByRole('button', { name: 'Pause playback', exact: true })).toBeVisible()
+  await page.locator('.sim-grid').scrollIntoViewIfNeeded()
   // Check every frame of the starter plan until playback stops on its last frame.
   for (let frame = 0; frame < 150; frame++) {
     const seen = await page.locator('.sim-grid').evaluate((grid) => {
@@ -138,6 +142,10 @@ test('every robot keeps its name in a packed corner: beside it when a side is fr
   await page.getByRole('button', { name: '2D', exact: true }).click()
   await page.locator('.sim-grid').scrollIntoViewIfNeeded()
   const play = page.getByRole('button', { name: 'Play', exact: true })
+  // The playback opens paused on its first frame; Play starts it.
+  await play.click()
+  await expect(page.getByRole('button', { name: 'Pause playback', exact: true })).toBeVisible()
+  await page.locator('.sim-grid').scrollIntoViewIfNeeded()
   let inCell = 0
   let frames = 0
   for (let frame = 0; frame < 150; frame++) {

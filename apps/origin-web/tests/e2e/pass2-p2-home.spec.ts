@@ -207,7 +207,7 @@ test('pass 2 phase 2: each tab panel carries one static schematic, labelled from
   await expect(figure).toBeVisible()
   const rows = figure.locator('.panelfig__rows li')
   await expect(rows).toHaveCount(3)
-  const shown = ['sup-01', 'sup-02', 'sup-04']
+  const shown = ['sup-01', 'sup-10', 'sup-04']
   const verdicts: string[] = []
   for (const [i, id] of shown.entries()) {
     const row = evaluation.decisions.find((decision: { id: string }) => decision.id === id)!
@@ -225,11 +225,11 @@ test('pass 2 phase 2: each tab panel carries one static schematic, labelled from
   const { matched, total, misses, over_grants } = evaluation.summary
   await expect(figure.locator('.panelfig__note')).toContainText(`That run: ${matched} of ${total} match, ${misses} misses, ${over_grants} over-grants.`)
   // The dividing line is the security-critical flag, as on /reference-check's annotated row:
-  // sup-04 carries the approval flag, sup-02 is over the cap with no flag.
+  // sup-04 carries the approval flag, sup-10 (release 7: the walkthrough's case) is over the cap with no flag.
   const flags = (id: string) => { const t = supportTasks.find((task: { id: string }) => task.id === id)!; return [t.pii, t.forbidden, t.tainted, t.requires_approval] }
   expect(flags('sup-04')).toEqual([false, false, false, true])
-  expect(flags('sup-02')).toEqual([false, false, false, false])
-  await expect(figure.locator('.panelfig__note')).toContainText('sup-04 is a bank-detail change flagged for approval, so allowing it is an over-grant; sup-02 is only over the refund cap, with no such flag, so allowing it is a miss.')
+  expect(flags('sup-10')).toEqual([false, false, false, false])
+  await expect(figure.locator('.panelfig__note')).toContainText('sup-04 is a bank-detail change flagged for approval, so allowing it is an over-grant; sup-10 is only over the $100 cap, with no such flag, so allowing it is a miss.')
   await expect(figure.locator('.panelfig__note')).not.toContainText('needs approval')
   // The panel's pinned readout is untouched.
   await expect(panel.locator('.demo__readout')).toHaveText('oracle · FAR · FRR · over-grants EVALUATION RESULT')

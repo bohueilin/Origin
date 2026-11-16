@@ -43,8 +43,10 @@ export function OperationsPage() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const visible = usePlaybackVisibility(canvasRef)
-  const [playing, setPlaying] = useState(() => !prefersReducedMotion())
+  // Opens paused on the wave's first frame; Play, or picking a wave or shift, starts motion.
+  const [playing, setPlaying] = useState(false)
   const [playbackScene, setPlaybackScene] = useState(scene)
+  // The scene changes only from a click (a wave, a new shift, the fleet or wave count).
   if (playbackScene !== scene) {
     setPlaybackScene(scene)
     setPlaying(!prefersReducedMotion())

@@ -1,5 +1,6 @@
-// Text caption tracks for the dated recordings, derived from each manifest's rendered
-// captions so the <track> can never say something the burned-in frame does not.
+// Text caption tracks for the dated recordings, derived from each manifest's caption cues.
+// Since Release 7 (R05) the cues are not drawn into the picture: this track is the only place
+// they appear, and the site's caption tray shows the active cue under the player.
 // Write: node scripts/recording-tracks.mjs   (verify-recordings.mjs checks the result)
 import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -21,7 +22,7 @@ export function vttFor(run) {
   return [
     'WEBVTT',
     '',
-    `NOTE ${tag.text} · recorded ${run.date} on ${run.host} (${run.commit}) · captions and cursor dot overlaid`,
+    `NOTE ${tag.text} · recorded ${run.date} on ${run.host} (${run.commit}) · cursor dot and corner label overlaid; captions shown under the picture`,
     ...cues.flatMap((c, i) => ['', String(i + 1), `${stamp(c.from_s)} --> ${stamp(c.to_s)}`, c.text]),
     '',
   ].join('\n')

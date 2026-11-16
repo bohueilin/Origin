@@ -57,11 +57,15 @@ test('operations playback can pause and does not advance off screen', async ({ p
   await page.goto('/operations')
   const canvas = page.locator('.ops-canvas')
   await canvas.scrollIntoViewIfNeeded()
+  // The playback opens paused on its first frame; Play starts it.
+  await page.locator('.ops-stage').getByRole('button', { name: 'Play', exact: true }).click()
   await page.getByRole('button', { name: 'Pause playback', exact: true }).click()
   const paused = await canvas.evaluate(el => (el as HTMLCanvasElement).toDataURL())
   await page.waitForTimeout(600)
   expect(await canvas.evaluate(el => (el as HTMLCanvasElement).toDataURL())).toBe(paused)
   await page.getByRole('button', { name: 'Play', exact: true }).click()
+  // The click can scroll the control's row to the top, leaving the playback below the fold.
+  await canvas.scrollIntoViewIfNeeded()
   await expect.poll(() => canvas.evaluate(el => (el as HTMLCanvasElement).toDataURL())).not.toBe(paused)
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
   await expect(canvas).not.toBeInViewport()
@@ -77,11 +81,15 @@ test('2D floor playback can pause and does not advance off screen', async ({ pag
   await page.getByRole('button', { name: '2D', exact: true }).click()
   const grid = page.locator('.sim-grid')
   await grid.scrollIntoViewIfNeeded()
+  // The playback opens paused on its first frame; Play starts it.
+  await page.getByRole('button', { name: 'Play', exact: true }).click()
   await page.getByRole('button', { name: 'Pause playback', exact: true }).click()
   const paused = await grid.innerHTML()
   await page.waitForTimeout(600)
   expect(await grid.innerHTML()).toBe(paused)
   await page.getByRole('button', { name: 'Play', exact: true }).click()
+  // The click can scroll the control's row to the top, leaving the playback below the fold.
+  await grid.scrollIntoViewIfNeeded()
   await expect.poll(() => grid.innerHTML()).not.toBe(paused)
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
   await expect(grid).not.toBeInViewport()
@@ -116,6 +124,10 @@ test('operations holds the last frame and a new wave or shift starts playback ag
   await page.goto('/operations')
   const stage = page.locator('.ops-stage')
   const canvas = page.locator('.ops-canvas')
+  await canvas.scrollIntoViewIfNeeded()
+  await expect(stage.getByRole('button', { name: 'Play', exact: true })).toBeVisible()
+  await stage.getByRole('button', { name: 'Play', exact: true }).click()
+  await expect(stage.getByRole('button', { name: 'Pause playback', exact: true })).toBeVisible()
   await canvas.scrollIntoViewIfNeeded()
   await page.clock.runFor(90_000)
   await expect(stage.getByRole('button', { name: 'Play', exact: true })).toBeVisible()
@@ -152,7 +164,9 @@ test('3D playback pauses rendering off screen and hidden, finishes once, and rep
   const canvas = page.locator('.pg3d-canvas')
   await canvas.scrollIntoViewIfNeeded()
   const draws = () => page.evaluate(() => (window as unknown as { draws: number }).draws)
+  // The view opens paused on its first frame, drawn once it is visible; Play starts it.
   await expect.poll(draws).toBeGreaterThan(0)
+  await page.locator('.pg3d-controls').getByRole('button', { name: 'Play', exact: true }).click()
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
   await expect(canvas).not.toBeInViewport()
   await page.clock.runFor(100)
@@ -200,7 +214,7 @@ const SCENE_CHANGES: Record<string, (page: Page) => Promise<void>> = {
 }
 
 for (const [field, change] of Object.entries(SCENE_CHANGES)) {
-  test(`changing ${field} starts a fresh 3D preview after completion`, async ({ page }) => {
+  test(`changing ${field} opens a fresh, paused 3D preview after completion, which Play runs`, async ({ page }) => {
     test.setTimeout(60_000) // Two complete previews also run with software WebGL in CI.
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.clock.install()
@@ -216,12 +230,16 @@ for (const [field, change] of Object.entries(SCENE_CHANGES)) {
     // IntersectionObserver delivery and React's visibility commit run outside
     // the virtual frame burst. Observe a real first draw before advancing it.
     await expect(page.locator('.pg3d-prog-txt')).not.toHaveText('starting…')
+    await controls.getByRole('button', { name: 'Play', exact: true }).click()
     await page.clock.runFor(8000)
     await expect(controls.getByRole('button', { name: 'Replay', exact: true })).toBeVisible()
     await change(page)
     await canvas.scrollIntoViewIfNeeded()
+    // A changed scene opens paused on its first frame, never on its own.
+    await expect(controls.getByRole('button', { name: 'Play', exact: true })).toBeVisible()
+    await expect(page.locator('.pg3d-prog-txt')).toHaveText(/^0 of \d+ items? delivered/)
+    await controls.getByRole('button', { name: 'Play', exact: true }).click()
     await expect(controls.getByRole('button', { name: 'Pause', exact: true })).toBeVisible()
-    await expect(page.locator('.pg3d-prog-txt')).not.toHaveText(/^✓ all/)
     // Painting a robot type scrolls the canvas out of view, and IntersectionObserver
     // reports its return outside the virtual clock, so one long runFor can elapse
     // while playback is still paused off-screen. Advance in steps that yield to the
@@ -239,6 +257,9 @@ test('2D floor playback holds its final state until replay', async ({ page }) =>
   await page.goto('/proving-ground')
   await page.getByRole('button', { name: '2D', exact: true }).click()
   const grid = page.locator('.sim-grid')
+  await grid.scrollIntoViewIfNeeded()
+  await page.getByRole('button', { name: 'Play', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Pause playback', exact: true })).toBeVisible()
   await grid.scrollIntoViewIfNeeded()
   // React schedules each next step after rendering, so advance one tick at a time.
   for (let i = 0; i < 150; i++) await page.clock.runFor(500)

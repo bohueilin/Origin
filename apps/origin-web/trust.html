@@ -122,6 +122,35 @@
       .trust-readnext { margin: 14px 0 0; }
       .trust-readnext a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-14); font-weight: 600; color: var(--signal-ink); text-decoration: underline; text-underline-offset: 2px; }
 
+      /* Release 7: the hero's right column holds a static "Release gate receipt", two columns
+         from 960px like /verify's specimen; below that it follows the copy. It names what
+         `make gates-all` checks and holds no count of its own: the scoreboard script below fills
+         the passed/total line from /trust/gates-summary.json, so the card cannot drift from it.
+         Static: no animation, no transition; ink and the one forest-green rule. */
+      body.trust-page .editorial-hero__grid.diagram-hero { grid-template-columns: 1fr; align-items: start; }
+      @media (min-width: 960px) {
+        body.trust-page .editorial-hero__grid.diagram-hero { grid-template-columns: minmax(0, 11fr) minmax(0, 9fr); column-gap: clamp(40px, 4.4vw, 72px); }
+      }
+      .gate-receipt { min-width: 0; max-width: 560px; padding: 18px 20px 20px; background: var(--paper-2); border: 1px solid var(--line-2); border-top: 3px solid var(--signal); border-radius: 12px; color: var(--ink); }
+      @media (min-width: 960px) { .gate-receipt { max-width: none; margin-top: 18px; } }
+      .gate-receipt__tag, .gate-receipt__lbl { margin: 0; font-size: var(--fs-12); font-weight: 700; letter-spacing: .06em; line-height: 1.4; text-transform: uppercase; }
+      .gate-receipt__tag { color: var(--signal-ink); }
+      .gate-receipt__lbl { display: block; color: var(--steel); }
+      .gate-receipt__lede { margin: 8px 0 0; font-size: var(--fs-15); line-height: 1.55; color: var(--ink-soft); }
+      .gate-receipt__lede b { display: block; margin-bottom: 2px; font-size: var(--fs-17); font-weight: 600; line-height: 1.3; color: var(--ink); }
+      .gate-receipt code { font-family: var(--font-mono); font-size: .92em; color: var(--ink); }
+      .gate-receipt__list { margin: 14px 0 0; padding: 0; display: grid; gap: 0; }
+      .gate-receipt__list > div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 2px 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+      .gate-receipt__list dt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; line-height: 1.6; text-transform: uppercase; color: var(--steel); }
+      .gate-receipt__list dd { margin: 0; font-size: var(--fs-14); line-height: 1.5; color: var(--ink-soft); }
+      @media (max-width: 420px) { .gate-receipt__list > div { grid-template-columns: 1fr; } }
+      .gate-receipt__result { display: grid; gap: 4px; padding: 12px 0 0; border-top: 1px solid var(--line); }
+      .gate-receipt__status { margin: 0; font-size: var(--fs-15); line-height: 1.5; color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+      .gate-receipt__status a { color: var(--signal-ink); text-decoration: underline; text-underline-offset: 2px; }
+      .gate-receipt .nowrap { white-space: nowrap; }
+      .gate-receipt__limit { margin: 12px 0 0; font-size: var(--fs-13); line-height: 1.5; color: var(--steel); }
+      @media print { .gate-receipt { break-inside: avoid; margin-top: 18px; } }
+
       /* Pass 2 Phase 3: print. The shared editorial stylesheet already prints this page in black on white
          with the header, footer and buttons hidden; these rules finish it. Print only, so the
          screen layout and the scoreboard renderer are unchanged. That stylesheet loads after
@@ -188,7 +217,23 @@
           <p class="editorial-caption">Working prototype. Seeking design partners. Not production SaaS or compliance certification. Not a guarantee of approval.</p>
           <div class="editorial-actions"><a class="btn btn--primary" href="/verify">Inspect an artifact</a><a class="btn btn--ghost" href="/reference-check-vs-runtime">Understand the boundary</a></div>
           <p class="trust-readnext"><a href="/reference-check-vs-runtime">Read next: what runs in your browser today vs. the proposed pilot architecture →</a></p>
-        </div></div><!-- ORIGIN:POSTURE -->
+        </div>
+        <section class="gate-receipt" id="gate-receipt" aria-labelledby="gate-receipt-title">
+          <h2 class="gate-receipt__tag" id="gate-receipt-title">Release gate receipt</h2>
+          <p class="gate-receipt__lede"><b>One command runs every check.</b> <code>make gates-all</code> runs each suite with its real exit code and writes one summary. A release runs it at the release commit, and a failing suite stops the release.</p>
+          <dl class="gate-receipt__list">
+            <div><dt>Build</dt><dd>Every TypeScript workspace and the Chronos UI</dd></div>
+            <div><dt>Unit tests</dt><dd>This site, Janus, the evidence and verifier-core packages, Cobra and Chronos</dd></div>
+            <div><dt>Evidence</dt><dd>The TR-A002 hash chain and its tamper test, the score receipt, reward integrity and the <span class="nowrap">/verify self-test</span></dd></div>
+            <div><dt>Honesty</dt><dd>honesty-lint’s banned overclaims, required disclaimers and launch contracts, plus the recording contract</dd></div>
+          </dl>
+          <div class="gate-receipt__result">
+            <span class="gate-receipt__lbl">This release’s summary</span>
+            <p class="gate-receipt__status" data-gate-receipt-status>Stamped in <a href="/trust/gates-summary.json">/trust/gates-summary.json</a>, one line per suite.</p>
+          </div>
+          <p class="gate-receipt__limit">A timestamped snapshot is evidence of that run, not a live assurance.</p>
+        </section>
+        </div><!-- ORIGIN:POSTURE -->
         <nav class="editorial-jumps" aria-label="On this page"><a href="#posture"><span>01</span>Current posture</a><a href="#gated"><span>02</span>Verification</a><a href="#data"><span>03</span>Data &amp; retention</a><a href="#controls"><span>04</span>Responsibility</a><a href="#packet"><span>05</span>Security review</a></nav>
       </div></section>
       <section class="editorial-section" id="posture"><div class="shell">
@@ -274,6 +319,15 @@
             + `<table style="border-collapse:collapse;font-size:13px;line-height:1.7">`
             + `<tbody>${rows}</tbody></table>`
             + (completed ? `<p class="gates-restored">† Ending restored from the verifier's fixed output. This snapshot cut lines at 70 characters; release stamps from now on carry the whole line.</p>` : '')
+          // The hero's gate receipt takes its count and stamp from the same summary, never from HTML.
+          const receipt = document.querySelector('[data-gate-receipt-status]')
+          if (receipt) {
+            const passed = data.suites.filter((s) => s.result === 'PASS').length
+            const stamp = release
+              ? `release <code>${sha}</code>, ${when}${stale ? ', not re-run since' : ''}`
+              : `local run${commit ? ' at <code>' + commit + '</code>' : ''}, ${when}${stale ? ', stale' : ''}`
+            receipt.innerHTML = `<b>${passed} of ${data.suites.length} suites passed</b> · ${stamp} · <a href="/trust/gates-summary.json">summary JSON</a>`
+          }
         } catch {
           /* keep the static reproduce note */
         }

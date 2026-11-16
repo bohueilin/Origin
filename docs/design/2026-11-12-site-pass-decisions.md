@@ -430,3 +430,169 @@ The Release 6 sweep's seventh gate checks every visible interactive target at 37
 **Test.** `r6-p4-tap-targets.spec.ts` loads each of the sixteen routes at 375 × 812. It fails on any visible target under 44 × 44 and on any sideways scroll. A control wrapped in its label is measured by the label. A skip link that is 1 × 1 until focused is not yet a target. Without the new rules, the spec fails on every route.
 
 **Separate fix first.** `main`'s build-only Deploy run for `4be6677` failed one 3D-preview test. Painting a robot type scrolls the canvas out of view, and the page's visibility observer reports its return outside Playwright's virtual clock. That was fixed in its own test-only PR (#129) before this one.
+
+## Release 7 — rendered verification (R01–R16)
+
+An outside audit of Release 6 (`965215b`, 15 November) found two places where this record's numbers disagreed with the live page (D1, D2), seven new issues (N1–N7) and sixteen recommendations (R01–R16). Every number in this section was measured with Playwright on a production build (`vite build`, then `vite preview`): "before" is `965215b`, "after" is this release. Each was read from the rendered DOM (`getBoundingClientRect`), or, for the 3D view, from the corners the canvas publishes.
+
+### D1 — the walkthrough's empty space (R01)
+
+**Why the Release 6 number was wrong.** Release 6 said no stage left more than about 4% of the panel empty at 1280 and 1919 px. That measured the space under the panel's *lowest* content, which was always the right column: the schematic plus its readout. The prose column on the left was 89–172 px shorter on every stage, and that space was not counted. The audit saw it at 1919 px. The panels are meant to share one height, the tallest stage's, so nothing below moves between stages; that lock stays.
+
+**Change.** From 900 px each stage's readout sits under its prose, level with the foot of the schematic, instead of under the schematic. The schematic takes the right column across both rows. The prose is centred in the space above the readout, and the schematic in its column, so a short stage's leftover space is split above and below rather than pooled at the foot. Reverify has two readouts; the second stays under its schematic. The shared height falls from 388 to 358 px at 1280 and 1919 px.
+
+**Measured: the largest blank stretch above or below either column, by stage (px, and share of the panel).**
+
+| Width | | Bind | Challenge | Grade | Attest | Reverify |
+|---|---|---|---|---|---|---|
+| 1280 and 1919 | before (panel 388) | 114 (29.4%) | 114 (29.4%) | 138 (35.6%) | 172 (44.4%) | 89 (22.9%) |
+| 1280 and 1919 | after (panel 358) | 25 (7.0%) | 22 (6.1%) | 19 (5.3%) | 42 (11.7%) | 16 (4.5%) |
+| 960 | before (panel 507) | 183 (36.1%) | 150 (29.6%) | 206 (40.6%) | 209 (41.2%) | 158 (31.2%) |
+| 960 | after (panel 437) | 48 (11.0%) | 29 (6.6%) | 16 (3.7%) | 42 (9.6%) | 36 (8.2%) |
+| 375 | before (panel 1001, one column; space at the foot) | 117 (11.7%) | 0 | 48 (4.8%) | 65 (6.5%) | 96 (9.6%) |
+| 375 | after | 117 (11.7%) | 0 | 8 (0.8%) | 65 (6.5%) | 96 (9.6%) |
+
+Attest still carries the most: its prose is 110 px shorter than its record figure, and the remainder is now 42 px above it and 42 px below. On phones the one-column panels keep their shared height. Freeing them would move the Play/Prev/Next bar by up to 117 px under the thumb between stages, so that stays. `r6-p2-walkthrough.spec.ts` now fails if any blank stretch is taller than 13% of the panel from 900 px.
+
+### N3 — the heading under the sticky header (R11)
+
+Clicking through the stages never scrolls the page itself. The clip the audit saw happens when the tab strip is already under the header when Next (or a tab) is pressed: the visitor has scrolled the section up, or a tool has scrolled the clicked button into view. The new stage then opens with its tabs and heading hidden. A stage change made by a click now checks the strip's top. If it sits above the header's foot, the page scrolls just enough to put it 12 px below. Otherwise nothing scrolls, and Play never scrolls. The walkthrough also carries `scroll-margin-top: 108px`.
+
+| Start | Width | Before (strip or heading top, minus header foot, stages 2–5) | After |
+|---|---|---|---|
+| strip 16 px under the header's foot | 1280, 1919 | ≥ 16 px | ≥ 16 px (unchanged; nothing scrolls) |
+| strip scrolled 150 px up under the header | 1280, 1919 | −150 px on every stage | +12 px on every stage |
+
+`r7-home-walkthrough.spec.ts` presses Next through all five stages from both starts at 1280 × 800 and 1919 × 998. It requires the strip and the heading at least 8 px below the header.
+
+### N6 — the 900–1023 px tab strip (R03)
+
+Already fixed in Release 6, and now tested. The Phase 2 sentence "from 900 to 1023 px … Challenge squeezed its connector to 2–14 px" describes the measurement that moved the five-column strip to 1024 px. Below 1024 px the strip is a one-column list with no connectors. Measured on both builds at 900, 960 and 1023 px: one column, no connector drawn, no identifier broken anywhere but at its dot, nothing scrolling sideways. At 1024 px the five connectors are 69, 27, 57, 59 and 43 px; at 1100 px, 84, 42, 72, 74 and 58 px. `r7-home-walkthrough.spec.ts` checks 900, 960, 1023 and 1024 px for connectors of at least 16 px (from 1024 px), mid-token breaks in every tab and panel identifier, and sideways scroll.
+
+### D2 — the 3D floor's fit (R01)
+
+**Why the Release 6 number was right but not enough.** "The floor fills 70% of the canvas's binding dimension" was true: 70% of the height. But the desktop canvas was 1112 × 520, more than twice as wide as tall, so the floor took only 42.6% of the width, with beige wings on both sides. On a phone the canvas was 283 × 520 and the floor, fitted to the width, took 27.8% of the height.
+
+**Change** (`src/components/ProvingGround3D.tsx`, `src/components/floorPlayback.css`):
+- **Camera.** 44° above the floor and 32° round from its front edge (was 48° and 37°): still a three-quarter view, a little lower and squarer, so the floor reads wider than deep.
+- **Fill.** The floor fills 72% of the canvas height or 88% of its width, whichever it reaches first (was 70% of the binding dimension). The scene still stays 2.5% inside every edge.
+- **Canvas.** On desktop it is 17:10, at least 520 px tall and never taller than the window minus 110 px. On phones (≤ 640 px) it is square.
+
+| Viewport | Before: canvas · floor width · floor height | After: canvas · floor width · floor height |
+|---|---|---|
+| 1919 × 998 | 1112 × 520 · 42.6% · 70.0% | 1112 × 654 · 58.4% · 71.3% |
+| 1280 × 800 | 1112 × 520 · 42.6% · 70.0% | 1112 × 654 · 58.4% · 71.3% |
+| 375 × 812 | 283 × 520 · 70.0% · 27.8% | 283 × 283 · 88.0% · 62.3% |
+
+The starter floor's racks reach the top margin first (scene box 0.025–0.975 in height), so its floor settles at 71.3%, not 72%. Two cases still fall short of the targets, by the 2.5% margin rule:
+- a shallow 12 × 4 rack floor reaches 64.3% of the height on desktop and 53.7% on a phone;
+- a 12 × 12 floor reaches 56.0% of the width on desktop.
+
+`r6-p4-pg-3d.spec.ts` now asserts the canvas size and both dimensions at 1919 × 998, 1280 × 800 and 375 × 812.
+
+### R10 — nothing on the site starts on scroll
+
+The Labs playbacks were the last exception. On `/operations`, `/simulation` and `/proving-ground` (2D and 3D), each console now opens paused at its first frame, with every robot placed. It starts only when the visitor presses Play, Step or Replay, picks a wave, presses "Run a new shift" or "New layout", or moves a fleet, wave or robot-count control. Editing the floor, its domain or a robot's type resets it to a paused first frame. Leaving the viewport or the tab still pauses drawing, but returning never starts motion. With reduced motion, the 2D view, `/operations` and `/simulation` still show the final frame, as before. `r7-no-scroll-start.spec.ts` scrolls each console into view at 1280 × 800 with motion allowed, waits 2 s, and requires nothing changed and the button to read Play. It then presses Play and requires motion.
+
+**Style Lock:** no animation or simulation anywhere on the site starts on scroll or on load.
+
+### R05, R16 — captions below the picture, never in it
+
+**Before.** The Release 6 renderer, `scripts/burn-captions.py`, burned each caption into the video pixels as a dark bar ending 24 px above the picture's foot. That bar covered recorded content: the "How to read the verdict" heading and JSON lines on `/` and `/verify`, and "Pin issuer thumbprint" on `/reference-check`.
+
+**Change.**
+- **New takes.** The three recordings were re-recorded on 2026-11-16 (UTC) on the live Release 6 site, `965215b`, with the repository's own recorders. The release stamp was checked first; only first-party and font GETs were allowed. Every observed fact matches the Release 5 takes exactly: codes, counts, seed and corpus results.
+- **Renderer.** It now draws no caption into the picture. Its only overlay is the small "RECORDED · ONE TAKE · SYNTHETIC DATA" pill at (24, 24). The pill sits over the site's sticky header, which the recorded page scrolls beneath, so it never covers recorded content. The real cursor dot is still shown.
+- **Cues.** Captions are still validated against the facts and beats and kept one at a time. They are written to the manifest as timed text (`render.captions_in_picture: false`, no box) and to the WebVTT track, which has no `default` and stays in mode `hidden`.
+- **Caption tray.** Under each player on `/`, `/reference-check`, `/over-grant` and `/verify`, the tray shows the active cue. It is now the only place a caption appears, so nothing shows twice.
+- **Superseded files.** The 2026-11-15 encodes, posters and tracks are removed.
+- **Checks.** `verify-recordings.mjs` now fails on any caption with an in-picture box or a missing `captions_in_picture: false`. `r6-p3-recordings.spec.ts` pins the same, and `burn-captions.test.py` checks that the plate is transparent below the pill. The Pass 2 clearance test, which kept the controls 48 px clear of a burned bar, now checks only the pinned, whole picture.
+
+**Measured.**
+- **The old bar band.** At each cue's midpoint, the longest dark horizontal run in the band where the bar sat (y 560–700 of 720):
+  - old encodes: 464–992 px on every cue (the bar);
+  - new encodes: 1–12 px (text), except one frame of shot01 at 890 px, which is the page's own rule under "How to read the verdict", now uncovered.
+- **Frames by eye.** Frames 1.5 s after every beat of all three takes show nothing over the page but the pill (in the header) and the cursor dot.
+- **Encodes.** All are H.264 High, 1280 × 720, yuv420p, no audio, `moov` before `mdat`: 0:36 (shot01, `/` and `/verify`), 0:29 (shot02, `/over-grant`) and 0:42 (shot04, `/reference-check`).
+- **Tray.** It starts 9 px below the video element on all four pages at 1919, 1280 and 375 px, and keeps one height through each take. The long `/over-grant` cue fits whole.
+
+The figure disclosures now say: "A cursor dot and the corner label are overlaid; the captions show under the picture, not in it."
+
+### R06/N1 — recording shelf-life policy
+
+Screen recordings verify the deterministic workflow and artifact output of the pinned engine commit named in their provenance line, now `965215b`. Surrounding page-layout additions, such as static hero specimens, do not invalidate the recorded workflow. Recordings are re-captured only when the graded artifact schema, the CLI/UI workflow steps or the verdict semantics change.
+
+The R05 re-render needed a fresh take of the live release, because the raw masters are not kept. The new takes therefore already show the Release 6 pages, and the dated drift note under the `/reference-check` recording is gone with nothing replacing it. Each figure's visible line is its summary alone, for example "Recorded 2026-11-16 (965215b) · synthetic demo data", with the full text in "Full provenance and limits".
+
+### R04/N2 and R07/N5 — the homepage's case and its caption
+
+**R04.** sup-02, the $450 refund, was told three times in one scroll: the hero card, the walkthrough's first two stages, and its Grade and Attest rows. The hero card keeps it, as the poster. The walkthrough now follows the battery's other looser miss, sup-10, a $200 goodwill credit over the oracle's $100 cap. Under the Moderate preset the policy allows it and the oracle escalates it, with no approval flag, exactly as for sup-02; this was computed with `buildPolicyEvaluation`.
+- Stage 1 asks: "A $200 goodwill credit over the oracle's $100 cap: should the agent proceed, refuse, or hand it to a person?"
+- Challenge marks sup-10 in the battery grid.
+- Grade's rows are sup-01, sup-10 and sup-04, and its prose names the $450 refund once: "a looser miss, the same kind as the $450 refund at the top of the page".
+- Attest shows the row `{"id":"sup-10","decision":"allow","expected":"escalate"}`.
+
+The human question still opens the walkthrough (F06); the walkthrough now extends the hero instead of repeating it. No launch contract pinned the old case.
+
+**R07.** The hero caption now reads: "Unlike the scene, the graded result below is output from the live demo, re-checkable in your browser." (was "is real reference-check output").
+
+### R08/F15 — `/trust` hero
+
+From 960 px the `/trust` hero is two columns, like `/verify`: copy on the left, a static "Release gate receipt" card on the right. The card lists what `make gates-all` checks: builds, unit tests, evidence re-checks, and honesty-lint's banned patterns, required disclaimers, launch contracts and recording contract. It holds no count. The existing scoreboard script fills "N of M suites passed" and the stamp from `/trust/gates-summary.json`, so the card cannot drift from it; without JavaScript it links the summary.
+
+Measured, on the page:
+
+| Viewport | Copy (x, y, w × h) | Card (x, y, w × h) |
+|---|---|---|
+| 1919 × 998 | 363.5, 191, 616 × 581.8 | 1051.5, 209, 504 × 550.1 (ends 13.7 px above the copy's foot) |
+| 1280 × 800 | 44, 176.6, 624.6 × 556.6 | 724.9, 194.6, 511 × 550.1 (ends 11.5 px below the copy's foot) |
+| 375 × 812 | y 127–752 | y 777, 327 × 721.1, stacked after the copy |
+
+At 375 × 812 nothing scrolls sideways.
+
+### R09 — `/foundry`
+
+The reading frame, static and in the app, gains one paragraph on the sample floor, from `src/foundry/sampleFloor.ts` and `src/floorMargin.ts`:
+- a 10 × 10 grid with a dock, pick and drop, 2 wall cells, 2 hazard cells on the row between pick and drop, 1 human-only cell and no robots;
+- the oracle returns finish with a 14-move route around the hazards;
+- the in-browser single-failure check finds no chokepoints in 92 swept cells, and a budget-blind disconnection margin of 3 free cells;
+- the Quorum loop runs only in a separately enabled local or backend demo.
+
+`r7-subpages.spec.ts` rebuilds the sentence from those modules.
+
+### R12/N4 — `/proof`
+
+The TR-A002 card and the hero figure already define the three rungs. "The ladder" is now "What a reviewer can re-check at each rung". For each rung it gives what a reviewer can re-check, with what, what that catches and what it cannot show:
+- **TR-A001:** the shape only; its digest is a placeholder.
+- **TR-A002:** every event hash and link, plus `final_digest` and `log_digest`, with `node scripts/verify-tr-a002.mjs tr-a002.json` or `/verify`. The top-level description is outside the chain.
+- **TR-A003:** would add external provenance, which no hash chain can show. It is not held, because no design partner has run a workflow with Origin.
+
+### R13 — `/labs`
+
+The spatial research card now says what the verifier studies: given a reconstructed outline and the points it was built from, which edges rest on recorded points (observed) and which were filled in (inferred), so a claim resting on an inferred edge is not reported as observed. It adds that no input format, rule set or verdict format is published yet; the implementation stays private.
+
+### R14 — `/verify`
+
+No change needed. `r7-subpages.spec.ts` confirms the specimen report (4 of 12 · 6 over-grants · 2 misses, UNTRUSTED and VOID) shows on load, before any paste or click: in the first viewport at 1919 × 998, and after the copy at 375 × 812. Its counts equal the Permissive support evaluation.
+
+### R02 — the narrated walkthrough, prepared
+
+`docs/narration/walkthrough-60s-refund.md` and `docs/narration/walkthrough-60s-refund.vtt` hold a timed 60-second script: 8 cues, 154 words, Bind → Challenge → Grade → Attest → Reverify → `/app`. It opens on "$450 over the cap. Held, not executed. Here's the receipt, and here's how your reviewer re-checks it." The founder records it in his own voice; synthetic voice is never used.
+
+The `.md` sources every fact and gives the drop-in steps: dated files under `public/audio/`, an `<audio>` element with a visible transcript (browsers do not display `<track>` captions on `<audio>`), and the owner decision needed to give a recording sound (the recordings are silent by contract).
+
+The opening's "Held" needs the owner's eye. The walkthrough says that in this demo nothing is held, so the script's second cue scopes it.
+
+### R15 — phone tap targets, rendered
+
+`r6-p4-tap-targets.spec.ts` now runs the sixteen routes at 360 × 800, 375 × 812 and 430 × 932: 48 tests. On the production build, 0 visible targets are under 44 × 44 at the three widths. Nothing scrolls sideways on any of the sixteen routes at 360, 375, 430, 768, 960, 1280 and 1919 px (112 route-widths).
+
+### Gates for this release
+
+- `npm run gates`: green; 956 unit tests.
+- `npx eslint . --max-warnings=0`: clean.
+- `npm run test:e2e`: 1231 passed, 134 skipped, 0 failed.
+- `node scripts/honesty-lint.mjs`: clean; 21 served pages, 184 React copy files, 65 launch contracts.
+- `make gates-all`: 15 of 15 suites green.
+- After the R05 re-render: `python3 scripts/burn-captions.test.py` 9 passed; `npm run recordings:check` green for all three takes; the same e2e, gates and `make gates-all` results.
+- No named blue (`#2f6df6`, `#4f86ff`, `#5f86ff`, `#0891b2`, `#cfdcff`, `#bcccff`, `#cfe0ff`) in the 87 served CSS, JS and HTML files.

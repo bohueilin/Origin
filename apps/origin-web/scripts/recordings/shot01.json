@@ -1,30 +1,30 @@
 {
   "shot": "shot01",
-  "date": "2026-11-15",
+  "date": "2026-11-16",
   "date_timezone": "UTC",
-  "recorded_at": "2026-11-15T03:12:27.031Z",
+  "recorded_at": "2026-11-16T05:31:53.014Z",
   "host": "originphysicalai.com",
-  "commit": "49b5cd0",
+  "commit": "965215b",
   "release": {
-    "generated_at": "2026-11-14T22:21:08Z",
-    "commit": "49b5cd0",
+    "generated_at": "2026-11-15T20:50:51Z",
+    "commit": "965215b",
     "tracked_clean": true,
     "all_green": true,
     "suites": [
       {
         "name": "ts:build (workspaces)",
         "result": "PASS",
-        "detail": "\u2713 built in 117ms"
+        "detail": "\u2713 built in 146ms"
       },
       {
         "name": "ts:build (chronos-ui)",
         "result": "PASS",
-        "detail": "\u2713 built in 621ms"
+        "detail": "\u2713 built in 927ms"
       },
       {
         "name": "ts:origin-web (+evidence+verifier-core globs)",
         "result": "PASS",
-        "detail": "Tests  948 passed (948)"
+        "detail": "Tests  956 passed (956)"
       },
       {
         "name": "ts:janus",
@@ -74,7 +74,7 @@
       {
         "name": "honesty-lint",
         "result": "PASS",
-        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 184 React copy files, 15 social cards + 3 caption files + cover template, 28 banned patterns, 3 required disclaimers, 63 launch contracts."
+        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 183 React copy files, 15 social cards + 3 caption files + cover template, 28 banned patterns, 3 required disclaimers, 65 launch contracts."
       },
       {
         "name": "py:cobra",
@@ -88,37 +88,37 @@
       }
     ],
     "source": "release",
-    "built_at": "2026-11-14T22:21:08Z",
-    "run_url": "https://github.com/bohueilin/Origin/actions/runs/43646436991"
+    "built_at": "2026-11-15T20:50:51Z",
+    "run_url": "https://github.com/bohueilin/Origin/actions/runs/43758166668"
   },
   "beats": [
     {
       "name": "painted",
-      "t": 0.776
+      "t": 0.973
     },
     {
       "name": "load",
-      "t": 2.778
+      "t": 2.994
     },
     {
       "name": "verify",
-      "t": 9.249
+      "t": 9.554
     },
     {
       "name": "offline",
-      "t": 12.753
+      "t": 13.059
     },
     {
       "name": "tamper-verify",
-      "t": 22.13
+      "t": 22.511
     },
     {
       "name": "restore",
-      "t": 31.468
+      "t": 31.939
     },
     {
       "name": "end",
-      "t": 35.969
+      "t": 36.441
     }
   ],
   "facts": {
@@ -134,33 +134,31 @@
   "blocked_requests": [
     "GET https://www.googletagmanager.com/gtag/js"
   ],
-  "raw_file": "page@04a2d638885a35cfa1f48df6921c2b42.webm",
-  "raw_sha256": "4dc0c6c100d080ba83a26b7324f38924fc818342d0991bb965e7148c8e46d65b",
+  "raw_file": "page@b493371527b1268b039c21b8cc5d535a.webm",
+  "raw_sha256": "70b21484d9470e5923f2802a3e1abd52c5bca57d4a955cf536bc56fd793574cd",
   "font": "Carlito-Regular.ttf",
   "font_sha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
   "network_off_from": "offline",
   "render": {
-    "output": "shot01-2026-11-15.mp4",
-    "sha256": "34811313556aca9e9cda42b5d3a8077421624fbb5d005f635ff926b8ad1099d1",
-    "poster": "shot01-2026-11-15.webp",
-    "poster_sha256": "22dcc649bab2f2cf02b01109c3fc4e5b6b53c652996c0d054445687b77a5c872",
+    "output": "shot01-2026-11-16.mp4",
+    "sha256": "c0c4d54a9d06ccdb9fa96c364f33f76320f46d3a1714c9adc6768a847c1e1f6e",
+    "poster": "shot01-2026-11-16.webp",
+    "poster_sha256": "1d67bbc74099b80cff27587d7609589da487d526bb1c05b883b919deb973c642",
     "size": [
       1280,
       720
     ],
-    "caption_px": 25,
     "tag_px": 20,
     "tag_xy": [
       24,
       24
     ],
     "lead_trimmed_s": 0,
-    "caption_max_w": 998,
-    "caption_bottom_px": 24,
+    "captions_in_picture": false,
     "captions": [
       {
         "from_s": 0,
-        "to_s": 35.969,
+        "to_s": 36.441,
         "text": "RECORDED \u00b7 ONE TAKE \u00b7 SYNTHETIC DATA",
         "box": [
           24,
@@ -170,59 +168,29 @@
         ]
       },
       {
-        "from_s": 0.776,
-        "to_s": 9.249,
-        "text": "/verify loads a synthetic demo attestation, signed in this tab",
-        "box": [
-          316,
-          654,
-          964,
-          696
-        ]
+        "from_s": 0.973,
+        "to_s": 9.554,
+        "text": "/verify loads a synthetic demo attestation, signed in this tab"
       },
       {
-        "from_s": 9.249,
-        "to_s": 12.753,
-        "text": "VALID (code 0): intact and signed by its embedded key \u2014 not signer identity",
-        "box": [
-          234,
-          654,
-          1045,
-          696
-        ]
+        "from_s": 9.554,
+        "to_s": 13.059,
+        "text": "VALID (code 0): intact and signed by its embedded key \u2014 not signer identity"
       },
       {
-        "from_s": 12.753,
-        "to_s": 22.13,
-        "text": "Network off from here \u2014 the next two verdicts are computed in this tab with no network",
-        "box": [
-          166,
-          654,
-          1113,
-          696
-        ]
+        "from_s": 13.059,
+        "to_s": 22.511,
+        "text": "Network off from here \u2014 the next two verdicts are computed in this tab with no network"
       },
       {
-        "from_s": 22.13,
-        "to_s": 31.468,
-        "text": "One field changed without re-signing: VOID (code 1)",
-        "box": [
-          354,
-          654,
-          926,
-          696
-        ]
+        "from_s": 22.511,
+        "to_s": 31.939,
+        "text": "One field changed without re-signing: VOID (code 1)"
       },
       {
-        "from_s": 31.468,
-        "to_s": 35.969,
-        "text": "Field restored: VALID (code 0), still offline",
-        "box": [
-          408,
-          654,
-          871,
-          696
-        ]
+        "from_s": 31.939,
+        "to_s": 36.441,
+        "text": "Field restored: VALID (code 0), still offline"
       }
     ]
   }

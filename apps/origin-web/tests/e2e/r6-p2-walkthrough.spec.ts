@@ -7,8 +7,10 @@ import { readFileSync } from 'node:fs'
 // once (the standalone five-stage figure above the tabs is gone). Each panel is a balanced split
 // from 900 px (question, heading and prose on the left, the schematic and the mono readout on the
 // right), and the five panels' content is written to similar heights, so under the one-height
-// lock no stage leaves more than 15% of the panel empty. Stages 1 and 2 open on the battery's own
-// case, sup-02: a $450 refund over the oracle's $100 refund cap. Under the walkthrough, beside the
+// lock no stage leaves more than 15% of the panel empty. Release 7 (R04): the hero card shows
+// sup-02, the $450 refund; stages 1 and 2 open on the battery's other looser miss, sup-10, a $200
+// goodwill credit over the oracle's $100 cap, so the walkthrough extends the hero instead of
+// repeating it. Under the walkthrough, beside the
 // boundary line, a three-beat strip links to /app, named as a separate scripted scenario ($480
 // over a $250 auto-cap). The five-column strip starts at 1024 px, where every stage fits.
 // Every number, id and field below is read from the code that makes the record.
@@ -49,7 +51,9 @@ const field = (record: Record<string, unknown>, path: string) =>
 
 // Every stage's panel height, the share of it left empty under the content, both columns' boxes,
 // and the control bar's place. Positions are layout boxes (offsets), so a hovered button's lift,
-// a transform, is never mistaken for a move.
+// a transform, is never mistaken for a move. Release 7: the right column's box is its schematic
+// (.demo__side is display: contents from 900 px, so its readouts can sit under the prose), and
+// `bands` are the blank stretches above and below each column's content, inside the panel.
 const walkthrough = (page: Page) => page.evaluate(() => {
   const top = (el: HTMLElement) => {
     let y = 0
@@ -57,11 +61,21 @@ const walkthrough = (page: Page) => page.evaluate(() => {
     return y
   }
   const stages = [...document.querySelectorAll<HTMLElement>('[data-demo-panel]')].map((panel) => {
-    const kids = [...panel.children] as HTMLElement[]
+    const kids = [...panel.querySelectorAll<HTMLElement>(':scope > .demo__main, :scope > .demo__side > *')]
     const bottom = Math.max(...kids.map((el) => top(el) + el.offsetHeight + parseFloat(getComputedStyle(el).marginBottom)))
     const content = bottom - top(panel)
-    const column = (selector: string) => { const el = panel.querySelector<HTMLElement>(`:scope > ${selector}`)!; return { x: el.offsetLeft, y: top(el), width: el.offsetWidth } }
-    return { height: panel.offsetHeight, content, empty: (panel.offsetHeight - content) / panel.offsetHeight, main: column('.demo__main'), side: column('.demo__side'), inner: panel.clientWidth }
+    const box = (el: HTMLElement) => ({ x: el.offsetLeft, y: top(el), width: el.offsetWidth, height: el.offsetHeight })
+    const main = box(panel.querySelector<HTMLElement>(':scope > .demo__main')!)
+    const side = box(panel.querySelector<HTMLElement>(':scope > .demo__side > .panelfig')!)
+    const readouts = [...panel.querySelectorAll<HTMLElement>(':scope > .demo__side > .demo__readout')].map(box)
+    // The foot of each column's own space: the top of the readout under it (less the 12 px row
+    // gap), or the panel's foot when nothing sits under it.
+    const foot = (col: { x: number, y: number, width: number }) => {
+      const under = readouts.filter((r) => r.x < col.x + col.width && r.x + r.width > col.x && r.y > col.y)
+      return under.length ? Math.min(...under.map((r) => r.y)) - 12 : top(panel) + panel.offsetHeight
+    }
+    const bands = [main.y - top(panel), foot(main) - (main.y + main.height), side.y - top(panel), foot(side) - (side.y + side.height)]
+    return { height: panel.offsetHeight, content, empty: (panel.offsetHeight - content) / panel.offsetHeight, main, side, inner: panel.clientWidth, bands }
   })
   const bar = ['[data-demo]', '.demo__bar', '[data-demo-play]', '[data-demo-prev]', '[data-demo-next]', '#demo .demo-boundary', '#demo .demo-beats'].map((selector) => {
     const el = document.querySelector<HTMLElement>(selector)!
@@ -129,39 +143,40 @@ test('release 6 phase 2: the stage tablist is the one stage strip, labelled from
   expect(source('../../src/verify/detect.mjs')).toContain("const verdict = firstFailed ? 'VOID' : !d.issuer_trusted ? 'UNTRUSTED' : 'VALID'")
 })
 
-test('release 6 phase 2: stages 1 to 4 follow the battery\'s own case, sup-02, with its true numbers', async ({ page }) => {
+test('release 7: stages 1 to 4 follow the battery\'s second looser miss, sup-10, with its true numbers', async ({ page }) => {
   const { supportTasks, supportOracle, ORACLE_REFUND_CAP } = await import('@origin/verifier-core/supportGym')
   const { buildPolicyEvaluation } = await import('@origin/verifier-core/policyEvaluation')
   const { SUPPORT_PRESETS } = await import('../../src/certify/policySpec')
   const { missDirection } = await import('@origin/verifier-core/missDirection')
-  const task = supportTasks.find((t: { id: string }) => t.id === 'sup-02')!
+  const task = supportTasks.find((t: { id: string }) => t.id === 'sup-10')!
   const oracle = supportOracle(task)
-  expect(task.amount).toBe(450)
+  expect(task.amount).toBe(200)
+  expect(task.requires_approval).toBe(false)
   expect(ORACLE_REFUND_CAP).toBe(100)
   expect(oracle.decision).toBe('escalate')
   expect(oracle.reason).toMatch(/^over the \$100 refund cap/)
-  const row = buildPolicyEvaluation({ scenario: 'support', parameters: SUPPORT_PRESETS.moderate.spec }).decisions.find((d: { id: string }) => d.id === 'sup-02')!
-  expect(row).toEqual({ id: 'sup-02', decision: 'allow', expected: 'escalate' })
+  const row = buildPolicyEvaluation({ scenario: 'support', parameters: SUPPORT_PRESETS.moderate.spec }).decisions.find((d: { id: string }) => d.id === 'sup-10')!
+  expect(row).toEqual({ id: 'sup-10', decision: 'allow', expected: 'escalate' })
   expect(missDirection(row.decision, row.expected)).toBe('looser')
 
   await page.goto('/')
   // Stage 1 opens on the human moment: the case comes first in the panel.
   const case1 = page.locator('#demo-panel-1 .demo__main > :first-child')
   await expect(case1).toHaveClass(/demo__case/)
-  await expect(case1).toHaveText(`sup-02A $${task.amount} refund over the $${ORACLE_REFUND_CAP} refund cap: should the agent proceed, refuse, or hand it to a person?`)
+  await expect(case1).toHaveText(`sup-10A $${task.amount} goodwill credit over the oracle’s $${ORACLE_REFUND_CAP} cap: should the agent proceed, refuse, or hand it to a person?`)
   await expect(page.locator('#demo-panel-1')).toContainText('it does not prove that the named agent was inspected or run')
 
   await page.locator('#demo-tab-2').click()
   const panel2 = page.locator('#demo-panel-2')
-  await expect(panel2.locator('.demo__main > :first-child')).toHaveText(`sup-02The $${task.amount} refund is one of ${supportTasks.length} requests whose answers the oracle fixes before any policy is run.`)
+  await expect(panel2.locator('.demo__main > :first-child')).toHaveText(`sup-10The $${task.amount} credit is one of ${supportTasks.length} requests whose answers the oracle fixes before any policy is run.`)
   await expect(panel2.locator('.panelfig__cells li.is-case')).toHaveCount(1)
-  await expect(panel2.locator('.panelfig__cells li.is-case code')).toHaveText('sup-02')
-  await expect(panel2.locator('.panelfig__pick code')).toHaveText('sup-02')
+  await expect(panel2.locator('.panelfig__cells li.is-case code')).toHaveText('sup-10')
+  await expect(panel2.locator('.panelfig__pick code')).toHaveText('sup-10')
   await expect(panel2.locator('.panelfig__pick span').first()).toHaveText(task.action)
   await expect(panel2.locator('.panelfig__pick .panelfig__dec')).toHaveText(`oracle ${oracle.decision} · over the $${ORACLE_REFUND_CAP} refund cap`)
 
   await page.locator('#demo-tab-3').click()
-  await expect(page.locator('#demo-panel-3')).toContainText(`Under the Moderate preset the policy allows the $${task.amount} refund and the oracle escalates it: a looser miss.`)
+  await expect(page.locator('#demo-panel-3')).toContainText(`Under the Moderate preset the policy allows the $${task.amount} credit and the oracle escalates it: a looser miss, the same kind as the $450 refund at the top of the page.`)
   await expect(page.locator('#demo-panel-3 .demo__key li')).toHaveText(['✓match', '△miss (stricter)', '△miss (looser)', 'over-grant, counted separately'])
 
   await page.locator('#demo-tab-4').click()
@@ -257,8 +272,13 @@ for (const [width, height] of [[1919, 998], [1280, 720], [375, 812]] as const) t
     expect(stage.empty, `stage ${i + 1} empty share`).toBeGreaterThanOrEqual(0)
     expect(stage.empty, `stage ${i + 1} empty share`).toBeLessThanOrEqual(0.15)
     if (width >= 900) {
-      // A balanced split: the left column about 52% of the panel, the schematic and readout right.
-      expect(stage.side.y, `stage ${i + 1}`).toBe(stage.main.y)
+      // A balanced split: the left column about 52% of the panel, the schematic right. Release 7
+      // (R01/D1): the readout sits under the prose and the prose is centred above it, so no blank
+      // stretch above or below either column is taller than 13% of the panel (measured: 42 px of
+      // 358, Attest, at 1280 and 1919 px; it was 172 px of 388 under the prose).
+      expect(stage.side.y, `stage ${i + 1}`).toBeLessThan(stage.main.y + stage.main.height)
+      expect(stage.main.y, `stage ${i + 1}`).toBeLessThan(stage.side.y + stage.side.height)
+      expect(Math.max(...stage.bands) / stage.height, `stage ${i + 1} largest blank band ${JSON.stringify(stage.bands)}`).toBeLessThanOrEqual(0.13)
       expect(stage.side.x, `stage ${i + 1}`).toBeGreaterThan(stage.main.x + stage.main.width)
       const share = stage.main.width / (stage.main.width + stage.side.width)
       expect(share, `stage ${i + 1} left share`).toBeGreaterThan(0.5)
@@ -307,7 +327,7 @@ for (const [width, height] of [[1919, 998], [1280, 720], [375, 812]] as const) t
 
 test('release 6 phase 2: a three-beat strip sits beside the boundary line and links to the scripted /app scenario', async ({ page }, testInfo) => {
   // The $480 refund, its $250 auto-cap and its $500 ceiling are the scripted /app scenario's,
-  // a case separate from the walkthrough's sup-02 ($450 over the $100 refund cap).
+  // a case separate from the hero's sup-02 ($450 over the $100 refund cap) and the walkthrough's sup-10.
   const app = source('../../app.html')
   expect(app).toContain('Refund $480.00')
   expect(app).toContain('$480.00 over the $250 auto-cap')

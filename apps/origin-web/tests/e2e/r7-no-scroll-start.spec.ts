@@ -28,7 +28,9 @@ async function stillUntilPlay(page: Page, scroll: string, read: () => Promise<st
   await play().click()
   // The click can scroll the control's row to the top, leaving the playback below the fold.
   await page.locator(scroll).scrollIntoViewIfNeeded()
-  await expect.poll(read, { message: 'Play starts the playback' }).not.toBe(first)
+  // 20 s: with software WebGL on a loaded CI runner, the 3D view draws few frames, and each
+  // frame advances the playback by at most 0.05 s (seen in CI: still unchanged at 8 s).
+  await expect.poll(read, { message: 'Play starts the playback', timeout: 20_000 }).not.toBe(first)
 }
 
 test('/operations opens paused on its first frame and plays only on Play', async ({ page }) => {

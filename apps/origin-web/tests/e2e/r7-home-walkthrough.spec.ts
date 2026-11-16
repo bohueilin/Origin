@@ -41,13 +41,31 @@ for (const [width, height] of [[1280, 800], [1919, 998]] as const) {
         const offset = start === 'strip under the header' ? 16 : -150
         window.scrollTo({ top: window.scrollY + rail - headerBottom - offset, behavior: 'instant' })
       }, start)
+      // Diagnostics, reported only on failure: every page scroll (with the time since the last
+      // click) and, per stage, the strip, heading and Next positions just after the click.
+      await page.evaluate(() => {
+        const w = window as unknown as { __r7scrolls: string[], __r7click: number }
+        w.__r7scrolls = []; w.__r7click = performance.now()
+        addEventListener('scroll', () => w.__r7scrolls.push(`${Math.round(scrollY)}@+${Math.round(performance.now() - w.__r7click)}ms`), { passive: true })
+        document.querySelector('[data-demo-next]')!.addEventListener('click', () => { w.__r7click = performance.now(); w.__r7scrolls.push('click') }, { capture: true })
+      })
+      const log: string[] = []
       for (const step of [2, 3, 4, 5]) {
         await page.locator('[data-demo-next]').click()
         await expect(page.locator(`#demo-tab-${step}`)).toHaveAttribute('aria-selected', 'true')
-        await expect.poll(async () => {
-          const p = await positions(page)
-          return Math.min(p.rail, p.heading) - p.headerBottom
-        }, { message: `stage ${step}: strip and heading below the header` }).toBeGreaterThanOrEqual(8)
+        const after = await page.evaluate(() => {
+          const hb = document.querySelector('.site-header')!.getBoundingClientRect().bottom
+          const r = (s: string) => Math.round(document.querySelector(s)!.getBoundingClientRect().top - hb)
+          return `rail ${r('.demo__rail')} h3 ${r('.demo__panel.is-on h3')} next ${r('[data-demo-next]')} y ${Math.round(scrollY)} vh ${innerHeight}`
+        })
+        log.push(`stage ${step}: ${after}`)
+        const below = async () => { const p = await positions(page); return Math.min(p.rail, p.heading) - p.headerBottom }
+        try {
+          await expect.poll(below, { timeout: 4000 }).toBeGreaterThanOrEqual(8)
+        } catch {
+          const scrolls = await page.evaluate(() => (window as unknown as { __r7scrolls: string[] }).__r7scrolls.join(' '))
+          throw new Error(`stage ${step}: strip or heading under the header (${await below()} px). ${log.join(' | ')}. Scrolls: ${scrolls}`)
+        }
       }
     })
   }

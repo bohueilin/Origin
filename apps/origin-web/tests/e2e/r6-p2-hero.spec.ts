@@ -24,7 +24,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 const SPEC = 'What the check produces'
-const CAPTION = 'AI-generated illustration · fictional people and setting. Unlike the scene, the result below is real reference-check output, re-checkable in your browser.'
+const CAPTION = 'AI-generated illustration · fictional people and setting. Unlike the scene, the graded result below is output from the live demo, re-checkable in your browser.'
 const SIZES = [[1919, 998], [1280, 720], [375, 812]] as const
 const source = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8')
 const specimen = (page: Page) => page.locator('#product').getByRole('figure', { name: SPEC, exact: true })

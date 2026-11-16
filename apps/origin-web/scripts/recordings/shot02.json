@@ -1,30 +1,30 @@
 {
   "shot": "shot02",
-  "date": "2026-11-15",
+  "date": "2026-11-16",
   "date_timezone": "UTC",
-  "recorded_at": "2026-11-15T03:13:08.814Z",
+  "recorded_at": "2026-11-16T05:32:30.420Z",
   "host": "originphysicalai.com",
-  "commit": "49b5cd0",
+  "commit": "965215b",
   "release": {
-    "generated_at": "2026-11-14T22:21:08Z",
-    "commit": "49b5cd0",
+    "generated_at": "2026-11-15T20:50:51Z",
+    "commit": "965215b",
     "tracked_clean": true,
     "all_green": true,
     "suites": [
       {
         "name": "ts:build (workspaces)",
         "result": "PASS",
-        "detail": "\u2713 built in 117ms"
+        "detail": "\u2713 built in 146ms"
       },
       {
         "name": "ts:build (chronos-ui)",
         "result": "PASS",
-        "detail": "\u2713 built in 621ms"
+        "detail": "\u2713 built in 927ms"
       },
       {
         "name": "ts:origin-web (+evidence+verifier-core globs)",
         "result": "PASS",
-        "detail": "Tests  948 passed (948)"
+        "detail": "Tests  956 passed (956)"
       },
       {
         "name": "ts:janus",
@@ -74,7 +74,7 @@
       {
         "name": "honesty-lint",
         "result": "PASS",
-        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 184 React copy files, 15 social cards + 3 caption files + cover template, 28 banned patterns, 3 required disclaimers, 63 launch contracts."
+        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 183 React copy files, 15 social cards + 3 caption files + cover template, 28 banned patterns, 3 required disclaimers, 65 launch contracts."
       },
       {
         "name": "py:cobra",
@@ -88,33 +88,33 @@
       }
     ],
     "source": "release",
-    "built_at": "2026-11-14T22:21:08Z",
-    "run_url": "https://github.com/bohueilin/Origin/actions/runs/43646436991"
+    "built_at": "2026-11-15T20:50:51Z",
+    "run_url": "https://github.com/bohueilin/Origin/actions/runs/43758166668"
   },
   "beats": [
     {
       "name": "painted",
-      "t": 0.841
+      "t": 0.94
     },
     {
       "name": "intro",
-      "t": 2.001
+      "t": 2.106
     },
     {
       "name": "analyze",
-      "t": 8.604
+      "t": 8.691
     },
     {
       "name": "widen",
-      "t": 16.167
+      "t": 16.272
     },
     {
       "name": "score",
-      "t": 23.729
+      "t": 23.88
     },
     {
       "name": "end",
-      "t": 29.231
+      "t": 29.382
     }
   ],
   "facts": {
@@ -136,35 +136,33 @@
   "blocked_requests": [
     "GET https://www.googletagmanager.com/gtag/js"
   ],
-  "raw_file": "page@aaebc8a728c342bf981d642017d85ffc.webm",
-  "raw_sha256": "70aab07ed46b5ba95861daf0ab5ef6bcabbf7b9f45f9e0b913762571bc47ba21",
+  "raw_file": "page@ee3f3b6a133e4b7592771d22613188ad.webm",
+  "raw_sha256": "73d87b0616fb8d7913cc639db84c41e8a8612500edfa3a3c2a240d7f110bf4d5",
   "font": "Carlito-Regular.ttf",
   "font_sha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
   "configuration_sources": {
-    "roots": "49b5cd0:apps/origin-web/src/security/SecurityPage.tsx#OG_ROOTS"
+    "roots": "965215b:apps/origin-web/src/security/SecurityPage.tsx#OG_ROOTS"
   },
   "render": {
-    "output": "shot02-2026-11-15.mp4",
-    "sha256": "bffa2d96fa92bd3badd8c13a3474b2908f528bf420701241ddbcefd4a3418ad1",
-    "poster": "shot02-2026-11-15.webp",
-    "poster_sha256": "c6845c0cd56291ff9d9666ee733e4872f9bb5e329d74d5e9d7ad0656495e5000",
+    "output": "shot02-2026-11-16.mp4",
+    "sha256": "44fb4a3edf686e800602ffb2aadff1ebb3f3e7fe73be36f67a9f2e1dc8b88c9f",
+    "poster": "shot02-2026-11-16.webp",
+    "poster_sha256": "6787103b2d52545425b62ad27be9a05cfde41fee7c6516e93d1d87903d984257",
     "size": [
       1280,
       720
     ],
-    "caption_px": 25,
     "tag_px": 20,
     "tag_xy": [
       24,
       24
     ],
     "lead_trimmed_s": 0,
-    "caption_max_w": 998,
-    "caption_bottom_px": 24,
+    "captions_in_picture": false,
     "captions": [
       {
         "from_s": 0,
-        "to_s": 29.231,
+        "to_s": 29.382,
         "text": "RECORDED \u00b7 ONE TAKE \u00b7 SYNTHETIC DATA",
         "box": [
           24,
@@ -174,48 +172,24 @@
         ]
       },
       {
-        "from_s": 0.841,
-        "to_s": 8.604,
-        "text": "/over-grant analyzer \u00b7 synthetic fleet, seed 20260818, 400 roots",
-        "box": [
-          295,
-          654,
-          984,
-          696
-        ]
+        "from_s": 0.94,
+        "to_s": 8.691,
+        "text": "/over-grant analyzer \u00b7 synthetic fleet, seed 20260818, 400 roots"
       },
       {
-        "from_s": 8.604,
-        "to_s": 16.167,
-        "text": "2074 synthetic identities \u00b7 63.2% of granted scopes never exercised in the window",
-        "box": [
-          203,
-          654,
-          1077,
-          696
-        ]
+        "from_s": 8.691,
+        "to_s": 16.272,
+        "text": "2074 synthetic identities \u00b7 63.2% of granted scopes never exercised in the window"
       },
       {
-        "from_s": 16.167,
-        "to_s": 23.729,
-        "text": "One delegation edge widened: the root reaches 55.6% \u2192 66.7% of the sensitive resources",
-        "box": [
-          162,
-          654,
-          1117,
-          696
-        ]
+        "from_s": 16.272,
+        "to_s": 23.88,
+        "text": "One delegation edge widened: the root reaches 55.6% \u2192 66.7% of the sensitive resources"
       },
       {
-        "from_s": 23.729,
-        "to_s": 29.231,
-        "text": "Fresh seeded corpus, 90 planted widened edges: 90/90 caught \u00b7 0 false positives (synthetic ground truth)",
-        "box": [
-          158,
-          622,
-          1121,
-          696
-        ]
+        "from_s": 23.88,
+        "to_s": 29.382,
+        "text": "Fresh seeded corpus, 90 planted widened edges: 90/90 caught \u00b7 0 false positives (synthetic ground truth)"
       }
     ]
   }

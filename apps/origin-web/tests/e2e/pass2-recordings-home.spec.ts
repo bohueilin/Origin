@@ -2,9 +2,10 @@ import { test, expect, type Locator, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 
 // Pass 2 Phase 1 — recordings and home
-// The recordings' captions are burned into the video, so the frame leaves a tray under the
-// picture for the native control bar, and the picture is pinned to the top of the frame:
-// the burned-in caption sits at least 48 px clear above the control bar. Each recording
+// The picture is pinned to the top of the frame and scaled whole, and the frame leaves room
+// under it for the native control bar. Release 7 (R05): no caption is drawn into the picture
+// (the caption tray under the player shows the cues), so nothing in the picture needs to be
+// kept clear of the controls. Each recording
 // figure leads with the "Recorded" pill and one summary line built from its manifest.
 // Home: the lab illustration says what it shows (a fictional person with a tablet and a
 // mobile robot) and its crop keeps both in frame, the offer and the lead dialog's intro say
@@ -25,11 +26,6 @@ const manifest = (shot: string) =>
 const RECORDINGS: [route: string, shot: string][] = [['/', 'shot01'], ['/verify', 'shot01'], ['/over-grant', 'shot02'], ['/reference-check', 'shot04']]
 const VIEWPORTS: [width: number, height: number][] = [[1919, 998], [1280, 720], [430, 932], [375, 812]]
 
-// Chromium's native control stack: a 48 px button panel over a 24 px timeline, at the
-// bottom of the <video> element. The burned-in caption box ends 24/720 of the picture
-// height above the picture's bottom edge.
-const CONTROLS = 72
-const CAPTION_BOTTOM = 696 / 720
 
 // The <video> box against the picture inside it. The posters are 16:9 and the picture is
 // scaled whole and pinned to the top, so its height is width * 9/16 before any video
@@ -37,27 +33,24 @@ const CAPTION_BOTTOM = 696 / 720
 async function frame(page: Page, shot: string) {
   const video = page.locator(`video[poster*="${shot}-"]`)
   await video.scrollIntoViewIfNeeded()
-  return video.evaluate(async (el: HTMLVideoElement, [controls, captionBottom]) => {
+  return video.evaluate(async (el: HTMLVideoElement) => {
     const poster = new Image()
     poster.src = el.poster
     await poster.decode()
     const s = getComputedStyle(el)
     const box = el.getBoundingClientRect()
     const [, y = '50%'] = s.objectPosition.split(' ')
-    const pictureTop = box.top + (parseFloat(y) || 0)
-    const pictureHeight = box.width * 9 / 16
     return {
       fit: s.objectFit,
       objectTop: parseFloat(y) || 0,
       poster: poster.naturalWidth * 9 - poster.naturalHeight * 16,
-      clearance: (box.bottom - controls) - (pictureTop + pictureHeight * captionBottom),
       top: box.top,
     }
-  }, [CONTROLS, CAPTION_BOTTOM] as const)
+  })
 }
 
 for (const [route, shot] of RECORDINGS) {
-  test(`pass 2: the ${shot} frame on ${route} keeps the control bar off the burned-in captions`, async ({ page }, testInfo) => {
+  test(`pass 2: the ${shot} frame on ${route} pins a whole picture to the top of its frame`, async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'viewports are set explicitly')
     const { date, commit } = manifest(shot)
     for (const [width, height] of VIEWPORTS) {
@@ -65,12 +58,10 @@ for (const [route, shot] of RECORDINGS) {
       await page.setViewportSize({ width, height })
       await page.goto(route)
       const box = await frame(page, shot)
-      // A 16:9 picture pinned to the top and scaled whole; the burned-in caption ends at
-      // least 48 px above the top of the native control bar.
+      // A 16:9 picture pinned to the top and scaled whole.
       expect(box.fit, at).toBe('contain')
       expect(box.objectTop, at).toBe(0)
       expect(box.poster, at).toBe(0)
-      expect(box.clearance, at).toBeGreaterThanOrEqual(48)
       const figure = page.locator(`video[poster*="${shot}-"]`).locator('xpath=ancestor::figure')
       const pill = figure.locator('.vband__pill')
       await expect(pill, at).toBeVisible()
@@ -99,13 +90,13 @@ test('pass 2: loading the recording metadata does not move the frame', async ({ 
   expect(Math.abs(after.width - before.width)).toBeLessThanOrEqual(0.5)
 })
 
-test('pass 2: the shot04 dated note stays its own line after the figure', async ({ page }) => {
-  const { date } = manifest('shot04')
+// Release 7 moved the shot04 drift note into the figure's disclosure (r6-p3-recordings.spec.ts):
+// the figure is the section's last block, and the visible line is the summary bar alone.
+test('pass 2: the shot04 figure ends its section with the summary bar as its one visible line', async ({ page }) => {
+  const { date, commit } = manifest('shot04')
   await page.goto('/reference-check')
-  const note = page.locator('.vband > .shell > figure.vband__fig + p.vband__note')
-  await expect(note).toHaveText(`Recorded ${date}; the pages have changed since (/reference-check and /verify now open with a static specimen beside the introduction, and /verify shows a labelled preview before anything is verified).`)
-  expect(await note.evaluate((el) => Number(getComputedStyle(el).fontWeight))).toBeGreaterThanOrEqual(600)
-  expect(await note.evaluate((el) => getComputedStyle(el).display)).toBe('block')
+  await expect(page.locator('.vband > .shell > figure.vband__fig + *')).toHaveCount(0)
+  await expect(page.locator('video[poster*="shot04-"]').locator('xpath=ancestor::figure').locator('.vband__sum')).toHaveText(`Recorded ${date} (${commit}) · synthetic demo data`)
 })
 
 test('pass 2: the home lab illustration says what it shows', async ({ page }) => {

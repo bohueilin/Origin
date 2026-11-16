@@ -1440,7 +1440,15 @@ export function ReflectAlign({
                     data-y={y}
                     tabIndex={proving ? (x === cx && y === cy ? 0 : -1) : undefined}
                     onClick={() => tapCell(x, y)}
-                    onMouseEnter={() => { setHover({ x, y }); setLook({ x, y }) }}
+                    // Only a pointer that really moves takes the readout. A page scroll (for
+                    // example, focus scrolling the grid into view under a resting pointer)
+                    // fires enter events with no movement; those must not override the
+                    // keyboard's cell. Release 7, seen in CI.
+                    onMouseMove={(e) => {
+                      if (!e.movementX && !e.movementY) return
+                      if (hover?.x === x && hover?.y === y && look?.x === x && look?.y === y) return
+                      setHover({ x, y }); setLook({ x, y })
+                    }}
                     aria-label={label}
                   >
                     <span className="site-cell-code">{text}</span>

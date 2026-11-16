@@ -191,9 +191,9 @@ test('pass 2 phase 2: the preset contrast on /reference-check is what the oracle
   await expect(fig).toBeVisible()
   await expect(fig.locator('#rcx-compare-desc')).toHaveText('The same 12 synthetic support requests, graded by the oracle. Each square is one request, sup-01 to sup-12.')
 
-  // Below the shot04 recording: its dated line stays the recording figure's next sibling, and
-  // the new section follows the recording's section.
-  await expect(page.locator('.vband > .shell > figure.vband__fig + p.vband__note')).toHaveCount(1)
+  // The shot04 recording's section (its dated line now sits in the figure's disclosure, Release 7)
+  // comes straight before the new section.
+  await expect(page.locator('.vband > .shell > figure.vband__fig')).toHaveCount(1)
   expect(await page.locator('section.rcx').evaluate((el) => el.previousElementSibling?.matches('section.vband') ?? false)).toBe(true)
   await expect(page.locator('section.rcx h2')).toHaveText('How to read a result')
 

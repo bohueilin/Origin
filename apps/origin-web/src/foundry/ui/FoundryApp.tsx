@@ -563,6 +563,8 @@ export default function FoundryApp() {
           <li><b>What the result means.</b> The oracle's verdict (finish, escalate or refuse) says whether a route on this grid fits its declared rules and budgets.</li>
           <li><b>Its limits.</b> The verdict describes this grid model only, not any physical site or robot.</li>
         </ul>
+        {/* Facts from src/foundry/sampleFloor.ts and src/floorMargin.ts; r7-subpages.spec.ts re-derives them. */}
+        <p className="lab-frame__sample"><b>The sample floor.</b> “Use the sample floor” loads one fixed 10 × 10 grid: a dock, a pick cell and a drop cell, 2 wall cells, 2 hazard cells on the row between the pick and the drop, and 1 human-only cell. It places no robots, so no fleet runs; the check scores one route for one AMR. The oracle returns finish, with a 14-move route around the hazards. The page shows the grid, labelled as a sample floor, not parsed from an upload, and a single-failure check computed in your browser: no chokepoints in 92 swept cells, and a budget-blind disconnection margin of 3 free cells. The Quorum loop that would step a proposal across the floor runs only in a separately enabled local/backend demo, not here.</p>
         <nav className="fdy-read__links" aria-label="Related pages"><a href="/labs">Labs</a><a href="/proving-ground">Proving ground</a><a href="/reference-check">Reference check</a></nav>
       </section>
 

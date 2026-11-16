@@ -61,6 +61,13 @@
       .rung p { font-size: 14px; color: var(--ink-soft); line-height: 1.55; margin: 0; }
       .rung__foot { margin-top: auto; padding-top: 14px; }
       .rung__link { font-size: var(--fs-14); font-weight: 600; color: var(--signal-ink); text-decoration: underline; text-underline-offset: 2px; }
+      /* Release 7: each rung card says what a reviewer can re-check there, and with what. */
+      .rung__checks { margin: 0; display: grid; gap: 2px; }
+      .rung__checks dt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .05em; line-height: 1.5; text-transform: uppercase; color: var(--steel); }
+      .rung__checks dt:not(:first-child) { margin-top: 10px; }
+      .rung__checks dd { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink-soft); overflow-wrap: anywhere; }
+      .rung__checks :is(code, .mono) { font-family: var(--font-mono); font-size: var(--fs-13); color: var(--ink); }
+      .rung__checks a { color: var(--signal-ink); text-decoration: underline; text-underline-offset: 2px; }
 
       /* Specimen fields — dl of the agent-evidence record */
       .spec { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -390,18 +397,25 @@
         <p class="proof__app"><a class="rung__link" href="/app">Walk three scripted agent scenarios (/app) →</a></p>
       </div>
 
-      <!-- ═══════════ The ladder — three rungs ═══════════ -->
+      <!-- ═══════════ The ladder — what each rung lets a reviewer re-check ═══════════ -->
+      <!-- Release 7: the TR-A002 card and the hero figure already define the rungs; this section
+           says what separates them: what a reviewer can re-check at each rung, with what, and why
+           TR-A003 is not held. The digest and command are the page's own (public/proof/tr-a002.json). -->
       <section id="ladder" aria-label="The evidence ladder">
         <p class="kicker">The ladder</p>
-        <h2>Three rungs, labeled for exactly what they are.</h2>
-        <p class="proof__sub">Each rung is a different kind of evidence. We only publish a rung once it exists, and we never relabel a lower rung as a higher one.</p>
+        <h2>What a reviewer can re-check at each rung.</h2>
+        <p class="proof__sub">The rungs differ in what a reviewer can re-derive, and with what. Each rung adds a check the rung below it cannot pass.</p>
 
         <div class="rungs">
           <article class="rung rung--now">
             <span class="rung__badge rung__badge--now">Available now</span>
             <span class="rung__id">TR-A001</span>
             <h3>Authored evidence specimen</h3>
-            <p>A hand-authored example of the evidence-package format, it shows the <b>shape</b> of the record. Illustrative, not a machine-emitted run.</p>
+            <dl class="rung__checks">
+              <dt>Re-check</dt><dd>The record's shape: the field names and nesting in the specimen below.</dd>
+              <dt>With</dt><dd>Reading it. There is nothing to recompute: its digest is a placeholder (<span class="mono">illustrative_digest</span>).</dd>
+              <dt>Cannot show</dt><dd>That anything ran. The values are written to the schema.</dd>
+            </dl>
             <div class="rung__foot"><a class="rung__link" href="#tr-a001">See the specimen ↓</a></div>
           </article>
 
@@ -409,7 +423,12 @@
             <span class="rung__badge rung__badge--now">Available now</span>
             <span class="rung__id">TR-A002</span>
             <h3>Machine-emitted trace of a scripted scenario</h3>
-            <p>Written by Origin's emitter script: twelve scripted events on a <b>real SHA-256 hash chain</b> you can re-verify. No agent, policy gate, proxy, approver or sandbox ran; no live money, no customer data.</p>
+            <dl class="rung__checks">
+              <dt>Re-check</dt><dd>Every event hash and <span class="mono">prev_hash</span> link, then <span class="mono">final_digest</span> and <span class="mono">log_digest</span>.</dd>
+              <dt>With</dt><dd><code>node scripts/verify-tr-a002.mjs tr-a002.json</code> in the public repository's <code>apps/origin-web</code> folder, or <a href="/verify">/verify</a> in your browser.</dd>
+              <dt>Catches</dt><dd>An event edited without recomputing the hashes fails. An edit with recomputed hashes ends in a final digest other than the published <span class="mono">ca1d4690206e…</span>.</dd>
+              <dt>Cannot show</dt><dd>That any agent, policy gate, proxy, approver or sandbox ran: the events are typed into the script. The top-level description is outside the chain.</dd>
+            </dl>
             <div class="rung__foot"><a class="rung__link" href="#tr-a002">See the trace ↓</a></div>
           </article>
 
@@ -417,7 +436,10 @@
             <span class="rung__badge rung__badge--soon">When earned</span>
             <span class="rung__id">TR-A003</span>
             <h3>First design-partner trace</h3>
-            <p>Evidence from a real external workflow, published only once a design partner has actually run it. <b>Not yet available.</b></p>
+            <dl class="rung__checks">
+              <dt>Would add</dt><dd>That the events came from a real external workflow. A hash chain cannot show that: it re-derives just as well over scripted events.</dd>
+              <dt>Why not held</dt><dd>No design partner has run a workflow with Origin, so there are no events to chain. This page describes no checks for TR-A003 until it exists.</dd>
+            </dl>
             <div class="rung__foot"><span class="rung__id">Forthcoming</span></div>
           </article>
         </div>

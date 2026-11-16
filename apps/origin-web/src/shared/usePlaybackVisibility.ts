@@ -1,6 +1,7 @@
 import { useEffect, useState, type RefObject } from 'react'
 
-/** Playback advances only while its surface is visible in the active tab. */
+/** Playback advances only while its surface is visible in the active tab. Visibility may
+ *  pause a playback, never start one: callers start motion only from a visitor's click. */
 export function usePlaybackVisibility(target: RefObject<Element | null>): boolean {
   const [visible, setVisible] = useState(false)
   useEffect(() => {

@@ -64,14 +64,15 @@ export function MultiRobotSim({
   const visible = usePlaybackVisibility(gridRef)
   const stepMax = Math.max(plan.ticks - 1, 0)
   const [step, setStep] = useState(() => reduced ? stepMax : 0)
-  const [playing, setPlaying] = useState(!reduced)
+  // Opens paused on its first frame (reduced motion: its last); only Play starts motion.
+  const [playing, setPlaying] = useState(false)
   const [playbackPlan, setPlaybackPlan] = useState(plan)
   // Reconcile before rendering a changed floor: an old tick is not a position
-  // in the new route. Preserve a manual pause; reduced motion shows its end.
+  // in the new route. A changed floor opens paused, as on load.
   if (playbackPlan !== plan) {
     setPlaybackPlan(plan)
     setStep(reduced ? stepMax : 0)
-    if (reduced) setPlaying(false)
+    setPlaying(false)
   }
   const advancing = playing && step < stepMax
   useEffect(() => {

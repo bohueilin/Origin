@@ -28,11 +28,17 @@ function smoother(t: number) {
   return c * c * c * (c * (c * 6 - 15) + 10)
 }
 
-// The default view: a high three-quarter angle, 48° above the floor and 37° round from its
-// front edge. The floor's projected box fills FLOOR_FILL of the canvas's binding dimension,
-// and the whole scene stays at least MARGIN inside every edge of the canvas.
-const VIEW_DIR = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(42), THREE.MathUtils.degToRad(37))
-const FLOOR_FILL = 0.7
+// The default view: a three-quarter angle, 44° above the floor and 32° round from its front
+// edge (lower and squarer than the earlier 48° / 37°, so the floor reads wider than it is
+// deep). The floor's projected box fills FILL_H of the canvas's height or FILL_W of its width,
+// whichever it reaches first, and the whole scene stays at least MARGIN inside every edge. On
+// the 17:10 desktop canvas (1112 × 654) the starter 12 × 9 floor spans about 71% of the height
+// and 58% of the width (the racks' tops bind first); on a phone's square canvas, 88% of the
+// width and about 62% of the height.
+const ELEVATION = 44, AZIMUTH = 32
+const VIEW_DIR = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - ELEVATION), THREE.MathUtils.degToRad(AZIMUTH))
+const FILL_H = 0.72
+const FILL_W = 0.88
 const MARGIN = 0.025
 
 const floorPoints = (W: number, H: number) =>
@@ -51,9 +57,10 @@ function canvasBox(camera: THREE.Camera, points: THREE.Vector3[]) {
   return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) }
 }
 
-/** Puts the camera on the default bearing so the floor fills FLOOR_FILL of the canvas and the
- *  box of the whole scene (`framed`: the floor's corners, every structure, person and box, and
- *  each robot's route) is centred on the canvas, MARGIN inside its edges. So a floor with tall
+/** Puts the camera on the default bearing so the floor fills FILL_H of the canvas's height or
+ *  FILL_W of its width (whichever binds) and the box of the whole scene (`framed`: the floor's
+ *  corners, every structure, person and box, and each robot's route) is centred on the canvas,
+ *  MARGIN inside its edges. So a floor with tall
  *  racks sits lower than one without, and where the racks are too tall for both, the floor
  *  fills less, so the whole scene always stays in the frame. Perspective makes the projected
  *  size only roughly inverse to distance, so rounds of scale-then-pan converge on it. Returns
@@ -81,8 +88,7 @@ function fitCamera(camera: THREE.PerspectiveCamera, target: THREE.Vector3, W: nu
     place()
     const f = canvasBox(camera, floor)
     s = canvasBox(camera, framed)
-    const fill = Math.max(f.x1 - f.x0, f.y1 - f.y0)
-    dist *= Math.max(fill / FLOOR_FILL, Math.max(s.x1 - s.x0, s.y1 - s.y0) / room)
+    dist *= Math.max((f.x1 - f.x0) / FILL_W, (f.y1 - f.y0) / FILL_H, Math.max(s.x1 - s.x0, s.y1 - s.y0) / room)
   }
   // Slide the pivot along the line of sight onto the floor plane. The camera and the picture
   // stay the same, and turning the view about a pivot on the floor never takes the camera
@@ -334,11 +340,12 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
   const visibleRef = useRef(false)
   const wakeRef = useRef<() => void>(() => {})
   const replayRef = useRef<() => void>(() => {})
-  const playingRef = useRef(true)
+  // Opens paused on its first frame; motion starts only from the visitor's Play.
+  const playingRef = useRef(false)
   const speedRef = useRef(1)
   const progFillRef = useRef<HTMLDivElement | null>(null)
   const progTxtRef = useRef<HTMLSpanElement | null>(null)
-  const [playing, setPlaying] = useState(true)
+  const [playing, setPlaying] = useState(false)
   const [complete, setComplete] = useState(false)
   const [speed, setSpeed] = useState(1)
   const webglOK = useMemo(() => {
@@ -372,8 +379,9 @@ export function ProvingGround3D({ siteMap, embodiment, domain = 'warehouse' }: {
 
   const [playbackScene, setPlaybackScene] = useState({ plan, emb, domain })
   if (playbackScene.plan !== plan || playbackScene.emb !== emb || playbackScene.domain !== domain) {
+    // A changed floor, domain or robot type opens paused on its first frame.
     setPlaybackScene({ plan, emb, domain })
-    setPlaying(true)
+    setPlaying(false)
     setComplete(false)
   }
 

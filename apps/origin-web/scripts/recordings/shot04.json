@@ -1,30 +1,30 @@
 {
   "shot": "shot04",
-  "date": "2026-11-15",
+  "date": "2026-11-16",
   "date_timezone": "UTC",
-  "recorded_at": "2026-11-15T04:26:18.320Z",
+  "recorded_at": "2026-11-16T05:33:01.124Z",
   "host": "originphysicalai.com",
-  "commit": "49b5cd0",
+  "commit": "965215b",
   "release": {
-    "generated_at": "2026-11-14T22:21:08Z",
-    "commit": "49b5cd0",
+    "generated_at": "2026-11-15T20:50:51Z",
+    "commit": "965215b",
     "tracked_clean": true,
     "all_green": true,
     "suites": [
       {
         "name": "ts:build (workspaces)",
         "result": "PASS",
-        "detail": "\u2713 built in 117ms"
+        "detail": "\u2713 built in 146ms"
       },
       {
         "name": "ts:build (chronos-ui)",
         "result": "PASS",
-        "detail": "\u2713 built in 621ms"
+        "detail": "\u2713 built in 927ms"
       },
       {
         "name": "ts:origin-web (+evidence+verifier-core globs)",
         "result": "PASS",
-        "detail": "Tests  948 passed (948)"
+        "detail": "Tests  956 passed (956)"
       },
       {
         "name": "ts:janus",
@@ -74,7 +74,7 @@
       {
         "name": "honesty-lint",
         "result": "PASS",
-        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 184 React copy files, 15 social cards + 3 caption files + cover template, 28 banned patterns, 3 required disclaimers, 63 launch contracts."
+        "detail": "honesty-lint: clean \u2014 21 served pages (prose + meta/title) + 183 React copy files, 15 social cards + 3 caption files + cover template, 28 banned patterns, 3 required disclaimers, 65 launch contracts."
       },
       {
         "name": "py:cobra",
@@ -88,41 +88,41 @@
       }
     ],
     "source": "release",
-    "built_at": "2026-11-14T22:21:08Z",
-    "run_url": "https://github.com/bohueilin/Origin/actions/runs/43646436991"
+    "built_at": "2026-11-15T20:50:51Z",
+    "run_url": "https://github.com/bohueilin/Origin/actions/runs/43758166668"
   },
   "beats": [
     {
       "name": "painted",
-      "t": 0.797
+      "t": 0.946
     },
     {
       "name": "intro",
-      "t": 1.941
+      "t": 2.09
     },
     {
       "name": "run",
-      "t": 8.489
+      "t": 8.583
     },
     {
       "name": "download",
-      "t": 14.888
+      "t": 14.999
     },
     {
       "name": "drift",
-      "t": 21.432
+      "t": 21.51
     },
     {
       "name": "paste",
-      "t": 30.986
+      "t": 31.187
     },
     {
       "name": "reverify",
-      "t": 36.478
+      "t": 36.726
     },
     {
       "name": "end",
-      "t": 41.981
+      "t": 42.229
     }
   ],
   "facts": {
@@ -139,36 +139,34 @@
   "blocked_requests": [
     "GET https://www.googletagmanager.com/gtag/js"
   ],
-  "raw_file": "page@c0b4fc1d60446f9c14a309757c35bc47.webm",
-  "raw_sha256": "e233bb7e76cb9fe84da8d755a8a348bcccd1d8e982c11c09a9d26a45aea6d000",
+  "raw_file": "page@4380ad32b93ac00baa979cda937dc916.webm",
+  "raw_sha256": "f64716a9b473e2dff7b5e997a96c4943292891039eac13aa6630435051b1feea",
   "font": "Carlito-Regular.ttf",
   "font_sha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
   "download": "reference-check.policy-evaluation.json",
-  "download_sha256": "4ba9c6518ab4dd7a784bec318e9264fb520158d9f89f2f22bbc748a85170ef86",
+  "download_sha256": "1286ab253ccfd28fc605a627da270290805aa4d1146d18dc8d8a3eaa474afff4",
   "link_matches_download": true,
   "clipboard_matches_download": true,
   "render": {
-    "output": "shot04-2026-11-15.mp4",
-    "sha256": "0dfbbf778f97f8c5cb494bacc637e1cafb67a6b4c15bfe4f6a276a4e57f9bdc3",
-    "poster": "shot04-2026-11-15.webp",
-    "poster_sha256": "9913f2a547bfd5a35e931a5f3bd4538397770c06774914aade70abf7dc114bd2",
+    "output": "shot04-2026-11-16.mp4",
+    "sha256": "e7e6c5de5f2e61c406a412ef7f26b865d84fc2d6101de730c01179230cc9e9ff",
+    "poster": "shot04-2026-11-16.webp",
+    "poster_sha256": "39ae0917990212683a9a3dde6f7953f45fe9e1244077fd116b13417a1eca5624",
     "size": [
       1280,
       720
     ],
-    "caption_px": 25,
     "tag_px": 20,
     "tag_xy": [
       24,
       24
     ],
     "lead_trimmed_s": 0,
-    "caption_max_w": 998,
-    "caption_bottom_px": 24,
+    "captions_in_picture": false,
     "captions": [
       {
         "from_s": 0,
-        "to_s": 41.981,
+        "to_s": 42.229,
         "text": "RECORDED \u00b7 ONE TAKE \u00b7 SYNTHETIC DATA",
         "box": [
           24,
@@ -178,70 +176,34 @@
         ]
       },
       {
-        "from_s": 0.797,
-        "to_s": 8.489,
-        "text": "/reference-check \u00b7 a selected policy vs a synthetic battery; no agent contacted",
-        "box": [
-          224,
-          654,
-          1055,
-          696
-        ]
+        "from_s": 0.946,
+        "to_s": 8.583,
+        "text": "/reference-check \u00b7 a selected policy vs a synthetic battery; no agent contacted"
       },
       {
-        "from_s": 8.489,
-        "to_s": 14.888,
-        "text": "12 synthetic policy decisions scored by the deterministic oracle",
-        "box": [
-          299,
-          654,
-          981,
-          696
-        ]
+        "from_s": 8.583,
+        "to_s": 14.999,
+        "text": "12 synthetic policy decisions scored by the deterministic oracle"
       },
       {
-        "from_s": 14.888,
-        "to_s": 21.432,
-        "text": "Signed policy-evaluation evidence downloaded (browser-session key)",
-        "box": [
-          268,
-          654,
-          1011,
-          696
-        ]
+        "from_s": 14.999,
+        "to_s": 21.51,
+        "text": "Signed policy-evaluation evidence downloaded (browser-session key)"
       },
       {
-        "from_s": 21.432,
-        "to_s": 30.986,
-        "text": "One tool added (payments.transfer): the legacy config-bound credential VOIDs (code 4); the downloaded evidence is unchanged",
-        "box": [
-          152,
-          622,
-          1127,
-          696
-        ]
+        "from_s": 21.51,
+        "to_s": 31.187,
+        "text": "One tool added (payments.transfer): the legacy config-bound credential VOIDs (code 4); the downloaded evidence is unchanged"
       },
       {
-        "from_s": 30.986,
-        "to_s": 36.478,
-        "text": "The /verify link carries the same record; the field is cleared and the downloaded file pasted in is byte-identical",
-        "box": [
-          144,
-          622,
-          1135,
-          696
-        ]
+        "from_s": 31.187,
+        "to_s": 36.726,
+        "text": "The /verify link carries the same record; the field is cleared and the downloaded file pasted in is byte-identical"
       },
       {
-        "from_s": 36.478,
-        "to_s": 41.981,
-        "text": "Pasted into /verify: UNTRUSTED \u2014 intact, but the session signer is unpinned",
-        "box": [
-          233,
-          654,
-          1047,
-          696
-        ]
+        "from_s": 36.726,
+        "to_s": 42.229,
+        "text": "Pasted into /verify: UNTRUSTED \u2014 intact, but the session signer is unpinned"
       }
     ]
   }

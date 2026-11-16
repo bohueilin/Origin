@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 
 // Release 6 Phase 4 follow-up — Gate 7: tap targets on a phone
-// At 375 × 812 every visible interactive target on the sixteen public routes is at least
-// 44 × 44 CSS px, and no route scrolls sideways. Boxed controls (buttons, tabs, chips,
+// At 375 × 812 (and, from Release 7, at 360 × 800 and 430 × 932) every visible interactive
+// target on the sixteen public routes is at least 44 × 44 CSS px, and no route scrolls sideways. Boxed controls (buttons, tabs, chips,
 // selects, fields, disclosures) take a real 44 px minimum below 761px. A link inside running
 // text grows its box with vertical padding, which an inline box adds without moving any
 // line, and any sideways padding is cancelled by an equal negative margin. A control wrapped
@@ -19,10 +19,14 @@ test.beforeEach(async ({ page }) => {
   })
 })
 
-for (const route of ROUTES) {
-  test(`gate 7: every tap target on ${route} is at least 44 x 44 at 375 px`, async ({ page }, testInfo) => {
+// Release 7 (R15): the same sweep runs at 360 × 800 and 430 × 932 as well as 375 × 812, so the
+// "none at 360, 375 and 430 px" claim is a rendered result of this spec, not a commit message.
+const PHONES = [[360, 800], [375, 812], [430, 932]] as const
+
+for (const [width, height] of PHONES) for (const route of ROUTES) {
+  test(`gate 7: every tap target on ${route} is at least 44 x 44 at ${width} px`, async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'the viewport is set explicitly')
-    await page.setViewportSize({ width: 375, height: 812 })
+    await page.setViewportSize({ width, height })
     await page.goto(route)
     await page.evaluate(() => document.fonts.ready)
     await expect(page.locator('h1:visible').first()).toBeVisible()

@@ -1,19 +1,19 @@
 WEBVTT
 
-NOTE RECORDED · ONE TAKE · SYNTHETIC DATA · recorded 2026-11-15 on originphysicalai.com (49b5cd0) · captions and cursor dot overlaid
+NOTE RECORDED · ONE TAKE · SYNTHETIC DATA · recorded 2026-11-16 on originphysicalai.com (965215b) · cursor dot and corner label overlaid; captions shown under the picture
 
 1
-00:00:00.841 --> 00:00:08.604
+00:00:00.940 --> 00:00:08.691
 /over-grant analyzer · synthetic fleet, seed 20260818, 400 roots
 
 2
-00:00:08.604 --> 00:00:16.167
+00:00:08.691 --> 00:00:16.272
 2074 synthetic identities · 63.2% of granted scopes never exercised in the window
 
 3
-00:00:16.167 --> 00:00:23.729
+00:00:16.272 --> 00:00:23.880
 One delegation edge widened: the root reaches 55.6% → 66.7% of the sensitive resources
 
 4
-00:00:23.729 --> 00:00:29.231
+00:00:23.880 --> 00:00:29.382
 Fresh seeded corpus, 90 planted widened edges: 90/90 caught · 0 false positives (synthetic ground truth)

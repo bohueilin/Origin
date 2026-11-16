@@ -53,3 +53,13 @@
 .pg3d { background: var(--paper); }
 .pg3d .pg3d-prog-track .pg3d-prog-fill { background: var(--signal); }
 .pg3d .pg3d-btn.primary { box-shadow: none; }
+
+/* The canvas takes the floor's shape rather than a fixed 520px: 17:10 on a wide stage (1112 x
+   654 at 1280px and up), never under 520px tall nor taller than the window below the sticky
+   header, and square on a phone, so the framed floor fills it without wide empty wings or
+   bands. The explicit min-height also keeps the drawn canvas from propping the box open while
+   it shrinks. */
+.pg3d .pg3d-canvas { height: auto; aspect-ratio: 17 / 10; min-height: 520px; max-height: calc(100vh - 110px); }
+@media (max-width: 640px) {
+  .pg3d .pg3d-canvas { aspect-ratio: 1; min-height: 0; }
+}

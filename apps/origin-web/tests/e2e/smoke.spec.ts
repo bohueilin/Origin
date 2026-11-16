@@ -872,15 +872,16 @@ test('wave 3: the /security log names no readiness tier', async ({ page }) => {
   await expect(log).not.toContainText(/\bL[0-4]\b/)
 })
 
-test('wave 3: the shot04 recording keeps its figure and gets a dated line outside it', async ({ page }) => {
+// Release 7: the take is of the Release 6 pages, so there is no drift line at all.
+test('wave 3: the shot04 recording keeps its figure and carries no drift note', async ({ page }) => {
   const { readFileSync } = await import('node:fs')
   const manifest = JSON.parse(readFileSync(new URL('../../scripts/recordings/shot04.json', import.meta.url), 'utf8'))
   await page.goto('/reference-check')
   const figure = page.locator('video[poster*="shot04-"]').locator('xpath=ancestor::figure')
-  const line = page.locator('.vband > .shell > figure.vband__fig + p.vband__cap')
-  await expect(line).toHaveText(`Recorded ${manifest.date}; the pages have changed since (/reference-check and /verify now open with a static specimen beside the introduction, and /verify shows a labelled preview before anything is verified).`)
+  await expect(page.locator('.vband > .shell > figure.vband__fig + p.vband__cap')).toHaveCount(0)
+  await expect(figure.locator('.vband__sum')).toHaveText(`Recorded ${manifest.date} (${manifest.commit}) · synthetic demo data`)
+  await expect(figure.locator('.vband__detail')).not.toContainText('have since gained')
   await expect(figure).not.toContainText('the pages have changed since')
-  expect(await line.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14)
 })
 
 test('wave 3: home demo panel 3 counts over-grants on their own and names no tier', async ({ page }) => {

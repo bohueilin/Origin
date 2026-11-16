@@ -25,7 +25,8 @@ export function SimulationPage() {
   const [seed, setSeed] = useState(20260713)
   const [robots, setRobots] = useState(4)
   const [view, setView] = useState<'2d' | '3d'>('2d')
-  const [playing, setPlaying] = useState(() => !prefersReducedMotion())
+  // Opens paused on the first frame; Play, Restart, a new layout or a robot count starts motion.
+  const [playing, setPlaying] = useState(false)
   const [frameIdx, setFrameIdx] = useState(0)
   const [sigil, setSigil] = useState<{ thumb: string; obj: unknown } | null>(null)
 

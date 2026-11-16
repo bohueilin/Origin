@@ -190,7 +190,7 @@ test('release 7: stages 1 to 4 follow the battery\'s second looser miss, sup-10,
   }
 })
 
-test('release 6 phase 2: the five-column stage strip starts where it fits, at 1024 px', async ({ page }, testInfo) => {
+test('release 6 phase 2: the five-column stage strip starts where it fits, at 1100 px (release 7)', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'viewports are set explicitly')
   // Each tab's boxes: the tab's content box, its name, its connector, and each word of its field
   // code (split at spaces and at the <wbr> after the dot) with the lines it is drawn on.
@@ -218,8 +218,8 @@ test('release 6 phase 2: the five-column stage strip starts where it fits, at 10
     }
   }))
 
-  // Below 1024 px the strip is a list: the tabs stack, without connectors or field codes.
-  await page.setViewportSize({ width: 1023, height: 900 })
+  // Below 1100 px the strip is a list: the tabs stack, without connectors or field codes.
+  await page.setViewportSize({ width: 1099, height: 900 })
   await page.goto('/')
   await expect(page.locator('[data-demo]')).toHaveClass(/is-enhanced/)
   const list = await strip()
@@ -229,9 +229,9 @@ test('release 6 phase 2: the five-column stage strip starts where it fits, at 10
     expect(tab.codeShown, `tab ${i + 1}`).toBe(false)
     expect(tab.connector.width, `tab ${i + 1}`).toBe(0)
   }
-  // From 1024 px: one row of five; no field breaks inside an identifier, and every connector
+  // From 1100 px: one row of five; no field breaks inside an identifier, and every connector
   // keeps a line before its 7 px arrowhead (Challenge, the longest name, leaves the least).
-  for (const [width, height] of [[1024, 900], [1280, 720], [1919, 998]]) {
+  for (const [width, height] of [[1100, 900], [1280, 720], [1919, 998]]) {
     await page.setViewportSize({ width, height })
     await page.goto('/')
     await expect(page.locator('[data-demo]')).toHaveClass(/is-enhanced/)
@@ -274,11 +274,12 @@ for (const [width, height] of [[1919, 998], [1280, 720], [375, 812]] as const) t
     if (width >= 900) {
       // A balanced split: the left column about 52% of the panel, the schematic right. Release 7
       // (R01/D1): the readout sits under the prose and the prose is centred above it, so no blank
-      // stretch above or below either column is taller than 13% of the panel (measured: 42 px of
-      // 358, Attest, at 1280 and 1919 px; it was 172 px of 388 under the prose).
+      // stretch above or below either column is taller than 15% of the panel (measured, Attest:
+      // 42 px of 358 with Avenir, 54 px of 383 with CI's Linux fallback font; it was 172 px of 388
+      // under the prose).
       expect(stage.side.y, `stage ${i + 1}`).toBeLessThan(stage.main.y + stage.main.height)
       expect(stage.main.y, `stage ${i + 1}`).toBeLessThan(stage.side.y + stage.side.height)
-      expect(Math.max(...stage.bands) / stage.height, `stage ${i + 1} largest blank band ${JSON.stringify(stage.bands)}`).toBeLessThanOrEqual(0.13)
+      expect(Math.max(...stage.bands) / stage.height, `stage ${i + 1} largest blank band ${JSON.stringify(stage.bands)}`).toBeLessThanOrEqual(0.15)
       expect(stage.side.x, `stage ${i + 1}`).toBeGreaterThan(stage.main.x + stage.main.width)
       const share = stage.main.width / (stage.main.width + stage.side.width)
       expect(share, `stage ${i + 1} left share`).toBeGreaterThan(0.5)

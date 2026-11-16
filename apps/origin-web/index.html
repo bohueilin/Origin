@@ -67,14 +67,15 @@
       .cin-demo .demo__dot > small { font-size: var(--fs-13); line-height: 1.45; font-weight: 400; color: var(--ink-soft); }
       .cin-demo .demo__dot > code { justify-self: start; font: var(--fs-12)/1.45 var(--font-mono); color: var(--ink); overflow-wrap: anywhere; }
       .cin-demo .demo__dot > i { display: none; }
-      /* Below 1024 px the strip is a list; each field still shows in its panel's schematic and
-         stays in its tab's description. The five-column strip starts at 1024 px, the narrowest
-         width (measured) where the longest stage name, Challenge, still leaves its connector a
-         line before the arrowhead and every field breaks only at its dot (<wbr>): below it the
-         connector shrank to 2-14 px and subject.environment_digest broke inside the identifier.
+      /* Below 1100 px the strip is a list; each field still shows in its panel's schematic and
+         stays in its tab's description. The five-column strip starts at 1100 px (Release 7; it
+         was 1024 px). With Avenir, Challenge's connector is 27 px at 1024 px, but with a wider
+         fallback font (Linux, measured in CI) it is 13 px there and 30 px at 1100 px. Below the
+         list breakpoint the connector would shrink to a few px and
+         subject.environment_digest would break inside the identifier.
          The panels' two-column split still starts at 900 px. */
-      @media (max-width: 1023px) { .cin-demo .demo__dot > code { display: none; } }
-      @media (min-width: 1024px) {
+      @media (max-width: 1099px) { .cin-demo .demo__dot > code { display: none; } }
+      @media (min-width: 1100px) {
         .cin-demo .demo.is-enhanced .demo__rail { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 14px 20px; }
         .cin-demo .demo__dot { grid-template-columns: 24px auto minmax(0, 1fr); grid-template-rows: auto auto 1fr; align-items: start; gap: 8px 10px; padding: 14px 16px 16px; }
         .cin-demo .demo__dot > b { align-self: center; }

@@ -452,11 +452,11 @@ An outside audit of Release 6 (`965215b`, 15 November) found two places where th
 | 375 | before (panel 1001, one column; space at the foot) | 117 (11.7%) | 0 | 48 (4.8%) | 65 (6.5%) | 96 (9.6%) |
 | 375 | after | 117 (11.7%) | 0 | 8 (0.8%) | 65 (6.5%) | 96 (9.6%) |
 
-Attest still carries the most: its prose is 110 px shorter than its record figure, and the remainder is now 42 px above it and 42 px below. On phones the one-column panels keep their shared height. Freeing them would move the Play/Prev/Next bar by up to 117 px under the thumb between stages, so that stays. `r6-p2-walkthrough.spec.ts` now fails if any blank stretch is taller than 13% of the panel from 900 px.
+Attest still carries the most: its prose is 110 px shorter than its record figure, and the remainder is now 42 px above it and 42 px below. With the wider fallback font on CI's Linux runner (Avenir is absent there), Attest's largest stretch measures 54 px of 383, or 14.1%. On phones the one-column panels keep their shared height. Freeing them would move the Play/Prev/Next bar by up to 117 px under the thumb between stages, so that stays. `r6-p2-walkthrough.spec.ts` now fails if any blank stretch is taller than 15% of the panel from 900 px.
 
 ### N3 — the heading under the sticky header (R11)
 
-Clicking through the stages never scrolls the page itself. The clip the audit saw happens when the tab strip is already under the header when Next (or a tab) is pressed: the visitor has scrolled the section up, or a tool has scrolled the clicked button into view. The new stage then opens with its tabs and heading hidden. A stage change made by a click now checks the strip's top. If it sits above the header's foot, the page scrolls just enough to put it 12 px below. Otherwise nothing scrolls, and Play never scrolls. The walkthrough also carries `scroll-margin-top: 108px`.
+Clicking through the stages never scrolls the page itself. The clip the audit saw happens when the tab strip is already under the header when Next (or a tab) is pressed: the visitor has scrolled the section up, or a tool has scrolled the clicked button into view. The new stage then opens with its tabs and heading hidden. A stage change made by a click now checks the strip's top. If it sits above the header's foot, the page scrolls just enough to put it 12 px below. Otherwise nothing scrolls, and Play never scrolls. The scroll is instant, like the stage change itself. A smooth scroll was cut short in CI, where the panel is taller with Linux fonts and Next sits below the fold, and the strip was left 300 px under the header. The walkthrough also carries `scroll-margin-top: 108px`.
 
 | Start | Width | Before (strip or heading top, minus header foot, stages 2–5) | After |
 |---|---|---|---|
@@ -465,9 +465,18 @@ Clicking through the stages never scrolls the page itself. The clip the audit sa
 
 `r7-home-walkthrough.spec.ts` presses Next through all five stages from both starts at 1280 × 800 and 1919 × 998. It requires the strip and the heading at least 8 px below the header.
 
-### N6 — the 900–1023 px tab strip (R03)
+### N6 — the tab strip squeeze (R03)
 
-Already fixed in Release 6, and now tested. The Phase 2 sentence "from 900 to 1023 px … Challenge squeezed its connector to 2–14 px" describes the measurement that moved the five-column strip to 1024 px. Below 1024 px the strip is a one-column list with no connectors. Measured on both builds at 900, 960 and 1023 px: one column, no connector drawn, no identifier broken anywhere but at its dot, nothing scrolling sideways. At 1024 px the five connectors are 69, 27, 57, 59 and 43 px; at 1100 px, 84, 42, 72, 74 and 58 px. `r7-home-walkthrough.spec.ts` checks 900, 960, 1023 and 1024 px for connectors of at least 16 px (from 1024 px), mid-token breaks in every tab and panel identifier, and sideways scroll.
+Release 6 moved the five-column strip to 1024 px. The Phase 2 sentence "from 900 to 1023 px … Challenge squeezed its connector to 2–14 px" describes the measurement behind that move. Below the breakpoint the strip is a one-column list with no connectors.
+
+On macOS (Avenir) the connectors at 1024 px measured 69, 27, 57, 59 and 43 px. CI's Linux runner has no Avenir, and its wider fallback font left Challenge's connector at **13.3 px at 1024 px**. Verdana reproduces it at 14 px. So the five-column strip now starts at **1100 px**. There, the connectors are 84, 42, 72, 74 and 58 px with Avenir, and 78, 30, 65 and 64 px with the wide font. Below 1100 px the strip is the list.
+
+`r7-home-walkthrough.spec.ts` checks 900, 960, 1024, 1099 and 1100 px for:
+- connectors of at least 16 px, from 1100 px;
+- no identifier breaking anywhere but at its dot, in every tab and panel;
+- no sideways scroll.
+
+`r6-p2-walkthrough.spec.ts` checks the list at 1099 px and the row from 1100 px.
 
 ### D2 — the 3D floor's fit (R01)
 

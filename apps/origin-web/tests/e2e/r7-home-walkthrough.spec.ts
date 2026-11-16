@@ -4,10 +4,10 @@ import { test, expect, type Page } from '@playwright/test'
 // R11/N3: pressing Next (or a stage tab) never leaves the tab strip or the new stage's heading under
 // the sticky header. Checked from two reading positions at 1280 × 800 and 1919 × 998: the strip
 // just under the header, and the section scrolled up so the strip is already under it.
-// R03/N6: from 900 to 1023 px the stage strip is a one-column list, so it has no connectors to
-// squeeze; from 1024 px every connector is at least 16 px. No record identifier
+// R03/N6: from 900 to 1099 px the stage strip is a one-column list, so it has no connectors to
+// squeeze; from 1100 px every connector is at least 16 px, with Avenir or a wider fallback font. No record identifier
 // (subject.environment_digest and the rest) breaks anywhere but at its dot, and nothing scrolls
-// sideways, at 900, 960, 1023 and 1024 px.
+// sideways, at 900, 960, 1024, 1099 and 1100 px.
 // R04/N2: the hero card is the one place sup-02, the $450 refund, is told. The walkthrough
 // follows sup-10 and names the $450 refund once, as the same kind of miss.
 // R07/N5: the hero caption calls the result "output from the live demo", not "real".
@@ -53,7 +53,7 @@ for (const [width, height] of [[1280, 800], [1919, 998]] as const) {
   }
 }
 
-for (const width of [900, 960, 1023, 1024]) {
+for (const width of [900, 960, 1024, 1099, 1100]) {
   test(`release 7: at ${width} px the stage strip fits, no identifier breaks inside itself and nothing scrolls sideways`, async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'viewports are set explicitly')
     await page.setViewportSize({ width, height: 900 })
@@ -64,7 +64,7 @@ for (const width of [900, 960, 1023, 1024]) {
       columns: getComputedStyle(document.querySelector('.demo__rail')!).gridTemplateColumns.split(' ').length,
       connectors: [...document.querySelectorAll<HTMLElement>('.demo__dot:not(:last-child) > i')].map((i) => getComputedStyle(i).display === 'none' ? null : i.getBoundingClientRect().width),
     }))
-    if (width < 1024) {
+    if (width < 1100) {
       expect(strip.columns, 'a one-column list').toBe(1)
       expect(strip.connectors, 'no connectors drawn').toEqual([null, null, null, null])
     } else {

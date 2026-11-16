@@ -468,7 +468,9 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
     if (!rail) return
     const headerBottom = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? 0
     const top = rail.getBoundingClientRect().top
-    if (top < headerBottom + 8) window.scrollBy({ top: top - headerBottom - 12, behavior: reduceMotion ? 'auto' : 'smooth' })
+    // Instant, like the stage change itself: the walkthrough has no transitions, and an
+    // animated scroll can be cut short (seen in CI), leaving the strip under the header.
+    if (top < headerBottom + 8) window.scrollBy({ top: top - headerBottom - 12, behavior: 'instant' })
   }
   const goByClick = (i: number) => { stop(); go(i); keepStripInView() }
 
